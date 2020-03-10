@@ -5,10 +5,10 @@
 
 Cognite Experimental Python SDK
 ===============================
-[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/cognite-experimental-sdk-python/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-experimental-sdk-python/job/master/)
-[![codecov](https://codecov.io/gh/cognitedata/cognite-experimental-sdk-python/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/cognite-experimental-sdk-python)
-[![Documentation Status](https://readthedocs.com/projects/cognite-experimental-sdk-python/badge/?version=latest)](https://cognite-docs.readthedocs-hosted.com/en/latest/)
-[![PyPI version](https://badge.fury.io/py/cognite-experimental-sdk.svg)](https://pypi.org/project/cognite-experimental-sdk/)
+[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/ognite-sdk-python-experimental/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-sdk-python-experimental/job/master/)
+[![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-python-experimental/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/cognite-experimental-sdk-python)
+[![Documentation Status](https://readthedocs.com/projects/cognite-sdk-python-experimental/badge/?version=latest)](https://cognite-docs.readthedocs-hosted.com/en/latest/)
+[![PyPI version](https://badge.fury.io/py/cognite-sdk-experimental.svg)](https://pypi.org/project/cognite-experimental-sdk/)
 [![tox](https://img.shields.io/badge/tox-3.6%2B-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
