@@ -33,6 +33,6 @@ in addition to experimental extensions.
 ## Installation
 To install this package:
 ```bash
-$ pip install cognite-experimental-sdk-experimental
+$ pip install cognite-sdk-experimental
 ```
 
