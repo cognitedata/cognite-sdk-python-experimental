@@ -2,8 +2,8 @@ import re
 
 import pytest
 
-from cognite.client.data_classes import Type, TypeFilter, TypeList
-from cognite.client.experimental import CogniteClient
+from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import Type, TypeFilter, TypeList
 from tests.utils import jsgz_load
 
 TYPES_API = CogniteClient().types

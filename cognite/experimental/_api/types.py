@@ -25,11 +25,12 @@ class TypesAPI(APIClient):
         external_id_prefix: str = None,
         type_subtree: Union[Dict[str, Any], ParentTypeDefinitionFilter] = None,
         limit: int = None,
+        chunk_size: int = None,
     ):
         filter = TypeFilter(name=name, external_id_prefix=external_id_prefix, type_subtree=type_subtree).dump(
             camel_case=True
         )
-        return self._list_generator(method="POST", limit=limit, filter=filter)
+        return self._list_generator(method="POST", limit=limit, filter=filter, chunk_size=chunk_size)
 
     def list(
         self,
@@ -44,6 +45,7 @@ class TypesAPI(APIClient):
             name (str): returns the type definitions matching that name
             external_id_prefix (str): filter external ids starting with the prefix specified
             root_parent (Union[Dict[str, Any], ParentTypeDefinitionFilter]): filter for type definitions that belong to the subtree defined by the root parent type specified
+            limit (int, optional): Maximum number of type definitions to return.
 
         Returns:
             TypeList: List of requested Types
@@ -52,20 +54,20 @@ class TypesAPI(APIClient):
 
             List Types and filter on name::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> file_list = c.types.list(limit=5, name="name")
 
             Iterate over type definitions::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> for type in c.types:
                 ...     type # do something with the  type definition
 
             Iterate over chunks of type definitions to reduce memory load::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> for type_list in c.types(chunk_size=2500):
                 ...     type_list # do something with the type definitions
@@ -89,13 +91,13 @@ class TypesAPI(APIClient):
 
             Get Type by id::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.types.retrieve(id=1)
 
             Get Type by external id::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.types.retrieve(external_id="1")
         """
@@ -116,13 +118,13 @@ class TypesAPI(APIClient):
 
             Get Types by id::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.types.retrieve_multiple(ids=[1, 2, 3])
 
             Get Types by external id::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.types.retrieve_multiple(external_ids=["abc", "def"])
         """
@@ -144,7 +146,7 @@ class TypesAPI(APIClient):
 
             Create new type definitions::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> from cognite.client.data_classes import Type
                 >>> c = CogniteClient()
                 >>> Types = [Type(external_id="valve"), Type(external_id="pipe",parent_type={"externalId":"parent","version":123})]
@@ -171,7 +173,7 @@ class TypesAPI(APIClient):
 
             Delete type definitions by id or external id::
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> c.types.delete(id=[1,2,3], external_id="3",soft=False)
         """

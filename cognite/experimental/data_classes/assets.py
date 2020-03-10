@@ -1,6 +1,7 @@
 import threading
 from typing import *
 
+from cognite.client.data_classes import Asset as NonExperimentalAsset
 from cognite.client.data_classes._base import *
 from cognite.client.data_classes.shared import TimestampRange
 
@@ -29,7 +30,7 @@ class AggregateResultItem(dict):
 
 
 # GenClass: Asset, ExternalAsset
-class Asset(CogniteResource):
+class Asset(NonExperimentalAsset):
     """No description.
 
     Args:

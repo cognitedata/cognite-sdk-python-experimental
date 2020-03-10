@@ -4,17 +4,9 @@ import re
 
 import pytest
 
-from cognite.client.data_classes import (
-    Asset,
-    Event,
-    FileMetadata,
-    Relationship,
-    RelationshipFilter,
-    RelationshipList,
-    Sequence,
-    TimeSeries,
-)
+from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
 from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import Asset, Relationship, RelationshipFilter, RelationshipList
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()

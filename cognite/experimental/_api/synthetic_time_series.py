@@ -44,20 +44,20 @@ class SyntheticDatapointsAPI(APIClient):
 
             Request a synthetic time series query with direct syntax
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> dps = c.datapoints.synthetic.retrieve(expression="TS{id:123} + TS{externalId:'abc'}", start="2w-ago", end="now")
 
             Use variables to re-use an expression:
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> vars = {"A": "my_ts_external_id", "B": client.time_series.retrieve(id=1)}
                 >>> dps = c.datapoints.synthetic.retrieve(expression="A+B", start="2w-ago", end="now", variables=vars)
 
             Use sympy to build complex expressions:
 
-                >>> from cognite.client.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> from sympy import symbols, cos, pi
                 >>> a = sympy.symbols('a')

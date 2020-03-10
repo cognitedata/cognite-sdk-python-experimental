@@ -61,14 +61,17 @@ class Relationship(CogniteResource):
         if isinstance(target, dict) or target is None:
             return target
 
-        from cognite.client.data_classes import Asset, Event, FileMetadata, TimeSeries, Sequence
+        from cognite.client.data_classes import Asset as NonExperimentalAsset
+        from cognite.client.data_classes import Event, FileMetadata, TimeSeries, Sequence
+        from cognite.experimental.data_classes import Asset as ExperimentalAsset
 
         _TARGET_TYPES = {
-            Asset: "Asset",
+            NonExperimentalAsset: "Asset",
             TimeSeries: "TimeSeries",
             FileMetadata: "File",
             Event: "Event",
             Sequence: "Sequence",
+            ExperimentalAsset: "Asset",
         }
         typestr = _TARGET_TYPES.get(target.__class__)
         if typestr:

@@ -4,9 +4,9 @@ from unittest import mock
 import pytest
 
 import cognite.client.utils._time
-from cognite.client.data_classes import Asset, AssetUpdate, Type, TypeFilter, TypeList
-from cognite.client.experimental import CogniteClient
 from cognite.client.utils._auxiliary import random_string
+from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import Asset, AssetUpdate, Type, TypeFilter, TypeList
 from tests.utils import set_request_limit
 
 COGNITE_CLIENT = CogniteClient()
