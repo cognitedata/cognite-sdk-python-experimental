@@ -13,8 +13,8 @@ class ParentTypeDefinitionFilter(dict):
     """filter for type definitions that belong to the subtree defined by the root parent type specified
 
     Args:
-        id (int): Javascript friendly internal ID given to the object.
-        version (int): A JavaScript-friendly version for the object.
+        id (int): A server-generated ID for the object.
+        version (int): A server-generated ID for the object.
         external_id (str): External Id provided by client. Should be unique within the project.
     """
 
@@ -31,7 +31,7 @@ class ParentTypeDefinitionFilter(dict):
     # GenStop
 
 
-# GenClass: TypeDefinitionCreateSpec, TypeDefinition
+# GenClass: TypeDefinitionSpec, TypeDefinition
 class Type(CogniteResource):
     """No description.
 
@@ -41,8 +41,8 @@ class Type(CogniteResource):
         description (str): No description.
         properties (List[Dict[str, Any]]): No description.
         parent_type (Union[Dict[str, Any], TypeDefinitionReference]): No description.
-        id (int): Javascript friendly internal ID given to the object.
-        version (int): A JavaScript-friendly version for the object.
+        id (int): A server-generated ID for the object.
+        version (int): A server-generated ID for the object.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         cognite_client (CogniteClient): The client to associate with this object.

@@ -7,76 +7,90 @@ from cognite.client.data_classes.shared import TimestampRange
 
 # GenPropertyClass: AggregateResultItem
 class AggregateResultItem(dict):
-    """No description.
+    """Aggregated metrics of the asset
 
     Args:
-        child_count (int): Asset child count.
-        max_child_depth (int): Max depth of any child of this asset
+        child_count (int): Number of direct descendants for the asset
+        depth (int): Asset path depth (number of levels below root node).
+        path (List[Dict[str, Any]]): IDs of assets on the path to the asset.
     """
 
-    def __init__(self, child_count: int = None, max_child_depth: int = None, **kwargs):
+    def __init__(self, child_count: int = None, depth: int = None, path: List[Dict[str, Any]] = None, **kwargs):
         self.child_count = child_count
-        self.max_child_depth = max_child_depth
+        self.depth = depth
+        self.path = path
         self.update(kwargs)
 
     child_count = CognitePropertyClassUtil.declare_property("childCount")
-    max_child_depth = CognitePropertyClassUtil.declare_property("maxChildDepth")
+    depth = CognitePropertyClassUtil.declare_property("depth")
+    path = CognitePropertyClassUtil.declare_property("path")
 
     # GenStop
 
 
-# GenClass: Asset, DataExternalAssetItem
+# GenClass: Asset, ExternalAsset
 class Asset(CogniteResource):
-    """Representation of a physical asset, e.g plant or piece of equipment
+    """No description.
 
     Args:
+        id (int): A server-generated ID for the object.
         external_id (str): External Id provided by client. Should be unique within the project.
         name (str): Name of asset. Often referred to as tag.
-        parent_id (int): Javascript friendly internal ID given to the object.
+        parent_id (int): A server-generated ID for the object.
+        parent_external_id (str): The external ID of the parent. The property is omitted if the asset doesn't have a parent or if the parent doesn't have externalId.
         description (str): Description of asset.
+        data_set_id (int): A server-generated ID for the object.
         metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value
         source (str): The source of this asset
         types (List[Dict[str, Any]]): No description.
-        id (int): Javascript friendly internal ID given to the object.
-        aggregates (List[Dict[str, Any]]): No description.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        root_id (int): Javascript friendly internal ID given to the object.
-        parent_external_id (str): The external ID of the parent. This will be resolved to an internal ID and stored as `parentId`.
+        root_id (int): A server-generated ID for the object.
+        aggregates (Union[Dict[str, Any], AggregateResultItem]): Aggregated metrics of the asset
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
     def __init__(
         self,
+        id: int = None,
         external_id: str = None,
         name: str = None,
         parent_id: int = None,
+        parent_external_id: str = None,
         description: str = None,
+        data_set_id: int = None,
         metadata: Dict[str, str] = None,
         source: str = None,
         types: List[Dict[str, Any]] = None,
-        id: int = None,
-        aggregates: List[Dict[str, Any]] = None,
         created_time: int = None,
         last_updated_time: int = None,
         root_id: int = None,
-        parent_external_id: str = None,
+        aggregates: Union[Dict[str, Any], AggregateResultItem] = None,
         cognite_client=None,
     ):
+        self.id = id
         self.external_id = external_id
         self.name = name
         self.parent_id = parent_id
+        self.parent_external_id = parent_external_id
         self.description = description
+        self.data_set_id = data_set_id
         self.metadata = metadata
         self.source = source
         self.types = types
-        self.id = id
-        self.aggregates = aggregates
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.root_id = root_id
-        self.parent_external_id = parent_external_id
+        self.aggregates = aggregates
         self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(Asset, cls)._load(resource, cognite_client)
+        if isinstance(resource, Dict):
+            if instance.aggregates is not None:
+                instance.aggregates = AggregateResultItem(**instance.aggregates)
+        return instance
 
     # GenStop
 
@@ -166,7 +180,7 @@ class AssetUpdate(CogniteUpdate):
     """Changes applied to asset
 
     Args:
-        id (int): Javascript friendly internal ID given to the object.
+        id (int): A server-generated ID for the object.
         external_id (str): External Id provided by client. Should be unique within the project.
     """
 
@@ -347,7 +361,6 @@ class AssetFilter(CogniteFilter):
         self,
         name: str = None,
         parent_ids: List[int] = None,
-        parent_external_ids: List[str] = None,
         root_ids: List[Dict[str, Any]] = None,
         asset_subtree_ids: List[Dict[str, Any]] = None,
         metadata: Dict[str, str] = None,
@@ -361,7 +374,6 @@ class AssetFilter(CogniteFilter):
     ):
         self.name = name
         self.parent_ids = parent_ids
-        self.parent_external_ids = parent_external_ids
         self.root_ids = root_ids
         self.asset_subtree_ids = asset_subtree_ids
         self.metadata = metadata
