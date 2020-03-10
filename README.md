@@ -3,8 +3,8 @@
     <img src="https://github.com/cognitedata/cognite-python-docs/blob/master/img/cognite_logo.png" alt="Cognite logo" title="Cognite" align="right" height="80" />
 </a>
 
-Cognite Experimental Python SDK
-===============================
+Cognite Python SDK Experimental Extensions
+==========================================
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/ognite-sdk-python-experimental/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-sdk-python-experimental/job/master/)
 [![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-python-experimental/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/cognite-experimental-sdk-python)
 [![Documentation Status](https://readthedocs.com/projects/cognite-sdk-python-experimental/badge/?version=latest)](https://cognite-docs.readthedocs-hosted.com/en/latest/)
