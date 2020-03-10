@@ -9,4 +9,11 @@ testBuildReleasePoetryPackage {
 		envVar(key: 'COGNITE_CLIENT_NAME', value: "cognite-sdk-experimental-integration-tests"),
 		envVar(key: 'COGNITE_PROJECT', value: "python-sdk-test"),
 	]
+    beforeTests = {
+        stage('Build Docs'){
+            dir('./docs'){
+                sh("poetry run sphinx-build -W -b html ./source ./build")
+            }
+        }
+    }
 }

@@ -147,7 +147,7 @@ class TypesAPI(APIClient):
             Create new type definitions::
 
                 >>> from cognite.experimental import CogniteClient
-                >>> from cognite.client.data_classes import Type
+                >>> from cognite.experimental.data_classes import Type
                 >>> c = CogniteClient()
                 >>> Types = [Type(external_id="valve"), Type(external_id="pipe",parent_type={"externalId":"parent","version":123})]
                 >>> res = c.types.create(Types)

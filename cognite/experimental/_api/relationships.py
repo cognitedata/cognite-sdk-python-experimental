@@ -261,7 +261,7 @@ class RelationshipsAPI(APIClient):
             Create a new relationship specifying object type and external id for source and target::
 
                 >>> from cognite.experimental import CogniteClient
-                >>> from cognite.client.data_classes import Relationship
+                >>> from cognite.experimental.data_classes import Relationship
                 >>> c = CogniteClient()
                 >>> rel = Relationship(external_id="rel",source={"resource":"TimeSeries", "resourceId": "ts"},target={"resource":"Asset", "resourceId": "a"},relationship_type="belongsTo",confidence=0.9,data_set="ds_name")
                 >>> res = c.relationships.create(rel)
@@ -269,7 +269,7 @@ class RelationshipsAPI(APIClient):
             Create a new relationship using objects directly as source and target::
 
                 >>> from cognite.experimental import CogniteClient
-                >>> from cognite.client.data_classes import Relationship
+                >>> from cognite.experimental.data_classes import Relationship
                 >>> c = CogniteClient()
                 >>> assets = c.assets.retrieve_multiple(id=[1,2,3])
                 >>> flowrel1 = Relationship(external_id="flow_1",source=assets[0],target=assets[1] ,relationship_type="flowsTo",confidence=0.1,data_set="ds_flow")
