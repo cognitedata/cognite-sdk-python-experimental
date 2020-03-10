@@ -7,10 +7,8 @@ from cognite.client import utils
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import Datapoints, TimeSeries
 from cognite.client.exceptions import CogniteAPIError
-from cognite.client.utils._experimental_warning import experimental_api
 
 
-@experimental_api(api_name="Synthetic Timeseries")
 class SyntheticDatapointsAPI(APIClient):
     _SYNTHETIC_RESOURCE_PATH = "/timeseries/synthetic"
 

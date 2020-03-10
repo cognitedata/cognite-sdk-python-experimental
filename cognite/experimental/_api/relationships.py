@@ -2,7 +2,7 @@ from typing import *
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.client.data_classes import Relationship, RelationshipFilter, RelationshipList
+from cognite.experimental.data_classes import Relationship, RelationshipFilter, RelationshipList
 
 
 class RelationshipsAPI(APIClient):
