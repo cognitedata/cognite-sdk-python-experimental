@@ -9,9 +9,9 @@ from openapi.openapi import OpenAPISpec
 from openapi.utils import TYPE_MAPPING
 
 TO_EXCLUDE = ["project", "cursor"]
-GEN_CLASS_PATTERN = "# GenClass: ([\S ]+)\s+class (\S+)\(.+\):(?:(?!# GenStop)[\s\S])+# GenStop"
-GEN_UPDATE_CLASS_PATTERN = "# GenUpdateClass: (\S+)\s+class (\S+)\(.+\):(?:(?!# GenStop)[\s\S])+# GenStop"
-GEN_PROPERTY_CLASS_PATTERN = "# GenPropertyClass: (\S+)\s+class (\S+)\(.+\):(?:(?!# GenStop)[\s\S])+# GenStop"
+GEN_CLASS_PATTERN = r"# GenClass: ([\S ]+)\s+class (\S+)\(.+\):(?:(?!# GenStop)[\s\S])+# GenStop"
+GEN_UPDATE_CLASS_PATTERN = r"# GenUpdateClass: (\S+)\s+class (\S+)\(.+\):(?:(?!# GenStop)[\s\S])+# GenStop"
+GEN_PROPERTY_CLASS_PATTERN = r"# GenPropertyClass: (\S+)\s+class (\S+)\(.+\):(?:(?!# GenStop)[\s\S])+# GenStop"
 
 GenClassSegment = namedtuple("GenClassSegment", ["schema_names", "class_name"])
 GenUpdateClassSegment = namedtuple("GenUpdateClassSegment", ["schema_name", "class_name"])
@@ -367,20 +367,20 @@ class CodeGenerator:
         return format_str(src_contents=content, mode=FileMode(line_length=120))
 
     def _get_gen_class_replace_pattern(self, class_name, gen_type="# GenClass"):
-        return gen_type + ": ([\S ]+)\s+class {}\((.+)\):(?:(?!# GenStop)[\s\S])+# GenStop".format(class_name)
+        return gen_type + r": ([\S ]+)\s+class {}\((.+)\):(?:(?!# GenStop)[\s\S])+# GenStop".format(class_name)
 
     def _get_gen_class_replace_string(self, class_name, code_segment, gen_type="# GenClass"):
         return gen_type + r": \1\nclass {}(\2):\n{}\n    # GenStop".format(class_name, code_segment)
 
     def _get_gen_update_class_replace_pattern(self, class_name):
-        return "# GenUpdateClass: (\S+)\s+class {}\((.+)\):(?:(?!# GenStop)[\s\S])+# GenStop".format(class_name)
+        return r"# GenUpdateClass: (\S+)\s+class {}\((.+)\):(?:(?!# GenStop)[\s\S])+# GenStop".format(class_name)
 
     def _get_gen_update_class_replace_string(self, class_name, code_segment):
         return r"# GenUpdateClass: \1\nclass {}(\2):\n{}\n    # GenStop".format(class_name, code_segment)
 
     @staticmethod
     def _parse_input(input):
-        if re.match("^([^/]*/)*[^/]+\.py$", input):
+        if re.match(r"^([^/]*/)*[^/]+\.py$", input):
             if not os.path.isfile(input):
                 raise AssertionError("{} is not a python file or does not exist.".format(input))
             return CodeGenerator._read_file(input)
