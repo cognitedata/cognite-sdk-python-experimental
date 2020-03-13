@@ -20,8 +20,6 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.resource_typing: `Fit Resource Typing Model`_
 
 
-API Extensions
-==============
 CogniteClient
 -------------
 .. autoclass:: cognite.experimental.CogniteClient
