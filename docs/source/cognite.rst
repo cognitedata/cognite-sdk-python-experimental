@@ -6,6 +6,19 @@ Quickstart
 
 For a quickstart guide see the main SDK Documentation at https://cognite-docs.readthedocs-hosted.com/projects/cognite-sdk-python/en/latest/cognite.html
 
+The currently available extensions for a `client` ( `CogniteClient`_) instance are:
+
+* client.assets: `Assets`_ (Playground Assets API with Types support)
+* client.assets_v1: Equivalent to client.assets in the base SDK
+* client.types: `Types`_
+* client.model_hosting = `Model Hosting`_
+* client.datapoints: includes extensions described in `Synthetic time series`_
+* client.relationships: `Relationships`_
+* client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
+* client.entity_extraction: `Extract Entities from Files`_
+* client.pnid_parsing: `Parse PNID`_
+* client.resource_typing: `Fit Resource Typing Model`_
+
 
 API Extensions
 ==============
@@ -320,6 +333,10 @@ Fit Resource Typing Model
 Parse PNID
 ^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.parse
+
+Extract Entities from Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_extraction.EntityExtractionAPI.extract
 
 Contextualization Data Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
