@@ -27,7 +27,7 @@ Note that Asset functionality currently points to playground due to typing,
  if needed use `client.assets_v1` to force the use of the v1 endpoints.
 
 ## Documentation
-* Experimental SDK Extensions Documentation: TODO
+* Experimental SDK Extensions Documentation: Available in the `docs` directory and can be built using `make html`. Hosted docs will be up soon.
 * [SDK Documentation](https://cognite-docs.readthedocs-hosted.com/en/latest/)
 * [API Documentation](https://doc.cognitedata.com/)
 * [Cognite Developer Documentation](https://docs.cognite.com/dev/)
