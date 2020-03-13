@@ -30,6 +30,8 @@ class CogniteClient(Client):
     """
 
     def __init__(self, server=None, *args, **kwargs):
+        if "base_url" not in kwargs and server is not None:
+            kwargs["base_url"] = "https://" + server + ".cognitedata.com"
 
         if "client_name" not in kwargs and not os.environ.get("COGNITE_CLIENT_NAME"):
             kwargs["client_name"] = "Cognite Experimental SDK"
@@ -40,7 +42,7 @@ class CogniteClient(Client):
                 kwargs["api_key"] = os.environ[key]
             else:
                 raise ValueError(
-                    "Did not find api key variable in environment, searched COGNITE_API_KEY and %s".format(key)
+                    "Did not find api key variable in environment, searched COGNITE_API_KEY and {}".format(key)
                 )
 
         super().__init__(*args, **kwargs)

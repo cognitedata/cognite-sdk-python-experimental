@@ -1,7 +1,7 @@
 import asyncio
 import functools
 import re
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 from requests import Response
 
@@ -37,7 +37,9 @@ class ContextAPI(APIClient):
         data = response.json()
         id = data[type + "Id"]
         while data["status"] != "Completed":
+            print("getting")
             data = self._camel_get(f"{status_path}{id}").json()
+            print(data)
             if data["status"] == "Failed":
                 raise ModelFailedException(type, id, data.get("errorMessage"))
             await asyncio.sleep(interval)
@@ -47,7 +49,7 @@ class ContextAPI(APIClient):
         json = await self._wait_for_result(response, status_path, "job", interval)
         return ContextualizationJob(cognite_client=self, **{to_snake_case(k): v for k, v in json.items()})
 
-    def _run_job(self, job_path, status_path="/", headers=None, **kwargs) -> "Task[ContextualizationJob]":
+    def _run_job(self, job_path, status_path="/", headers=None, **kwargs) -> "asyncio.Task[ContextualizationJob]":
         response = self._camel_post(job_path, json=kwargs, headers=headers)
         return asyncio.get_event_loop().create_task(self._wait_for_job_result(response, status_path))
 
@@ -60,7 +62,9 @@ class ContextModelAPI(ContextAPI):
             await self._wait_for_result(response, status_path, "model", interval), cognite_client=self._cognite_client
         )
 
-    def _fit_model(self, model_path="/fit", status_path="/", headers=None, **kwargs) -> "Task[ContextualizationModel]":
+    def _fit_model(
+        self, model_path="/fit", status_path="/", headers=None, **kwargs
+    ) -> "asyncio.Task[ContextualizationModel]":
         response = self._camel_post(model_path, json=kwargs, headers=headers)
         return asyncio.get_event_loop().create_task(self._wait_for_model_result(response, status_path))  # 3.6 compat
 
@@ -86,7 +90,7 @@ class ContextModelAPI(ContextAPI):
             ]
         )
 
-    def delete(self, model_id: Union[list, ContextualizationModelList, int, ContextualizationModel]) -> None:
+    def delete(self, model_id: Union[List, ContextualizationModelList, int, ContextualizationModel]) -> None:
         """Delete models
 
         Args:
