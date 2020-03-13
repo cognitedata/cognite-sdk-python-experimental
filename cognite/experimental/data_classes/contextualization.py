@@ -58,6 +58,13 @@ class ContextualizationModelList(CogniteResourceList):
 
 class EntityMatchingModel(ContextualizationModel):
     def predict(self, entities: Iterable[str]) -> "Task[ContextualizationJob]":
+        """Predict entity matching
+
+        Args:
+            items (Iterable[str]): entities (e.g. time series) to predict matching entity of (e.g. asset)
+
+        Returns:
+            Task[ContextualizationJob]: Task which waits for the job to be completed."""
         return self._cognite_client.entity_matching._run_job(
             job_path=f"/{self.model_id}/predict", status_path=f"/{self.model_id}/predict/", items=list(entities)
         )
@@ -83,6 +90,13 @@ class ResourceTypingModel(ContextualizationModel):
         return items
 
     def predict(self, items: Iterable[TypingPredictData]) -> "Task[ContextualizationJob]":
+        """Predict resource types
+
+        Args:
+            items (Iterable[TypingPredictData]): entities to predict type of, in the same for as passed to fit.
+
+        Returns:
+            Task[ContextualizationJob]: Task which waits for the job to be completed."""
         return self._cognite_client.resource_typing._run_job(
             job_path=f"/{self.model_id}/predict",
             status_path=f"/{self.model_id}/predict/",

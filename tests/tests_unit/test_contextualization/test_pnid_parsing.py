@@ -53,7 +53,7 @@ class TestPNIDParsing:
     async def test_extract(self, mock_parse, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
-        resp = PNIDAPI.run(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
+        resp = PNIDAPI.parse(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
         assert isinstance(resp, asyncio.Task)
         job = await resp
         assert isinstance(job, ContextualizationJob)
@@ -79,7 +79,7 @@ class TestPNIDParsing:
 
     @pytest.mark.asyncio
     async def test_run_fails(self, mock_parse, mock_status_failed):
-        task = PNIDAPI.run([1], [])
+        task = PNIDAPI.parse([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             await task
         assert "Job 123 failed with error 'error message'" == str(exc_info.value)

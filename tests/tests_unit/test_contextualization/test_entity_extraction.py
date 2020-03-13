@@ -53,7 +53,7 @@ class TestEntityExtraction:
     async def test_extract(self, mock_extract_new, mock_status_ok):
         entities = ["a", "b"]
         file_ids = [1, 2]
-        resp = EEAPI.run(file_ids, entities)
+        resp = EEAPI.extract(file_ids, entities)
         assert isinstance(resp, asyncio.Task)
         job = await resp
         assert isinstance(job, ContextualizationJob)
@@ -74,7 +74,7 @@ class TestEntityExtraction:
 
     @pytest.mark.asyncio
     async def test_run_fails(self, mock_extract_new, mock_status_failed):
-        task = EEAPI.run([1], [])
+        task = EEAPI.extract([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             await task
         assert "Job 123 failed with error 'error message'" == str(exc_info.value)

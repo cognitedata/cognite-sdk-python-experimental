@@ -23,6 +23,9 @@ from cognite.experimental import CogniteClient
 The resulting client object will contain all normal SDK functionality
 in addition to experimental extensions.
 
+Note that Asset functionality currently points to playground due to typing,
+ if needed use `client.assets_v1` to force the use of the v1 endpoints.
+
 ## Documentation
 * Experimental SDK Extensions Documentation: TODO
 * [SDK Documentation](https://cognite-docs.readthedocs-hosted.com/en/latest/)

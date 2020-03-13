@@ -14,6 +14,15 @@ class ResourceTypingAPI(ContextModelAPI):
         algorithm: str = "open_set_nearest_neighbors",
         targets_to_classify: List[str] = None,
     ) -> "Task[ContextualizationModel]":
+        """Fit entity matching model.
+
+        Args:
+            items (List[TypingFitData]): List of entities (e.g. asset name and description) and corresponding type.
+            algorithm (str): The type of model to use for classification, either "open_set_nearest_neighbors" "deep_open_classifier"
+            targets_to_classify (str): The classes the model will try to classify items into. All other targets will be treated as a single 'other' class.
+
+        Returns:
+            Task[ResourceTypingModel]: Task which waits for the model to be completed."""
         return self._fit_model(
             items=ResourceTypingModel.format_items(items), algorithm=algorithm, targets_to_classify=targets_to_classify
         )

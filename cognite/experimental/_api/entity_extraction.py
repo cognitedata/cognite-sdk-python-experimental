@@ -7,7 +7,7 @@ from cognite.experimental.data_classes import ContextualizationJob
 class EntityExtractionAPI(ContextAPI):
     _RESOURCE_PATH = "/context/entity_extraction"
 
-    def run(self, file_ids: List[int], entities: List[str]) -> "Task[ContextualizationJob]":
+    def extract(self, file_ids: List[int], entities: List[str]) -> "Task[ContextualizationJob]":
         """Extracts entities from files.
 
         Args:

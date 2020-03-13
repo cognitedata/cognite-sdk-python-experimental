@@ -77,6 +77,9 @@ def new_root_asset():
 
 
 class TestAssetsAPI:
+    def test_v1(self, post_spy):
+        res_flat = COGNITE_CLIENT.assets_v1.list(limit=123)
+
     def test_get(self):
         res = COGNITE_CLIENT.assets.list(limit=1)
         assert res[0] == COGNITE_CLIENT.assets.retrieve(res[0].id)

@@ -301,3 +301,30 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.model_hosting.source_packages
     :members:
     :show-inheritance:
+
+Contextualization
+-----------------
+
+Fit Entity Matching Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
+
+Create Entity Matching Rules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
+
+Fit Resource Typing Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.resource_typing.ResourceTypingAPI.fit
+
+Parse PNID
+^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.parse
+
+Contextualization Data Classes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.contextualization
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
