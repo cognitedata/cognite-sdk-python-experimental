@@ -1,6 +1,6 @@
 @Library('jenkins-helpers') _
 testBuildReleasePoetryPackage {
-    releaseToArtifactory = true
+    releaseToArtifactory = false
     testWithTox = true
     toxEnvList = ['py36', 'py37', 'py38']
     extraEnvVars = [
