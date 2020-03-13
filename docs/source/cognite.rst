@@ -6,9 +6,20 @@ Quickstart
 
 For a quickstart guide see the main SDK Documentation at https://cognite-docs.readthedocs-hosted.com/projects/cognite-sdk-python/en/latest/cognite.html
 
+The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
-API Extensions
-==============
+* client.assets: `Assets`_ (Playground Assets API with Types support)
+* client.assets_v1: Equivalent to client.assets in the base SDK
+* client.types: `Types`_
+* client.model_hosting = `Model Hosting`_
+* client.datapoints: includes extensions described in `Synthetic time series`_
+* client.relationships: `Relationships`_
+* client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
+* client.entity_extraction: `Extract Entities from Files`_
+* client.pnid_parsing: `Parse PNID`_
+* client.resource_typing: `Fit Resource Typing Model`_
+
+
 CogniteClient
 -------------
 .. autoclass:: cognite.experimental.CogniteClient
@@ -301,3 +312,34 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.model_hosting.source_packages
     :members:
     :show-inheritance:
+
+Contextualization
+-----------------
+
+Fit Entity Matching Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
+
+Create Entity Matching Rules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
+
+Fit Resource Typing Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.resource_typing.ResourceTypingAPI.fit
+
+Parse PNID
+^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.parse
+
+Extract Entities from Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_extraction.EntityExtractionAPI.extract
+
+Contextualization Data Classes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.contextualization
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:

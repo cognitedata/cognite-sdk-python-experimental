@@ -80,7 +80,6 @@ class TestSyntheticQuery:
         assert 0 == len(dps_res)
         assert 1 == len(mock_get_datapoints_empty.calls)
 
-    @pytest.mark.dsl
     def test_expression_builder(self):
         from sympy import symbols
 
@@ -94,7 +93,6 @@ class TestSyntheticQuery:
         ) == DPS_CLIENT._build_expression(symbols("a") + symbols("b") + symbols("c"), {"a": "x", "b": "y", "c": "z"})
         assert ("(1/ts{externalId:'a'})", "(1/a)") == DPS_CLIENT._build_expression(1 / symbols("a"), {"a": "a"})
 
-    @pytest.mark.dsl
     def test_expression_builder_variables_missing(self):
         from sympy import symbols
 
@@ -103,7 +101,6 @@ class TestSyntheticQuery:
         ):
             DPS_CLIENT.retrieve(symbols("a"), start=0, end="now")
 
-    @pytest.mark.dsl
     def test_expression_builder_unsupported_missing(self):
         from sympy import symbols, cot
 

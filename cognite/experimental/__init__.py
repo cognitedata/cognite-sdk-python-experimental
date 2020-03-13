@@ -1,1 +1,1 @@
-from cognite.experimental.client import CogniteClient
+from cognite.experimental._client import CogniteClient

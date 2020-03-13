@@ -9,7 +9,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Asset, AssetFilter, AssetUpdate
 from tests.utils import set_request_limit
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 
 
 @pytest.fixture
@@ -77,6 +77,9 @@ def new_root_asset():
 
 
 class TestAssetsAPI:
+    def test_v1(self, post_spy):
+        res_flat = COGNITE_CLIENT.assets_v1.list(limit=123)
+
     def test_get(self):
         res = COGNITE_CLIENT.assets.list(limit=1)
         assert res[0] == COGNITE_CLIENT.assets.retrieve(res[0].id)
