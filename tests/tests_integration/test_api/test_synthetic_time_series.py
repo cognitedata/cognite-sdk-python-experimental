@@ -51,7 +51,6 @@ class TestSyntheticDatapointsAPI:
         assert (100, 1) == dps.to_pandas().shape
         assert (100, 2) == dps.to_pandas(include_errors=True).shape
 
-    @pytest.mark.dsl
     def test_expression_builder_time_series_vs_string(self, test_time_series):
         from sympy import symbols
 
@@ -73,7 +72,6 @@ class TestSyntheticDatapointsAPI:
         assert 100 == len(dps2)
         assert dps1 == dps2
 
-    @pytest.mark.dsl
     def test_expression_builder_complex(self, test_time_series):
         from sympy import symbols, cos, sin, pi, log, sqrt
 

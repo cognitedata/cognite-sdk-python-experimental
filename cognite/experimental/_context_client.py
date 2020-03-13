@@ -37,9 +37,7 @@ class ContextAPI(APIClient):
         data = response.json()
         id = data[type + "Id"]
         while data["status"] != "Completed":
-            print("getting")
             data = self._camel_get(f"{status_path}{id}").json()
-            print(data)
             if data["status"] == "Failed":
                 raise ModelFailedException(type, id, data.get("errorMessage"))
             await asyncio.sleep(interval)

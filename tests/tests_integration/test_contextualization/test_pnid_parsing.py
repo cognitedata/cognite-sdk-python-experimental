@@ -3,7 +3,7 @@ import pytest
 from cognite.experimental import CogniteClient
 from cognite.experimental.exceptions import ModelFailedException
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 PNIDAPI = COGNITE_CLIENT.pnid_parsing
 
 

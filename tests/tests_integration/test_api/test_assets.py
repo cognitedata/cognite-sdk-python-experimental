@@ -9,7 +9,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Asset, AssetFilter, AssetUpdate
 from tests.utils import set_request_limit
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def new_asset():
 
 def generate_asset_tree(root_external_id: str, depth: int, children_per_node: int, current_depth=1):
     assert 1 <= children_per_node <= 10, "children_per_node must be between 1 and 10"
-    assets = []
+    assets: List[Asset] = []
     if current_depth == 1:
         assets = [Asset(external_id=root_external_id, name=root_external_id)]
     if depth > current_depth:
