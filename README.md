@@ -6,7 +6,7 @@
 Cognite Python SDK Experimental Extensions
 ==========================================
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/cognite-sdk-python-experimental/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-sdk-python-experimental/job/master/)
-[![Documentation Status](https://readthedocs.com/projects/cognite-sdk-python-experimental/badge/?version=latest)](https://cognite-docs.readthedocs-hosted.com/en/latest/)
+[![Documentation Status](https://readthedocs.com/projects/cognite-sdk-experimental/badge/?version=latest)](https://cognite-sdk-experimental.readthedocs-hosted.com/en/latest/)
 [![PyPI version](https://badge.fury.io/py/cognite-sdk-experimental.svg)](https://pypi.org/project/cognite-sdk-experimental/)
 [![tox](https://img.shields.io/badge/tox-3.6%2B-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
