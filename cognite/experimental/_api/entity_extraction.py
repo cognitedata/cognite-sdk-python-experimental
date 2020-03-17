@@ -16,4 +16,4 @@ class EntityExtractionAPI(ContextAPI):
 
         Returns:
             Task[ContextualizationJob]: Task which waits for the job to be completed."""
-        return self._run_job(job_path="/extract_new", file_ids=file_ids, entities=entities)
+        return self._run_job(job_path="/extract", file_ids=file_ids, entities=entities)
