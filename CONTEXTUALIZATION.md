@@ -63,7 +63,7 @@ will produce the following output after a few seconds:
 This will print the url for the svg as a string after a few seconds.
 ```python
 job = await client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
-svg_url = job.result["svgUrl"]
+svg_url = job.args["svg_url"]
 ```
 
 ## Resource typing
