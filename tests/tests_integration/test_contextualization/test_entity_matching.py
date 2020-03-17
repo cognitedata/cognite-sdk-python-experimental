@@ -24,11 +24,5 @@ class TestEntityMatchingIntegration:
         assert isinstance(jobtask, asyncio.Task)
         job = await jobtask
         assert isinstance(job, ContextualizationJob)
+        assert {"input", "predicted", "score"} == set(job.items[0].keys())
         EMAPI.delete(model)
-
-    @pytest.mark.asyncio
-    async def test_fit_fails(self):
-        task = EMAPI.fit([])
-        with pytest.raises(ModelFailedException) as exc_info:
-            await task
-        assert "failed with error" in str(exc_info.value)

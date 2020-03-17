@@ -29,14 +29,14 @@ class ContextualizationModel(CogniteResource):
 
 
 class ContextualizationJob(CogniteResource):
-    def __init__(self, job_id=None, status=None, error_message=None, items=None, cognite_client=None, **kwargs):
+    def __init__(self, job_id=None, status=None, error_message=None, cognite_client=None, **kwargs):
+        """Data class for the result of a contextualization job. All keys in the body become snake-cased variables in the class (e.g. `items`, `svg_url`)"""
         self.job_id = job_id
         self.status = status
         self.error_message = error_message
         self._cognite_client = cognite_client
-        self.result = items
-        if kwargs:
-            self.args = kwargs
+        for k, v in (kwargs or {}).items():
+            setattr(self, k, v)
 
     def __str__(self):
         if self.error_message:

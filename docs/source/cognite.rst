@@ -315,6 +315,8 @@ Data classes
 
 Contextualization
 -----------------
+These APIs make use of the `asyncio` library to asynchronously wait for the models and jobs.
+For examples of using this api, see: https://github.com/cognitedata/cognite-sdk-python-experimental/blob/master/CONTEXTUALIZATION.md
 
 Fit Entity Matching Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^

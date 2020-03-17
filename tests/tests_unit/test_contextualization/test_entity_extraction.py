@@ -63,7 +63,7 @@ class TestEntityExtraction:
         extract_calls = 0
         n_status_calls = 0
         for call in mock_extract.calls:
-            if "extract" in call.request.url:
+            if call.request.method == "POST":
                 extract_calls += 1
                 assert {"entities": entities, "fileIds": file_ids} == jsgz_load(call.request.body)
             else:
