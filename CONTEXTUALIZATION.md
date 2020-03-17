@@ -38,7 +38,7 @@ will produce the following output after a few seconds:
 After first running the entity matcher
 ```python
 rules_job = await client.entity_matching.create_rules(matches)
-rules_job.result
+rules_job.items
 ```
 will produce the following output after a few seconds:
 ```python
@@ -63,7 +63,7 @@ will produce the following output after a few seconds:
 This will print the url for the svg as a string after a few seconds.
 ```python
 job = await client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
-svg_url = job.result["svgUrl"]
+svg_url = job.svg_url
 ```
 
 ## Resource typing
@@ -96,7 +96,7 @@ predict_data = [{
     "data": ["48-SX-9225-J01", "SAFETY, ESCAPE AND FIREFIGHTING, JUNCTION BOX"]
   }]
 matches = await model.predict(predict_data)
-print(matches.result)
+print(matches.items)
 ```
 will produce the following output after a few seconds:
 ```python
@@ -123,7 +123,7 @@ The following methods are available for a project whitelisted for unstructured s
 ```python
 job = await client.entity_extraction.extract(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
                                file_ids = [6240763514226915])
-print(job.result)
+print(job.items)
 ```
 
 will produce an output similar to:
