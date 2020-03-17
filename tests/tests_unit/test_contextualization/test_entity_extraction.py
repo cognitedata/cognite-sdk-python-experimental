@@ -50,7 +50,7 @@ def mock_status_failed(rsps):
 
 class TestEntityExtraction:
     @pytest.mark.asyncio
-    async def test_extract(self, mock_extract_new, mock_status_ok):
+    async def test_extract(self, mock_extract, mock_status_ok):
         entities = ["a", "b"]
         file_ids = [1, 2]
         resp = EEAPI.extract(file_ids, entities)
@@ -62,8 +62,8 @@ class TestEntityExtraction:
 
         extract_calls = 0
         n_status_calls = 0
-        for call in mock_extract_new.calls:
-            if "extract_new" in call.request.url:
+        for call in mock_extract.calls:
+            if "extract" in call.request.url:
                 extract_calls += 1
                 assert {"entities": entities, "fileIds": file_ids} == jsgz_load(call.request.body)
             else:
@@ -73,7 +73,7 @@ class TestEntityExtraction:
         assert 1 == n_status_calls
 
     @pytest.mark.asyncio
-    async def test_run_fails(self, mock_extract_new, mock_status_failed):
+    async def test_run_fails(self, mock_extract, mock_status_failed):
         task = EEAPI.extract([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             await task
