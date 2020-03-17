@@ -35,7 +35,7 @@ class ContextualizationJob(CogniteResource):
         self.status = status
         self.error_message = error_message
         self._cognite_client = cognite_client
-        for k, v in kwargs or {}:
+        for k, v in (kwargs or {}).items():
             setattr(self, k, v)
 
     def __str__(self):
