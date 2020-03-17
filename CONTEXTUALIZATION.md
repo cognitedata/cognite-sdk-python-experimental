@@ -62,7 +62,7 @@ will produce the following output after a few seconds:
 ## P&ID parser
 This will print the url for the svg as a string after a few seconds.
 ```python
-job = await client.pnid_parsing.run(file_id=1234,entities=['string1','string2'])
+job = await client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
 svg_url = job.result["svgUrl"]
 ```
 
@@ -121,7 +121,7 @@ will produce the following output after a few seconds:
 
 The following methods are available for a project whitelisted for unstructured search, and only for file types supported in the search index. 
 ```python
-job = await client.entity_extraction.run(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
+job = await client.entity_extraction.extract(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
                                file_ids = [6240763514226915])
 print(job.result)
 ```
