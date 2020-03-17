@@ -24,4 +24,5 @@ class TestEntityMatchingIntegration:
         assert isinstance(jobtask, asyncio.Task)
         job = await jobtask
         assert isinstance(job, ContextualizationJob)
+        assert {"input", "predicted", "score"} == set(job.items[0].keys())
         EMAPI.delete(model)

@@ -25,5 +25,5 @@ class TestResourceTypingIntegration:
         job = await jt
         assert isinstance(job, ContextualizationJob)
         assert isinstance(job.result, list)
-        assert {"data", "score", "target"} == job.result[0].keys()
+        assert {"data", "score", "target"} == job.items[0].keys()
         RTAPI.delete(model)
