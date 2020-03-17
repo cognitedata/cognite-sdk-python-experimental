@@ -8,7 +8,7 @@ from cognite.experimental.data_classes import ContextualizationJob
 from cognite.experimental.exceptions import ModelFailedException
 from tests.utils import jsgz_load
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 EEAPI = COGNITE_CLIENT.entity_extraction
 
 
