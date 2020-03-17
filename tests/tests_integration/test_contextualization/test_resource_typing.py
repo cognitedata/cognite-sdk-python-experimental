@@ -24,6 +24,6 @@ class TestResourceTypingIntegration:
         assert isinstance(jt, asyncio.Task)
         job = await jt
         assert isinstance(job, ContextualizationJob)
-        assert isinstance(job.result, list)
+        assert isinstance(job.items, list)
         assert {"data", "score", "target"} == job.items[0].keys()
         RTAPI.delete(model)
