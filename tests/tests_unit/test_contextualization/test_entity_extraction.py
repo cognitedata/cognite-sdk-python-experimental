@@ -13,11 +13,11 @@ EEAPI = COGNITE_CLIENT.entity_extraction
 
 
 @pytest.fixture
-def mock_extract_new(rsps):
+def mock_extract(rsps):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        EEAPI._get_base_url_with_base_path() + EEAPI._RESOURCE_PATH + "/extract_new",
+        EEAPI._get_base_url_with_base_path() + EEAPI._RESOURCE_PATH + "/extract",
         status=200,
         json=response_body,
     )
