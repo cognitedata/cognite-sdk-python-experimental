@@ -8,8 +8,7 @@ For a quickstart guide see the main SDK Documentation at https://cognite-docs.re
 
 The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
-* client.assets: `Assets`_ (Playground Assets API with Types support)
-* client.assets_v1: Equivalent to client.assets in the base SDK
+* client.assets_playground: `Assets`_ (Playground Assets API with Types support)
 * client.types: `Types`_
 * client.model_hosting = `Model Hosting`_
 * client.datapoints: includes extensions described in `Synthetic time series`_
