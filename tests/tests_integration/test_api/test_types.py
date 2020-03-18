@@ -52,26 +52,26 @@ class TestTypesAPI:
         types = [
             {"type": {"externalId": new_type.external_id, "version": new_type.version}, "properties": {"prop": "str"}}
         ]
-        ac = COGNITE_client.assets_playground.create(Asset(name="any", types=types))
+        ac = COGNITE_CLIENT.assets_playground.create(Asset(name="any", types=types))
         assert isinstance(ac, Asset)
         del ac.types[0]["type"]["id"]
         assert types == ac.types
-        COGNITE_client.assets_playground.delete(id=ac.id)
+        COGNITE_CLIENT.assets_playground.delete(id=ac.id)
 
     def test_update_asset_with_type(self, new_type):
-        ac = COGNITE_client.assets_playground.create(Asset(name="any", description="delete me"))
+        ac = COGNITE_CLIENT.assets_playground.create(Asset(name="any", description="delete me"))
         assert not ac.types
         update = AssetUpdate(id=ac.id)
         update = update.put_type(external_id=new_type.external_id, version=new_type.version, properties={"prop": "str"})
         assert isinstance(update, AssetUpdate)
-        ua = COGNITE_client.assets_playground.update(update)
+        ua = COGNITE_CLIENT.assets_playground.update(update)
         assert len(ua.types) == 1
         assert new_type.external_id == ua.types[0]["type"]["externalId"]
 
         update = AssetUpdate(id=ac.id)
         update = update.remove_type(external_id=new_type.external_id, version=new_type.version)
         assert isinstance(update, AssetUpdate)
-        ua = COGNITE_client.assets_playground.update(update)
+        ua = COGNITE_CLIENT.assets_playground.update(update)
 
         assert not ua.types
-        COGNITE_client.assets_playground.delete(id=ac.id)
+        COGNITE_CLIENT.assets_playground.delete(id=ac.id)
