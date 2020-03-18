@@ -219,18 +219,19 @@ class TestRelationships:
         assert isinstance(res, RelationshipList)
         assert 12 == len(res)
 
-        combinations = []
-        for call in mock_rel_response.calls:
-            json = jsgz_load(call.request.body)
-            combinations.extend(
-                [
-                    (s["resourceId"], t["resourceId"])
-                    for s in json["filter"]["sources"]
-                    for t in json["filter"]["targets"]
-                ]
-            )
-        assert 2500 * 3500 == len(combinations)
-        assert set([(s["resourceId"], t["resourceId"]) for s in sources for t in targets]) == set(combinations)
+    # too slow
+    #        combinations = []
+    #        for call in mock_rel_response.calls:
+    #            json = jsgz_load(call.request.body)
+    #            combinations.extend(
+    #                [
+    #                    (s["resourceId"], t["resourceId"])
+    #                    for s in json["filter"]["sources"]
+    #                    for t in json["filter"]["targets"]
+    #                ]
+    #            )
+    #        assert 2500 * 3500 == len(combinations)
+    #        assert set([(s["resourceId"], t["resourceId"]) for s in sources for t in targets]) == set(combinations)
 
     def test_many_sources_only(self, mock_rel_response):
         sources = [{"resource": "Asset", "resourceId": str(i)} for i in range(2500)]
