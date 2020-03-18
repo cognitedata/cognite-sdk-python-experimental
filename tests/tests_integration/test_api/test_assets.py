@@ -39,7 +39,9 @@ def generate_asset_tree(root_external_id: str, depth: int, children_per_node: in
 
 @pytest.fixture
 def post_spy():
-    with mock.patch.object(COGNITE_CLIENT.assets, "_post", wraps=COGNITE_CLIENT.assets_playground._post) as _:
+    with mock.patch.object(
+        COGNITE_CLIENT.assets_playground, "_post", wraps=COGNITE_CLIENT.assets_playground._post
+    ) as _:
         yield
 
 
@@ -48,7 +50,7 @@ def new_asset_hierarchy(post_spy):
     random_prefix = "test_{}_".format(utils._auxiliary.random_string(10))
     assets = generate_asset_tree(random_prefix + "0", depth=5, children_per_node=5)
 
-    with set_request_limit(COGNITE_CLIENT.assets, 50):
+    with set_request_limit(COGNITE_CLIENT.assets_playground, 50):
         COGNITE_CLIENT.assets_playground.create_hierarchy(assets)
 
     assert 20 < COGNITE_CLIENT.assets_playground._post.call_count < 30
@@ -61,7 +63,7 @@ def new_asset_hierarchy(post_spy):
 
 @pytest.fixture
 def root_test_asset():
-    for asset in COGNITE_CLIENT.assets(root=True):
+    for asset in COGNITE_CLIENT.assets_playground(root=True):
         if asset.name.startswith("test__"):
             return asset
 
@@ -94,7 +96,7 @@ class TestAssetsAPI:
         assert 1 == len(retr)
 
     def test_list(self, post_spy):
-        with set_request_limit(COGNITE_CLIENT.assets, 10):
+        with set_request_limit(COGNITE_CLIENT.assets_playground, 10):
             res = COGNITE_CLIENT.assets_playground.list(limit=20)
 
         assert 20 == len(res)
