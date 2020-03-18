@@ -50,8 +50,7 @@ class CogniteClient(Client):
         self.datapoints = ExperimentalDatapointsApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
 
-        self.assets_v1 = self.assets
-        self.assets = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
+        self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
 
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)

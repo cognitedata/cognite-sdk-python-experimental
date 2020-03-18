@@ -207,3 +207,46 @@ class TestRelationships:
             "cursor": None,
         } == jsgz_load(mock_rel_response.calls[0].request.body)
         assert mock_rel_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_many_source_targets(self, mock_rel_response):
+        sources = [{"resource": "Asset", "resourceId": str(i)} for i in range(2500)]
+        targets = [{"resource": "Asset", "resourceId": str(i)} for i in range(3500)]
+        with pytest.raises(ValueError):
+            res = REL_API(sources=sources, targets=targets)
+        with pytest.raises(ValueError):
+            res = REL_API.list(sources=sources, targets=targets)
+        res = REL_API.list(sources=sources, targets=targets, limit=None)
+
+        assert 12 == len(mock_rel_response.calls)
+        assert isinstance(res, RelationshipList)
+        assert 12 == len(res)
+
+    # too slow
+    #        combinations = []
+    #        for call in mock_rel_response.calls:
+    #            json = jsgz_load(call.request.body)
+    #            combinations.extend(
+    #                [
+    #                    (s["resourceId"], t["resourceId"])
+    #                    for s in json["filter"]["sources"]
+    #                    for t in json["filter"]["targets"]
+    #                ]
+    #            )
+    #        assert 2500 * 3500 == len(combinations)
+    #        assert set([(s["resourceId"], t["resourceId"]) for s in sources for t in targets]) == set(combinations)
+
+    def test_many_sources_only(self, mock_rel_response):
+        sources = [{"resource": "Asset", "resourceId": str(i)} for i in range(2500)]
+        with pytest.raises(ValueError):
+            res = REL_API(sources=sources)
+
+        res = REL_API.list(sources=sources, limit=-1)
+        assert 3 == len(mock_rel_response.calls)
+        assert isinstance(res, RelationshipList)
+        assert 3 == len(res)
+        requested_sources = []
+        for call in mock_rel_response.calls:
+            json = jsgz_load(call.request.body)
+            assert "targets" not in json["filter"]
+            requested_sources.extend([s["resourceId"] for s in json["filter"]["sources"]])
+        assert set([s["resourceId"] for s in sources]) == set(requested_sources)

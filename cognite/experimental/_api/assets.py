@@ -106,7 +106,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
                 >>> from cognite.experimental.data_classes import Asset
                 >>> c = CogniteClient()
                 >>> assets = [Asset(name="asset1"), Asset(name="asset2")]
-                >>> res = c.assets.create(assets)
+                >>> res = c.assets_playground.create(assets)
         """
         utils._auxiliary.assert_type(asset, "asset", [Asset, list])
         return self._create_multiple(asset)
@@ -128,13 +128,13 @@ class ExperimentalAssetsAPI(AssetsAPI):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.retrieve(id=1)
+                >>> res = c.assets_playground.retrieve(id=1)
 
             Get asset by external id::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.retrieve(external_id="1")
+                >>> res = c.assets_playground.retrieve(external_id="1")
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
@@ -162,13 +162,13 @@ class ExperimentalAssetsAPI(AssetsAPI):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.retrieve_multiple(ids=[1, 2, 3])
+                >>> res = c.assets_playground.retrieve_multiple(ids=[1, 2, 3])
 
             Get assets by external id::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.retrieve_multiple(external_ids=["abc", "def"], ignore_unknown_ids=True)
+                >>> res = c.assets_playground.retrieve_multiple(external_ids=["abc", "def"], ignore_unknown_ids=True)
         """
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
@@ -225,20 +225,20 @@ class ExperimentalAssetsAPI(AssetsAPI):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> asset_list = c.assets.list(limit=5)
+                >>> asset_list = c.assets_playground.list(limit=5)
 
             Iterate over assets::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> for asset in c.assets:
+                >>> for asset in c.assets_playground:
                 ...     asset # do something with the asset
 
             Iterate over chunks of assets to reduce memory load::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> for asset_list in c.assets(chunk_size=2500):
+                >>> for asset_list in c.assets_playground(chunk_size=2500):
                 ...     asset_list # do something with the assets
         """
         if aggregated_properties:
@@ -291,7 +291,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
                 >>> from cognite.experimental.data_classes import Asset
                 >>> c = CogniteClient()
                 >>> assets = [Asset(external_id="root"), Asset(external_id="child1", parent_external_id="root"), Asset(external_id="child2", parent_external_id="root")]
-                >>> res = c.assets.create_hierarchy(assets)
+                >>> res = c.assets_playground.create_hierarchy(assets)
         """
         utils._auxiliary.assert_type(assets, "assets", [list])
         return _AssetPoster(assets, client=self).post()
@@ -321,7 +321,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> c.assets.delete(id=[1,2,3], external_id="3")
+                >>> c.assets_playground.delete(id=[1,2,3], external_id="3")
         """
         self._delete_multiple(
             ids=id,
@@ -345,9 +345,9 @@ class ExperimentalAssetsAPI(AssetsAPI):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> asset = c.assets.retrieve(id=1)
+                >>> asset = c.assets_playground.retrieve(id=1)
                 >>> asset.description = "New description"
-                >>> res = c.assets.update(asset)
+                >>> res = c.assets_playground.update(asset)
 
             Perform a partial update on a asset, updating the description and adding a new field to metadata::
 
@@ -355,7 +355,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
                 >>> from cognite.experimental.data_classes import AssetUpdate
                 >>> c = CogniteClient()
                 >>> my_update = AssetUpdate(id=1).description.set("New description").metadata.add({"key": "value"})
-                >>> res = c.assets.update(my_update)
+                >>> res = c.assets_playground.update(my_update)
         """
         return self._update_multiple(items=item)
 
@@ -385,25 +385,25 @@ class ExperimentalAssetsAPI(AssetsAPI):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.search(name="some name")
+                >>> res = c.assets_playground.search(name="some name")
 
             Search for assets by exact search on name::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.search(filter={"name": "some name"})
+                >>> res = c.assets_playground.search(filter={"name": "some name"})
 
             Search for assets by improved multi-field fuzzy search::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.search(query="TAG 30 XV")
+                >>> res = c.assets_playground.search(query="TAG 30 XV")
 
             Search for assets using multiple filters, finding all assets with name similar to `xyz` with parent asset `123` or `456` with source `some source`::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.assets.search(name="xyz",filter={"parent_ids": [123,456],"source": "some source"})
+                >>> res = c.assets_playground.search(name="xyz",filter={"parent_ids": [123,456],"source": "some source"})
         """
         return self._search(
             search={"name": name, "description": description, "query": query}, filter=filter, limit=limit

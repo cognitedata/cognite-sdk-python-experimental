@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Generator, List, Optional, Set, Union
 
 from cognite.client import utils
@@ -117,6 +118,9 @@ class RelationshipsAPI(APIClient):
             data_set=data_set,
             relationship_type=relationship_type,
         )
+        if len(filter.get("targets", [])) > 1000 or len(filter.get("sources", [])) > 1000:
+            raise ValueError("For queries with more than 1000 sources or targets, only list is supported")
+
         return self._list_generator(method="POST", chunk_size=chunk_size, limit=limit, filter=filter)
 
     def __iter__(self) -> Generator[Relationship, None, None]:
@@ -244,6 +248,37 @@ class RelationshipsAPI(APIClient):
             data_set=data_set,
             relationship_type=relationship_type,
         )
+        targets = filter.get("targets", [])
+        sources = filter.get("sources", [])
+        if len(targets) > 1000 or len(sources) > 1000:
+            if limit not in [-1, None, float("inf")]:
+                raise ValueError(
+                    "Querying more than 1000 sources/targets only supported for queries without limit (pass -1 / None / inf instead of {}".format(
+                        limit
+                    )
+                )
+            tasks = []
+            for ti in range(0, max(1, len(targets)), 1000):
+                for si in range(0, max(1, len(sources)), 1000):
+                    task_filter = copy.copy(filter)
+                    if targets:  # keep null if it was
+                        task_filter["targets"] = targets[ti : ti + 1000]
+                    if sources:  # keep null if it was
+                        task_filter["sources"] = sources[si : si + 1000]
+                    tasks.append((task_filter,))
+
+            tasks_summary = utils._concurrency.execute_tasks_concurrently(
+                lambda filter: self._list(method="POST", limit=limit, filter=filter),
+                tasks,
+                max_workers=self._config.max_workers,
+            )
+            tasks_summary.raise_compound_exception_if_failed_tasks()
+            res_list = tasks_summary.results
+            rels = RelationshipList([], cognite_client=self._cognite_client)
+            for res in res_list:
+                rels.extend(res)
+            return rels
+
         return self._list(method="POST", limit=limit, filter=filter)
 
     def create(self, relationship: Union[Relationship, List[Relationship]]) -> Union[Relationship, RelationshipList]:
