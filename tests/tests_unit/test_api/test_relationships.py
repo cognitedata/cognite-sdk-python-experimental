@@ -213,8 +213,10 @@ class TestRelationships:
         targets = [{"resource": "Asset", "resourceId": str(i)} for i in range(3500)]
         with pytest.raises(ValueError):
             res = REL_API(sources=sources, targets=targets)
+        with pytest.raises(ValueError):
+            res = REL_API.list(sources=sources, targets=targets)
+        res = REL_API.list(sources=sources, targets=targets, limit=None)
 
-        res = REL_API.list(sources=sources, targets=targets)
         assert 12 == len(mock_rel_response.calls)
         assert isinstance(res, RelationshipList)
         assert 12 == len(res)
@@ -238,7 +240,7 @@ class TestRelationships:
         with pytest.raises(ValueError):
             res = REL_API(sources=sources)
 
-        res = REL_API.list(sources=sources)
+        res = REL_API.list(sources=sources, limit=-1)
         assert 3 == len(mock_rel_response.calls)
         assert isinstance(res, RelationshipList)
         assert 3 == len(res)

@@ -251,6 +251,12 @@ class RelationshipsAPI(APIClient):
         targets = filter.get("targets", [])
         sources = filter.get("sources", [])
         if len(targets) > 1000 or len(sources) > 1000:
+            if limit not in [-1, None, float("inf")]:
+                raise ValueError(
+                    "Querying more than 1000 sources/targets only supported for queries without limit (pass -1 / None / inf instead of {}".format(
+                        limit
+                    )
+                )
             tasks = []
             for ti in range(0, max(1, len(targets)), 1000):
                 for si in range(0, max(1, len(sources)), 1000):
