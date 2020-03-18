@@ -216,6 +216,8 @@ class TestRelationships:
 
         res = REL_API.list(sources=sources, targets=targets)
         assert 12 == len(mock_rel_response.calls)
+        assert isinstance(res, RelationshipList)
+        assert 12 == len(res)
 
         combinations = []
         for call in mock_rel_response.calls:
@@ -237,6 +239,8 @@ class TestRelationships:
 
         res = REL_API.list(sources=sources)
         assert 3 == len(mock_rel_response.calls)
+        assert isinstance(res, RelationshipList)
+        assert 3 == len(res)
         requested_sources = []
         for call in mock_rel_response.calls:
             json = jsgz_load(call.request.body)

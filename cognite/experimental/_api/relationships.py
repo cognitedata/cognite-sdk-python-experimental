@@ -266,9 +266,12 @@ class RelationshipsAPI(APIClient):
                 tasks,
                 max_workers=self._config.max_workers,
             )
-            if tasks_summary.exceptions:
-                raise tasks_summary.exceptions[0]
-            return tasks_summary.joined_results()
+            tasks_summary.raise_compound_exception_if_failed_tasks()
+            res_list = tasks_summary.results
+            rels = RelationshipList([], cognite_client=self._cognite_client)
+            for res in res_list:
+                rels.extend(res)
+            return rels
 
         return self._list(method="POST", limit=limit, filter=filter)
 
