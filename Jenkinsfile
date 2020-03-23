@@ -2,6 +2,7 @@
 testBuildReleasePoetryPackage {
     releaseToPypi = true
     testWithTox = false
+    uploadCoverageReport = true
     toxEnvList = ['py36', 'py37', 'py38']
     extraEnvVars = [
 		secretEnvVar(key: 'COGNITE_API_KEY', secretName: 'cognite-sdk-python', secretKey: 'integration-test-api-key'),
