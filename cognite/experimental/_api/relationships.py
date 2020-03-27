@@ -252,7 +252,7 @@ class RelationshipsAPI(APIClient):
             created_time=created_time,
             data_set=data_set,
             relationship_type=relationship_type,
-            active_at_time=active_at_time
+            active_at_time=active_at_time,
         )
         targets = filter.get("targets", [])
         sources = filter.get("sources", [])
