@@ -29,6 +29,7 @@ class RelationshipsAPI(APIClient):
         created_time: Dict[str, Any] = None,
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
     ):
         if sources and (source_resource or source_resource_id):
             raise ValueError("Can not set both sources and source_resource/source_resource_id.")
@@ -58,6 +59,7 @@ class RelationshipsAPI(APIClient):
             created_time=created_time,
             data_sets=data_set,
             relationship_types=relationship_type,
+            active_at_time=active_at_time,
         ).dump(camel_case=True)
 
     def __call__(
@@ -76,6 +78,7 @@ class RelationshipsAPI(APIClient):
         created_time: Dict[str, Any] = None,
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
         limit: int = None,
     ) -> Generator[Union[Relationship, RelationshipList], None, None]:
         """Iterate over relationships
@@ -116,6 +119,7 @@ class RelationshipsAPI(APIClient):
             last_updated_time=last_updated_time,
             created_time=created_time,
             data_set=data_set,
+            active_at_time=active_at_time,
             relationship_type=relationship_type,
         )
         if len(filter.get("targets", [])) > 1000 or len(filter.get("sources", [])) > 1000:
@@ -187,6 +191,7 @@ class RelationshipsAPI(APIClient):
         created_time: Dict[str, Any] = None,
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
         limit: int = 25,
     ) -> RelationshipList:
         """List relationships
@@ -247,6 +252,7 @@ class RelationshipsAPI(APIClient):
             created_time=created_time,
             data_set=data_set,
             relationship_type=relationship_type,
+            active_at_time=active_at_time
         )
         targets = filter.get("targets", [])
         sources = filter.get("sources", [])
