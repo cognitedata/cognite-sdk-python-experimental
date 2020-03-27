@@ -209,7 +209,10 @@ class RelationshipsAPI(APIClient):
             last_updated_time (Dict[str, Any]): Range to filter the field for. (inclusive)
             created_time (Dict[str, Any]): Range to filter the field for. (inclusive)
             data_set (Union[str,List[str]): Filter on any of a given list of dataSets.
-            relationship_type (Union[str,List[str]):  Filter on any of a given list o relationship types.
+            relationship_type (Union[str,List[str]):  Filter on any of a given list of relationship types.
+            active_at_time: Filter on relationships where start_time is less than or equal, and end_time is greater than, this
+                value. If the relationship does not have a start_time, it assumes start_time to be -infinity, and if the
+                relationship does not have and end_time, it assumes end_time to be +infinity.
             limit (int, optional): Maximum number of relationships to return. Defaults to 100. Set to -1, float("inf") or None
                 to return all items.
 

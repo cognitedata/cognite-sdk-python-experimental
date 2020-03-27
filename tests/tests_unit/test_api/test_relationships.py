@@ -3,6 +3,7 @@ import json
 import re
 
 import pytest
+import random
 
 from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
 from cognite.experimental import CogniteClient
@@ -26,6 +27,7 @@ def mock_rel_response(rsps):
                 "relationshipType": "flowsTo",
                 "source": {"resourceId": "asset1", "resource": "Asset"},
                 "target": {"resourceId": "asset2", "resource": "Asset"},
+                "startTime": 600
             }
         ]
     }
@@ -250,3 +252,14 @@ class TestRelationships:
             assert "targets" not in json["filter"]
             requested_sources.extend([s["resourceId"] for s in json["filter"]["sources"]])
         assert set([s["resourceId"] for s in sources]) == set(requested_sources)
+
+    def test_list_with_active_at_time(self, mock_rel_response):
+        active_at_time = random.randint(0, 10000)
+        res = REL_API.list(active_at_time=active_at_time)
+        print(jsgz_load(mock_rel_response.calls[0].request.body))
+
+        assert 1 == len(mock_rel_response.calls)
+        json_request = jsgz_load(mock_rel_response.calls[0].request.body)
+        assert json_request['filter']['activeAtTime'] == active_at_time
+        assert isinstance(res, RelationshipList)
+        assert 1 == len(res)
