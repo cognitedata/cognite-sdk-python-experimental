@@ -4,11 +4,13 @@ import re
 
 import pytest
 import random
+import string
 
 from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Asset, Relationship, RelationshipFilter, RelationshipList
+from cognite.experimental.data_classes import Asset, Relationship, RelationshipList
 from tests.utils import jsgz_load
+
 
 COGNITE_CLIENT = CogniteClient()
 REL_API = COGNITE_CLIENT.relationships
@@ -27,7 +29,7 @@ def mock_rel_response(rsps):
                 "relationshipType": "flowsTo",
                 "source": {"resourceId": "asset1", "resource": "Asset"},
                 "target": {"resourceId": "asset2", "resource": "Asset"},
-                "startTime": 600
+                "startTime": 600,
             }
         ]
     }
@@ -169,13 +171,43 @@ class TestRelationships:
         assert {"items": [{"externalId": "a"}]} == jsgz_load(mock_rel_response.calls[0].request.body)
         assert res is None
 
-    def test_advanced_list(self, mock_rel_response):
-        res = REL_API.list(source_resource="asset", relationship_type="belongs_to")
-        assert {
-            "filter": {"sources": [{"resource": "asset"}], "relationshipTypes": ["belongs_to"]},
-            "limit": 25,
-            "cursor": None,
-        } == jsgz_load(mock_rel_response.calls[0].request.body)
+    def test_advanced_list_fields(self, mock_rel_response):
+        """
+        Checks that all (non deprecated) fields in the list method are surfaced in the api call
+        """
+
+        def _generate_random_string():
+            string_length = random.randint(5, 10)
+            letters = string.ascii_letters
+            return "".join(random.choice(letters) for i in range(string_length))
+
+        def _to_snake_case(camel_case_string):
+            return re.sub(r"(?<!^)(?=[A-Z])", "_", camel_case_string).lower()
+
+        # TODO: some fields are skipped here because there some deprecated fields are unified with new field, so that
+        # there are inconsistencies in the naming in the api vs the sdk (e.g. there is a relationshipTypes field) in
+        # the api, but no relationship_types in the sdk. If we drop support for the deprecated fields we should be
+        # able to cover all fields.
+        input = {
+            "active_at_time": random.randint(0, 10000),
+            "sources": [{"resource": "asset", "resource_id": _generate_random_string()}],
+            "targets": [{"resource": "asset", "resource_id": _generate_random_string()}],
+            # "relationship_type": ["flows_to"],
+            "created_time": {"min": random.randint(0, 10000), "max": random.randint(10001, 20000)},
+            "last_updated_time": {"min": random.randint(0, 10000), "max": random.randint(10001, 20000)},
+            "start_time": {"min": random.randint(0, 10000), "max": random.randint(10001, 20000)},
+            "end_time": {"min": random.randint(0, 10000), "max": random.randint(10001, 20000)},
+            # "data_set": [_generate_random_string()],
+            "confidence": {"min": random.random(), "max": random.random()},
+        }
+        res = REL_API.list(**input)
+        assert 1 == len(mock_rel_response.calls)
+        assert isinstance(res, RelationshipList)
+        assert 1 == len(res)
+        request_filter = jsgz_load(mock_rel_response.calls[0].request.body)["filter"]
+        for key in request_filter:
+            assert _to_snake_case(key) in input.keys()
+            assert request_filter[key] == input[_to_snake_case(key)]
         assert mock_rel_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_source_target_packing(self, mock_rel_response):
@@ -252,14 +284,3 @@ class TestRelationships:
             assert "targets" not in json["filter"]
             requested_sources.extend([s["resourceId"] for s in json["filter"]["sources"]])
         assert set([s["resourceId"] for s in sources]) == set(requested_sources)
-
-    def test_list_with_active_at_time(self, mock_rel_response):
-        active_at_time = random.randint(0, 10000)
-        res = REL_API.list(active_at_time=active_at_time)
-        print(jsgz_load(mock_rel_response.calls[0].request.body))
-
-        assert 1 == len(mock_rel_response.calls)
-        json_request = jsgz_load(mock_rel_response.calls[0].request.body)
-        assert json_request['filter']['activeAtTime'] == active_at_time
-        assert isinstance(res, RelationshipList)
-        assert 1 == len(res)
