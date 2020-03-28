@@ -1,16 +1,15 @@
 import gzip
 import json
+import random
 import re
+import string
 
 import pytest
-import random
-import string
 
 from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Asset, Relationship, RelationshipList
 from tests.utils import jsgz_load
-
 
 COGNITE_CLIENT = CogniteClient()
 REL_API = COGNITE_CLIENT.relationships
