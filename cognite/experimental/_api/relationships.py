@@ -100,6 +100,10 @@ class RelationshipsAPI(APIClient):
             created_time (Dict[str, Any]): Range to filter the field for. (inclusive)
             data_set (Union[str,List[str]): Filter on any of a given list of dataSets.
             relationship_type (Union[str,List[str]):  Filter on any of a given list o relationship types.
+            active_at_time (int): Limits results to those active at this time, i.e. activeAtTime falls between startTime and endTime,
+                startTime is treated as inclusive (if activeAtTime is equal to startTime then the relationship will be included).
+                endTime is treated as exclusive (if activeTime is equal to endTime then the relationsip will NOT be included).
+                If a relationship has neither startTime nor endTime, the relationship is active at all times.
             limit (int, optional): Maximum number of relationships to return. Defaults to 100. Set to -1, float("inf") or None
                 to return all items.
 

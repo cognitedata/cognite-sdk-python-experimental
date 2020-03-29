@@ -7,6 +7,7 @@ import string
 import pytest
 
 from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
+from cognite.client.utils._auxiliary import random_string, to_snake_case
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Asset, Relationship, RelationshipList
 from tests.utils import jsgz_load
@@ -174,23 +175,14 @@ class TestRelationships:
         """
         Checks that all (non deprecated) fields in the list method are surfaced in the api call
         """
-
-        def _generate_random_string():
-            string_length = random.randint(5, 10)
-            letters = string.ascii_letters
-            return "".join(random.choice(letters) for i in range(string_length))
-
-        def _to_snake_case(camel_case_string):
-            return re.sub(r"(?<!^)(?=[A-Z])", "_", camel_case_string).lower()
-
         # TODO: some fields are skipped here because there some deprecated fields are unified with new field, so that
         # there are inconsistencies in the naming in the api vs the sdk (e.g. there is a relationshipTypes field) in
         # the api, but no relationship_types in the sdk. If we drop support for the deprecated fields we should be
-        # able to cover all fields.
+        # able to cover all fields with this setup.
         input = {
             "active_at_time": random.randint(0, 10000),
-            "sources": [{"resource": "asset", "resource_id": _generate_random_string()}],
-            "targets": [{"resource": "asset", "resource_id": _generate_random_string()}],
+            "sources": [{"resource": "asset", "resource_id": random_string(random.randint(10, 15))}],
+            "targets": [{"resource": "asset", "resource_id": random_string(random.randint(10, 15))}],
             # "relationship_type": ["flows_to"],
             "created_time": {"min": random.randint(0, 10000), "max": random.randint(10001, 20000)},
             "last_updated_time": {"min": random.randint(0, 10000), "max": random.randint(10001, 20000)},
@@ -205,8 +197,8 @@ class TestRelationships:
         assert 1 == len(res)
         request_filter = jsgz_load(mock_rel_response.calls[0].request.body)["filter"]
         for key in request_filter:
-            assert _to_snake_case(key) in input.keys()
-            assert request_filter[key] == input[_to_snake_case(key)]
+            assert to_snake_case(key) in input.keys()
+            assert request_filter[key] == input[to_snake_case(key)]
         assert mock_rel_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_source_target_packing(self, mock_rel_response):

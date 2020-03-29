@@ -93,7 +93,10 @@ class RelationshipFilter(CogniteFilter):
         confidence (Dict[str, Any]): Range to filter the field for. (inclusive)
         last_updated_time (Dict[str, Any]): Range to filter the field for. (inclusive)
         created_time (Dict[str, Any]): Range to filter the field for. (inclusive)
-        active_at_time (int): Limits results to those active at this time, i.e. activeAtTime falls between startTime and endTime startTime is treated as inclusive (if activeAtTime is equal to startTime then the relationship will be included). endTime is treated as exclusive (if activeTime is equal to endTime then the relationsip will NOT be included). If a relationship has neither startTime nor endTime, the relationship is active at all times
+        active_at_time (int): Limits results to those active at this time, i.e. activeAtTime falls between startTime and
+            endTime startTime is treated as inclusive (if activeAtTime is equal to startTime then the relationship will be included).
+            endTime is treated as exclusive (if activeTime is equal to endTime then the relationsip will NOT be included).
+            If a relationship has neither startTime nor endTime, the relationship is active at all times
         source_resource (str): Resource type of the source node.
         source_resource_id (str): Resource ID of the source node.
         target_resource (str): Resource type of the target node.
