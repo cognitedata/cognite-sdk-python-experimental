@@ -10,6 +10,7 @@ Cognite Python SDK Experimental Extensions
 [![PyPI version](https://badge.fury.io/py/cognite-sdk-experimental.svg)](https://pypi.org/project/cognite-sdk-experimental/)
 [![tox](https://img.shields.io/badge/tox-3.6%2B-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-python/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/cognite-sdk-python)
 
 This is an extensions package to the [Cognite Python SDK](https://github.com/cognitedata/cognite-sdk-python)
  for developers testing features in development in Cognite Data Fusion (CDF). 
