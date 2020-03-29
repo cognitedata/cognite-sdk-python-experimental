@@ -29,6 +29,7 @@ class RelationshipsAPI(APIClient):
         created_time: Dict[str, Any] = None,
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
     ):
         if sources and (source_resource or source_resource_id):
             raise ValueError("Can not set both sources and source_resource/source_resource_id.")
@@ -58,6 +59,7 @@ class RelationshipsAPI(APIClient):
             created_time=created_time,
             data_sets=data_set,
             relationship_types=relationship_type,
+            active_at_time=active_at_time,
         ).dump(camel_case=True)
 
     def __call__(
@@ -76,6 +78,7 @@ class RelationshipsAPI(APIClient):
         created_time: Dict[str, Any] = None,
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
         limit: int = None,
     ) -> Generator[Union[Relationship, RelationshipList], None, None]:
         """Iterate over relationships
@@ -97,6 +100,10 @@ class RelationshipsAPI(APIClient):
             created_time (Dict[str, Any]): Range to filter the field for. (inclusive)
             data_set (Union[str,List[str]): Filter on any of a given list of dataSets.
             relationship_type (Union[str,List[str]):  Filter on any of a given list o relationship types.
+            active_at_time (int): Limits results to those active at this time, i.e. activeAtTime falls between startTime and endTime,
+                startTime is treated as inclusive (if activeAtTime is equal to startTime then the relationship will be included).
+                endTime is treated as exclusive (if activeTime is equal to endTime then the relationsip will NOT be included).
+                If a relationship has neither startTime nor endTime, the relationship is active at all times.
             limit (int, optional): Maximum number of relationships to return. Defaults to 100. Set to -1, float("inf") or None
                 to return all items.
 
@@ -116,6 +123,7 @@ class RelationshipsAPI(APIClient):
             last_updated_time=last_updated_time,
             created_time=created_time,
             data_set=data_set,
+            active_at_time=active_at_time,
             relationship_type=relationship_type,
         )
         if len(filter.get("targets", [])) > 1000 or len(filter.get("sources", [])) > 1000:
@@ -187,6 +195,7 @@ class RelationshipsAPI(APIClient):
         created_time: Dict[str, Any] = None,
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
         limit: int = 25,
     ) -> RelationshipList:
         """List relationships
@@ -204,7 +213,11 @@ class RelationshipsAPI(APIClient):
             last_updated_time (Dict[str, Any]): Range to filter the field for. (inclusive)
             created_time (Dict[str, Any]): Range to filter the field for. (inclusive)
             data_set (Union[str,List[str]): Filter on any of a given list of dataSets.
-            relationship_type (Union[str,List[str]):  Filter on any of a given list o relationship types.
+            relationship_type (Union[str,List[str]):  Filter on any of a given list of relationship types.
+            active_at_time: Limits results to those active at this time, i.e. activeAtTime falls between startTime and endTime,
+                startTime is treated as inclusive (if activeAtTime is equal to startTime then the relationship will be included).
+                endTime is treated as exclusive (if activeTime is equal to endTime then the relationsip will NOT be included).
+                If a relationship has neither startTime nor endTime, the relationship is active at all times.
             limit (int, optional): Maximum number of relationships to return. Defaults to 100. Set to -1, float("inf") or None
                 to return all items.
 
@@ -247,6 +260,7 @@ class RelationshipsAPI(APIClient):
             created_time=created_time,
             data_set=data_set,
             relationship_type=relationship_type,
+            active_at_time=active_at_time,
         )
         targets = filter.get("targets", [])
         sources = filter.get("sources", [])

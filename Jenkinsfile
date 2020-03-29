@@ -14,7 +14,7 @@ testBuildReleasePoetryPackage {
         stage('Build Docs'){
             dir('./docs'){
                 sh("poetry run sphinx-build -W -b html ./source ./build")
-            }
+            } 
         }
     }
 }
