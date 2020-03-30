@@ -1,5 +1,6 @@
 import copy
 import math
+from typing import *
 from typing import Iterable, List, Union
 
 from typing_extensions import TypedDict
@@ -35,6 +36,7 @@ class ContextualizationJob(CogniteResource):
         self.status = status
         self.error_message = error_message
         self._cognite_client = cognite_client
+        self.result_keys = list(kwargs.keys())
         for k, v in (kwargs or {}).items():
             setattr(self, k, v)
 
@@ -45,8 +47,12 @@ class ContextualizationJob(CogniteResource):
                 self.status,
                 self.error_message,
             )
-        elif self.result:
-            return "ContextualizationJob(id: %d, status: %s, result: available)" % (self.job_id, self.status)
+        elif self.result_keys:
+            return "ContextualizationJob(id: %d, status: %s, results: %s)" % (
+                self.job_id,
+                self.status,
+                self.result_keys,
+            )
         else:
             return "ContextualizationJob(id: %d, status: %s)" % (self.job_id, self.status)
 
