@@ -11,7 +11,7 @@ model = await client.entity_matching.fit(training_data)
 
 predict_data = ["IAA_21PT1019.PV", "IAA_13FV1234.PV", "IAA_84PAH93234.PV"]
 job = await model.predict(predict_data)
-matches = job.result
+matches = job.items
 print(matches)
 ```
 will produce the following output after a few seconds: 
