@@ -77,6 +77,7 @@ class TestEntityMatching:
         assert isinstance(resp, asyncio.Task)
         model = await resp
         assert isinstance(model, EntityMatchingModel)
+        assert "ContextualizationModel(id: 123,status: Completed)" == str(model)
         assert "Completed" == model.status
         assert 123 == model.model_id
 
