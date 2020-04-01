@@ -12,9 +12,11 @@ def mock_functions_response(rsps):
     response_body = {
         "items": [
             {
+                "id": 1233456,
                 "name": "myfunction",
                 "externalId": "func-no-123",
                 "description": "my fabulous function",
+                "owner": "ola.normann@cognite.com",
                 "status": "Ready",
                 "fileId": 1234,
                 "createdTime": 1585662507939,

@@ -7,8 +7,10 @@ class Function(CogniteResource):
     """A representation of a Cognite Function.
 
     Args:
+        id (int): Id of the function.
         name (str): Name of the function.
         description (str): Description of the function.
+        owner (str): Owner of the function.
         status (str): Status of the function.
         filed_id (int): File id of the code represented by this object.
         created_time (int): Created time in UNIX.
@@ -19,9 +21,11 @@ class Function(CogniteResource):
 
     def __init__(
         self,
+        id: int = None,
         name: str = None,
         external_id: str = None,
         description: str = None,
+        owner: str = None,
         status: str = None,
         file_id: int = None,
         created_time: int = None,
@@ -29,9 +33,11 @@ class Function(CogniteResource):
         secrets: Dict = None,
         cognite_client=None,
     ):
+        self.id = id
         self.name = name
         self.external_id = external_id
         self.description = description
+        self.owner = owner
         self.status = status
         self.file_id = file_id
         self.created_time = created_time
