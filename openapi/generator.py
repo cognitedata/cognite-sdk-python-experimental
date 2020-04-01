@@ -359,8 +359,8 @@ class CodeGenerator:
         return content
 
     def _generate_imports(self, content):
-        if re.search("from typing import \*", content) is None:
-            content = "from typing import *\n\n" + content
+        # if re.search("from typing import \*", content) is None:
+        #    content = "from typing import *\n\n" + content
         return content
 
     def _format_with_black(self, content):

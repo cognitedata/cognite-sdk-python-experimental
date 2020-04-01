@@ -1,6 +1,5 @@
 import copy
 import math
-from typing import *
 from typing import Iterable, List, Union
 
 from typing_extensions import TypedDict

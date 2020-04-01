@@ -1,5 +1,5 @@
 import copy
-from typing import *
+from typing import Any, Dict, List
 
 from cognite.client.data_classes._base import *
 
