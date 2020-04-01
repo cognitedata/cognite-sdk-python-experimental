@@ -1,4 +1,5 @@
 import os
+from typing import Callable, Dict, Optional, Union
 
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._cognite_client import CogniteClient as Client
@@ -25,27 +26,50 @@ class CogniteClient(Client):
     Args:
         * api_key (str): Your api key. If not given, looks for it in environment variables COGNITE_API_KEY and [PROJECT]_API_KEY
         * server (str): Sets base_url to https://[server].cognitedata.com, e.g. server=greenfield.
-        * max_workers_async (int): Maximum number of worker threads for the asynchronous job queue. Defaults to max_workers (10).
-        * `**kwargs`: other arguments are passed to the SDK.
+        * Other arguments are passed to the base SDK directly.
     """
 
-    def __init__(self, server=None, *args, **kwargs):
-        if "base_url" not in kwargs and server is not None:
-            kwargs["base_url"] = "https://" + server + ".cognitedata.com"
+    def __init__(
+        self,
+        api_key: str = None,
+        project: str = None,
+        client_name: str = None,
+        base_url: str = None,
+        max_workers: int = None,
+        headers: Dict[str, str] = None,
+        timeout: int = None,
+        token: Union[str, Callable[[], str], None] = None,
+        disable_pypi_version_check: Optional[bool] = None,
+        debug: bool = False,
+        server=None,
+    ):
+        if base_url is None and server is not None:
+            base_url = "https://" + server + ".cognitedata.com"
 
-        if "client_name" not in kwargs and not os.environ.get("COGNITE_CLIENT_NAME"):
-            kwargs["client_name"] = "Cognite Experimental SDK"
+        if client_name is None and not os.environ.get("COGNITE_CLIENT_NAME"):
+            client_name = "Cognite Experimental SDK"
 
-        if "api_key" not in kwargs and not os.environ.get("COGNITE_API_KEY") and "project" in kwargs:
-            key = kwargs["project"].upper().replace("-", "_") + "_API_KEY"
+        if api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None:
+            key = project.upper().replace("-", "_") + "_API_KEY"
             if os.environ.get(key):
-                kwargs["api_key"] = os.environ[key]
+                api_key = os.environ[key]
             else:
                 raise ValueError(
                     "Did not find api key variable in environment, searched COGNITE_API_KEY and {}".format(key)
                 )
 
-        super().__init__(*args, **kwargs)
+        super().__init__(
+            api_key,
+            project,
+            client_name,
+            base_url,
+            max_workers,
+            headers,
+            timeout,
+            token,
+            disable_pypi_version_check,
+            debug,
+        )
         self.relationships = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)
         self.datapoints = ExperimentalDatapointsApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
