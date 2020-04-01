@@ -1,4 +1,4 @@
-from typing import *
+from typing import Any, Dict, List, Optional, Union
 
 from cognite.client._api_client import APIClient
 from cognite.experimental.data_classes.model_hosting.schedules import Schedule, ScheduleList, ScheduleLog

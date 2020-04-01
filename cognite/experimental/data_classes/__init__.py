@@ -1,5 +1,3 @@
-from typing import *
-
 from cognite.experimental.data_classes.assets import *
 from cognite.experimental.data_classes.contextualization import *
 from cognite.experimental.data_classes.relationships import *
