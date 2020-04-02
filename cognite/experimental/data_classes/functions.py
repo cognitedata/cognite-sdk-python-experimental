@@ -9,6 +9,7 @@ class Function(CogniteResource):
     Args:
         id (int): Id of the function.
         name (str): Name of the function.
+        external_id (str): External id of the function.
         description (str): Description of the function.
         owner (str): Owner of the function.
         status (str): Status of the function.
