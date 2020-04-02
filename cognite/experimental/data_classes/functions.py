@@ -15,7 +15,7 @@ class Function(CogniteResource):
         filed_id (int): File id of the code represented by this object.
         created_time (int): Created time in UNIX.
         api_key (str): Api key attached to the function.
-        secrets (Dict): Secrets attached to the function.
+        secrets (Dict[str, str]): Secrets attached to the function ((key, value) pairs).
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
 
