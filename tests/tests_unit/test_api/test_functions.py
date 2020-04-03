@@ -3,7 +3,7 @@ import os
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Function, FunctionList
+from cognite.experimental.data_classes import Function, FunctionCall, FunctionList
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -76,6 +76,26 @@ def mock_functions_delete_response(rsps):
     yield rsps
 
 
+@pytest.fixture
+def mock_functions_call_response(rsps):
+    response_body_sync = {
+        "id": 7255309231137124,
+        "startTime": 1585925306822,
+        "response": "Hello World!",
+        "status": "Completed",
+    }
+    response_body_async = response_body_sync.copy()
+    del response_body_async["response"]
+
+    url_sync = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+    url_async = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/async_call"
+    rsps.assert_all_requests_are_fired = False
+    rsps.add(rsps.POST, url_sync, status=200, json=response_body_sync)
+    rsps.add(rsps.POST, url_async, status=200, json=response_body_async)
+
+    yield rsps
+
+
 class TestFunctionsAPI:
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
@@ -142,3 +162,13 @@ class TestFunctionsAPI:
         res = FUNCTIONS_API.retrieve_multiple(ids=[1], external_ids=["func1"])
         assert isinstance(res, FunctionList)
         assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_function_call(self, mock_functions_call_response):
+        res = FUNCTIONS_API.call(id=1234)
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_response.calls[0].response.json() == res.dump(camel_case=True)
+
+    def test_function_call_async(self, mock_functions_call_response):
+        res = FUNCTIONS_API.call(id=1234, asyncronous=True)
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_response.calls[0].response.json() == res.dump(camel_case=True)
