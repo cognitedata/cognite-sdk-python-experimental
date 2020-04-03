@@ -1,14 +1,16 @@
 import os
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 from zipfile import ZipFile
 
+from cognite.client import utils
 from cognite.client._api_client import APIClient
 from cognite.experimental.data_classes import Function, FunctionList
 
 
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
+    _LIST_CLASS = FunctionList
 
     def create(
         self,
@@ -106,6 +108,63 @@ class FunctionsAPI(APIClient):
         url = "/functions"
         res = self._get(url)
         return FunctionList._load(res.json()["items"])
+
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
+        """Retrieve a single function by id.
+
+        Args:
+            id (int, optional): ID
+            external_id (str, optional): External ID
+
+        Returns:
+            Optional[Function]: Requested function or None if it does not exist.
+
+        Examples:
+
+            Get function by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.functions.retrieve(id=1)
+
+            Get function by external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.functions.retrieve(external_id="1")
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def retrieve_multiple(
+        self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
+    ) -> FunctionList:
+        """Retrieve multiple functions by id.
+
+        Args:
+            ids (List[int], optional): IDs
+            external_ids (List[str], optional): External IDs
+
+        Returns:
+            FunctionList: The requested functions.
+
+        Examples:
+
+            Get function by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.functions.retrieve_multiple(ids=[1, 2, 3])
+
+            Get functions by external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.functions.retrieve_multiple(external_ids=["func1", "func2"])
+        """
+        utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
+        utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
+        return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         current_dir = os.getcwd()
