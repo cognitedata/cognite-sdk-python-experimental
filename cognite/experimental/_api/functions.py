@@ -1,6 +1,6 @@
 import os
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 from zipfile import ZipFile
 
 from cognite.client._api_client import APIClient
@@ -8,6 +8,8 @@ from cognite.experimental.data_classes import Function, FunctionList
 
 
 class FunctionsAPI(APIClient):
+    _RESOURCE_PATH = "/functions"
+
     def create(
         self,
         name: str,
@@ -32,6 +34,20 @@ class FunctionsAPI(APIClient):
 
         Returns:
             Function: The created function.
+
+        Examples:
+
+            Create function with source code in folder::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> function = c.functions.create(name="myfunction", folder="path/to/code")
+
+            Create function with file_id from already uploaded source code::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> function = c.functions.create(name="myfunction", file_id=123)
         """
         if folder and file_id:
             raise TypeError("Exactly one of the arguments `path` and `file_id` is required, but both were given.")
@@ -53,11 +69,39 @@ class FunctionsAPI(APIClient):
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0])
 
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
+        """Delete one or more functions.
+
+        Args:
+            id (Union[int, List[int]): Id or list of ids
+            external_id (Union[str, List[str]]): External ID or list of external ids
+
+        Returns:
+            None
+
+        Example:
+
+            Delete functions by id or external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.functions.delete(id=[1,2,3], external_id="function3")
+        """
+        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
     def list(self) -> FunctionList:
         """List all functions.
 
         Returns:
             FunctionList: List of functions
+        
+        Example:
+
+            List functions::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> functions_list = c.functions.list()
         """
         url = "/functions"
         res = self._get(url)
