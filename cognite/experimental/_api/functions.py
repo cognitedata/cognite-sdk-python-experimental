@@ -70,7 +70,7 @@ class FunctionsAPI(APIClient):
         return Function._load(res.json()["items"][0])
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
-        """Delete one or more functions.s
+        """Delete one or more functions.
 
         Args:
             id (Union[int, List[int]): Id or list of ids
