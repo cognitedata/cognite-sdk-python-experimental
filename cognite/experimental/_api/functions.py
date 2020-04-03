@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import Function, FunctionList
+from cognite.experimental.data_classes import Function, FunctionCall, FunctionList
 
 
 class FunctionsAPI(APIClient):
@@ -165,6 +165,14 @@ class FunctionsAPI(APIClient):
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+
+    def call(self, id: int, data=None, asyncronous: bool = False) -> FunctionCall:
+        url = f"/functions/{id}/call" if not asyncronous else f"/functions/{id}/async_call"
+        body = {}
+        if data:
+            body = {"data": data}
+        res = self._post(url, json=body)
+        return FunctionCall._load(res.json())
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         current_dir = os.getcwd()

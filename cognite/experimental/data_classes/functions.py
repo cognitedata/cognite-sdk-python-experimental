@@ -46,7 +46,42 @@ class Function(CogniteResource):
         self.secrets = secrets
         self._cognite_client = cognite_client
 
+    def call(self, data=None, asyncronous: bool = False):
+        return self._cognite_client.functions.call(self.id, data, asyncronous)
+
 
 class FunctionList(CogniteResourceList):
     _RESOURCE = Function
     _ASSERT_CLASSES = False
+
+
+class FunctionCall(CogniteResource):
+    """A representation of a Cognite Function call.
+
+    Args:
+        id (int): Id of the function call.
+        start_time (int): Start time in UNIX.
+        end_time (int): End time in UNIX.
+        response (str): Response returned by the function.
+        status (str): Status of the function call ("Running" or "Completed").
+        error (dict): Error from the function call. It contains an error message and the stack trace.
+        cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
+    """
+
+    def __init__(
+        self,
+        id: int = None,
+        start_time: int = None,
+        end_time: int = None,
+        response: str = None,
+        status: str = None,
+        error: dict = None,
+        cognite_client=None,
+    ):
+        self.id = id
+        self.start_time = start_time
+        self.end_time = end_time
+        self.response = response
+        self.status = status
+        self.error = error
+        self._cognite_client = cognite_client
