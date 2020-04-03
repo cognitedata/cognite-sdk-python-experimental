@@ -23,7 +23,7 @@ class FunctionsAPI(APIClient):
 
         Args:
             name (str):                 Name of function
-            folder (str):               Path to folder (relative to current working directory) where the function source code is located
+            folder (str):               Path to folder where the function source code is located
             external_id (str):          External id of the function
             description (str):          Description of the function
             owner (str):                Owner of the function
@@ -76,7 +76,7 @@ class FunctionsAPI(APIClient):
                     zf.write(os.path.join(root, filename))
             zf.close()
 
-            file = self._cognite_client.files.upload(zip_path, name=name)
+            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
 
         os.chdir(current_dir)
 
