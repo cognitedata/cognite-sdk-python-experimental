@@ -137,10 +137,7 @@ class FunctionsAPI(APIClient):
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def retrieve_multiple(
-        self,
-        ids: Optional[List[int]] = None,
-        external_ids: Optional[List[str]] = None,
-        ignore_unknown_ids: bool = False,
+        self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
     ) -> FunctionList:
         """Retrieve multiple functions by id.
 
