@@ -36,6 +36,16 @@ def mock_functions_list_response(rsps):
 
 
 @pytest.fixture
+def mock_functions_retrieve_response(rsps):
+    response_body = {"items": [EXAMPLE_FUNCTION]}
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/byids"
+    rsps.add(rsps.POST, url, status=200, json=response_body)
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_functions_create_response(rsps):
     files_response_body = {
         "name": "myfunction",
@@ -103,3 +113,32 @@ class TestFunctionsAPI:
 
         assert isinstance(res, FunctionList)
         assert mock_functions_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_retrieve_by_id(self, mock_functions_retrieve_response):
+        res = FUNCTIONS_API.retrieve(id=1)
+        assert isinstance(res, Function)
+        assert mock_functions_retrieve_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_retrieve_by_external_id(self, mock_functions_retrieve_response):
+        res = FUNCTIONS_API.retrieve(external_id="func1")
+        assert isinstance(res, Function)
+        assert mock_functions_retrieve_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_retrieve_by_id_and_external_id_raises(self):
+        with pytest.raises(AssertionError):
+            FUNCTIONS_API.retrieve(id=1, external_id="func1")
+
+    def test_retrieve_multiple_by_ids(self, mock_functions_retrieve_response):
+        res = FUNCTIONS_API.retrieve_multiple(ids=[1])
+        assert isinstance(res, FunctionList)
+        assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_retrieve_multiple_by_external_ids(self, mock_functions_retrieve_response):
+        res = FUNCTIONS_API.retrieve_multiple(external_ids=["func1"])
+        assert isinstance(res, FunctionList)
+        assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_retrieve_multiple_by_ids_and_external_ids(self, mock_functions_retrieve_response):
+        res = FUNCTIONS_API.retrieve_multiple(ids=[1], external_ids=["func1"])
+        assert isinstance(res, FunctionList)
+        assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
