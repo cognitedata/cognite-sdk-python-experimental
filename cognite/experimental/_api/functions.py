@@ -166,7 +166,11 @@ class FunctionsAPI(APIClient):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
-    def call(self, id: int, data=None, asyncronous: bool = False) -> FunctionCall:
+    def call(self, id: int = None, external_id: str = None, data=None, asyncronous: bool = False) -> FunctionCall:
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        if external_id:
+            id = self.retrieve(external_id=external_id).id
+
         url = f"/functions/{id}/call" if not asyncronous else f"/functions/{id}/async_call"
         body = {}
         if data:
