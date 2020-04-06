@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import Function, FunctionList
+from cognite.experimental.data_classes import Function, FunctionCall, FunctionList
 
 
 class FunctionsAPI(APIClient):
@@ -69,7 +69,7 @@ class FunctionsAPI(APIClient):
             function.update({"secrets": secrets})
         body = {"items": [function]}
         res = self._post(url, json=body)
-        return Function._load(res.json()["items"][0])
+        return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
         """Delete one or more functions.
@@ -107,7 +107,7 @@ class FunctionsAPI(APIClient):
         """
         url = "/functions"
         res = self._get(url)
-        return FunctionList._load(res.json()["items"])
+        return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
         """Retrieve a single function by id.
@@ -165,6 +165,44 @@ class FunctionsAPI(APIClient):
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+
+    def call(self, id: int = None, external_id: str = None, data=None, asynchronous: bool = False) -> FunctionCall:
+        """Call a function by its ID or external ID.
+
+        Args:
+            id (int, optional): ID
+            external_id (str, optional): External ID
+            data (optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            asynchronous (bool): Call the function asynchronously. Defaults to false.
+
+        Returns:
+            FunctionCall: A function call object.
+
+        Examples:
+
+            Call a function by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> call = c.functions.call(id=1)
+
+            Call a function directly on the `Function` object::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> func = c.functions.retrieve(id=1)
+                >>> call = func.call()
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        if external_id:
+            id = self.retrieve(external_id=external_id).id
+
+        url = f"/functions/{id}/call" if not asynchronous else f"/functions/{id}/async_call"
+        body = {}
+        if data:
+            body = {"data": data}
+        res = self._post(url, json=body)
+        return FunctionCall._load(res.json())
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         current_dir = os.getcwd()
