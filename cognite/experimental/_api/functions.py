@@ -69,7 +69,7 @@ class FunctionsAPI(APIClient):
             function.update({"secrets": secrets})
         body = {"items": [function]}
         res = self._post(url, json=body)
-        return Function._load(res.json()["items"][0])
+        return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
         """Delete one or more functions.
@@ -107,7 +107,7 @@ class FunctionsAPI(APIClient):
         """
         url = "/functions"
         res = self._get(url)
-        return FunctionList._load(res.json()["items"])
+        return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
         """Retrieve a single function by id.
