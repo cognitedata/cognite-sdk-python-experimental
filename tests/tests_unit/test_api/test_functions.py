@@ -12,7 +12,7 @@ FILES_API = COGNITE_CLIENT.files
 
 
 EXAMPLE_FUNCTION = {
-    "id": 1233456,
+    "id": 123456,
     "name": "myfunction",
     "externalId": "func-no-123",
     "description": "my fabulous function",
@@ -93,6 +93,23 @@ def mock_functions_call_completed_response(rsps):
     rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.POST, url_sync, status=201, json=response_body_sync)
     rsps.add(rsps.POST, url_async, status=201, json=response_body_async)
+
+    yield rsps
+
+
+@pytest.fixture
+def mock_functions_call_by_external_id(mock_functions_retrieve_response):
+    response_body = {
+        "id": 7255309231137124,
+        "startTime": 1585925306822,
+        "endTime": 1585925310822,
+        "response": "Hello World!",
+        "status": "Completed",
+    }
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/123456/call"
+    rsps = mock_functions_retrieve_response
+    rsps.add(rsps.POST, url, status=201, json=response_body)
 
     yield rsps
 
@@ -195,10 +212,15 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_function_call_async(self, mock_functions_call_completed_response):
+    def test_function_async_call(self, mock_functions_call_completed_response):
         res = FUNCTIONS_API.call(id=1234, asyncronous=True)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
+
+    def test_function_call_by_external_id(self, mock_functions_call_by_external_id):
+        res = FUNCTIONS_API.call(external_id="func-no-123")
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_by_external_id.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_function_call_failed(self, mock_functions_call_failed_response):
         res = FUNCTIONS_API.call(id=1234)
