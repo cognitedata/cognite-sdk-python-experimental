@@ -213,7 +213,7 @@ class TestFunctionsAPI:
         assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
 
     def test_function_async_call(self, mock_functions_call_completed_response):
-        res = FUNCTIONS_API.call(id=1234, asyncronous=True)
+        res = FUNCTIONS_API.call(id=1234, asynchronous=True)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
 

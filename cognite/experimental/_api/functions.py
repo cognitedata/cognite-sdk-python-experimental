@@ -166,12 +166,38 @@ class FunctionsAPI(APIClient):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
-    def call(self, id: int = None, external_id: str = None, data=None, asyncronous: bool = False) -> FunctionCall:
+    def call(self, id: int = None, external_id: str = None, data=None, asynchronous: bool = False) -> FunctionCall:
+        """Call a function by its ID or external ID.
+
+        Args:
+            id (int, optional): ID
+            external_id (str, optional): External ID
+            data (optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            asynchronous (bool): Call the function asynchronously. Defaults to false.
+
+        Returns:
+            FunctionCall: A function call object.
+
+        Examples:
+
+            Call a function by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> call = c.functions.call(id=1)
+
+            Call a function directly on the `Function` object::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> func = c.functions.retrieve(id=1)
+                >>> call = func.call()
+        """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         if external_id:
             id = self.retrieve(external_id=external_id).id
 
-        url = f"/functions/{id}/call" if not asyncronous else f"/functions/{id}/async_call"
+        url = f"/functions/{id}/call" if not asynchronous else f"/functions/{id}/async_call"
         body = {}
         if data:
             body = {"data": data}

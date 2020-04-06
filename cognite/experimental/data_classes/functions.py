@@ -46,8 +46,8 @@ class Function(CogniteResource):
         self.secrets = secrets
         self._cognite_client = cognite_client
 
-    def call(self, data=None, asyncronous: bool = False):
-        return self._cognite_client.functions.call(self.id, data, asyncronous)
+    def call(self, data=None, asynchronous: bool = False):
+        return self._cognite_client.functions.call(self.id, data, asynchronous)
 
 
 class FunctionList(CogniteResourceList):
