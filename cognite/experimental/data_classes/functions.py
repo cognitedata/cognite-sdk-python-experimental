@@ -47,7 +47,7 @@ class Function(CogniteResource):
         self._cognite_client = cognite_client
 
     def call(self, data=None, asynchronous: bool = False):
-        return self._cognite_client.functions.call(id=self.id, data=data, asynchronous=asynchronous)
+        return self._cognite_client.functions.functions.call(id=self.id, data=data, asynchronous=asynchronous)
 
 
 class FunctionList(CogniteResourceList):

@@ -7,7 +7,7 @@ from cognite.experimental.data_classes import Function, FunctionCall, FunctionLi
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
-FUNCTIONS_API = COGNITE_CLIENT.functions
+FUNCTIONS_API = COGNITE_CLIENT.functions.functions
 FILES_API = COGNITE_CLIENT.files
 
 

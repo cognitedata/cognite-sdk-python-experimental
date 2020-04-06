@@ -6,7 +6,7 @@ from cognite.client._cognite_client import CogniteClient as Client
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.entity_extraction import EntityExtractionAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
-from cognite.experimental._api.functions import FunctionsAPI
+from cognite.experimental._api.functions import FunctionsRootAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.relationships import RelationshipsAPI
@@ -82,4 +82,4 @@ class CogniteClient(Client):
         self.entity_extraction = EntityExtractionAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.resource_typing = ResourceTypingAPI(self._config, api_version="playground", cognite_client=self)
-        self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
+        self.functions = FunctionsRootAPI(self.config, api_version="playground", cognite_client=self)
