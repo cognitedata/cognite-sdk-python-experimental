@@ -7,12 +7,12 @@ from cognite.experimental import CogniteClient
 client = CogniteClient(client_name="datastudio")
 
 training_data = ["21PT1019", "13FV1234", "84PAH93234"]
-model = await client.entity_matching.fit(training_data)
+model = client.entity_matching.fit(training_data)
 
 predict_data = ["IAA_21PT1019.PV", "IAA_13FV1234.PV", "IAA_84PAH93234.PV"]
-job = await model.predict(predict_data)
-matches = job.items
-print(matches)
+job = model.predict(predict_data) # at this point the client waits for model fit completion
+matches = job.result # at this point the client waits for job completion
+print(matches['items'])
 ```
 will produce the following output after a few seconds: 
 ```python
@@ -37,8 +37,8 @@ will produce the following output after a few seconds:
 ### Create rules
 After first running the entity matcher
 ```python
-rules_job = await client.entity_matching.create_rules(matches)
-rules_job.items
+rules_job = client.entity_matching.create_rules(matches)
+rules_job.result
 ```
 will produce the following output after a few seconds:
 ```python
@@ -62,8 +62,8 @@ will produce the following output after a few seconds:
 ## P&ID parser
 This will print the url for the svg as a string after a few seconds.
 ```python
-job = await client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
-svg_url = job.svg_url
+job = client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
+svg_url = job.result['svgUrl']
 ```
 
 ## Resource typing
@@ -86,7 +86,7 @@ training_data = [
     "target": "pipe"
   }
 ]
-model = await client.entity_matching.fit(training_data)
+model = client.entity_matching.fit(training_data)
 
 predict_data = [{
     "data": ["0600-DO-81L5090-AC21", "FROM DRAIN GULLY"]
@@ -95,8 +95,8 @@ predict_data = [{
   }, {
     "data": ["48-SX-9225-J01", "SAFETY, ESCAPE AND FIREFIGHTING, JUNCTION BOX"]
   }]
-matches = await model.predict(predict_data)
-print(matches.items)
+matches = model.predict(predict_data)
+print(matches.result['items'])
 ```
 will produce the following output after a few seconds:
 ```python
@@ -121,9 +121,9 @@ will produce the following output after a few seconds:
 
 The following methods are available for a project whitelisted for unstructured search, and only for file types supported in the search index. 
 ```python
-job = await client.entity_extraction.extract(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
+job = client.entity_extraction.extract(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
                                file_ids = [6240763514226915])
-print(job.items)
+print(job.result['items'])
 ```
 
 will produce an output similar to:

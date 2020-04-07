@@ -8,10 +8,8 @@ PNIDAPI = COGNITE_CLIENT.pnid_parsing
 
 
 class TestPNIDParsingIntegration:
-    @pytest.mark.skip("hangs for some reason")
-    @pytest.mark.asyncio
-    async def test_run_fails(self):
-        task = PNIDAPI.parse(1, [])
+    def test_run_fails(self):
+        job = PNIDAPI.parse(1, [])
         with pytest.raises(ModelFailedException) as exc_info:
-            await task
+            job.result
         assert "failed with error" in str(exc_info.value)

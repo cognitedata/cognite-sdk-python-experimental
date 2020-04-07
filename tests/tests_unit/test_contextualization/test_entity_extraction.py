@@ -1,4 +1,3 @@
-import asyncio
 import re
 
 import pytest
@@ -26,7 +25,7 @@ def mock_extract(rsps):
 
 @pytest.fixture
 def mock_status_ok(rsps):
-    response_body = {"jobId": 123, "status": "Completed"}
+    response_body = {"jobId": 123, "status": "Completed", "items": "x"}
     rsps.add(
         rsps.GET,
         re.compile(EEAPI._get_base_url_with_base_path() + EEAPI._RESOURCE_PATH + "/\\d+"),
@@ -49,14 +48,13 @@ def mock_status_failed(rsps):
 
 
 class TestEntityExtraction:
-    @pytest.mark.asyncio
-    async def test_extract(self, mock_extract, mock_status_ok):
+    def test_extract(self, mock_extract, mock_status_ok):
         entities = ["a", "b"]
         file_ids = [1, 2]
-        resp = EEAPI.extract(file_ids, entities)
-        assert isinstance(resp, asyncio.Task)
-        job = await resp
+        job = EEAPI.extract(file_ids, entities)
         assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"items": "x"} == job.result
         assert "Completed" == job.status
         assert 123 == job.job_id
 
@@ -72,9 +70,8 @@ class TestEntityExtraction:
         assert 1 == extract_calls
         assert 1 == n_status_calls
 
-    @pytest.mark.asyncio
-    async def test_run_fails(self, mock_extract, mock_status_failed):
-        task = EEAPI.extract([1], [])
+    def test_run_fails(self, mock_extract, mock_status_failed):
+        job = EEAPI.extract([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
-            await task
-        assert "Job 123 failed with error 'error message'" == str(exc_info.value)
+            job.result()
+        assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)

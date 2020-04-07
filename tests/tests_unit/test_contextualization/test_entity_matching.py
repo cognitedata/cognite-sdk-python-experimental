@@ -1,4 +1,3 @@
-import asyncio
 import re
 
 import pytest
@@ -59,7 +58,7 @@ def mock_rules(rsps):
 
 @pytest.fixture
 def mock_status_rules_ok(rsps):
-    response_body = {"jobId": 456, "status": "Completed"}
+    response_body = {"jobId": 456, "status": "Completed", "items": [1]}
     rsps.add(
         rsps.GET,
         re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/rules/\\d+"),
@@ -70,14 +69,12 @@ def mock_status_rules_ok(rsps):
 
 
 class TestEntityMatching:
-    @pytest.mark.asyncio
-    async def test_fit(self, mock_fit, mock_status_ok):
+    def test_fit(self, mock_fit, mock_status_ok):
         entities = ["a", "b"]
-        resp = EMAPI.fit(entities)
-        assert isinstance(resp, asyncio.Task)
-        model = await resp
+        model = EMAPI.fit(entities)
         assert isinstance(model, EntityMatchingModel)
-        assert "ContextualizationModel(id: 123,status: Completed)" == str(model)
+        assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
+        model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.model_id
 
@@ -93,15 +90,14 @@ class TestEntityMatching:
         assert 1 == n_fit_calls
         assert 1 == n_status_calls
 
-    @pytest.mark.asyncio
-    async def test_fit_fails(self, mock_fit, mock_status_failed):
-        task = EMAPI.fit(["a", "b"])
+    def test_fit_fails(self, mock_fit, mock_status_failed):
+        model = EMAPI.fit(["a", "b"])
         with pytest.raises(ModelFailedException) as exc_info:
-            await task
+            model.wait_for_completion()
         assert exc_info.type is ModelFailedException
         assert 123 == exc_info.value.id
         assert "error message" == exc_info.value.error_message
-        assert "Model 123 failed with error 'error message'" == str(exc_info.value)
+        assert "EntityMatchingModel 123 failed with error 'error message'" == str(exc_info.value)
 
     def test_retrieve(self, mock_status_ok):
         model = EMAPI.retrieve(model_id=123)
@@ -109,10 +105,11 @@ class TestEntityMatching:
         assert "Completed" == model.status
         assert 123 == model.model_id
 
-    @pytest.mark.asyncio
-    async def test_rules(self, mock_rules, mock_status_rules_ok):
-        task = EMAPI.create_rules({"a": "b"})
-        assert isinstance(task, asyncio.Task)
-        job = await task
+    def test_rules(self, mock_rules, mock_status_rules_ok):
+        job = EMAPI.create_rules({"a": "b"})
         assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
         assert 456 == job.job_id
+        assert "ContextualizationJob(id: 456,status: Queued,error: None)" == str(job)
+        assert {"items": [1]} == job.result
+        assert "Completed" == job.status
