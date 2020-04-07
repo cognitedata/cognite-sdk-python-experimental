@@ -12,9 +12,9 @@ FILES_API = COGNITE_CLIENT.files
 
 
 EXAMPLE_FUNCTION = {
-    "id": 123456,
+    "id": 1234,
     "name": "myfunction",
-    "externalId": "func-no-123",
+    "externalId": "func-no-1234",
     "description": "my fabulous function",
     "owner": "ola.normann@cognite.com",
     "status": "Ready",
@@ -60,7 +60,7 @@ def mock_functions_create_response(rsps):
 
     files_url = FILES_API._get_base_url_with_base_path() + "/files"
     rsps.add(rsps.POST, files_url, status=201, json=files_response_body)
-    rsps.add(rsps.PUT, "https://upload.here", status=200)
+    rsps.add(rsps.PUT, "https://upload.here", status=201)
 
     functions_url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions"
     rsps.add(rsps.POST, functions_url, status=201, json={"items": [EXAMPLE_FUNCTION]})
@@ -76,17 +76,14 @@ def mock_functions_delete_response(rsps):
     yield rsps
 
 
+BASE_CALL = {"id": 7255309231137124, "startTime": 1585925306822, "endTime": 1585925310822, "status": "Completed"}
+
+
 @pytest.fixture
 def mock_functions_call_completed_response(rsps):
-    response_body_sync = {
-        "id": 7255309231137124,
-        "startTime": 1585925306822,
-        "endTime": 1585925310822,
-        "response": "Hello World!",
-        "status": "Completed",
-    }
-    response_body_async = response_body_sync.copy()
-    del response_body_async["response"]
+    response_body_async = BASE_CALL.copy()
+    response_body_sync = BASE_CALL.copy()
+    response_body_sync["response"] = "Hello World!"
 
     url_sync = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
     url_async = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/async_call"
@@ -99,15 +96,10 @@ def mock_functions_call_completed_response(rsps):
 
 @pytest.fixture
 def mock_functions_call_by_external_id(mock_functions_retrieve_response):
-    response_body = {
-        "id": 7255309231137124,
-        "startTime": 1585925306822,
-        "endTime": 1585925310822,
-        "response": "Hello World!",
-        "status": "Completed",
-    }
+    response_body = BASE_CALL.copy()
+    response_body["response"] = "Hello World!"
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/123456/call"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
     rsps = mock_functions_retrieve_response
     rsps.add(rsps.POST, url, status=201, json=response_body)
 
@@ -116,13 +108,9 @@ def mock_functions_call_by_external_id(mock_functions_retrieve_response):
 
 @pytest.fixture
 def mock_functions_call_failed_response(rsps):
-    response_body = {
-        "id": 7255309231137124,
-        "startTime": 1585925306822,
-        "endTime": 1585925310822,
-        "status": "Failed",
-        "error": {"message": "some message", "trace": "some stack trace"},
-    }
+    response_body = BASE_CALL.copy()
+    response_body["status"] = "Failed"
+    response_body["error"] = ({"message": "some message", "trace": "some stack trace"},)
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
     rsps.add(rsps.POST, url, status=201, json=response_body)
@@ -132,7 +120,8 @@ def mock_functions_call_failed_response(rsps):
 
 @pytest.fixture
 def mock_functions_call_timeout_response(rsps):
-    response_body = {"id": 7255309231137124, "startTime": 1585925306822, "endTime": 1585925310822, "status": "Timeout"}
+    response_body = BASE_CALL.copy()
+    response_body["status"] = "Timeout"
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
     rsps.add(rsps.POST, url, status=201, json=response_body)
@@ -218,7 +207,7 @@ class TestFunctionsAPI:
         assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
 
     def test_function_call_by_external_id(self, mock_functions_call_by_external_id):
-        res = FUNCTIONS_API.call(external_id="func-no-123")
+        res = FUNCTIONS_API.call(external_id="func-no-1234")
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_by_external_id.calls[1].response.json() == res.dump(camel_case=True)
 
