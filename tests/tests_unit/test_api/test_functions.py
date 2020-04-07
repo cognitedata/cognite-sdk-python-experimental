@@ -3,7 +3,7 @@ import os
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Function, FunctionCall, FunctionCallList, FunctionList
+from cognite.experimental.data_classes import Function, FunctionCall, FunctionCallList, FunctionCallLog, FunctionList
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -245,6 +245,22 @@ def mock_function_calls_retrieve_response(mock_functions_retrieve_response):
     yield rsps
 
 
+@pytest.fixture
+def mock_function_call_logs_response(mock_functions_retrieve_response):
+    rsps = mock_functions_retrieve_response
+    response_body = {
+        "items": [
+            {"timestamp": 1585925306822, "message": "message 1"},
+            {"timestamp": 1585925310822, "message": "message 2"},
+        ]
+    }
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls/5678/logs"
+    rsps.assert_all_requests_are_fired = False
+    rsps.add(rsps.GET, url, status=200, json=response_body)
+
+    yield rsps
+
+
 class TestFunctionCallsAPI:
     def test_list_calls_by_function_id(self, mock_function_calls_list_response):
         res = FUNCTION_CALLS_API.list(function_id=1234)
@@ -265,3 +281,13 @@ class TestFunctionCallsAPI:
         res = FUNCTION_CALLS_API.retrieve(call_id=5678, function_external_id="func-no-1234")
         assert isinstance(res, FunctionCall)
         assert mock_function_calls_retrieve_response.calls[1].response.json() == res.dump(camel_case=True)
+
+    def test_function_call_logs_by_function_id(self, mock_function_call_logs_response):
+        res = FUNCTION_CALLS_API.logs(call_id=5678, function_id=1234)
+        assert isinstance(res, FunctionCallLog)
+        assert mock_function_call_logs_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_function_call_logs_by_function_external_id(self, mock_function_call_logs_response):
+        res = FUNCTION_CALLS_API.logs(call_id=5678, function_external_id="func-no-1234")
+        assert isinstance(res, FunctionCallLog)
+        assert mock_function_call_logs_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
