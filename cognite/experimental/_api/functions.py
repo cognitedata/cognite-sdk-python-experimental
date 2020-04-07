@@ -233,8 +233,8 @@ class FunctionCallsAPI(APIClient):
         """List all calls associated with a specific function.
 
         Args:
-            function_id (int, optional): ID of the function associated with the call.
-            external_id (str, optional): External ID of the function associated with the call.
+            function_id (int, optional): ID of the function on which the calls are made.
+            external_id (str, optional): External ID of the function on which the calls are made.
 
         Returns:
             FunctionCallList: List of function calls
@@ -269,8 +269,8 @@ class FunctionCallsAPI(APIClient):
 
         Args:
             call_id (int): ID of the call.
-            function_id (int, optional): ID of the function associated with the call.
-            external_id (str, optional): External ID of the function associated with the call.
+            function_id (int, optional): ID of the function on which the call is made.
+            external_id (str, optional): External ID of the function on which the call is made.
 
         Returns:
             FunctionCall: Function call.
