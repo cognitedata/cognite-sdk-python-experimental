@@ -253,7 +253,7 @@ class FunctionCallsAPI(APIClient):
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
         if function_external_id:
-            id = self.retrieve(external_id=external_id).id
+            function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls"
         res = self._get(url)
         return FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
