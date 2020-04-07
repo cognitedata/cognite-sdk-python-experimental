@@ -82,6 +82,7 @@ class FunctionCall(CogniteResource):
         response: str = None,
         status: str = None,
         error: dict = None,
+        function_id: int = None,
         cognite_client=None,
     ):
         self.id = id
@@ -90,9 +91,32 @@ class FunctionCall(CogniteResource):
         self.response = response
         self.status = status
         self.error = error
+        self._function_id = function_id
         self._cognite_client = cognite_client
+
+    def logs(self):
+        return self._cognite_client.functions.calls.logs(call_id=self.id, function_id=self._function_id)
 
 
 class FunctionCallList(CogniteResourceList):
     _RESOURCE = FunctionCall
+    _ASSERT_CLASSES = False
+
+
+class FunctionCallLogEntry(CogniteResource):
+    """A log entry for a function call.
+
+    Args:
+        timestamp (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        message (str): Single line from stdout / stderr.
+    """
+
+    def __init__(self, timestamp: int = None, message: str = None, cognite_client=None):
+        self.timestamp = timestamp
+        self.message = message
+        self._cognite_client = cognite_client
+
+
+class FunctionCallLog(CogniteResourceList):
+    _RESOURCE = FunctionCallLogEntry
     _ASSERT_CLASSES = False
