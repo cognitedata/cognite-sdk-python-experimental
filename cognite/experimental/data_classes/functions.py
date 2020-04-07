@@ -49,6 +49,12 @@ class Function(CogniteResource):
     def call(self, data=None, asynchronous: bool = False):
         return self._cognite_client.functions.call(id=self.id, data=data, asynchronous=asynchronous)
 
+    def list_calls(self):
+        return self._cognite_client.functions.calls.list(function_id=self.id)
+
+    def retrieve_call(self, id: int):
+        return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
+
 
 class FunctionList(CogniteResourceList):
     _RESOURCE = Function
@@ -85,3 +91,8 @@ class FunctionCall(CogniteResource):
         self.status = status
         self.error = error
         self._cognite_client = cognite_client
+
+
+class FunctionCallList(CogniteResourceList):
+    _RESOURCE = FunctionCall
+    _ASSERT_CLASSES = False

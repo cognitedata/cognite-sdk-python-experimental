@@ -5,12 +5,16 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import Function, FunctionCall, FunctionList
+from cognite.experimental.data_classes import Function, FunctionCall, FunctionCallList, FunctionList
 
 
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
     _LIST_CLASS = FunctionList
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.calls = FunctionCallsAPI(*args, **kwargs)
 
     def create(
         self,
@@ -222,3 +226,74 @@ class FunctionsAPI(APIClient):
         os.chdir(current_dir)
 
         return file.id
+
+
+class FunctionCallsAPI(APIClient):
+    def list(self, function_id: Optional[int] = None, function_external_id: Optional[str] = None) -> FunctionCallList:
+        """List all calls associated with a specific function.
+
+        Args:
+            function_id (int, optional): ID of the function on which the calls are made.
+            external_id (str, optional): External ID of the function on which the calls are made.
+
+        Returns:
+            FunctionCallList: List of function calls
+        
+        Examples:
+
+            List function calls::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> calls = c.functions.calls.list(function_id=1)
+
+            List function calls directly on a function object::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> func = c.functions.retrieve(id=1)
+                >>> calls = func.list_calls()
+
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        if function_external_id:
+            function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
+        url = f"/functions/{function_id}/calls"
+        res = self._get(url)
+        return FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
+
+    def retrieve(
+        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
+    ) -> FunctionCall:
+        """Retrieve call by id.
+
+        Args:
+            call_id (int): ID of the call.
+            function_id (int, optional): ID of the function on which the call is made.
+            external_id (str, optional): External ID of the function on which the call is made.
+
+        Returns:
+            FunctionCall: Function call.
+        
+        Examples:
+
+            Retrieve function call by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> call = c.functions.calls.retrieve(call_id=2, function_id=1)
+
+            Retrieve function call directly on a function object::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> func = c.functions.retrieve(id=1)
+                >>> call = func.retrieve_call(id=2)
+
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        if function_external_id:
+            function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
+        url = f"/functions/{function_id}/calls/{call_id}"
+        res = self._get(url)
+        return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
