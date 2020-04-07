@@ -232,6 +232,10 @@ class FunctionCallsAPI(APIClient):
     def list(self, function_id: Optional[int] = None, function_external_id: Optional[str] = None) -> FunctionCallList:
         """List all calls associated with a specific function.
 
+        Args:
+            function_id (int, optional): ID of the function associated with the call.
+            external_id (str, optional): External ID of the function associated with the call.
+
         Returns:
             FunctionCallList: List of function calls
         
@@ -262,6 +266,11 @@ class FunctionCallsAPI(APIClient):
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCall:
         """Retrieve call by id.
+
+        Args:
+            call_id (int): ID of the call.
+            function_id (int, optional): ID of the function associated with the call.
+            external_id (str, optional): External ID of the function associated with the call.
 
         Returns:
             FunctionCall: Function call.
