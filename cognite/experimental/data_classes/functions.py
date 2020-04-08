@@ -94,8 +94,8 @@ class FunctionCall(CogniteResource):
         self._function_id = function_id
         self._cognite_client = cognite_client
 
-    def logs(self):
-        return self._cognite_client.functions.calls.logs(call_id=self.id, function_id=self._function_id)
+    def get_logs(self):
+        return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self._function_id)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):

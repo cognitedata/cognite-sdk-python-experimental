@@ -175,7 +175,7 @@ class FunctionsAPI(APIClient):
         self,
         id: Optional[int] = None,
         external_id: Optional[str] = None,
-        data: Optional[Union[Dict, str]] = None,
+        data: Optional[Dict] = None,
         asynchronous: bool = False,
     ) -> FunctionCall:
         """Call a function by its ID or external ID. Can be done `synchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_ or `asynchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-functionId-async_call>`_.
@@ -219,20 +219,22 @@ class FunctionsAPI(APIClient):
         current_dir = os.getcwd()
         os.chdir(folder)
 
-        with TemporaryDirectory() as tmpdir:
-            zip_path = os.path.join(tmpdir, "function.zip")
-            zf = ZipFile(zip_path, "w")
-            for root, dirs, files in os.walk("."):
-                zf.write(root)
-                for filename in files:
-                    zf.write(os.path.join(root, filename))
-            zf.close()
+        try:
+            with TemporaryDirectory() as tmpdir:
+                zip_path = os.path.join(tmpdir, "function.zip")
+                zf = ZipFile(zip_path, "w")
+                for root, dirs, files in os.walk("."):
+                    zf.write(root)
+                    for filename in files:
+                        zf.write(os.path.join(root, filename))
+                zf.close()
 
-            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+                file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
 
-        os.chdir(current_dir)
+            return file.id
 
-        return file.id
+        finally:
+            os.chdir(current_dir)
 
 
 class FunctionCallsAPI(APIClient):
@@ -305,7 +307,7 @@ class FunctionCallsAPI(APIClient):
         res = self._get(url)
         return FunctionCall._load(res.json(), function_id=function_id, cognite_client=self._cognite_client)
 
-    def logs(
+    def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCallLog:
         """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
@@ -324,14 +326,14 @@ class FunctionCallsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> logs = c.functions.calls.logs(call_id=2, function_id=1)
+                >>> logs = c.functions.calls.get_logs(call_id=2, function_id=1)
 
             Retrieve function call logs directly on a call object::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> call = c.functions.calls.retrieve(call_id=2, function_id=1)
-                >>> logs = call.logs()
+                >>> logs = call.get_logs()
 
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
