@@ -9,7 +9,7 @@ class PNIDParsingAPI(ContextAPI):
 
     def parse(
         self, file_id: int, entities: List[str], name_mapping: Dict[str, str] = None, partial_match: bool = False
-    ) -> "Task[ContextualizationJob]":
+    ) -> ContextualizationJob:
         """Parse PNID
 
         Args:
@@ -19,9 +19,10 @@ class PNIDParsingAPI(ContextAPI):
             partial_match (bool): Allow for a partial match (e.g. missing prefix), can not be used in combination with `name_mapping`
 
         Returns:
-            Task[ContextualizationJob]: Task which waits for the job to be completed."""
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
         return self._run_job(
             job_path="/parse",
+            status_path="/",
             file_id=file_id,
             entities=entities,
             partial_match=partial_match,

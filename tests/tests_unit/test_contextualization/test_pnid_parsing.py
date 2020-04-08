@@ -1,4 +1,3 @@
-import asyncio
 import re
 
 import pytest
@@ -26,7 +25,7 @@ def mock_parse(rsps):
 
 @pytest.fixture
 def mock_status_ok(rsps):
-    response_body = {"jobId": 123, "status": "Completed"}
+    response_body = {"jobId": 123, "status": "Completed", "svgUrl": "x"}
     rsps.add(
         rsps.GET,
         re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/\\d+"),
@@ -49,14 +48,13 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    @pytest.mark.asyncio
-    async def test_extract(self, mock_parse, mock_status_ok):
+    def test_extract(self, mock_parse, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
-        resp = PNIDAPI.parse(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
-        assert isinstance(resp, asyncio.Task)
-        job = await resp
+        job = PNIDAPI.parse(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
         assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"svgUrl": "x"} == job.result
         assert "Completed" == job.status
         assert 123 == job.job_id
 
@@ -77,9 +75,8 @@ class TestPNIDParsing:
         assert 1 == n_parse_calls
         assert 1 == n_status_calls
 
-    @pytest.mark.asyncio
-    async def test_run_fails(self, mock_parse, mock_status_failed):
-        task = PNIDAPI.parse([1], [])
+    def test_run_fails(self, mock_parse, mock_status_failed):
+        job = PNIDAPI.parse([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
-            await task
-        assert "Job 123 failed with error 'error message'" == str(exc_info.value)
+            job.result
+        assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)

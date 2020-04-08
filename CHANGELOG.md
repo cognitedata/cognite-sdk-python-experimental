@@ -1,3 +1,4 @@
+=======
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -16,3 +17,6 @@ Changes are grouped as follows
 
 ### Added
 - FunctionsAPI to interact with the Cognite Functions API in CDF.
+
+### Changed
+- Refactor of contextualization endpoints to not use asyncio and block later.

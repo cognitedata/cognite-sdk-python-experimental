@@ -1,6 +1,6 @@
 class ModelFailedException(Exception):
     def __init__(self, type, id, error_message):
-        self.type = type.capitalize()
+        self.type = type
         self.id = id
         self.error_message = error_message
 

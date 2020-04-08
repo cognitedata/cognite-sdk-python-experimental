@@ -1,4 +1,3 @@
-import asyncio
 import re
 
 import pytest
@@ -46,15 +45,14 @@ def mock_status_failed(rsps):
 
 
 class TestResourceTyping:
-    @pytest.mark.asyncio
-    async def test_fit(self, mock_fit, mock_status_ok):
+    def test_fit(self, mock_fit, mock_status_ok):
         items = [{"data": ["a", "b'"], "target": "x"}, {"data": ["c", "d'"], "target": "y"}]
         targets_to_classify = ["x"]
 
-        resp = RTAPI.fit(items, targets_to_classify=targets_to_classify)
-        assert isinstance(resp, asyncio.Task)
-        model = await resp
+        model = RTAPI.fit(items, targets_to_classify=targets_to_classify)
         assert isinstance(model, ResourceTypingModel)
+        assert "Queued" == model.status
+        model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.model_id
 
@@ -74,15 +72,14 @@ class TestResourceTyping:
         assert 1 == n_fit_calls
         assert 1 == n_status_calls
 
-    @pytest.mark.asyncio
-    async def test_fit_fails(self, mock_fit, mock_status_failed):
-        task = RTAPI.fit([], [])
+    def test_fit_fails(self, mock_fit, mock_status_failed):
+        model = RTAPI.fit([], [])
         with pytest.raises(ModelFailedException) as exc_info:
-            await task
+            model.wait_for_completion()
         assert exc_info.type is ModelFailedException
         assert 123 == exc_info.value.id
         assert "error message" == exc_info.value.error_message
-        assert "Model 123 failed with error 'error message'" == str(exc_info.value)
+        assert "ResourceTypingModel 123 failed with error 'error message'" == str(exc_info.value)
 
     def test_retrieve(self, mock_status_ok):
         model = RTAPI.retrieve(model_id=123)
