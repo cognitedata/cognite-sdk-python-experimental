@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
@@ -97,10 +97,24 @@ class FunctionCall(CogniteResource):
     def logs(self):
         return self._cognite_client.functions.calls.logs(call_id=self.id, function_id=self._function_id)
 
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):
+        instance = super()._load(resource, cognite_client=cognite_client)
+        if function_id:
+            instance._function_id = function_id
+        return instance
+
 
 class FunctionCallList(CogniteResourceList):
     _RESOURCE = FunctionCall
     _ASSERT_CLASSES = False
+
+    @classmethod
+    def _load(cls, resource: Union[List, str], function_id: int, cognite_client=None):
+        instance = super()._load(resource, cognite_client=cognite_client)
+        for obj in instance:
+            obj._function_id = function_id
+        return instance
 
 
 class FunctionCallLogEntry(CogniteResource):

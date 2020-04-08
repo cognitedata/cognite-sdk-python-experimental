@@ -8,11 +8,6 @@ from cognite.client._api_client import APIClient
 from cognite.experimental.data_classes import Function, FunctionCall, FunctionCallList, FunctionCallLog, FunctionList
 
 
-def _add_function_id_to_calls(calls: FunctionCallList, function_id: int) -> None:
-    for call in calls:
-        call._function_id = function_id
-
-
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
     _LIST_CLASS = FunctionList
@@ -211,9 +206,7 @@ class FunctionsAPI(APIClient):
         if data:
             body = {"data": data}
         res = self._post(url, json=body)
-        call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
-        _add_function_id_to_calls([call], id)
-        return call
+        return FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         current_dir = os.getcwd()
@@ -267,9 +260,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls"
         res = self._get(url)
-        calls = FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
-        _add_function_id_to_calls(calls, function_id)
-        return calls
+        return FunctionCallList._load(res.json()["items"], function_id=function_id, cognite_client=self._cognite_client)
 
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
@@ -305,9 +296,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}"
         res = self._get(url)
-        call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
-        _add_function_id_to_calls([call], function_id)
-        return call
+        return FunctionCall._load(res.json(), function_id=function_id, cognite_client=self._cognite_client)
 
     def logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
