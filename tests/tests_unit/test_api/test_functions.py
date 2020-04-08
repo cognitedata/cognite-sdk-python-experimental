@@ -282,20 +282,20 @@ class TestFunctionCallsAPI:
         assert mock_function_calls_retrieve_response.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_function_call_logs_by_function_id(self, mock_function_call_logs_response):
-        res = FUNCTION_CALLS_API.logs(call_id=5678, function_id=1234)
+        res = FUNCTION_CALLS_API.get_logs(call_id=5678, function_id=1234)
         assert isinstance(res, FunctionCallLog)
         assert mock_function_call_logs_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_retrieve_response")
     def test_function_call_logs_by_function_external_id(self, mock_function_call_logs_response):
-        res = FUNCTION_CALLS_API.logs(call_id=5678, function_external_id="func-no-1234")
+        res = FUNCTION_CALLS_API.get_logs(call_id=5678, function_external_id="func-no-1234")
         assert isinstance(res, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_function_calls_retrieve_response")
     def test_get_logs_on_retrieved_call_object(self, mock_function_call_logs_response):
         call = FUNCTION_CALLS_API.retrieve(call_id=5678, function_id=1234)
-        logs = call.logs()
+        logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
@@ -303,13 +303,13 @@ class TestFunctionCallsAPI:
     def test_get_logs_on_listed_call_object(self, mock_function_call_logs_response):
         calls = FUNCTION_CALLS_API.list(function_id=1234)
         call = calls[0]
-        logs = call.logs()
+        logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_call_completed_response")
     def test_get_logs_on_created_call_object(self, mock_function_call_logs_response):
         call = FUNCTIONS_API.call(id=1234)
-        logs = call.logs()
+        logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
