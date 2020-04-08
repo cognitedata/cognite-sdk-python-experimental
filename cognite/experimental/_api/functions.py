@@ -19,24 +19,25 @@ class FunctionsAPI(APIClient):
     def create(
         self,
         name: str,
-        folder: str = None,
-        file_id: int = None,
-        external_id: str = None,
-        description: str = "",
-        owner: str = "",
-        api_key: str = None,
-        secrets: Dict = None,
+        folder: Optional[str] = None,
+        file_id: Optional[int] = None,
+        external_id: Optional[str] = None,
+        description: Optional[str] = "",
+        owner: Optional[str] = "",
+        api_key: Optional[str] = None,
+        secrets: Optional[Dict] = None,
     ) -> Function:
-        """Creates a new function from source code located in folder
+        """`Create a new function from source code located in folder. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
 
         Args:
-            name (str):                 Name of function
-            folder (str):               Path to folder where the function source code is located
-            external_id (str):          External id of the function
-            description (str):          Description of the function
-            owner (str):                Owner of the function
-            api_key (str):              Api key to be used by the CogniteClient in the function source code
-            secrets (Dict[str, str]):   Secrets attached to the function ((key, value) pairs)
+            name (str):                     The name of the function.
+            folder (str, optional):         Path to the folder where the function source code is located.
+            filde_id (int, optional):       File ID of the code uploaded to the Files API.
+            external_id (str, optional):    External id of the function.
+            description (str, optional):    Description of the function.
+            owner (str, optional):          Owner of this function. Typically used to know who created it.
+            api_key (str, optional):        API key that can be used inside the function to access data in CDF.
+            secrets (Dict[str, str]):       Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
 
         Returns:
             Function: The created function.
@@ -76,11 +77,11 @@ class FunctionsAPI(APIClient):
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
-        """Delete one or more functions.
+        """`Delete one or more functions. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-delete>`_
 
         Args:
-            id (Union[int, List[int]): Id or list of ids
-            external_id (Union[str, List[str]]): External ID or list of external ids
+            id (Union[int, List[int]): Id or list of ids.
+            external_id (Union[str, List[str]]): External ID or list of external ids.
 
         Returns:
             None
@@ -96,7 +97,7 @@ class FunctionsAPI(APIClient):
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def list(self) -> FunctionList:
-        """List all functions.
+        """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
 
         Returns:
             FunctionList: List of functions
@@ -114,7 +115,7 @@ class FunctionsAPI(APIClient):
         return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
-        """Retrieve a single function by id.
+        """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name>`_
 
         Args:
             id (int, optional): ID
@@ -143,7 +144,7 @@ class FunctionsAPI(APIClient):
     def retrieve_multiple(
         self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
     ) -> FunctionList:
-        """Retrieve multiple functions by id.
+        """`Retrieve multiple functions by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
 
         Args:
             ids (List[int], optional): IDs
@@ -170,13 +171,19 @@ class FunctionsAPI(APIClient):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
-    def call(self, id: int = None, external_id: str = None, data=None, asynchronous: bool = False) -> FunctionCall:
-        """Call a function by its ID or external ID.
+    def call(
+        self,
+        id: Optional[int] = None,
+        external_id: Optional[str] = None,
+        data: Optional[Union[Dict, str]] = None,
+        asynchronous: bool = False,
+    ) -> FunctionCall:
+        """Call a function by its ID or external ID. Can be done `synchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_ or `asynchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-functionId-async_call>`_.
 
         Args:
             id (int, optional): ID
             external_id (str, optional): External ID
-            data (optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
             asynchronous (bool): Call the function asynchronously. Defaults to false.
 
         Returns:
@@ -230,7 +237,7 @@ class FunctionsAPI(APIClient):
 
 class FunctionCallsAPI(APIClient):
     def list(self, function_id: Optional[int] = None, function_external_id: Optional[str] = None) -> FunctionCallList:
-        """List all calls associated with a specific function.
+        """`List all calls associated with a specific function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
@@ -265,7 +272,7 @@ class FunctionCallsAPI(APIClient):
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCall:
-        """Retrieve call by id.
+        """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
 
         Args:
             call_id (int): ID of the call.
@@ -301,7 +308,7 @@ class FunctionCallsAPI(APIClient):
     def logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCallLog:
-        """Retrieve logs for function call.
+        """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
 
         Args:
             call_id (int): ID of the call.
