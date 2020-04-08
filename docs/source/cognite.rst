@@ -390,18 +390,6 @@ Retrieve function call logs
 
 Data classes
 ^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.functions.
-    :members:
-    :show-inheritance:
-
-.. automodule:: cognite.experimental.data_classes.model_hosting.versions
-    :members:
-    :show-inheritance:
-
-.. automodule:: cognite.experimental.data_classes.model_hosting.schedules
-    :members:
-    :show-inheritance:
-
-.. automodule:: cognite.experimental.data_classes.model_hosting.source_packages
+.. automodule:: cognite.experimental.data_classes.functions
     :members:
     :show-inheritance:
