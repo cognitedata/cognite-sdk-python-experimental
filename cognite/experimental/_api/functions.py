@@ -305,7 +305,7 @@ class FunctionCallsAPI(APIClient):
         res = self._get(url)
         return FunctionCall._load(res.json(), function_id=function_id, cognite_client=self._cognite_client)
 
-    def logs(
+    def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCallLog:
         """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
@@ -324,14 +324,14 @@ class FunctionCallsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> logs = c.functions.calls.logs(call_id=2, function_id=1)
+                >>> logs = c.functions.calls.get_logs(call_id=2, function_id=1)
 
             Retrieve function call logs directly on a call object::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> call = c.functions.calls.retrieve(call_id=2, function_id=1)
-                >>> logs = call.logs()
+                >>> logs = call.get_logs()
 
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
