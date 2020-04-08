@@ -175,7 +175,7 @@ class FunctionsAPI(APIClient):
         self,
         id: Optional[int] = None,
         external_id: Optional[str] = None,
-        data: Optional[Union[Dict, str]] = None,
+        data: Optional[Dict] = None,
         asynchronous: bool = False,
     ) -> FunctionCall:
         """Call a function by its ID or external ID. Can be done `synchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_ or `asynchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-functionId-async_call>`_.
@@ -219,20 +219,22 @@ class FunctionsAPI(APIClient):
         current_dir = os.getcwd()
         os.chdir(folder)
 
-        with TemporaryDirectory() as tmpdir:
-            zip_path = os.path.join(tmpdir, "function.zip")
-            zf = ZipFile(zip_path, "w")
-            for root, dirs, files in os.walk("."):
-                zf.write(root)
-                for filename in files:
-                    zf.write(os.path.join(root, filename))
-            zf.close()
+        try:
+            with TemporaryDirectory() as tmpdir:
+                zip_path = os.path.join(tmpdir, "function.zip")
+                zf = ZipFile(zip_path, "w")
+                for root, dirs, files in os.walk("."):
+                    zf.write(root)
+                    for filename in files:
+                        zf.write(os.path.join(root, filename))
+                zf.close()
 
-            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+                file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
 
-        os.chdir(current_dir)
+            return file.id
 
-        return file.id
+        finally:
+            os.chdir(current_dir)
 
 
 class FunctionCallsAPI(APIClient):
