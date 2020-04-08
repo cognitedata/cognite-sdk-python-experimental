@@ -345,3 +345,63 @@ Contextualization Data Classes
     :show-inheritance:
     :inherited-members:
 
+
+Functions
+---------
+
+Create function
+^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionsAPI.create
+
+Delete function
+^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionsAPI.delete
+
+List functions
+^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionsAPI.list
+
+Retrieve function
+^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionsAPI.retrieve
+
+Retrieve multiple functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionsAPI.retrieve_multiple
+
+Call function
+^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionsAPI.call
+
+
+Function calls
+^^^^^^^^^^^^^^
+List function calls
+~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.list
+
+Retrieve function call
+~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.retrieve
+
+Retrieve function call logs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.logs
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.functions.
+    :members:
+    :show-inheritance:
+
+.. automodule:: cognite.experimental.data_classes.model_hosting.versions
+    :members:
+    :show-inheritance:
+
+.. automodule:: cognite.experimental.data_classes.model_hosting.schedules
+    :members:
+    :show-inheritance:
+
+.. automodule:: cognite.experimental.data_classes.model_hosting.source_packages
+    :members:
+    :show-inheritance:
