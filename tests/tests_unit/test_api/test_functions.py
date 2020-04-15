@@ -9,6 +9,7 @@ from cognite.experimental.data_classes import (
     FunctionCallList,
     FunctionCallLog,
     FunctionList,
+    FunctionSchedule,
     FunctionSchedulesList,
 )
 from tests.utils import jsgz_load
@@ -266,44 +267,48 @@ def mock_function_call_logs_response(rsps):
     yield rsps
 
 
+SCHEDULE1 = {
+    "createdTime": 1586944839659,
+    "cronExpression": "*/5 * * * *",
+    "data": {},
+    "description": "Hi",
+    "functionExternalId": "user/hello-cognite/hello-cognite:latest",
+    "id": 8012683333564363,
+    "name": "my-schedule",
+    "when": "Every 5 minutes",
+}
+
+
 @pytest.fixture
-def mock_function_schedules_list_response(rsps):
-    response_body = {
-        "items": [
-            {
-                "createdTime": 1586944839659,
-                "cronExpression": "*/5 * * * *",
-                "data": {},
-                "description": "Hi",
-                "functionExternalId": "matzhaugen/hello-cognite/hello-cognite:latest",
-                "id": 8012683333564363,
-                "name": "my-schedule2",
-                "when": "Every 5 minutes",
-            },
-            {
-                "createdTime": 1586944852871,
-                "cronExpression": "*/5 * * * *",
-                "data": {},
-                "description": "Hi",
-                "functionExternalId": "matzhaugen/hello-cognite/hello-cognite:latest",
-                "id": 835726202545567,
-                "name": "my-schedule2",
-                "when": "Every 5 minutes",
-            },
-        ]
-    }
+def mock_function_schedules_response(rsps):
+    response_body = {"items": [SCHEDULE1]}
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
     rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.GET, url, status=200, json=response_body)
+    rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
 
 
 class TestFunctionSchedulesAPI:
-    def test_list_schedules(self, mock_function_schedules_list_response):
+    def test_list_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
-        assert mock_function_calls_list_response.list[0].response.json()["items"] == res.dump(camel_case=True)
+        assert mock_function_schedules_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_create_schedules(self, mock_function_schedules_response):
+        res = FUNCTION_SCHEDULES_API.create(
+            name="my-schedule",
+            function_external_id="user/hello-cognite/hello-cognite:latest",
+            cron_expression="*/5 * * * *",
+            description="Hi",
+        )
+        assert isinstance(res, FunctionSchedule)
+        assert mock_function_schedules_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_delete_schedules(self):
+        res = FUNCTION_SCHEDULES_API.delete(id=8012683333564363)
+        assert None == res
 
 
 class TestFunctionCallsAPI:

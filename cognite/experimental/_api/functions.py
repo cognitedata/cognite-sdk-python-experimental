@@ -354,8 +354,8 @@ class FunctionCallsAPI(APIClient):
 
 
 class FunctionSchedulesAPI(APIClient):
-    def list(self) -> FunctionCallList:
-        """`List all schedules associated with a specific project. `_
+    def list(self) -> FunctionSchedulesList:
+        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
         Returns:
             FunctionSchedulesList: List of function schedules
@@ -381,10 +381,10 @@ class FunctionSchedulesAPI(APIClient):
         description: str,
         data: Union[Dict, None] = None,
     ) -> FunctionSchedule:
-        """`Create a schedule associated with a specific project. `_
+        """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
 
         Returns:
-            FunctionSchedule: List of function schedules
+            FunctionSchedule: Created function schedule.
 
         Examples:
 
@@ -392,7 +392,7 @@ class FunctionSchedulesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> schedules = c.functions.schedules.create(name= "my-schedule",
+                >>> schedule = c.functions.schedules.create(name= "my-schedule",
                 function_external_id="user/hello-cognite/hello-cognite:latest",
                 cron_expression="*/5 * * * *", description="Hi")
 
@@ -410,10 +410,23 @@ class FunctionSchedulesAPI(APIClient):
         }
         url = f"/functions/schedules"
         res = self._post(url, json=json)
-        return FunctionSchedulesList._load(res.json()["items"])
+        return FunctionSchedule._load(res.json()["items"][0])
 
     def delete(self, id: int):
+        """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules-delete>`_
+
+        Returns:
+            FunctionSchedule: Delete function schedule.
+
+        Examples:
+
+            List function calls::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> schedule = c.functions.schedules.delete(id= 123)
+
+        """
         json = {"items": [{"id": id,}]}
         url = f"/functions/schedules/delete"
-        res = self._post(url, json=json)
-        return res
+        self._post(url, json=json)
