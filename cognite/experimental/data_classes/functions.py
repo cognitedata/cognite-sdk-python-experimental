@@ -65,7 +65,7 @@ class FunctionSchedule(CogniteResource):
     """A representation of a Cognite Function Schedule.
 
     Args:
-        id (int): Id of the function.
+        id (int): Id of the schedule.
         name (str): Name of the function.
         function_external_id (str): External id of the function.
         description (str): Description of the function.

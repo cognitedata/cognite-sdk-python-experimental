@@ -378,10 +378,17 @@ class FunctionSchedulesAPI(APIClient):
         name: str,
         function_external_id: str,
         cron_expression: str,
-        description: str,
+        description: Optional[str] = "",
         data: Union[Dict, None] = None,
     ) -> FunctionSchedule:
         """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            name (str): Name of the function.
+            function_external_id (str): External id of the function.
+            description (optional, str): Description of the function.
+            cron_expression (str): Cron expression (see e.g. http://www.cronmaker.com)
+            data (Dict): Data to be passed to the scheduled run.
 
         Returns:
             FunctionSchedule: Created function schedule.
@@ -393,7 +400,7 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> schedule = c.functions.schedules.create(name= "my-schedule",
-                function_external_id="user/hello-cognite/hello-cognite:latest",
+                function_external_id="my-external-id",
                 cron_expression="*/5 * * * *", description="Hi")
 
         """
@@ -404,7 +411,7 @@ class FunctionSchedulesAPI(APIClient):
                     "description": description,
                     "functionExternalId": function_external_id,
                     "cronExpression": cron_expression,
-                    "data": {},
+                    "data": data,
                 }
             ]
         }
@@ -414,6 +421,9 @@ class FunctionSchedulesAPI(APIClient):
 
     def delete(self, id: int) -> None:
         """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules-delete>`_
+
+        Args:
+            id (int): Id of the schedule
 
         Returns:
             FunctionSchedule: Delete function schedule.
