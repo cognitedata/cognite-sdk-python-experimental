@@ -13,7 +13,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
+## [0.5.0] - 2020-04-08
 
 ### Added
 - FunctionsAPI to interact with the Cognite Functions API in CDF.

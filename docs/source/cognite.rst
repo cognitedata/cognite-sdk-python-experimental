@@ -386,7 +386,7 @@ Retrieve function call
 
 Retrieve function call logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.logs
+.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_logs
 
 Data classes
 ^^^^^^^^^^^^
