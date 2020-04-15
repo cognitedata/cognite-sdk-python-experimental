@@ -1,4 +1,3 @@
-=======
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -12,6 +11,11 @@ Changes are grouped as follows
 - `Removed` for now removed features.
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
+
+## Unreleased
+
+### Added
+- Argument `function_handle` to `FunctionsAPI.create()`, which can be used to create a function directly from code.
 
 ## [0.5.0] - 2020-04-08
 
