@@ -5,7 +5,15 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import Function, FunctionCall, FunctionCallList, FunctionCallLog, FunctionList
+from cognite.experimental.data_classes import (
+    Function,
+    FunctionCall,
+    FunctionCallList,
+    FunctionCallLog,
+    FunctionList,
+    FunctionSchedule,
+    FunctionSchedulesList,
+)
 
 
 class FunctionsAPI(APIClient):
@@ -15,6 +23,7 @@ class FunctionsAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.calls = FunctionCallsAPI(*args, **kwargs)
+        self.schedules = FunctionSchedulesAPI(*args, **kwargs)
 
     def create(
         self,
@@ -101,7 +110,7 @@ class FunctionsAPI(APIClient):
 
         Returns:
             FunctionList: List of functions
-        
+
         Example:
 
             List functions::
@@ -247,7 +256,7 @@ class FunctionCallsAPI(APIClient):
 
         Returns:
             FunctionCallList: List of function calls
-        
+
         Examples:
 
             List function calls::
@@ -283,7 +292,7 @@ class FunctionCallsAPI(APIClient):
 
         Returns:
             FunctionCall: Function call.
-        
+
         Examples:
 
             Retrieve function call by id::
@@ -319,7 +328,7 @@ class FunctionCallsAPI(APIClient):
 
         Returns:
             FunctionCallLog: Log for the function call.
-        
+
         Examples:
 
             Retrieve function call logs by call ID::
@@ -342,3 +351,69 @@ class FunctionCallsAPI(APIClient):
         url = f"/functions/{function_id}/calls/{call_id}/logs"
         res = self._get(url)
         return FunctionCallLog._load(res.json()["items"])
+
+
+class FunctionSchedulesAPI(APIClient):
+    def list(self) -> FunctionCallList:
+        """`List all schedules associated with a specific project. `_
+
+        Returns:
+            FunctionSchedulesList: List of function schedules
+
+        Examples:
+
+            List function calls::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> schedules = c.functions.schedules.list()
+
+        """
+        url = f"/functions/schedules"
+        res = self._get(url)
+        return FunctionSchedulesList._load(res.json()["items"])
+
+    def create(
+        self,
+        name: str,
+        function_external_id: str,
+        cron_expression: str,
+        description: str,
+        data: Union[Dict, None] = None,
+    ) -> FunctionSchedule:
+        """`Create a schedule associated with a specific project. `_
+
+        Returns:
+            FunctionSchedule: List of function schedules
+
+        Examples:
+
+            List function calls::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> schedules = c.functions.schedules.create(name= "my-schedule",
+                function_external_id="user/hello-cognite/hello-cognite:latest",
+                cron_expression="*/5 * * * *", description="Hi")
+
+        """
+        json = {
+            "items": [
+                {
+                    "name": name,
+                    "description": description,
+                    "functionExternalId": function_external_id,
+                    "cronExpression": cron_expression,
+                    "data": {},
+                }
+            ]
+        }
+        url = f"/functions/schedules"
+        res = self._post(url, json=json)
+        return FunctionSchedulesList._load(res.json()["items"])
+
+    def delete(self, id: int):
+        json = {"items": [{"id": id,}]}
+        url = f"/functions/schedules/delete"
+        res = self._post(url, json=json)
+        return res

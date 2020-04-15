@@ -56,6 +56,44 @@ class Function(CogniteResource):
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
 
+class FunctionSchedule(CogniteResource):
+    """A representation of a Cognite Function Schedule.
+
+    Args:
+        id (int): Id of the function.
+        name (str): Name of the function.
+        function_external_id (str): External id of the function.
+        description (str): Description of the function.
+        cron_expression (str): Cron expression
+        created_time (int): Created time in UNIX.
+        cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
+    """
+
+    def __init__(
+        self,
+        id: int = None,
+        name: str = None,
+        function_external_id: str = None,
+        description: str = None,
+        created_time: int = None,
+        cron_expression: str = None,
+        data: Dict = None,
+        cognite_client=None,
+    ):
+        self.id = id
+        self.name = name
+        self.function_external_id = function_external_id
+        self.description = description
+        self.cron_expression = cron_expression
+        self.created_time = created_time
+        self.data = data
+
+
+class FunctionSchedulesList(CogniteResourceList):
+    _RESOURCE = FunctionSchedule
+    _ASSERT_CLASSES = False
+
+
 class FunctionList(CogniteResourceList):
     _RESOURCE = Function
     _ASSERT_CLASSES = False
