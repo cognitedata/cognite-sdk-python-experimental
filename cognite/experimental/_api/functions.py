@@ -362,7 +362,7 @@ class FunctionSchedulesAPI(APIClient):
 
         Examples:
 
-            List function calls::
+            List function schedules::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -388,7 +388,7 @@ class FunctionSchedulesAPI(APIClient):
 
         Examples:
 
-            List function calls::
+            Create function schedule::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -412,7 +412,7 @@ class FunctionSchedulesAPI(APIClient):
         res = self._post(url, json=json)
         return FunctionSchedule._load(res.json()["items"][0])
 
-    def delete(self, id: int):
+    def delete(self, id: int) -> None:
         """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules-delete>`_
 
         Returns:
@@ -420,11 +420,11 @@ class FunctionSchedulesAPI(APIClient):
 
         Examples:
 
-            List function calls::
+            Delete function schedule::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> schedule = c.functions.schedules.delete(id= 123)
+                >>> c.functions.schedules.delete(id= 123)
 
         """
         json = {"items": [{"id": id,}]}
