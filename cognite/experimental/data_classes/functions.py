@@ -52,6 +52,11 @@ class Function(CogniteResource):
     def list_calls(self):
         return self._cognite_client.functions.calls.list(function_id=self.id)
 
+    def list_schedules(self):
+        all_schedules = self._cognite_client.functions.schedules.list()
+        function_schedules = filter(lambda f: f.function_external_id == self.external_id, all_schedules)
+        return function_schedules
+
     def retrieve_call(self, id: int):
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
