@@ -1,6 +1,7 @@
 import os
+from inspect import getsource
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
 from cognite.client import utils
@@ -21,6 +22,7 @@ class FunctionsAPI(APIClient):
         name: str,
         folder: Optional[str] = None,
         file_id: Optional[int] = None,
+        function_handle: Optional[Callable] = None,
         external_id: Optional[str] = None,
         description: Optional[str] = "",
         owner: Optional[str] = "",
@@ -30,14 +32,15 @@ class FunctionsAPI(APIClient):
         """`Create a new function from source code located in folder. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
 
         Args:
-            name (str):                     The name of the function.
-            folder (str, optional):         Path to the folder where the function source code is located.
-            filde_id (int, optional):       File ID of the code uploaded to the Files API.
-            external_id (str, optional):    External id of the function.
-            description (str, optional):    Description of the function.
-            owner (str, optional):          Owner of this function. Typically used to know who created it.
-            api_key (str, optional):        API key that can be used inside the function to access data in CDF.
-            secrets (Dict[str, str]):       Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
+            name (str):                             The name of the function.
+            folder (str, optional):                 Path to the folder where the function source code is located.
+            filde_id (int, optional):               File ID of the code uploaded to the Files API.
+            function_handle (Callable, optional):   Reference to a function object, which must be named `handle`. Valid arguments to `handle` are `data`, `client` and `secret`.
+            external_id (str, optional):            External id of the function.
+            description (str, optional):            Description of the function.
+            owner (str, optional):                  Owner of this function. Typically used to know who created it.
+            api_key (str, optional):                API key that can be used inside the function to access data in CDF.
+            secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
 
         Returns:
             Function: The created function.
@@ -55,14 +58,20 @@ class FunctionsAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> function = c.functions.create(name="myfunction", file_id=123)
-        """
-        if folder and file_id:
-            raise TypeError("Exactly one of the arguments `path` and `file_id` is required, but both were given.")
-        if not folder and not file_id:
-            raise TypeError("Exactly one of the arguments `path` and `file_id` is required, but none were given.")
 
-        if not file_id:
+            Create function with predefined function object named `handle`::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> function = c.functions.create(name="myfunction", function_handle=handle)
+        """
+        self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
+
+        if folder:
             file_id = self._zip_and_upload_folder(folder, name)
+        elif function_handle:
+            self._validate_function_handle(function_handle)
+            file_id = self._zip_and_upload_handle(function_handle, name)
 
         url = "/functions"
         function = {"name": name, "description": description, "owner": owner, "fileId": file_id}
@@ -235,6 +244,46 @@ class FunctionsAPI(APIClient):
 
         finally:
             os.chdir(current_dir)
+
+    def _zip_and_upload_handle(self, function_handle, name) -> int:
+        with TemporaryDirectory() as tmpdir:
+            handle_path = os.path.join(tmpdir, "handler.py")
+            with open(handle_path, "w") as f:
+                source = getsource(function_handle)
+                f.write(source)
+
+            zip_path = os.path.join(tmpdir, "function.zip")
+            zf = ZipFile(zip_path, "w")
+            zf.write(handle_path, arcname="handler.py")
+            zf.close()
+
+            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+
+        return file.id
+
+    @staticmethod
+    def _assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle):
+        source_code_options = {"folder": folder, "file_id": file_id, "function_handle": function_handle}
+        given_source_code_options = [key for key in source_code_options.keys() if source_code_options[key]]
+        if len(given_source_code_options) < 1:
+            raise TypeError("Exactly one of the arguments folder, file_id and handle is required, but none were given.")
+        elif len(given_source_code_options) > 1:
+            raise TypeError(
+                "Exactly one of the arguments folder, file_id and handle is required, but "
+                + ", ".join(given_source_code_options)
+                + " were given."
+            )
+
+    @staticmethod
+    def _validate_function_handle(function_handle):
+        if not function_handle.__code__.co_name == "handle":
+            raise TypeError("Function referenced by function_handle must be named handle.")
+        if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
+            set(["data", "client", "secrets"])
+        ):
+            raise TypeError(
+                "Arguments to function referenced by function_handle must be a subset of (data, client, secrets)"
+            )
 
 
 class FunctionCallsAPI(APIClient):
