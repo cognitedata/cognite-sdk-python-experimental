@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
+## [0.5.1] - 2020-04-15
 
 ### Added
 - Argument `function_handle` to `FunctionsAPI.create()`, which can be used to create a function directly from code.
