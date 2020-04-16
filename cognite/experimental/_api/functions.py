@@ -428,15 +428,15 @@ class FunctionSchedulesAPI(APIClient):
         function_external_id: str,
         cron_expression: str,
         description: Optional[str] = "",
-        data: Union[Dict, None] = None,
+        data: Optional[Dict] = None,
     ) -> FunctionSchedule:
         """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
 
         Args:
-            name (str): Name of the function.
+            name (str): Name of the schedule.
             function_external_id (str): External id of the function.
-            description (optional, str): Description of the function.
-            cron_expression (str): Cron expression (see e.g. http://www.cronmaker.com)
+            description (optional, str): Description of the schedule.
+            cron_expression (str): Cron expression.
             data (Dict): Data to be passed to the scheduled run.
 
         Returns:
