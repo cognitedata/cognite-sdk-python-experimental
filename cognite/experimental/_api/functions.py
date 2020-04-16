@@ -435,9 +435,9 @@ class FunctionSchedulesAPI(APIClient):
         Args:
             name (str): Name of the schedule.
             function_external_id (str): External id of the function.
-            description (optional, str): Description of the schedule.
+            description (str): Description of the schedule.
             cron_expression (str): Cron expression.
-            data (Dict): Data to be passed to the scheduled run.
+            data (optional, Dict): Data to be passed to the scheduled run.
 
         Returns:
             FunctionSchedule: Created function schedule.
@@ -448,9 +448,10 @@ class FunctionSchedulesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> schedule = c.functions.schedules.create(name= "my-schedule",
-                function_external_id="my-external-id",
-                cron_expression="*/5 * * * *", description="Hi")
+                >>> schedule = c.functions.schedules.create(
+                    name= "my-schedule",
+                    function_external_id="my-external-id",
+                    cron_expression="*/5 * * * *", description="Hi")
 
         """
         json = {

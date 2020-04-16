@@ -345,7 +345,6 @@ def mock_function_schedules_response(rsps):
 @pytest.fixture
 def mock_function_schedules_response_with_data(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
-    rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE2]})
 
     yield rsps
@@ -354,7 +353,6 @@ def mock_function_schedules_response_with_data(rsps):
 @pytest.fixture
 def mock_function_schedules_delete_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/delete"
-    rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.POST, url, status=200, json={})
 
     yield rsps
@@ -364,7 +362,9 @@ class TestFunctionSchedulesAPI:
     def test_list_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
-        assert mock_function_schedules_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+        expected = mock_function_schedules_response.calls[0].response.json()["items"]
+        expected[0].pop("when")
+        assert expected == res.dump(camel_case=True)
 
     def test_create_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.create(
@@ -374,7 +374,9 @@ class TestFunctionSchedulesAPI:
             description="Hi",
         )
         assert isinstance(res, FunctionSchedule)
-        assert mock_function_schedules_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+        expected = mock_function_schedules_response.calls[0].response.json()["items"][0]
+        expected.pop("when")
+        assert expected == res.dump(camel_case=True)
 
     def test_create_schedules_with_data(self, mock_function_schedules_response_with_data):
         res = FUNCTION_SCHEDULES_API.create(
@@ -385,9 +387,9 @@ class TestFunctionSchedulesAPI:
             data={"value": 2},
         )
         assert isinstance(res, FunctionSchedule)
-        assert mock_function_schedules_response_with_data.calls[0].response.json()["items"][0] == res.dump(
-            camel_case=True
-        )
+        expected = mock_function_schedules_response_with_data.calls[0].response.json()["items"][0]
+        expected.pop("when")
+        assert expected == res.dump(camel_case=True)
 
     def test_delete_schedules(self, mock_function_schedules_delete_response):
         res = FUNCTION_SCHEDULES_API.delete(id=8012683333564363)

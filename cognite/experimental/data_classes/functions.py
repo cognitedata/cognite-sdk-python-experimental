@@ -72,7 +72,6 @@ class FunctionSchedule(CogniteResource):
         cron_expression (str): Cron expression
         created_time (int): Created time in UNIX.
         data (Dict): Data to be passed to the scheduled run.
-        when (str): When the schedule runs in human readable format.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
 
@@ -94,6 +93,7 @@ class FunctionSchedule(CogniteResource):
         self.cron_expression = cron_expression
         self.created_time = created_time
         self.data = data
+        self._cognite_client = cognite_client
 
 
 class FunctionSchedulesList(CogniteResourceList):
