@@ -449,9 +449,10 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> schedule = c.functions.schedules.create(
-                    name= "my-schedule",
+                    name= "My schedule",
                     function_external_id="my-external-id",
-                    cron_expression="*/5 * * * *", description="Hi")
+                    cron_expression="*/5 * * * *",
+                    description="This schedule does magic stuff.")
 
         """
         json = {

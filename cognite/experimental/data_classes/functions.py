@@ -70,7 +70,7 @@ class FunctionSchedule(CogniteResource):
         function_external_id (str): External id of the function.
         description (str): Description of the function schedule.
         cron_expression (str): Cron expression
-        created_time (int): Created time in UNIX.
+        created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         data (Dict): Data to be passed to the scheduled run.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
