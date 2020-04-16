@@ -139,6 +139,30 @@ def mock_functions_call_timeout_response(rsps):
     yield rsps
 
 
+@pytest.fixture
+def function_handle():
+    def handle(data, client, secrets):
+        pass
+
+    return handle
+
+
+@pytest.fixture
+def function_handle_illegal_name():
+    def func(data, client, secrets):
+        pass
+
+    return func
+
+
+@pytest.fixture
+def function_handle_illegal_argument():
+    def handle(client, input):
+        pass
+
+    return handle
+
+
 class TestFunctionsAPI:
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
@@ -152,6 +176,24 @@ class TestFunctionsAPI:
 
         assert isinstance(res, Function)
         assert mock_functions_create_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_create_with_function_handle(self, mock_functions_create_response, function_handle):
+        res = FUNCTIONS_API.create(name="myfunction", function_handle=function_handle)
+
+        assert isinstance(res, Function)
+        assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_create_with_function_handle_with_illegal_name_raises(self, function_handle_illegal_name):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", function_handle=function_handle_illegal_name)
+
+    def test_create_with_function_handle_with_illegal_argument_raises(self, function_handle_illegal_argument):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", function_handle=function_handle_illegal_argument)
+
+    def test_create_with_handle_function_and_file_id_raises(self, mock_functions_create_response, function_handle):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", function_handle=function_handle, file_id=1234)
 
     def test_create_with_path_and_file_id_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
