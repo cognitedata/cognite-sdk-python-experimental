@@ -17,6 +17,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.entity_extraction: `Extract Entities from Files`_
 * client.pnid_parsing: `Parse PNID`_
 * client.resource_typing: `Fit Resource Typing Model`_
+* client.functions: `Run and schedule python code in the cloud with Cognite Functions`_
 
 
 CogniteClient
