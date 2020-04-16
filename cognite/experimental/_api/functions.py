@@ -427,7 +427,7 @@ class FunctionSchedulesAPI(APIClient):
         name: str,
         function_external_id: str,
         cron_expression: str,
-        description: Optional[str] = "",
+        description: str = "",
         data: Optional[Dict] = None,
     ) -> FunctionSchedule:
         """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
@@ -476,7 +476,7 @@ class FunctionSchedulesAPI(APIClient):
             id (int): Id of the schedule
 
         Returns:
-            FunctionSchedule: Delete function schedule.
+            None
 
         Examples:
 
@@ -484,7 +484,7 @@ class FunctionSchedulesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> c.functions.schedules.delete(id= 123)
+                >>> c.functions.schedules.delete(id = 123)
 
         """
         json = {"items": [{"id": id,}]}
