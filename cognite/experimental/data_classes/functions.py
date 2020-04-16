@@ -66,9 +66,9 @@ class FunctionSchedule(CogniteResource):
 
     Args:
         id (int): Id of the schedule.
-        name (str): Name of the function.
+        name (str): Name of the function schedule.
         function_external_id (str): External id of the function.
-        description (str): Description of the function.
+        description (str): Description of the function schedule.
         cron_expression (str): Cron expression
         created_time (int): Created time in UNIX.
         data (Dict): Data to be passed to the scheduled run.
