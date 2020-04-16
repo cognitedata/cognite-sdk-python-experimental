@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.5.2] - 2020-04-16
+
+### Added
+- A `FunctionSchedule` class and corresponding api attached to the `Functions` api to interact with function schedules. 
+Function schedules can now also be listed using the `Function` object through the `list_schedules` method. 
+
 ## [0.5.1] - 2020-04-15
 
 ### Added

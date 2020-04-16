@@ -52,8 +52,53 @@ class Function(CogniteResource):
     def list_calls(self):
         return self._cognite_client.functions.calls.list(function_id=self.id)
 
+    def list_schedules(self):
+        all_schedules = self._cognite_client.functions.schedules.list()
+        function_schedules = filter(lambda f: f.function_external_id == self.external_id, all_schedules)
+        return list(function_schedules)
+
     def retrieve_call(self, id: int):
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
+
+
+class FunctionSchedule(CogniteResource):
+    """A representation of a Cognite Function Schedule.
+
+    Args:
+        id (int): Id of the schedule.
+        name (str): Name of the function schedule.
+        function_external_id (str): External id of the function.
+        description (str): Description of the function schedule.
+        cron_expression (str): Cron expression
+        created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        data (Dict): Data to be passed to the scheduled run.
+        cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
+    """
+
+    def __init__(
+        self,
+        id: int = None,
+        name: str = None,
+        function_external_id: str = None,
+        description: str = None,
+        created_time: int = None,
+        cron_expression: str = None,
+        data: Dict = None,
+        cognite_client=None,
+    ):
+        self.id = id
+        self.name = name
+        self.function_external_id = function_external_id
+        self.description = description
+        self.cron_expression = cron_expression
+        self.created_time = created_time
+        self.data = data
+        self._cognite_client = cognite_client
+
+
+class FunctionSchedulesList(CogniteResourceList):
+    _RESOURCE = FunctionSchedule
+    _ASSERT_CLASSES = False
 
 
 class FunctionList(CogniteResourceList):

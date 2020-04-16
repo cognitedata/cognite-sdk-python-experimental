@@ -3,12 +3,21 @@ import os
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Function, FunctionCall, FunctionCallList, FunctionCallLog, FunctionList
+from cognite.experimental.data_classes import (
+    Function,
+    FunctionCall,
+    FunctionCallList,
+    FunctionCallLog,
+    FunctionList,
+    FunctionSchedule,
+    FunctionSchedulesList,
+)
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
 FUNCTIONS_API = COGNITE_CLIENT.functions
 FUNCTION_CALLS_API = FUNCTIONS_API.calls
+FUNCTION_SCHEDULES_API = FUNCTIONS_API.schedules
 FILES_API = COGNITE_CLIENT.files
 
 
@@ -298,6 +307,93 @@ def mock_function_call_logs_response(rsps):
     rsps.add(rsps.GET, url, status=200, json=response_body)
 
     yield rsps
+
+
+SCHEDULE1 = {
+    "createdTime": 1586944839659,
+    "cronExpression": "*/5 * * * *",
+    "data": {},
+    "description": "Hi",
+    "functionExternalId": "user/hello-cognite/hello-cognite:latest",
+    "id": 8012683333564363,
+    "name": "my-schedule",
+    "when": "Every 5 minutes",
+}
+
+SCHEDULE2 = {
+    "createdTime": 1586944839659,
+    "cronExpression": "*/5 * * * *",
+    "data": {"value": 2},
+    "description": "Hi",
+    "functionExternalId": "user/hello-cognite/hello-cognite:latest",
+    "id": 8012683333564363,
+    "name": "my-schedule",
+    "when": "Every 5 minutes",
+}
+
+
+@pytest.fixture
+def mock_function_schedules_response(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
+    rsps.assert_all_requests_are_fired = False
+    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]})
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+
+    yield rsps
+
+
+@pytest.fixture
+def mock_function_schedules_response_with_data(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE2]})
+
+    yield rsps
+
+
+@pytest.fixture
+def mock_function_schedules_delete_response(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/delete"
+    rsps.add(rsps.POST, url, status=200, json={})
+
+    yield rsps
+
+
+class TestFunctionSchedulesAPI:
+    def test_list_schedules(self, mock_function_schedules_response):
+        res = FUNCTION_SCHEDULES_API.list()
+        assert isinstance(res, FunctionSchedulesList)
+        expected = mock_function_schedules_response.calls[0].response.json()["items"]
+        expected[0].pop("when")
+        assert expected == res.dump(camel_case=True)
+
+    def test_create_schedules(self, mock_function_schedules_response):
+        res = FUNCTION_SCHEDULES_API.create(
+            name="my-schedule",
+            function_external_id="user/hello-cognite/hello-cognite:latest",
+            cron_expression="*/5 * * * *",
+            description="Hi",
+        )
+        assert isinstance(res, FunctionSchedule)
+        expected = mock_function_schedules_response.calls[0].response.json()["items"][0]
+        expected.pop("when")
+        assert expected == res.dump(camel_case=True)
+
+    def test_create_schedules_with_data(self, mock_function_schedules_response_with_data):
+        res = FUNCTION_SCHEDULES_API.create(
+            name="my-schedule",
+            function_external_id="user/hello-cognite/hello-cognite:latest",
+            cron_expression="*/5 * * * *",
+            description="Hi",
+            data={"value": 2},
+        )
+        assert isinstance(res, FunctionSchedule)
+        expected = mock_function_schedules_response_with_data.calls[0].response.json()["items"][0]
+        expected.pop("when")
+        assert expected == res.dump(camel_case=True)
+
+    def test_delete_schedules(self, mock_function_schedules_delete_response):
+        res = FUNCTION_SCHEDULES_API.delete(id=8012683333564363)
+        assert None == res
 
 
 class TestFunctionCallsAPI:
