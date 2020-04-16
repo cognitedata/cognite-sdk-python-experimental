@@ -1,10 +1,10 @@
 import copy
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from cognite.client.data_classes._base import *
+from cognite.client.utils._auxiliary import to_snake_case
 
 
-# GenClass: relationshipResponse, relationship
 class Relationship(CogniteResource):
     """Representation of a relationship in CDF, consists of a source and a target and some additional parameters.
 
@@ -144,6 +144,68 @@ class RelationshipFilter(CogniteFilter):
     # GenStop
 
 
+# GenClass: graphQueryResponseItem
+class GraphQueryResponse(CogniteResource):
+    """No description.
+
+    Args:
+        value (Union[int, bool, Dict[str, Any], float]): No description.
+        type (str): No description.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(self, value: Union[int, bool, Dict[str, Any], float] = None, type: str = None, cognite_client=None):
+        self.value = value
+        self.type = type
+        self._cognite_client = cognite_client
+
+    # GenStop
+
+
+# GenClass: resourceProperty
+class RelationshipResourceProperty(CogniteResource):
+    """No description.
+
+    Args:
+        key (str): No description.
+        value (Union[bool, str, float]): No description.
+        resource (Dict[str, Any]): No description.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(
+        self,
+        key: str = None,
+        value: Union[bool, str, float] = None,
+        resource: Dict[str, Any] = None,
+        cognite_client=None,
+    ):
+        self.key = key
+        self.value = value
+        self.resource = resource
+        self._cognite_client = cognite_client
+
+    # GenStop
+
+
+# GenClass: resourceReferenceWithExternalId
+class RelationshipResource(CogniteResource):
+    """No description.
+
+    Args:
+        resource (str): No description.
+        resource_id (str): Disallowing leading and trailing whitespaces. Case sensitive. The external Id must be unique within the project.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(self, resource: str = None, resource_id: str = None, cognite_client=None):
+        self.resource = resource
+        self.resource_id = resource_id
+        self._cognite_client = cognite_client
+
+    # GenStop
+
+
 class RelationshipUpdate(CogniteUpdate):
     pass
 
@@ -151,3 +213,69 @@ class RelationshipUpdate(CogniteUpdate):
 class RelationshipList(CogniteResourceList):
     _RESOURCE = Relationship
     _UPDATE = RelationshipUpdate
+
+
+class RelationshipResourceList(CogniteResourceList):
+    _RESOURCE = RelationshipResource
+    _ASSERT_CLASSES = False
+
+    def assets(self, ignore_unkown_ids=False):
+        return self._cognite_client.assets.retrieve_multiple(
+            external_ids=[r.resource_id for r in self if r.resource == "asset"], ignore_unkown_ids=ignore_unkown_ids
+        )
+
+    def time_series(self, ignore_unkown_ids=False):
+        return self._cognite_client.time_series.retrieve_multiple(
+            external_ids=[r.resource_id for r in self if to_snake_case(r.resource) == "time_series"],
+            ignore_unkown_ids=ignore_unkown_ids,
+        )
+
+    def events(self, ignore_unkown_ids=False):
+        return self._cognite_client.events.retrieve_multiple(
+            external_ids=[r.resource_id for r in self if r.resource == "event"], ignore_unkown_ids=ignore_unkown_ids
+        )
+
+
+class ResourcePropertyList(CogniteResourceList):
+    _RESOURCE = RelationshipResourceProperty
+    _ASSERT_CLASSES = False
+
+
+class GraphQueryResponseList(CogniteResourceList):
+    _RESOURCE = GraphQueryResponse
+    _ASSERT_CLASSES = False
+
+    def resources(self) -> RelationshipResourceList:
+        return RelationshipResourceList(
+            [
+                RelationshipResource(**r.value, cognite_client=self._cognite_client)
+                for r in self
+                if r.type == "resource"
+            ],
+            cognite_client=self._cognite_client,
+        )
+
+    def relationships(self) -> RelationshipList:
+        return RelationshipList(
+            [Relationship(**r.value, cognite_client=self._cognite_client) for r in self if r.type == "relationship"],
+            cognite_client=self._cognite_client,
+        )
+
+    def resource_properties(self) -> ResourcePropertyList:
+        return ResourcePropertyList(
+            [
+                RelationshipResourceProperty(**r.value, cognite_client=self._cognite_client)
+                for r in self
+                if r.type == "resource_property"
+            ],
+            cognite_client=self._cognite_client,
+        )
+
+    def integers(self) -> List[int]:
+        return [r.value for r in self if r.type == "integer" or r.type == "long"]
+
+    def floats(self) -> List[float]:
+        return [r.value for r in self if r.type == "double"]
+
+    def booleans(self) -> List[bool]:
+        return [r.value for r in self if r.type == "boolean"]

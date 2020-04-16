@@ -1,9 +1,7 @@
-import copy
-from typing import Any, Dict, Generator, List, Optional, Set, Union
+from typing import Dict, List
 
-from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import Relationship, RelationshipFilter, RelationshipList
+from cognite.experimental.data_classes import *
 
 
 class RelationshipsAPI(APIClient):
@@ -30,7 +28,7 @@ class RelationshipsAPI(APIClient):
         data_set: Optional[Union[str, List[str]]] = None,
         relationship_type: Optional[Union[str, List[str]]] = None,
         active_at_time: int = None,
-    ):
+    ) -> Dict[str, Any]:
         if sources and (source_resource or source_resource_id):
             raise ValueError("Can not set both sources and source_resource/source_resource_id.")
         if targets and (target_resource_id or target_resource):
@@ -334,7 +332,7 @@ class RelationshipsAPI(APIClient):
         return self._create_multiple(items=relationship)
 
     def delete(self, external_id: Union[str, List[str]]) -> None:
-        """Delete one or more relationships
+        """balleDelete one or more relationships
 
         Args:
             external_id (Union[str, List[str]]): External ID or list of external ids
@@ -351,3 +349,69 @@ class RelationshipsAPI(APIClient):
                 >>> c.relationships.delete(external_id=["a","b"])
         """
         self._delete_multiple(external_ids=external_id, wrap_ids=True)
+
+    def graph_query(
+        self,
+        query: str,
+        source_resource: str = None,
+        source_resource_id: str = None,
+        sources: List[Dict[str, Any]] = None,
+        target_resource: str = None,
+        target_resource_id: str = None,
+        targets: List[Dict[str, Any]] = None,
+        start_time: Dict[str, Any] = None,
+        end_time: Dict[str, Any] = None,
+        confidence: Dict[str, Any] = None,
+        last_updated_time: Dict[str, Any] = None,
+        created_time: Dict[str, Any] = None,
+        data_set: Optional[Union[str, List[str]]] = None,
+        relationship_type: Optional[Union[str, List[str]]] = None,
+        active_at_time: int = None,
+    ):
+        graph_query_path = "/restrictedGraphQuery"
+        filter = self._create_filter(
+            source_resource=source_resource,
+            source_resource_id=source_resource_id,
+            sources=sources,
+            target_resource=target_resource,
+            target_resource_id=target_resource_id,
+            targets=targets,
+            start_time=start_time,
+            end_time=end_time,
+            confidence=confidence,
+            last_updated_time=last_updated_time,
+            created_time=created_time,
+            data_set=data_set,
+            relationship_type=relationship_type,
+            active_at_time=active_at_time,
+        )
+        payload = {"filter": filter, "query": query}
+        response = self._post(graph_query_path, payload).json()
+
+        # Convert resourceId to resource_id etc in the keys
+        def recursively_convert_all_keys_to_snake_case(d):
+            if isinstance(d, dict):
+                new_d = {}
+                for k, v in d.items():
+                    if isinstance(v, dict):
+                        new_d[to_snake_case(k)] = recursively_convert_all_keys_to_snake_case(v)
+                    elif isinstance(v, list):
+                        new_d[to_snake_case(k)] = [recursively_convert_all_keys_to_snake_case(val) for val in v]
+                    else:
+                        new_d[to_snake_case(k)] = v
+                return new_d
+            else:
+                return d
+
+        response = recursively_convert_all_keys_to_snake_case(response)["items"]
+        # Some values describe type information such as a resourceProperty or a timeSeries. Convert these to snake case as well
+        for item in response:
+            item["type"] = to_snake_case(item["type"])
+            if item["type"] == "resource":
+                item["value"]["resource"] = to_snake_case(item["value"]["resource"])
+            elif item["type"] == "resource_property":
+                item["value"]["resource"]["resource"] = to_snake_case(item["value"]["resource"]["resource"])
+        return GraphQueryResponseList(
+            [GraphQueryResponse(**rr, cognite_client=self._cognite_client) for rr in response],
+            cognite_client=self._cognite_client,
+        )
