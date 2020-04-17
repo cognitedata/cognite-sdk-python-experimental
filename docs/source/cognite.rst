@@ -17,6 +17,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.entity_extraction: `Extract Entities from Files`_
 * client.pnid_parsing: `Parse PNID`_
 * client.resource_typing: `Fit Resource Typing Model`_
+* client.functions: `Functions`_
 
 
 CogniteClient
@@ -387,6 +388,20 @@ Retrieve function call
 Retrieve function call logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_logs
+
+Function schedules
+^^^^^^^^^^^^^^^^^^
+List function schedules
+^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.list
+
+Create function schedule
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.create
+
+Delete function schedule
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.delete
 
 Data classes
 ^^^^^^^^^^^^

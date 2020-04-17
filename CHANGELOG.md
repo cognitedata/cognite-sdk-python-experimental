@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.5.3] - 2020-04-16
+
+### Added
+- Sphinx documentation for Cognite Functions
+
 ## [0.5.2] - 2020-04-16
 
 ### Added
