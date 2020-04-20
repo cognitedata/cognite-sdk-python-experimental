@@ -2,6 +2,7 @@ import re
 
 import pytest
 
+from cognite.client.data_classes import Asset, TimeSeries
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
@@ -16,6 +17,18 @@ def mock_fit(rsps):
     response_body = {"modelId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fit", status=200, json=response_body
+    )
+    yield rsps
+
+
+@pytest.fixture
+def mock_fit_ml(rsps):
+    response_body = {"modelId": 123, "status": "Queued"}
+    rsps.add(
+        rsps.POST,
+        EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fitml",
+        status=200,
+        json=response_body,
     )
     yield rsps
 
@@ -89,6 +102,44 @@ class TestEntityMatching:
                 assert "/123" in call.request.url
         assert 1 == n_fit_calls
         assert 1 == n_status_calls
+
+    def test_ml_fit(self, mock_fit_ml, mock_status_ok):
+        entities_from = [{"id": 1, "name": "xx"}]
+        entities_to = [{"id": 2, "name": "yy"}]
+        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        assert isinstance(model, EntityMatchingModel)
+        assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
+        model.wait_for_completion()
+        assert "Completed" == model.status
+        assert 123 == model.model_id
+
+        n_fit_calls = 0
+        n_status_calls = 0
+        for call in mock_fit_ml.calls:
+            if "fit" in call.request.url:
+                n_fit_calls += 1
+                assert {
+                    "matchFrom": entities_from,
+                    "matchTo": entities_to,
+                    "trueMatches": [[1, 2]],
+                    "modelType": "foo",
+                } == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/123" in call.request.url
+        assert 1 == n_fit_calls
+        assert 1 == n_status_calls
+
+    def test_ml_fit_cognite_resource(self, mock_fit_ml):
+        entities_from = [TimeSeries(id=1, name="x")]
+        entities_to = [Asset(id=1, name="x")]
+        EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        assert {
+            "matchFrom": [entities_from[0].dump()],
+            "matchTo": [entities_to[0].dump()],
+            "trueMatches": [[1, 2]],
+            "modelType": "foo",
+        } == jsgz_load(mock_fit_ml.calls[0].request.body)
 
     def test_fit_fails(self, mock_fit, mock_status_failed):
         model = EMAPI.fit(["a", "b"])
