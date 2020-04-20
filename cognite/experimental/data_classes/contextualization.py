@@ -132,7 +132,12 @@ class EntityMatchingModel(ContextualizationModel):
 
     @staticmethod
     def dump_entities(entities: List[Union[Dict, CogniteResource]]):
-        return [e.dump(camel_case=True) if isinstance(e, CogniteResource) else e for e in entities]
+        return [
+            {k: v for k, v in e.dump(camel_case=True).items() if isinstance(v, str) or k == "id"}
+            if isinstance(e, CogniteResource)
+            else e
+            for e in entities
+        ]
 
 
 class TypingPredictData(TypedDict):
