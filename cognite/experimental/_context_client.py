@@ -6,7 +6,13 @@ from requests import Response
 
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import to_camel_case, to_snake_case
-from cognite.experimental.data_classes import ContextualizationJob, ContextualizationModel, ContextualizationModelList
+from cognite.experimental.data_classes import (
+    ContextualizationJob,
+    ContextualizationModel,
+    ContextualizationModelList,
+    EntityMatchingModel,
+    ResourceTypingModel,
+)
 
 
 class ContextAPI(APIClient):
@@ -16,7 +22,7 @@ class ContextAPI(APIClient):
         json: Dict[str, Any] = None,
         params: Dict[str, Any] = None,
         headers: Dict[str, Any] = None,
-    ) -> Dict:
+    ) -> Response:
         return self._post(
             self._RESOURCE_PATH + context_path,
             json={to_camel_case(k): v for k, v in (json or {}).items() if v is not None},
@@ -24,7 +30,7 @@ class ContextAPI(APIClient):
             headers=headers,
         )
 
-    def _camel_get(self, context_path: str, params: Dict[str, Any] = None, headers: Dict[str, Any] = None) -> Dict:
+    def _camel_get(self, context_path: str, params: Dict[str, Any] = None, headers: Dict[str, Any] = None) -> Response:
         return self._get(
             self._RESOURCE_PATH + context_path,
             params={to_camel_case(k): v for k, v in (params or {}).items() if v is not None},
@@ -44,7 +50,9 @@ class ContextAPI(APIClient):
 class ContextModelAPI(ContextAPI):
     _MODEL_CLASS = ContextualizationModel
 
-    def _fit_model(self, model_path="/fit", status_path=None, headers=None, **kwargs) -> ContextualizationModel:
+    def _fit_model(
+        self, model_path="/fit", status_path=None, headers=None, **kwargs
+    ) -> Union[EntityMatchingModel, ResourceTypingModel]:
         if status_path is None:
             status_path = self._RESOURCE_PATH + "/"
         response = self._camel_post(model_path, json=kwargs, headers=headers)

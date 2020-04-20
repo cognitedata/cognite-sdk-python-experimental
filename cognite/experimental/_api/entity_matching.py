@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from cognite.experimental._context_client import ContextModelAPI
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
@@ -17,6 +17,27 @@ class EntityMatchingAPI(ContextModelAPI):
         Returns:
             EntityMatchingModel: Resulting queued model."""
         return super()._fit_model(items=list(items))
+
+    def fit_ml(
+        self, match_from: List[Dict], match_to: List[Dict], true_matches: List[Tuple[int, int]], model_type=None
+    ) -> EntityMatchingModel:
+        """Fit entity matching model with machine learning methods.
+
+        Args:
+            match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
+            match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
+            true_matches: Known valid matches given as a list of (id_from,id_to)
+            model_type: model type that defines features and methods used, see API docs for details.
+
+        Returns:
+            EntityMatchingModel: Resulting queued model."""
+        return super()._fit_model(
+            model_path="/fitml",
+            match_from=list(match_from),
+            match_to=list(match_to),
+            true_matches=list(true_matches),
+            model_type=model_type,
+        )
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
