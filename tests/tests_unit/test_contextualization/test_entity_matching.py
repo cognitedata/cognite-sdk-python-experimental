@@ -2,6 +2,7 @@ import re
 
 import pytest
 
+from cognite.client.data_classes import Asset, TimeSeries
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
@@ -128,6 +129,17 @@ class TestEntityMatching:
                 assert "/123" in call.request.url
         assert 1 == n_fit_calls
         assert 1 == n_status_calls
+
+    def test_ml_fit_cognite_resource(self, mock_fit_ml):
+        entities_from = [TimeSeries(id=1, name="x")]
+        entities_to = [Asset(id=1, name="x")]
+        EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        assert {
+            "matchFrom": [entities_from[0].dump()],
+            "matchTo": [entities_to[0].dump()],
+            "trueMatches": [[1, 2]],
+            "modelType": "foo",
+        } == jsgz_load(mock_fit_ml.calls[0].request.body)
 
     def test_fit_fails(self, mock_fit, mock_status_failed):
         model = EMAPI.fit(["a", "b"])

@@ -124,8 +124,15 @@ class EntityMatchingModel(ContextualizationModel):
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/predictml", match_from=match_from, match_to=match_to, model_id=self.model_id
+            job_path=f"/predictml",
+            match_from=self.dump_entities(match_from),
+            match_to=self.dump_entities(match_to),
+            model_id=self.model_id,
         )
+
+    @staticmethod
+    def dump_entities(entities: List[Union[Dict, CogniteResource]]):
+        return [e.dump(camel_case=True) if isinstance(e, CogniteResource) else e for e in entities]
 
 
 class TypingPredictData(TypedDict):

@@ -1,5 +1,6 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
+from cognite.client.data_classes._base import CogniteResource
 from cognite.experimental._context_client import ContextModelAPI
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
 
@@ -19,7 +20,11 @@ class EntityMatchingAPI(ContextModelAPI):
         return super()._fit_model(items=list(items))
 
     def fit_ml(
-        self, match_from: List[Dict], match_to: List[Dict], true_matches: List[Tuple[int, int]], model_type=None
+        self,
+        match_from: List[Union[Dict, CogniteResource]],
+        match_to: List[Union[Dict, CogniteResource]],
+        true_matches: List[Tuple[int, int]],
+        model_type=None,
     ) -> EntityMatchingModel:
         """Fit entity matching model with machine learning methods.
 
@@ -33,8 +38,8 @@ class EntityMatchingAPI(ContextModelAPI):
             EntityMatchingModel: Resulting queued model."""
         return super()._fit_model(
             model_path="/fitml",
-            match_from=list(match_from),
-            match_to=list(match_to),
+            match_from=EntityMatchingModel.dump_entities(match_from),
+            match_to=EntityMatchingModel.dump_entities(match_to),
             true_matches=list(true_matches),
             model_type=model_type,
         )
