@@ -12,7 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.5.5] - 2020-04-21
+
+### Changed
+- Data class `Function` now has the additional attribute `error`.
+
 ## [0.5.4] - 2020-04-20
+
 ### Added
 - fit_ml function on entity matcher and predict_ml on model object.
 
