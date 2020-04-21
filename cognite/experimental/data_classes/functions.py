@@ -17,7 +17,7 @@ class Function(CogniteResource):
         created_time (int): Created time in UNIX.
         api_key (str): Api key attached to the function.
         secrets (Dict[str, str]): Secrets attached to the function ((key, value) pairs).
-        error(Dict[str, str]): Dictionary with keys "error_message" and "trace", which is populated if deployment fails.
+        error(Dict[str, str]): Dictionary with keys "message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
 
