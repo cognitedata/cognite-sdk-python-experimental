@@ -17,6 +17,7 @@ class Function(CogniteResource):
         created_time (int): Created time in UNIX.
         api_key (str): Api key attached to the function.
         secrets (Dict[str, str]): Secrets attached to the function ((key, value) pairs).
+        error(Dict[str, str]): Dictionary with keys "error_message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
 
@@ -32,6 +33,7 @@ class Function(CogniteResource):
         created_time: int = None,
         api_key: str = None,
         secrets: Dict = None,
+        error: Dict = None,
         cognite_client=None,
     ):
         self.id = id
@@ -44,6 +46,7 @@ class Function(CogniteResource):
         self.created_time = created_time
         self.api_key = api_key
         self.secrets = secrets
+        self.error = error
         self._cognite_client = cognite_client
 
     def call(self, data=None, asynchronous: bool = False):
