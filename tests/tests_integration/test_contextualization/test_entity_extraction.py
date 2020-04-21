@@ -9,6 +9,7 @@ EEAPI = COGNITE_CLIENT.entity_extraction
 
 
 class TestEntityExtractionIntegration:
+    @pytest.mark.skip("entity extraction is super unstable")
     def test_run_fails(self):
         job = EEAPI.extract([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
