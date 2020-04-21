@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.5.4] - 2020-04-21
+
+### Changed
+- Data class `Function` now has the additional attribute `error`.
+
 ## [0.5.3] - 2020-04-16
 
 ### Added
