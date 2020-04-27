@@ -284,16 +284,16 @@ class FunctionsAPI(APIClient):
                 + " were given."
             )
 
-    @staticmethod
-    def validate_handler_file(target_directory):
-        sys.path.append(target_directory)
-        import handler
 
-        if "handle" not in handler.__dir__():
-            raise TypeError(f"'handler.py' must contain a function named 'handle'.")
+def validate_handler_file(target_directory):
+    sys.path.append(target_directory)
+    import handler
 
-        _validate_function_handle(handler.handle)
-        sys.path.remove(target_directory)
+    if "handle" not in handler.__dir__():
+        raise TypeError(f"'handler.py' must contain a function named 'handle'.")
+
+    _validate_function_handle(handler.handle)
+    sys.path.remove(target_directory)
 
 
 def _validate_function_handle(function_handle):
