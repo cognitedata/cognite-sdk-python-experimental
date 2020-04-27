@@ -35,7 +35,13 @@ def mock_fit_ml(rsps):
 
 @pytest.fixture
 def mock_status_ok(rsps):
-    response_body = {"modelId": 123, "status": "Completed"}
+    response_body = {
+        "modelId": 123,
+        "status": "Completed",
+        "requestTimestamp": 123,
+        "statusTimestamp": 456,
+        "startTimestamp": 789,
+    }
     rsps.add(
         rsps.GET,
         re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/\\d+"),
@@ -112,6 +118,9 @@ class TestEntityMatching:
         model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.model_id
+        assert 123 == model.request_timestamp
+        assert 456 == model.status_timestamp
+        assert 789 == model.start_timestamp
 
         n_fit_calls = 0
         n_status_calls = 0
