@@ -1,4 +1,5 @@
 import os
+import sys
 from inspect import getsource
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, Dict, List, Optional, Union
@@ -79,7 +80,7 @@ class FunctionsAPI(APIClient):
         if folder:
             file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
-            self._validate_function_handle(function_handle)
+            _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
 
         url = "/functions"
@@ -284,15 +285,26 @@ class FunctionsAPI(APIClient):
             )
 
     @staticmethod
-    def _validate_function_handle(function_handle):
-        if not function_handle.__code__.co_name == "handle":
-            raise TypeError("Function referenced by function_handle must be named handle.")
-        if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
-            set(["data", "client", "secrets"])
-        ):
-            raise TypeError(
-                "Arguments to function referenced by function_handle must be a subset of (data, client, secrets)"
-            )
+    def validate_handler_file(target_directory):
+        sys.path.append(target_directory)
+        import handler
+
+        if "handle" not in handler.__dir__():
+            raise TypeError(f"'handler.py' must contain a function named 'handle'.")
+
+        _validate_function_handle(handler.handle)
+        sys.path.remove(target_directory)
+
+
+def _validate_function_handle(function_handle):
+    if not function_handle.__code__.co_name == "handle":
+        raise TypeError("Function referenced by function_handle must be named handle.")
+    if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
+        set(["data", "client", "secrets"])
+    ):
+        raise TypeError(
+            "Arguments to function referenced by function_handle must be a subset of (data, client, secrets)"
+        )
 
 
 class FunctionCallsAPI(APIClient):
