@@ -17,6 +17,8 @@ from cognite.experimental.data_classes import (
     FunctionSchedulesList,
 )
 
+HANDLER_FILE_NAME = "handler.py"
+
 
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
@@ -78,6 +80,7 @@ class FunctionsAPI(APIClient):
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
         if folder:
+            validate_handler_file(os.path.join(folder, HANDLER_FILE_NAME))
             file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
             _validate_function_handle(function_handle)
@@ -257,14 +260,14 @@ class FunctionsAPI(APIClient):
 
     def _zip_and_upload_handle(self, function_handle, name) -> int:
         with TemporaryDirectory() as tmpdir:
-            handle_path = os.path.join(tmpdir, "handler.py")
+            handle_path = os.path.join(tmpdir, HANDLER_FILE_NAME)
             with open(handle_path, "w") as f:
                 source = getsource(function_handle)
                 f.write(source)
 
             zip_path = os.path.join(tmpdir, "function.zip")
             zf = ZipFile(zip_path, "w")
-            zf.write(handle_path, arcname="handler.py")
+            zf.write(handle_path, arcname=HANDLER_FILE_NAME)
             zf.close()
 
             file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
@@ -290,7 +293,7 @@ def validate_handler_file(path_to_handler_file):
     import handler
 
     if "handle" not in handler.__dir__():
-        raise TypeError(f"'handler.py' must contain a function named 'handle'.")
+        raise TypeError(f"{HANDLER_FILE_NAME} must contain a function named 'handle'.")
 
     _validate_function_handle(handler.handle)
     sys.path.remove(path_to_handler_file)
