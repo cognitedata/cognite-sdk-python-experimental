@@ -80,7 +80,7 @@ class FunctionsAPI(APIClient):
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
         if folder:
-            validate_handler_folder(folder)
+            validate_function_folder(folder)
             file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
             _validate_function_handle(function_handle)
