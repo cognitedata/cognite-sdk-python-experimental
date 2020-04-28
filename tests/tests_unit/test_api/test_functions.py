@@ -3,6 +3,7 @@ import os
 import pytest
 
 from cognite.experimental import CogniteClient
+from cognite.experimental._api.functions import validate_handler_file
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -161,6 +162,11 @@ def function_handle_illegal_argument():
         pass
 
     return handle
+
+
+def test_validate_handler_file():
+    folder = os.path.join(os.path.dirname(__file__), "function_code")
+    validate_handler_file(folder)
 
 
 class TestFunctionsAPI:

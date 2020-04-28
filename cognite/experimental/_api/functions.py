@@ -288,15 +288,18 @@ class FunctionsAPI(APIClient):
             )
 
 
-def validate_handler_file(path_to_handler_file):
-    sys.path.append(path_to_handler_file)
+def validate_handler_file(folder_with_handler_file):
+    sys.path.append(folder_with_handler_file)
+    if HANDLER_FILE_NAME not in os.listdir(folder_with_handler_file):
+        raise TypeError(f"Function folder must contain a module named {HANDLER_FILE_NAME}.")
+
     import handler
 
     if "handle" not in handler.__dir__():
         raise TypeError(f"{HANDLER_FILE_NAME} must contain a function named 'handle'.")
 
     _validate_function_handle(handler.handle)
-    sys.path.remove(path_to_handler_file)
+    sys.path.remove(folder_with_handler_file)
 
 
 def _validate_function_handle(function_handle):
