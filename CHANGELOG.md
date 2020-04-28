@@ -17,6 +17,9 @@ Changes are grouped as follows
 ### Added
 - Data classes for contextualization models and job now include time stamps for request_timestamp, start_timestamp, status_timestamp.
 
+### Fixed
+- Function schedules can be created without using the `data` argument.
+
 
 ## [0.5.5] - 2020-04-21
 
