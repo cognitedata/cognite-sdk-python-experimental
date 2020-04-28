@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.5.5] - 2020-04-27
+## [0.5.6] - 2020-04-28
 
 ### Added
 - Added checks that verifies that the function handler in an uploaded funtions is correctly constructed.
