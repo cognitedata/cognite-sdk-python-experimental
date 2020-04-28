@@ -22,8 +22,5 @@ if __name__ == "__main__":
         for file in files:
             file_path = os.path.join(root, file)
             if file_path.endswith(".py"):
-                try:
-                    print("* Generating playground code in {}".format(file_path))
-                    codegen_playground.generate(file_path, file_path)
-                except Exception as e:
-                    print(f"Failed generating code: {e}")
+                print("* Generating playground code in {}".format(file_path))
+                codegen_playground.generate(file_path, file_path)
