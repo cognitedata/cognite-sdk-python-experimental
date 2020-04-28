@@ -80,7 +80,7 @@ class FunctionsAPI(APIClient):
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
         if folder:
-            validate_handler_file(folder)
+            validate_handler_folder(folder)
             file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
             _validate_function_handle(function_handle)
@@ -288,9 +288,9 @@ class FunctionsAPI(APIClient):
             )
 
 
-def validate_handler_file(folder_with_handler_file):
-    sys.path.append(folder_with_handler_file)
-    if HANDLER_FILE_NAME not in os.listdir(folder_with_handler_file):
+def validate_function_folder(path):
+    sys.path.append(path)
+    if HANDLER_FILE_NAME not in os.listdir(path):
         raise TypeError(f"Function folder must contain a module named {HANDLER_FILE_NAME}.")
 
     import handler
@@ -299,7 +299,7 @@ def validate_handler_file(folder_with_handler_file):
         raise TypeError(f"{HANDLER_FILE_NAME} must contain a function named 'handle'.")
 
     _validate_function_handle(handler.handle)
-    sys.path.remove(folder_with_handler_file)
+    sys.path.remove(path)
 
 
 def _validate_function_handle(function_handle):
