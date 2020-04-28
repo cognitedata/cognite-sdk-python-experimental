@@ -285,15 +285,15 @@ class FunctionsAPI(APIClient):
             )
 
 
-def validate_handler_file(target_directory):
-    sys.path.append(target_directory)
+def validate_handler_file(path_to_handler_file):
+    sys.path.append(path_to_handler_file)
     import handler
 
     if "handle" not in handler.__dir__():
         raise TypeError(f"'handler.py' must contain a function named 'handle'.")
 
     _validate_function_handle(handler.handle)
-    sys.path.remove(target_directory)
+    sys.path.remove(path_to_handler_file)
 
 
 def _validate_function_handle(function_handle):
