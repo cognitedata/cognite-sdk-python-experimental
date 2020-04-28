@@ -36,6 +36,6 @@ class TestEntityMatchingIntegration:
         assert "Completed" == model.status
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"matchFrom", "matchTo", "score"} == set(job.result["items"][0].keys())
+        assert {"matchFrom", "matches"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
         EMAPI.delete(model)
