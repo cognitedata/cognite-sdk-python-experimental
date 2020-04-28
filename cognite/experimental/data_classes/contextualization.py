@@ -11,18 +11,36 @@ from cognite.experimental.exceptions import ModelFailedException
 
 
 class ContextualizationJob(CogniteResource):
-    def __init__(self, job_id=None, status=None, error_message=None, status_path=None, cognite_client=None, **kwargs):
+    def __init__(
+        self,
+        job_id=None,
+        status=None,
+        error_message=None,
+        request_timestamp=None,
+        start_timestamp=None,
+        status_timestamp=None,
+        status_path=None,
+        cognite_client=None,
+        **kwargs,
+    ):
         """Data class for the result of a contextualization job. All keys in the body become snake-cased variables in the class (e.g. `items`, `svg_url`)"""
         self.job_id = job_id
         self.status = status
+        self.request_timestamp = request_timestamp
+        self.start_timestamp = start_timestamp
+        self.status_timestamp = status_timestamp
         self.error_message = error_message
         self._cognite_client = cognite_client
         self._result = None
+        self._status_path = status_path
 
     def update_status(self) -> str:
         """Updates the model status and returns it"""
-        data = self._cognite_client.entity_matching._get(f"{self.status_path}{self.job_id}").json()  # any playground
+        data = self._cognite_client.entity_matching._get(f"{self._status_path}{self.job_id}").json()  # any playground
         self.status = data["status"]
+        self.status_timestamp = data.get("statusTimestamp")
+        self.start_timestamp = data.get("startTimestamp")
+        self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
         self.error_message = data.get("errorMessage")
         self._result = {k: v for k, v in data.items() if k not in {"status", "jobId", "errorMessage"}}
         return self.status
@@ -55,7 +73,7 @@ class ContextualizationJob(CogniteResource):
     @staticmethod
     def _load_with_status(data, status_path, cognite_client):
         obj = ContextualizationJob._load(data, cognite_client=cognite_client)
-        obj.status_path = status_path
+        obj._status_path = status_path
         return obj
 
 
@@ -64,9 +82,21 @@ class ContextualizationModel(CogniteResource):
 
     _STATUS_PATH = None
 
-    def __init__(self, model_id=None, status=None, error_message=None, cognite_client=None):
+    def __init__(
+        self,
+        model_id=None,
+        status=None,
+        error_message=None,
+        request_timestamp=None,
+        start_timestamp=None,
+        status_timestamp=None,
+        cognite_client=None,
+    ):
         self.model_id = model_id
         self.status = status
+        self.request_timestamp = request_timestamp
+        self.start_timestamp = start_timestamp
+        self.status_timestamp = status_timestamp
         self.error_message = error_message
         self._cognite_client = cognite_client
 
@@ -78,13 +108,13 @@ class ContextualizationModel(CogniteResource):
             self.error_message,
         )
 
-    def predict(self, asynchronous=False, **kwargs):
-        raise NotImplementedError(f"Predict not implemented for {self.__class__}")
-
     def update_status(self) -> str:
         """Updates the model status and returns it"""
         data = self._cognite_client.entity_matching._get(f"{self._STATUS_PATH}{self.model_id}").json()
         self.status = data["status"]
+        self.status_timestamp = data.get("statusTimestamp")
+        self.start_timestamp = data.get("startTimestamp")
+        self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
         self.error_message = data.get("errorMessage")
         return self.status
 
@@ -155,9 +185,9 @@ class ResourceTypingModel(ContextualizationModel):
 
     @staticmethod
     def format_items(
-        items: List[Union[TypingFitData, TypingPredictData]]
+        items: Iterable[Union[TypingFitData, TypingPredictData]]
     ) -> List[Union[TypingFitData, TypingPredictData]]:
-        items = copy.deepcopy(items)
+        items = copy.deepcopy(list(items))
         for item in items:
             item["data"] = ["" if isinstance(x, float) and math.isnan(x) else x for x in item["data"]]
         return items

@@ -14,7 +14,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 @pytest.fixture
 def mock_fit(rsps):
-    response_body = {"modelId": 123, "status": "Queued"}
+    response_body = {"modelId": 123, "status": "Queued", "requestTimestamp": 42}
     rsps.add(
         rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fit", status=200, json=response_body
     )
@@ -23,7 +23,7 @@ def mock_fit(rsps):
 
 @pytest.fixture
 def mock_fit_ml(rsps):
-    response_body = {"modelId": 123, "status": "Queued"}
+    response_body = {"modelId": 123, "status": "Queued", "requestTimestamp": 42}
     rsps.add(
         rsps.POST,
         EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fitml",
@@ -35,7 +35,13 @@ def mock_fit_ml(rsps):
 
 @pytest.fixture
 def mock_status_ok(rsps):
-    response_body = {"modelId": 123, "status": "Completed"}
+    response_body = {
+        "modelId": 123,
+        "status": "Completed",
+        "requestTimestamp": 42,
+        "statusTimestamp": 456,
+        "startTimestamp": 789,
+    }
     rsps.add(
         rsps.GET,
         re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/\\d+"),
@@ -87,9 +93,11 @@ class TestEntityMatching:
         model = EMAPI.fit(entities)
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
+        assert 42 == model.request_timestamp
         model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.model_id
+        assert 42 == model.request_timestamp
 
         n_fit_calls = 0
         n_status_calls = 0
@@ -109,9 +117,13 @@ class TestEntityMatching:
         model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
+        assert 42 == model.request_timestamp
         model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.model_id
+        assert 42 == model.request_timestamp
+        assert 456 == model.status_timestamp
+        assert 789 == model.start_timestamp
 
         n_fit_calls = 0
         n_status_calls = 0

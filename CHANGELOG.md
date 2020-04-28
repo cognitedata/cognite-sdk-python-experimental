@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+
+### Added
+- Data classes for contextualization models and job now include time stamps for request_timestamp, start_timestamp, status_timestamp.
+
+
 ## [0.5.5] - 2020-04-21
 
 ### Changed
