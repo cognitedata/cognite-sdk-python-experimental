@@ -15,7 +15,7 @@ Changes are grouped as follows
 ## [0.5.6] - 2020-04-28
 
 ### Added
-- Added checks that verifies that the function handler in an uploaded funtions is correctly constructed.
+- Added checks that verify that the function handler in an uploaded funtion is correctly constructed.
 
 ## [0.5.5] - 2020-04-21
 
