@@ -40,6 +40,7 @@ class ContextualizationJob(CogniteResource):
         self.status = data["status"]
         self.status_timestamp = data.get("statusTimestamp")
         self.start_timestamp = data.get("startTimestamp")
+        self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
         self.error_message = data.get("errorMessage")
         self._result = {k: v for k, v in data.items() if k not in {"status", "jobId", "errorMessage"}}
         return self.status
@@ -113,6 +114,7 @@ class ContextualizationModel(CogniteResource):
         self.status = data["status"]
         self.status_timestamp = data.get("statusTimestamp")
         self.start_timestamp = data.get("startTimestamp")
+        self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
         self.error_message = data.get("errorMessage")
         return self.status
 
