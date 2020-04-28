@@ -13,7 +13,13 @@ class TestListAndIterSignatures:
             (
                 assets.ExperimentalAssetsAPI,
                 assets.AssetFilter,
-                ["root_external_ids", "asset_subtree_external_ids", "aggregated_properties", "partitions"],
+                [
+                    "root_external_ids",
+                    "data_set_external_ids",
+                    "asset_subtree_external_ids",
+                    "aggregated_properties",
+                    "partitions",
+                ],
             ),
             (relationships.RelationshipsAPI, relationships.RelationshipFilter, ["data_sets", "relationship_types"]),
             (types.TypesAPI, types.TypeFilter, []),
