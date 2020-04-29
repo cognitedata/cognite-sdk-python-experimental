@@ -14,6 +14,8 @@ Changes are grouped as follows
 
 ## Unreleased
 
+### Fixed
+- `FunctionSchedulesAPI.create()` works without providing the `data` argument.
 
 ## [0.5.6] - 2020-04-28
 
