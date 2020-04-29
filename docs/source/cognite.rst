@@ -18,6 +18,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.pnid_parsing: `Parse PNID`_
 * client.resource_typing: `Fit Resource Typing Model`_
 * client.functions: `Functions`_
+* client.files: includes extensions described in `Unstructured Search`_
 
 
 CogniteClient
@@ -145,6 +146,18 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.types
     :members:
     :show-inheritance:
+
+Unstructured Search
+-------------------
+
+Search File Contents
+^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.unstructured.GrepAPI.search
+
+Download OCR Results
+^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.unstructured.GrepAPI.download
+
 
 Model Hosting
 -------------

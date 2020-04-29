@@ -151,7 +151,7 @@ class ClassGenerator:
         res = utils.get_type_hint(prop)
         if res == "Dict[str, Any]":
             name = self._spec.components.schemas.rev_get(prop)
-            if name != None and name[-8:] == "Metadata":
+            if name != None and (name == "Metadata3D" or name.endswith("Metadata") or name.endswith("Predicate")):
                 return "Dict[str, str]", False
             if name != None and name == "NodeProperties3D":
                 return "Dict[str, Dict[str, str]]", False
