@@ -18,8 +18,14 @@ class GrepAPI(APIClient):
         self, query: str, highlight: bool = False, filter: Dict = None, aggregates: Dict = None, limit: int = None,
     ) -> UnstructuredSearchResultList:
         """Grep stuff"""
-
-        body = {"filter": filter, "search": {"query": query, "highlight": highlight}, "aggregates": aggregates}
+        if limit == -1 or limit == float("inf"):
+            limit = None
+        body = {
+            "filter": filter,
+            "search": {"query": query, "highlight": highlight},
+            "aggregates": aggregates,
+            "limit": limit,
+        }
         resp = self._post(url_path=self._GREP_RESOURCE_PATH + "/search", json=body)
         data = resp.json()
         items = data["items"]
