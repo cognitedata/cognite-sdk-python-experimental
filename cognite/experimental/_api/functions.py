@@ -466,7 +466,7 @@ class FunctionSchedulesAPI(APIClient):
             ]
         }
         if data:
-            json["items"]["data"] = data
+            json["items"][0]["data"] = data
 
         url = f"/functions/schedules"
         res = self._post(url, json=json)
