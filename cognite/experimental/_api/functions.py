@@ -487,10 +487,12 @@ class FunctionSchedulesAPI(APIClient):
                     "description": description,
                     "functionExternalId": function_external_id,
                     "cronExpression": cron_expression,
-                    "data": data,
                 }
             ]
         }
+        if data:
+            json["items"][0]["data"] = data
+
         url = f"/functions/schedules"
         res = self._post(url, json=json)
         return FunctionSchedule._load(res.json()["items"][0])
