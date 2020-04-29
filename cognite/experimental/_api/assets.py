@@ -122,7 +122,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         utils._auxiliary.assert_type(asset, "asset", [Asset, list])
         return self._create_multiple(asset)
 
-    @use_v1_instead_of_playground
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Asset]:
         """`Retrieve a single asset by id. <https://docs.cognite.com/api/v1/#operation/getAsset>`_
 
@@ -150,7 +149,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    @use_v1_instead_of_playground
     def retrieve_multiple(
         self,
         ids: Optional[List[int]] = None,

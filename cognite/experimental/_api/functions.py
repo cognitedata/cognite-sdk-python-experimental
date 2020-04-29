@@ -1,4 +1,5 @@
 import os
+import sys
 from inspect import getsource
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, Dict, List, Optional, Union
@@ -15,6 +16,8 @@ from cognite.experimental.data_classes import (
     FunctionSchedule,
     FunctionSchedulesList,
 )
+
+HANDLER_FILE_NAME = "handler.py"
 
 
 class FunctionsAPI(APIClient):
@@ -77,9 +80,10 @@ class FunctionsAPI(APIClient):
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
         if folder:
+            validate_function_folder(folder)
             file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
-            self._validate_function_handle(function_handle)
+            _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
 
         url = "/functions"
@@ -256,14 +260,14 @@ class FunctionsAPI(APIClient):
 
     def _zip_and_upload_handle(self, function_handle, name) -> int:
         with TemporaryDirectory() as tmpdir:
-            handle_path = os.path.join(tmpdir, "handler.py")
+            handle_path = os.path.join(tmpdir, HANDLER_FILE_NAME)
             with open(handle_path, "w") as f:
                 source = getsource(function_handle)
                 f.write(source)
 
             zip_path = os.path.join(tmpdir, "function.zip")
             zf = ZipFile(zip_path, "w")
-            zf.write(handle_path, arcname="handler.py")
+            zf.write(handle_path, arcname=HANDLER_FILE_NAME)
             zf.close()
 
             file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
@@ -283,16 +287,37 @@ class FunctionsAPI(APIClient):
                 + " were given."
             )
 
-    @staticmethod
-    def _validate_function_handle(function_handle):
-        if not function_handle.__code__.co_name == "handle":
-            raise TypeError("Function referenced by function_handle must be named handle.")
-        if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
-            set(["data", "client", "secrets"])
-        ):
-            raise TypeError(
-                "Arguments to function referenced by function_handle must be a subset of (data, client, secrets)"
-            )
+
+def validate_function_folder(path):
+    sys.path.insert(0, path)
+    if HANDLER_FILE_NAME not in os.listdir(path):
+        sys.path.remove(path)
+        raise TypeError(f"Function folder must contain a module named {HANDLER_FILE_NAME}.")
+
+    cached_handler_module = sys.modules.get("handler")
+    if cached_handler_module:
+        del sys.modules["handler"]
+    import handler
+
+    if "handle" not in handler.__dir__():
+        sys.path.remove(path)
+        raise TypeError(f"{HANDLER_FILE_NAME} must contain a function named 'handle'.")
+
+    _validate_function_handle(handler.handle)
+    sys.path.remove(path)
+    if cached_handler_module:
+        sys.modules["handler"] = cached_handler_module
+
+
+def _validate_function_handle(function_handle):
+    if not function_handle.__code__.co_name == "handle":
+        raise TypeError("Function referenced by function_handle must be named handle.")
+    if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
+        set(["data", "client", "secrets"])
+    ):
+        raise TypeError(
+            "Arguments to function referenced by function_handle must be a subset of (data, client, secrets)"
+        )
 
 
 class FunctionCallsAPI(APIClient):
@@ -462,10 +487,12 @@ class FunctionSchedulesAPI(APIClient):
                     "description": description,
                     "functionExternalId": function_external_id,
                     "cronExpression": cron_expression,
-                    "data": data,
                 }
             ]
         }
+        if data:
+            json["items"][0]["data"] = data
+
         url = f"/functions/schedules"
         res = self._post(url, json=json)
         return FunctionSchedule._load(res.json()["items"][0])

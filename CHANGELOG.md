@@ -12,14 +12,19 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
 
+## [0.5.7] - 2020-04-30
+- Assets playground API uses playground for retrieve
 
 ## [0.5.6] - 2020-04-28
 
 ### Added
+- Added checks that verify that the function handler in an uploaded function is correctly constructed.
 - Data classes for contextualization models and job now include time stamps for request_timestamp, start_timestamp, status_timestamp.
 - Unstructured search endpoints added in client.files.unstructured.
+
+### Fixed
+- `FunctionSchedulesAPI.create()` works without providing the `data` argument.
 
 ## [0.5.5] - 2020-04-21
 
