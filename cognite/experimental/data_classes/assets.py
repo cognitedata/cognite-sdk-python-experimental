@@ -350,6 +350,7 @@ class AssetFilter(CogniteFilter):
     Args:
         name (str): Name of asset. Often referred to as tag.
         parent_ids (List[int]): Return only the direct descendants of the specified assets.
+        parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
         root_ids (List[Dict[str, Any]]): Only include these root assets and their descendants.
         asset_subtree_ids (List[Dict[str, Any]]): Only include assets in subtrees rooted at the specified assets (including the roots given). If the total size of the given subtrees exceeds 100,000 assets, an error will be returned.
         data_set_ids (List[int]): No description.
@@ -367,6 +368,7 @@ class AssetFilter(CogniteFilter):
         self,
         name: str = None,
         parent_ids: List[int] = None,
+        parent_external_ids: List[str] = None,
         root_ids: List[Dict[str, Any]] = None,
         asset_subtree_ids: List[Dict[str, Any]] = None,
         data_set_ids: List[int] = None,
@@ -381,6 +383,7 @@ class AssetFilter(CogniteFilter):
     ):
         self.name = name
         self.parent_ids = parent_ids
+        self.parent_external_ids = parent_external_ids
         self.root_ids = root_ids
         self.asset_subtree_ids = asset_subtree_ids
         self.data_set_ids = data_set_ids

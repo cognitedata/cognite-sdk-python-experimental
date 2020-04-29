@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List
 
 from cognite.client.data_classes import TimestampRange
@@ -28,7 +29,7 @@ class UnstructuredSearchHighlight(CogniteResource):
 
 
 # GenClass: FilesMetadata
-class UnstructuredFilesMetadata(CogniteResource):
+class UnstructuredFileMetadata(CogniteResource):
     """No description.
 
     Args:
@@ -94,7 +95,7 @@ class UnstructuredFilesMetadata(CogniteResource):
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(UnstructuredFilesMetadata, cls)._load(resource, cognite_client)
+        instance = super(UnstructuredFileMetadata, cls)._load(resource, cognite_client)
         if isinstance(resource, Dict):
             if instance.geolocation is not None:
                 instance.geolocation = GeoShape(**instance.geolocation)
@@ -104,18 +105,31 @@ class UnstructuredFilesMetadata(CogniteResource):
 
 
 class UnstructuredSearchResult(CogniteResource):
-    """Unstructured Search Result
-
-    Args:
-        highlight (Dict[str, Any]): Highlighted snippets from content, name and externalId fields which show where the query matches are.
-        item (Dict[str, str]): No description.
-        cognite_client (CogniteClient): The client to associate with this object.
-    """
-
     def __init__(self, highlight: Dict[str, Any] = None, item: Dict[str, str] = None, cognite_client=None):
-        self.highlight = UnstructuredSearchHighlight._load(highlight, cognite_client=self._cognite_client)
-        self.item = UnstructuredFilesMetadata._load(item, cognite_client=self._cognite_client)
+        """Unstructured Search Result
+
+        Args:
+            item (Dict[str, str]): The search result. Will be converted to a UnstructuredFileMetadata.
+            highlight (Dict[str, Any]): Highlighted snippets from content, name and externalId fields which show where the query matches are. Converted to UnstructuredSearchHighlight.
+            cognite_client (CogniteClient): The client to associate with this object.
+        """
+        self.highlight = None
+        if highlight:
+            self.highlight = UnstructuredSearchHighlight._load(highlight, cognite_client=self._cognite_client)
+        self.item = UnstructuredFileMetadata._load(item, cognite_client=self._cognite_client)
         self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        if isinstance(resource, str):
+            resource = json.loads(resource)
+        return cls(item=resource["item"], highlight=resource.get("highlight"), cognite_client=cognite_client)
+
+    def dump(self, camel_case: bool = False) -> Dict[str, Any]:
+        itemdump = self.item.dump(camel_case=camel_case)
+        if self.highlight:
+            itemdump["highlight"] = self.highlight.dump(camel_case=camel_case)
+        return itemdump
 
 
 # GenClass: UnstructuredAggregateResult
@@ -142,8 +156,8 @@ class UnstructuredSearchHighlightList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
 
-class UnstructuredFilesMetadataList(CogniteResourceList):
-    _RESOURCE = UnstructuredFilesMetadata
+class UnstructuredFileMetadataList(CogniteResourceList):
+    _RESOURCE = UnstructuredFileMetadata
     _UPDATE = None
     _ASSERT_CLASSES = False
 
@@ -170,7 +184,7 @@ class UnstructuredSearchResultList(CogniteResourceList):
 
     @property
     def files(self):
-        return UnstructuredFilesMetadataList([res.item for res in self], cognite_client=self._cognite_client)
+        return UnstructuredFileMetadataList([res.item for res in self], cognite_client=self._cognite_client)
 
     @property
     def highlights(self):
