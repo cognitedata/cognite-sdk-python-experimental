@@ -3,6 +3,7 @@ import os
 import pytest
 
 from cognite.experimental import CogniteClient
+from cognite.experimental._api.functions import validate_function_folder
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -164,6 +165,18 @@ def function_handle_illegal_argument():
 
 
 class TestFunctionsAPI:
+    @pytest.mark.parametrize(
+        "function_folder, will_pass",
+        [("function_code", True), ("bad_function_code", False), ("bad_function_code2", False)],
+    )
+    def test_validate_folder(self, function_folder, will_pass):
+        folder = os.path.join(os.path.dirname(__file__), function_folder)
+        if will_pass:
+            validate_function_folder(folder)
+        else:
+            with pytest.raises(TypeError):
+                validate_function_folder(folder)
+
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
         res = FUNCTIONS_API.create(name="myfunction", folder=folder)
