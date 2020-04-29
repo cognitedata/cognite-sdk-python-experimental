@@ -151,11 +151,11 @@ Unstructured Search
 -------------------
 
 Search File Contents
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.unstructured.GrepAPI.search
 
 Download OCR Results
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.unstructured.GrepAPI.download
 
 
