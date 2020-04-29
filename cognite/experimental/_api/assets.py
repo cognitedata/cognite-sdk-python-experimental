@@ -20,11 +20,14 @@ class ExperimentalAssetsAPI(AssetsAPI):
         chunk_size: int = None,
         name: str = None,
         parent_ids: List[int] = None,
+        parent_external_ids: List[str] = None,
         root_ids: List[int] = None,
         root_external_ids: List[str] = None,
         asset_subtree_ids: List[int] = None,
         asset_subtree_external_ids: List[str] = None,
         metadata: Dict[str, str] = None,
+        data_set_ids: List[int] = None,
+        data_set_external_ids: List[str] = None,
         source: str = None,
         created_time: Union[Dict[str, Any], TimestampRange] = None,
         last_updated_time: Union[Dict[str, Any], TimestampRange] = None,
@@ -42,11 +45,14 @@ class ExperimentalAssetsAPI(AssetsAPI):
             chunk_size (int, optional): Number of assets to return in each chunk. Defaults to yielding one asset a time.
             name (str): Name of asset. Often referred to as tag.
             parent_ids (List[int]): Return only the direct descendants of the specified assets.
+            parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
             root_ids (List[int], optional): List of root ids ids to filter on.
             root_external_ids (List[str], optional): List of root external ids to filter on.
             asset_subtree_ids (List[int]): List of asset subtrees ids to filter on.
             asset_subtree_external_ids (List[str]): List of asset subtrees external ids to filter on.
             metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value
+            data_set_ids (List[int]): Return only assets in the specified data sets with these ids.
+            data_set_external_ids (List[str]): Return only assets in the specified data sets with these external ids.
             source (str): The source of this asset
             created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
             last_updated_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
@@ -66,18 +72,23 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root_ids = self._process_ids(root_ids, root_external_ids, wrap_ids=True)
         if asset_subtree_ids or asset_subtree_external_ids:
             asset_subtree_ids = self._process_ids(asset_subtree_ids, asset_subtree_external_ids, wrap_ids=True)
+        if data_set_ids or data_set_external_ids:
+            data_set_ids = self._process_ids(data_set_ids, data_set_external_ids, wrap_ids=True)
 
         filter = AssetFilter(
             name=name,
             parent_ids=parent_ids,
+            parent_external_ids=parent_external_ids,
             root_ids=root_ids,
             asset_subtree_ids=asset_subtree_ids,
+            data_set_ids=data_set_ids,
             metadata=metadata,
             source=source,
             created_time=created_time,
             last_updated_time=last_updated_time,
             root=root,
             external_id_prefix=external_id_prefix,
+            types=types,
         ).dump(camel_case=True)
         return self._list_generator(
             method="POST",
@@ -180,10 +191,13 @@ class ExperimentalAssetsAPI(AssetsAPI):
         self,
         name: str = None,
         parent_ids: List[int] = None,
+        parent_external_ids: List[str] = None,
         root_ids: List[int] = None,
         root_external_ids: List[str] = None,
         asset_subtree_ids: List[int] = None,
         asset_subtree_external_ids: List[str] = None,
+        data_set_ids: List[int] = None,
+        data_set_external_ids: List[str] = None,
         metadata: Dict[str, str] = None,
         source: str = None,
         created_time: Union[Dict[str, Any], TimestampRange] = None,
@@ -200,10 +214,13 @@ class ExperimentalAssetsAPI(AssetsAPI):
         Args:
             name (str): Name of asset. Often referred to as tag.
             parent_ids (List[int]): Return only the direct descendants of the specified assets.
+            parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
             root_ids (List[int], optional): List of root ids ids to filter on.
             root_external_ids (List[str], optional): List of root external ids to filter on.
             asset_subtree_ids (List[int]): List of asset subtrees ids to filter on.
             asset_subtree_external_ids (List[str]): List of asset subtrees external ids to filter on.
+            data_set_ids (List[int]): Return only assets in the specified data sets with these ids.
+            data_set_external_ids (List[str]): Return only assets in the specified data sets with these external ids.
             metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value.
             source (str): The source of this asset.
             created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
@@ -249,12 +266,17 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root_ids = self._process_ids(root_ids, root_external_ids, wrap_ids=True)
         if asset_subtree_ids or asset_subtree_external_ids:
             asset_subtree_ids = self._process_ids(asset_subtree_ids, asset_subtree_external_ids, wrap_ids=True)
+            asset_subtree_ids = self._process_ids(asset_subtree_ids, asset_subtree_external_ids, wrap_ids=True)
+        if data_set_ids or data_set_external_ids:
+            data_set_ids = self._process_ids(data_set_ids, data_set_external_ids, wrap_ids=True)
 
         filter = AssetFilter(
             name=name,
             parent_ids=parent_ids,
+            parent_external_ids=parent_external_ids,
             root_ids=root_ids,
             asset_subtree_ids=asset_subtree_ids,
+            data_set_ids=data_set_ids,
             metadata=metadata,
             source=source,
             created_time=created_time,

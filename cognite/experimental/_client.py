@@ -2,6 +2,7 @@ import os
 from typing import Callable, Dict, Optional, Union
 
 from cognite.client._api.datapoints import DatapointsAPI
+from cognite.client._api.files import FilesAPI
 from cognite.client._cognite_client import CogniteClient as Client
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.entity_extraction import EntityExtractionAPI
@@ -13,12 +14,19 @@ from cognite.experimental._api.relationships import RelationshipsAPI
 from cognite.experimental._api.resource_typing import ResourceTypingAPI
 from cognite.experimental._api.synthetic_time_series import SyntheticDatapointsAPI
 from cognite.experimental._api.types import TypesAPI
+from cognite.experimental._api.unstructured import GrepAPI
 
 
 class ExperimentalDatapointsApi(DatapointsAPI):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.synthetic = SyntheticDatapointsAPI(self._config, api_version="playground", cognite_client=self)
+
+
+class ExperimentalFilesApi(FilesAPI):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.unstructured = GrepAPI(self._config, api_version="playground", cognite_client=self)
 
 
 class CogniteClient(Client):
@@ -73,6 +81,7 @@ class CogniteClient(Client):
         )
         self.relationships = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)
         self.datapoints = ExperimentalDatapointsApi(self._config, api_version="v1", cognite_client=self)
+        self.files = ExperimentalFilesApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
 
         self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)

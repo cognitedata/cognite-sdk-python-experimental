@@ -12,7 +12,7 @@ COGNITE_CLIENT = CogniteClient()
 @pytest.fixture(scope="session")
 def test_time_series():
     time_series = {}
-    for ts in COGNITE_CLIENT.time_series.list(limit=1000):
+    for ts in COGNITE_CLIENT.time_series.list(limit=2000):
         if ts.name in ["test__constant_{}_with_noise".format(i) for i in range(0, 10)]:
             value = int(re.match(r"test__constant_(\d+)_with_noise", ts.name).group(1))
             time_series[value] = ts
@@ -87,6 +87,8 @@ class TestSyntheticDatapointsAPI:
             + cos(syms[3] ** (1 + 0.1 ** syms[4]))
             + sqrt(log(abs(syms[8]) + 1))
         )
+        test_time_series = list(test_time_series.values())
+        print(test_time_series)
         dps1 = COGNITE_CLIENT.datapoints.synthetic.retrieve(
             expression=expression,
             start=datetime(2017, 1, 1),
