@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 from cognite.client.data_classes import TimestampRange
 from cognite.client.data_classes._base import *
-from cognite.experimental.data_classes.shared import AssetIdsFilter
+from cognite.experimental.data_classes.shared import AssetIdsFilter, GeoShape
 
 
 # GenClass: SearchHighlight
@@ -27,10 +27,156 @@ class UnstructuredSearchHighlight(CogniteResource):
     # GenStop
 
 
+# GenClass: FilesMetadata
+class UnstructuredFilesMetadata(CogniteResource):
+    """No description.
+
+    Args:
+        external_id (str): External Id provided by client. Should be unique within the project.
+        name (str): Name of the file.
+        source (str): The source of the file
+        mime_type (str): File type. E.g. 'text/plain', 'application/pdf'.
+        metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32 bytes, value 512 bytes, up to 16 key-value pairs.
+        asset_ids (List[int]): No description.
+        source_created_time (int): The timestamp for when the file was originally created in the source system.
+        source_modified_time (int): The timestamp for when the file was last modified in the source system.
+        id (int): A server-generated ID for the object.
+        uploaded (bool): Whether or not the actual file is uploaded. This field is returned only by the API, it has no effect in a post body.
+        uploaded_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        indices (List[str]): All indices this document belongs to
+        document_types (List[str]): All document types this document has been classified as
+        language (str): Detected language from file content.
+        geolocation (Union[Dict[str, Any], GeoShape]): GeoJson representation of a geometry.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(
+        self,
+        external_id: str = None,
+        name: str = None,
+        source: str = None,
+        mime_type: str = None,
+        metadata: Dict[str, str] = None,
+        asset_ids: List[int] = None,
+        source_created_time: int = None,
+        source_modified_time: int = None,
+        id: int = None,
+        uploaded: bool = None,
+        uploaded_time: int = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        indices: List[str] = None,
+        document_types: List[str] = None,
+        language: str = None,
+        geolocation: Union[Dict[str, Any], GeoShape] = None,
+        cognite_client=None,
+    ):
+        self.external_id = external_id
+        self.name = name
+        self.source = source
+        self.mime_type = mime_type
+        self.metadata = metadata
+        self.asset_ids = asset_ids
+        self.source_created_time = source_created_time
+        self.source_modified_time = source_modified_time
+        self.id = id
+        self.uploaded = uploaded
+        self.uploaded_time = uploaded_time
+        self.created_time = created_time
+        self.last_updated_time = last_updated_time
+        self.indices = indices
+        self.document_types = document_types
+        self.language = language
+        self.geolocation = geolocation
+        self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(UnstructuredFilesMetadata, cls)._load(resource, cognite_client)
+        if isinstance(resource, Dict):
+            if instance.geolocation is not None:
+                instance.geolocation = GeoShape(**instance.geolocation)
+        return instance
+
+    # GenStop
+
+
+class UnstructuredSearchResult(CogniteResource):
+    """Unstructured Search Result
+
+    Args:
+        highlight (Dict[str, Any]): Highlighted snippets from content, name and externalId fields which show where the query matches are.
+        item (Dict[str, str]): No description.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(self, highlight: Dict[str, Any] = None, item: Dict[str, str] = None, cognite_client=None):
+        self.highlight = UnstructuredSearchHighlight._load(highlight, cognite_client=self._cognite_client)
+        self.item = UnstructuredFilesMetadata._load(item, cognite_client=self._cognite_client)
+        self._cognite_client = cognite_client
+
+
+# GenClass: UnstructuredAggregateResult
+class UnstructuredAggregate(CogniteResource):
+    """No description.
+
+    Args:
+        name (str): User defined name for this aggregate
+        groups (List[Dict[str, Any]]): No description.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(self, name: str = None, groups: List[Dict[str, Any]] = None, cognite_client=None):
+        self.name = name
+        self.groups = groups
+        self._cognite_client = cognite_client
+
+    # GenStop
+
+
 class UnstructuredSearchHighlightList(CogniteResourceList):
     _RESOURCE = UnstructuredSearchHighlight
     _UPDATE = None
     _ASSERT_CLASSES = False
+
+
+class UnstructuredFilesMetadataList(CogniteResourceList):
+    _RESOURCE = UnstructuredFilesMetadata
+    _UPDATE = None
+    _ASSERT_CLASSES = False
+
+
+class UnstructuredAggregateList(CogniteResourceList):
+    _RESOURCE = UnstructuredAggregate
+    _UPDATE = None
+    _ASSERT_CLASSES = False
+
+
+class UnstructuredSearchResultList(CogniteResourceList):
+    _RESOURCE = UnstructuredSearchResult
+    _UPDATE = None
+    _ASSERT_CLASSES = False
+
+    def __init__(
+        self,
+        resources: List[UnstructuredSearchResult],
+        cognite_client=None,
+        aggregates: UnstructuredAggregateList = None,
+    ):
+        super().__init__(resources, cognite_client)
+        self.aggregates = aggregates
+
+    @property
+    def files(self):
+        return UnstructuredFilesMetadataList([res.item for res in self], cognite_client=self._cognite_client)
+
+    @property
+    def highlights(self):
+        if not any(res.highlight for res in self):
+            raise ValueError("No highlights are available in this search result.")
+        return UnstructuredSearchHighlightList([res.highlight for res in self], cognite_client=self._cognite_client)
 
 
 # GenClass: FileFilter.filter

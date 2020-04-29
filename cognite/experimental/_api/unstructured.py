@@ -5,7 +5,7 @@ import requests
 from cognite.client import utils
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import FileMetadataList
-from cognite.experimental.data_classes.unstructured import UnstructuredSearchHighlightList
+from cognite.experimental.data_classes.unstructured import UnstructuredAggregateList, UnstructuredSearchResultList
 
 
 class GrepAPI(APIClient):
@@ -17,18 +17,20 @@ class GrepAPI(APIClient):
 
     def search(
         self, query: str, highlight: bool = False, filter: Dict = None, aggregates: Dict = None, limit: int = None,
-    ) -> Union[FileMetadataList, Tuple[FileMetadataList, UnstructuredSearchHighlightList]]:
+    ) -> UnstructuredSearchResultList:
         """Grep stuff"""
 
         body = {"filter": filter, "search": {"query": query, "highlight": highlight}, "aggregates": aggregates}
         resp = self._post(url_path=self._GREP_RESOURCE_PATH + "/search", json=body)
+        data = resp.json()
+        items = data["items"]
+        search_results = UnstructuredSearchResultList._load(items, cognite_client=self._cognite_client)
+        if aggregates:
+            search_results.aggregates = UnstructuredAggregateList._load(
+                data["aggregates"], cognite_client=self._cognite_client
+            )
 
-        items = resp.json()["items"]
-        files_res = FileMetadataList._load([item["item"] for item in items], cognite_client=self._cognite_client)
-        if highlight:
-            highlight_res = UnstructuredSearchHighlightList._load([item["highlight"] for item in items])
-            return files_res, highlight_res
-        return files_res
+        return search_results
 
     def download(self, id: int = None, external_id: str = None) -> str:
         """Download OCR results"""

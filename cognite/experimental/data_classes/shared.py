@@ -22,3 +22,13 @@ class AssetIdsFilter(dict):
     contains_any = CognitePropertyClassUtil.declare_property("containsAny")
 
     # GenStop
+
+
+class GeoShape(dict):
+    def __init__(self, type: str = None, coordinates: List = None, **kwargs):
+        self.type = type
+        self.coordinates = coordinates
+        self.update(kwargs)
+
+    type = CognitePropertyClassUtil.declare_property("type")
+    coordinates = CognitePropertyClassUtil.declare_property("coordinates")
