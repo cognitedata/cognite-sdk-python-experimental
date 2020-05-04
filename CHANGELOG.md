@@ -13,6 +13,11 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
+## Unreleased
+
+### Fixed
+- `FunctionSchedulesAPI.create()` works when argument `name` contains the character `\`.
+
 ## [0.5.8] - 2020-04-30
 - Assets playground API uses playground for retrieve
 
