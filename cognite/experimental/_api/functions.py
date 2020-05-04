@@ -238,6 +238,9 @@ class FunctionsAPI(APIClient):
         return FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
 
     def _zip_and_upload_folder(self, folder, name) -> int:
+        # / is not allowed in file names
+        name = name.replace("/", "-")
+
         current_dir = os.getcwd()
         os.chdir(folder)
 
@@ -259,6 +262,9 @@ class FunctionsAPI(APIClient):
             os.chdir(current_dir)
 
     def _zip_and_upload_handle(self, function_handle, name) -> int:
+        # / is not allowed in file names
+        name = name.replace("/", "-")
+
         with TemporaryDirectory() as tmpdir:
             handle_path = os.path.join(tmpdir, HANDLER_FILE_NAME)
             with open(handle_path, "w") as f:
