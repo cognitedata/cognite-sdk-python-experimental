@@ -5,8 +5,8 @@
 
 Cognite Python SDK Experimental Extensions
 ==========================================
-[![Release Status](https://github.com/cognitedata/cognite-sdk-experimental/workflows/release/badge.svg)](https://github.com/cognitedata/cognite-sdk-experimental/actions)
-[![Build Status](https://github.com/cognitedata/cognite-sdk-experimental/workflows/test_and_build/badge.svg)](https://github.com/cognitedata/cognite-sdk-experimental/actions)
+[![Release Status](https://github.com/cognitedata/cognite-sdk-python-experimental/workflows/release/badge.svg)](https://github.com/cognitedata/cognite-sdk-python-experimental/actions)
+[![Build Status](https://github.com/cognitedata/cognite-sdk-python-experimental/workflows/test_and_build/badge.svg)](https://github.com/cognitedata/cognite-sdk-python-experimental/actions)
 [![Documentation Status](https://readthedocs.com/projects/cognite-sdk-experimental/badge/?version=latest)](https://cognite-sdk-experimental.readthedocs-hosted.com/en/latest/)
 [![PyPI version](https://badge.fury.io/py/cognite-sdk-experimental.svg)](https://pypi.org/project/cognite-sdk-experimental/)
 [![tox](https://img.shields.io/badge/tox-3.6%2B-blue.svg)](https://www.python.org/downloads/release/python-360/)
