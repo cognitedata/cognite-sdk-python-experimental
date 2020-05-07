@@ -15,6 +15,11 @@ Changes are grouped as follows
 
 ## Unreleased
 
+## [0.6.0] - 2020-05-08
+
+### Changed
+- SDK updated for changes in ML Entity matcher endpoints.
+
 ### Fixed
 - `FunctionSchedulesAPI.create()` works when argument `name` contains the character `/`.
 
