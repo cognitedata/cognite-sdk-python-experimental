@@ -26,9 +26,7 @@ class TestEntityMatchingIntegration:
     def test_ml_fit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit_ml(
-            match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram-name"
-        )
+        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
 

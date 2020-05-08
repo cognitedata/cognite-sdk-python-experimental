@@ -144,20 +144,23 @@ class EntityMatchingModel(ContextualizationModel):
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(job_path=f"/{self.model_id}/predict", items=list(entities))
 
-    def predict_ml(self, match_from: List[Dict], match_to: List[Dict]) -> ContextualizationJob:
+    def predict_ml(
+        self, match_from: List[Dict] = None, match_to: List[Dict] = None, num_matches=1
+    ) -> ContextualizationJob:
         """Predict entity matching.
 
         Args:
-            match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
-            match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used.
+            match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
+            match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
+            num_matches (int): number of matches to return for each item.
         Returns:
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/predictml",
+            job_path=f"/{self.model_id}/predictml",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
-            model_id=self.model_id,
+            num_matches=num_matches,
         )
 
     @staticmethod
