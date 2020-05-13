@@ -17,6 +17,10 @@ Changes are grouped as follows
 
 ## [0.6.0] - 2020-05-08
 
+### Added
+- Labels endpoint support
+- Assets labelling support
+
 ### Changed
 - SDK updated for changes in ML Entity matcher endpoints.
 
