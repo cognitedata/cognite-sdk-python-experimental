@@ -2,6 +2,7 @@ from typing import Dict, List, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
+import time
 
 class Function(CogniteResource):
     """A representation of a Cognite Function.
@@ -145,6 +146,18 @@ class FunctionCall(CogniteResource):
     def get_logs(self):
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self._function_id)
 
+    def update(self):
+        latest = self._cognite_client.functions.calls.retrieve(id=self.id)
+        self.status = latest.status
+        self.end_time = latest.end_time
+        self.response = latest.response
+        self.error = latest.error
+
+    def wait(self):
+        while self.status == "Running":
+            self.update()
+            time.sleep(1.0)
+            
     @classmethod
     def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):
         instance = super()._load(resource, cognite_client=cognite_client)

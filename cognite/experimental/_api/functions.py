@@ -235,7 +235,12 @@ class FunctionsAPI(APIClient):
         if data:
             body = {"data": data}
         res = self._post(url, json=body)
-        return FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
+        function_call = FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
+        
+        if wait:
+            function_call.wait()
+        
+        return function_call
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         # / is not allowed in file names
