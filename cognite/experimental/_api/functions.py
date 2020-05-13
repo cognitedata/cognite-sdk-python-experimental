@@ -198,15 +198,15 @@ class FunctionsAPI(APIClient):
         id: Optional[int] = None,
         external_id: Optional[str] = None,
         data: Optional[Dict] = None,
-        asynchronous: bool = False,
+        wait: bool = True,
     ) -> FunctionCall:
-        """Call a function by its ID or external ID. Can be done `synchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_ or `asynchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-functionId-async_call>`_.
+        """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
 
         Args:
             id (int, optional): ID
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
-            asynchronous (bool): Call the function asynchronously. Defaults to false.
+            wait (bool): Wait until the function call is finished. Defaults to True.
 
         Returns:
             FunctionCall: A function call object.
@@ -230,7 +230,7 @@ class FunctionsAPI(APIClient):
         if external_id:
             id = self.retrieve(external_id=external_id).id
 
-        url = f"/functions/{id}/call" if not asynchronous else f"/functions/{id}/async_call"
+        url = f"/functions/{id}/call"
         body = {}
         if data:
             body = {"data": data}
