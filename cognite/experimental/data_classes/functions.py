@@ -1,8 +1,8 @@
+import time
 from typing import Dict, List, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
-import time
 
 class Function(CogniteResource):
     """A representation of a Cognite Function.
@@ -157,7 +157,7 @@ class FunctionCall(CogniteResource):
         while self.status == "Running":
             self.update()
             time.sleep(1.0)
-            
+
     @classmethod
     def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):
         instance = super()._load(resource, cognite_client=cognite_client)
