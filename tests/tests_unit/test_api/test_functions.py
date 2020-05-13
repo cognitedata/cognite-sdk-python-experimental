@@ -92,15 +92,12 @@ BASE_CALL = {"id": 5678, "startTime": 1585925306822, "endTime": 1585925310822, "
 
 @pytest.fixture
 def mock_functions_call_completed_response(rsps):
-    response_body_async = BASE_CALL.copy()
     response_body_sync = BASE_CALL.copy()
-    response_body_sync["response"] = "Hello World!"
+    response_body_sync["response"] = {"pi": 3.1415}
 
-    url_sync = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
-    url_async = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/async_call"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
     rsps.assert_all_requests_are_fired = False
-    rsps.add(rsps.POST, url_sync, status=201, json=response_body_sync)
-    rsps.add(rsps.POST, url_async, status=201, json=response_body_async)
+    rsps.add(rsps.POST, url, status=201, json=response_body_sync)
 
     yield rsps
 
@@ -108,7 +105,7 @@ def mock_functions_call_completed_response(rsps):
 @pytest.fixture
 def mock_functions_call_by_external_id(mock_functions_retrieve_response):
     response_body = BASE_CALL.copy()
-    response_body["response"] = "Hello World!"
+    response_body["response"] = {"pi": 3.1415}
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
     rsps = mock_functions_retrieve_response
@@ -263,11 +260,6 @@ class TestFunctionsAPI:
 
     def test_function_call(self, mock_functions_call_completed_response):
         res = FUNCTIONS_API.call(id=1234)
-        assert isinstance(res, FunctionCall)
-        assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
-
-    def test_function_async_call(self, mock_functions_call_completed_response):
-        res = FUNCTIONS_API.call(id=1234, asynchronous=True)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
 
