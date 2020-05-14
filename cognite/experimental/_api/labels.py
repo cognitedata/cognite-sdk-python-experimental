@@ -1,7 +1,7 @@
 from typing import Generator, List, Union
 
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import LabelFilter, Label, LabelList
+from cognite.experimental.data_classes import Label, LabelFilter, LabelList
 
 
 class LabelsAPI(APIClient):
@@ -19,23 +19,12 @@ class LabelsAPI(APIClient):
         return self.__call__()
 
     def __call__(
-        self,
-        name: str = None,
-        external_id_prefix: str = None,
-        limit: int = None,
-        chunk_size: int = None,
+        self, name: str = None, external_id_prefix: str = None, limit: int = None, chunk_size: int = None,
     ):
-        filter = LabelDefinitionFilter(name=name, external_id_prefix=external_id_prefix).dump(
-            camel_case=True
-        )
+        filter = LabelFilter(name=name, external_id_prefix=external_id_prefix).dump(camel_case=True)
         return self._list_generator(method="POST", limit=limit, filter=filter, chunk_size=chunk_size)
 
-    def list(
-        self,
-        name: str = None,
-        external_id_prefix: str = None,
-        limit: int = 25,
-    ) -> LabelList:
+    def list(self, name: str = None, external_id_prefix: str = None, limit: int = 25,) -> LabelList:
         """`List Labels <https://docs.cognite.com/api/playground/#operation/listLabels>`_
 
         Args:
@@ -68,9 +57,7 @@ class LabelsAPI(APIClient):
                 >>> for label_list in c.types(chunk_size=2500):
                 ...     label_list # do something with the type definitions
         """
-        filter = LabelFilter(name=name, external_id_prefix=external_id_prefix).dump(
-            camel_case=True
-        )
+        filter = LabelFilter(name=name, external_id_prefix=external_id_prefix).dump(camel_case=True)
         return self._list(method="POST", limit=limit, filter=filter)
 
     def create(self, label: Union[Label, List[Label]]) -> Union[Label, LabelList]:
@@ -94,10 +81,7 @@ class LabelsAPI(APIClient):
         """
         return self._create_multiple(items=label)
 
-    def delete(
-        self,
-        external_id: Union[str, List[str]] = None,
-    ) -> None:
+    def delete(self, external_id: Union[str, List[str]] = None,) -> None:
         """`Delete one or more label definitions <https://docs.cognite.com/api/playground/#operation/deleteLabels>`_
 
         Args:
@@ -114,7 +98,4 @@ class LabelsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> c.labels.delete(external_id=["big_pump", "small_pump"])
         """
-        self._delete_multiple(
-            external_ids=external_id, wrap_ids=True
-        )
-
+        self._delete_multiple(external_ids=external_id, wrap_ids=True)
