@@ -44,6 +44,7 @@ class Asset(NonExperimentalAsset):
         metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value. Limits: Key are at most 128 bytes. Values are at most 10240 bytes. Up to 256 key-value pairs. Total size is at most 10240.
         source (str): The source of this asset
         types (List[Dict[str, Any]]): No description.
+        labels (List[Dict[str, Any]]): A list of the labels associated with this asset.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         root_id (int): A server-generated ID for the object.
@@ -63,6 +64,7 @@ class Asset(NonExperimentalAsset):
         metadata: Dict[str, str] = None,
         source: str = None,
         types: List[Dict[str, Any]] = None,
+        labels: List[Dict[str, Any]] = None,
         created_time: int = None,
         last_updated_time: int = None,
         root_id: int = None,
@@ -79,6 +81,7 @@ class Asset(NonExperimentalAsset):
         self.metadata = metadata
         self.source = source
         self.types = types
+        self.labels = labels
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.root_id = root_id
@@ -267,6 +270,28 @@ class AssetUpdate(CogniteUpdate):
         self._update_object["types"]["remove"].append({"id": id, "externalId": external_id, "version": version})
         return self
 
+    @property
+    def labels(self):
+        raise Exception("Use the put_label and remove_label functions to handle label updates")
+
+    def put_label(self, external_id: str = None):
+        """Upsert the label on the asset"""
+        if self._update_object.get("labels") is None:
+            self._update_object["labels"] = {}
+        if self._update_object["labels"].get("put") is None:
+            self._update_object["labels"]["put"] = []
+        self._update_object["labels"]["put"].append({"externalId": external_id})
+        return self
+
+    def remove_label(self, external_id: str = None):
+        """Remove the label from an asset"""
+        if self._update_object.get("labels") is None:
+            self._update_object["labels"] = {}
+        if self._update_object["labels"].get("remove") is None:
+            self._update_object["labels"]["remove"] = []
+        self._update_object["labels"]["remove"].append({"externalId": external_id})
+        return self
+
 
 class AssetList(CogniteResourceList):
     _RESOURCE = Asset
@@ -350,7 +375,6 @@ class AssetFilter(CogniteFilter):
     Args:
         name (str): Name of asset. Often referred to as tag.
         parent_ids (List[int]): Return only the direct descendants of the specified assets.
-        parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
         root_ids (List[Dict[str, Any]]): Only include these root assets and their descendants.
         asset_subtree_ids (List[Dict[str, Any]]): Only include assets in subtrees rooted at the specified assets (including the roots given). If the total size of the given subtrees exceeds 100,000 assets, an error will be returned.
         data_set_ids (List[int]): No description.
@@ -361,6 +385,7 @@ class AssetFilter(CogniteFilter):
         root (bool): filtered assets are root assets or not
         external_id_prefix (str): External Id provided by client. Should be unique within the project.
         types (List[Dict[str, Any]]): No description.
+        labels (List[List[Dict[str, Any]]]): A label filter is composed in the following manner: [<label> AND <label> AND ...] OR [<label> AND <label> AND ...] OR ... In the associated example, the applied filter will return all the ACTIVE PUMPs and all the VALVEs. 
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
@@ -368,7 +393,6 @@ class AssetFilter(CogniteFilter):
         self,
         name: str = None,
         parent_ids: List[int] = None,
-        parent_external_ids: List[str] = None,
         root_ids: List[Dict[str, Any]] = None,
         asset_subtree_ids: List[Dict[str, Any]] = None,
         data_set_ids: List[int] = None,
@@ -379,11 +403,11 @@ class AssetFilter(CogniteFilter):
         root: bool = None,
         external_id_prefix: str = None,
         types: List[Dict[str, Any]] = None,
+        labels: List[List[Dict[str, Any]]] = None,
         cognite_client=None,
     ):
         self.name = name
         self.parent_ids = parent_ids
-        self.parent_external_ids = parent_external_ids
         self.root_ids = root_ids
         self.asset_subtree_ids = asset_subtree_ids
         self.data_set_ids = data_set_ids
@@ -394,6 +418,7 @@ class AssetFilter(CogniteFilter):
         self.root = root
         self.external_id_prefix = external_id_prefix
         self.types = types
+        self.labels = labels
         self._cognite_client = cognite_client
 
     @classmethod

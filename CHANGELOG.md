@@ -15,6 +15,12 @@ Changes are grouped as follows
 
 ## Unreleased
 
+## [0.7.0] - 2020-05-14
+
+### Added
+- Labels endpoint support
+- Assets labelling support
+
 ## [0.6.0] - 2020-05-08
 
 ### Changed
