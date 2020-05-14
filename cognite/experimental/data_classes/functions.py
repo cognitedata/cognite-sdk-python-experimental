@@ -147,7 +147,7 @@ class FunctionCall(CogniteResource):
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self._function_id)
 
     def update(self):
-        latest = self._cognite_client.functions.calls.retrieve(id=self.id)
+        latest = self._cognite_client.functions.calls.retrieve(call_id=self.id, function_id=self._function_id)
         self.status = latest.status
         self.end_time = latest.end_time
         self.response = latest.response
