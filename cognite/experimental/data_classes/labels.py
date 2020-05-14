@@ -5,7 +5,7 @@ from cognite.client.data_classes.shared import TimestampRange
 
 
 # GenClass: LabelDefinitionSpec, LabelDefinition
-class Label(dict):
+class Label(CogniteResource):
     """No description.
 
     Args:
@@ -34,7 +34,7 @@ class Label(dict):
 
 
 # GenClass: LabelDefinitionFilter.filter
-class LabelFilter(dict):
+class LabelFilter(CogniteFilter):
     """Filter on labels with strict matching.
 
     Args:
