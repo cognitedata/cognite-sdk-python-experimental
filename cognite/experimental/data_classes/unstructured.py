@@ -42,7 +42,6 @@ class UnstructuredFileMetadata(CogniteResource):
         source_created_time (int): The timestamp for when the file was originally created in the source system.
         source_modified_time (int): The timestamp for when the file was last modified in the source system.
         id (int): A server-generated ID for the object.
-        uploaded (bool): Whether or not the actual file is uploaded. This field is returned only by the API, it has no effect in a post body.
         uploaded_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
@@ -50,6 +49,8 @@ class UnstructuredFileMetadata(CogniteResource):
         document_types (List[str]): All document types this document has been classified as
         language (str): Detected language from file content.
         geolocation (Union[Dict[str, Any], GeoShape]): GeoJson representation of a geometry.
+        data_set_id (int): A server-generated ID for the object.
+        security_categories (List[int]): The security category IDs required to access this file.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
@@ -64,7 +65,6 @@ class UnstructuredFileMetadata(CogniteResource):
         source_created_time: int = None,
         source_modified_time: int = None,
         id: int = None,
-        uploaded: bool = None,
         uploaded_time: int = None,
         created_time: int = None,
         last_updated_time: int = None,
@@ -72,6 +72,8 @@ class UnstructuredFileMetadata(CogniteResource):
         document_types: List[str] = None,
         language: str = None,
         geolocation: Union[Dict[str, Any], GeoShape] = None,
+        data_set_id: int = None,
+        security_categories: List[int] = None,
         cognite_client=None,
     ):
         self.external_id = external_id
@@ -83,7 +85,6 @@ class UnstructuredFileMetadata(CogniteResource):
         self.source_created_time = source_created_time
         self.source_modified_time = source_modified_time
         self.id = id
-        self.uploaded = uploaded
         self.uploaded_time = uploaded_time
         self.created_time = created_time
         self.last_updated_time = last_updated_time
@@ -91,6 +92,8 @@ class UnstructuredFileMetadata(CogniteResource):
         self.document_types = document_types
         self.language = language
         self.geolocation = geolocation
+        self.data_set_id = data_set_id
+        self.security_categories = security_categories
         self._cognite_client = cognite_client
 
     @classmethod
@@ -208,10 +211,10 @@ class UnstructuredSearchFileFilter(CogniteFilter):
         uploaded_time (Union[Dict[str, Any], TimestampRange]): Range between two timestamps.
         source_created_time (Union[Dict[str, Any], TimestampRange]): Range between two timestamps.
         source_modified_time (Union[Dict[str, Any], TimestampRange]): Range between two timestamps.
-        uploaded (bool): Whether or not the actual file is uploaded. This field is returned only by the API, it has no effect in a post body.
         geolocation (Dict[str, Any]): Filter for files where
         indices (Dict[str, Any]): Filter for indices
         document_types (Dict[str, Any]): Filter for document types
+        data_set_id (Dict[str, str]): No description.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
@@ -227,10 +230,10 @@ class UnstructuredSearchFileFilter(CogniteFilter):
         uploaded_time: Union[Dict[str, Any], TimestampRange] = None,
         source_created_time: Union[Dict[str, Any], TimestampRange] = None,
         source_modified_time: Union[Dict[str, Any], TimestampRange] = None,
-        uploaded: bool = None,
         geolocation: Dict[str, Any] = None,
         indices: Dict[str, Any] = None,
         document_types: Dict[str, Any] = None,
+        data_set_id: Dict[str, str] = None,
         cognite_client=None,
     ):
         self.name = name
@@ -243,10 +246,10 @@ class UnstructuredSearchFileFilter(CogniteFilter):
         self.uploaded_time = uploaded_time
         self.source_created_time = source_created_time
         self.source_modified_time = source_modified_time
-        self.uploaded = uploaded
         self.geolocation = geolocation
         self.indices = indices
         self.document_types = document_types
+        self.data_set_id = data_set_id
         self._cognite_client = cognite_client
 
     @classmethod

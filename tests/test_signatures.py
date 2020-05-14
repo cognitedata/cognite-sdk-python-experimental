@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from cognite.experimental._api import assets, relationships, types
+from cognite.experimental._api import assets, labels, relationships, types
 
 
 class TestListAndIterSignatures:
@@ -15,6 +15,7 @@ class TestListAndIterSignatures:
                 assets.AssetFilter,
                 [
                     "root_external_ids",
+                    "parent_external_ids",
                     "data_set_external_ids",
                     "asset_subtree_external_ids",
                     "aggregated_properties",
@@ -23,6 +24,7 @@ class TestListAndIterSignatures:
             ),
             (relationships.RelationshipsAPI, relationships.RelationshipFilter, ["data_sets", "relationship_types"]),
             (types.TypesAPI, types.TypeFilter, []),
+            (labels.LabelsAPI, labels.LabelFilter, []),
         ],
     )
     def test_list_and_iter_signatures_same_as_filter_signature(self, api, filter, ignore):
