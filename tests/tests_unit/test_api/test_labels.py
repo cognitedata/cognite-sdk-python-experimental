@@ -12,14 +12,7 @@ LABELS_API = CogniteClient().labels
 @pytest.fixture
 def mock_labels_response(rsps):
     response_body = {
-        "items": [
-            {
-                "name": "Pump",
-                "description": "guess",
-                "externalId": "PUMP",
-                "createdTime": 1575892259245,
-            }
-        ]
+        "items": [{"name": "Pump", "description": "guess", "externalId": "PUMP", "createdTime": 1575892259245,}]
     }
 
     url_pattern = re.compile(re.escape(LABELS_API._get_base_url_with_base_path()) + "/.+")
@@ -31,7 +24,6 @@ def mock_labels_response(rsps):
 
 
 class TestLabels:
-
     def test_list(self, mock_labels_response):
         res = LABELS_API.list(external_id_prefix="P")
         assert "P" == jsgz_load(mock_labels_response.calls[0].request.body)["filter"]["externalIdPrefix"]
