@@ -34,6 +34,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         root: bool = None,
         external_id_prefix: str = None,
         types: List = None,
+        labels: List = None,
         aggregated_properties: List[str] = None,
         limit: int = None,
     ) -> Generator[Union[Asset, AssetList], None, None]:
@@ -59,6 +60,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root (bool): filtered assets are root assets or not
             external_id_prefix (str): Filter by this (case-sensitive) prefix for the external ID.
             types (List): List of type filters.
+            labels (List): List of label filters
             aggregated_properties (List[str]): Set of aggregated properties to include.
             limit (int, optional): Maximum number of assets to return. Defaults to return all items.
 
@@ -89,6 +91,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root=root,
             external_id_prefix=external_id_prefix,
             types=types,
+            labels=labels,
         ).dump(camel_case=True)
         return self._list_generator(
             method="POST",
@@ -203,6 +206,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         root: bool = None,
         external_id_prefix: str = None,
         types: List = None,
+        labels: List = None,
         aggregated_properties: List[str] = None,
         partitions: int = None,
         limit: int = 25,
@@ -226,6 +230,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root (bool): filtered assets are root assets or not.
             external_id_prefix (str): Filter by this (case-sensitive) prefix for the external ID.
             types (List): List of type filters.
+            labels (List): List of label filters.
             aggregated_properties (List[str]): Set of aggregated properties to include.
             partitions (int): Retrieve assets in parallel using this number of workers. Also requires `limit=None` to be passed.
             limit (int, optional): Maximum number of assets to return. Defaults to 25. Set to -1, float("inf") or None
@@ -282,6 +287,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root=root,
             external_id_prefix=external_id_prefix,
             types=types,
+            labels=labels,
         ).dump(camel_case=True)
         return self._list(
             method="POST",
