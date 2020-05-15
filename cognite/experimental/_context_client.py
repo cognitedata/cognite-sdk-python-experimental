@@ -50,11 +50,7 @@ class ContextAPI(APIClient):
 class ContextModelAPI(ContextAPI):
     _MODEL_CLASS = ContextualizationModel
 
-    def _fit_model(
-        self, model_path="/fit", status_path=None, headers=None, **kwargs
-    ) -> Union[EntityMatchingModel, ResourceTypingModel]:
-        if status_path is None:
-            status_path = self._RESOURCE_PATH + "/"
+    def _fit_model(self, model_path="/fit", headers=None, **kwargs) -> Union[EntityMatchingModel, ResourceTypingModel]:
         response = self._camel_post(model_path, json=kwargs, headers=headers)
         return self._MODEL_CLASS._load(response.json(), cognite_client=self._cognite_client)
 

@@ -15,6 +15,9 @@ Changes are grouped as follows
 
 ## Unreleased
 
+## [0.7.1] - 2020-05-15
+- Support for ML Entity matcher from/to columns and retrain.
+
 ## [0.7.0] - 2020-05-14
 
 ### Added
