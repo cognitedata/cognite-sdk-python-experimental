@@ -4,7 +4,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 EMAPI = COGNITE_CLIENT.entity_matching
 
 
