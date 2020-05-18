@@ -16,7 +16,7 @@ class PNIDParsingAPI(ContextAPI):
             file_id (int): ID of the file, should already be uploaded in the same tenant.
             entities (List[str]): List of entities to detect
             name_mapping (Dict[str,str]): Optional mapping between entity names and their synonyms in the P&ID. Used if the P&ID contains names on a different form than the entity list (e.g a substring only). The response will contain names as given in the entity list.
-            partial_match (bool): Allow for a partial match (e.g. missing prefix), can not be used in combination with `name_mapping`
+            partial_match (bool): Allow for a partial match (e.g. missing prefix).
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
