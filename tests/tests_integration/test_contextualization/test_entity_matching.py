@@ -42,6 +42,13 @@ class TestEntityMatchingIntegration:
         assert "Queued" == job.status
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
+
+        job = model.predict_ml()
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert "Completed" == job.status
+
         EMAPI.delete(model)
 
     def test_ml_refit(self):
