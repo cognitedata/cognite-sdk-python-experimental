@@ -1,7 +1,7 @@
 import copy
 import math
 import time
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Tuple, Union
 
 from typing_extensions import TypedDict
 
@@ -161,6 +161,18 @@ class EntityMatchingModel(ContextualizationModel):
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
+        )
+
+    def refit_ml(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
+        """Re-fits an entity matching on updated data.
+
+        Args:
+            true_matches: Updated known valid matches given as a list of (id_from,id_to).
+        Returns:
+            EntityMatchingModel: new model refitted to ."""
+        self.wait_for_completion()
+        return self._cognite_client.entity_matching._fit_model(
+            model_path=f"/{self.model_id}/refitml", true_matches=true_matches
         )
 
     @staticmethod
