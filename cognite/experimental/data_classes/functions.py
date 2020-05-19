@@ -117,7 +117,7 @@ class FunctionCall(CogniteResource):
         id (int): A server-generated ID for the object.
         start_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         end_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        response (str): Response from the function. The function must return a JSON serializable dictionary or nothing.
+        response (str): Response from the function. The function must return a JSON serializable object or nothing.
         status (str): Status of the function call ("Running" or "Completed").
         error (dict): Error from the function call. It contains an error message and the stack trace.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
