@@ -15,7 +15,7 @@ Changes are grouped as follows
 
 ## Unreleased
 
-## [0.7.3] - 2020-05-15
+## [0.7.3] - 2020-05-19
 ### Changed
 - In `FunctionsAPI.call()`, the `asynchronous` argument has been removed, reflecting the Functions API which now only supports asynchronous calls. A new argument `wait` has been introduced. When `wait=True` (default), `FunctionsAPI.call()` will block until the call changes its status from `Running`.
 
