@@ -37,7 +37,7 @@ will produce the following output after a few seconds:
 ### Create rules
 After first running the entity matcher
 ```python
-rules_job = client.entity_matching.create_rules(matches)
+rules_job = client.entity_matching.create_rules(matches["items"])
 rules_job.result
 ```
 will produce the following output after a few seconds:
