@@ -1,7 +1,7 @@
 import copy
 import math
 import time
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 from typing_extensions import TypedDict
 
@@ -145,7 +145,7 @@ class EntityMatchingModel(ContextualizationModel):
         return self._cognite_client.entity_matching._run_job(job_path=f"/{self.model_id}/predict", items=list(entities))
 
     def predict_ml(
-        self, match_from: List[Dict] = None, match_to: List[Dict] = None, num_matches=1
+        self, match_from: Optional[List[Dict]] = None, match_to: Optional[List[Dict]] = None, num_matches=1
     ) -> ContextualizationJob:
         """Predict entity matching.
 
@@ -163,14 +163,27 @@ class EntityMatchingModel(ContextualizationModel):
             num_matches=num_matches,
         )
 
+    def refit_ml(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
+        """Re-fits an entity matching on updated data.
+
+        Args:
+            true_matches: Updated known valid matches given as a list of (id_from,id_to).
+        Returns:
+            EntityMatchingModel: new model refitted to ."""
+        self.wait_for_completion()
+        return self._cognite_client.entity_matching._fit_model(
+            model_path=f"/{self.model_id}/refitml", true_matches=true_matches
+        )
+
     @staticmethod
-    def dump_entities(entities: List[Union[Dict, CogniteResource]]):
-        return [
-            {k: v for k, v in e.dump(camel_case=True).items() if isinstance(v, str) or k == "id"}
-            if isinstance(e, CogniteResource)
-            else e
-            for e in entities
-        ]
+    def dump_entities(entities: List[Union[Dict, CogniteResource]]) -> Optional[List[Dict]]:
+        if entities:
+            return [
+                {k: v for k, v in e.dump(camel_case=True).items() if isinstance(v, str) or k == "id"}
+                if isinstance(e, CogniteResource)
+                else e
+                for e in entities
+            ]
 
 
 class TypingPredictData(TypedDict):

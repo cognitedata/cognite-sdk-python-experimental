@@ -76,7 +76,7 @@ class LabelsAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes import Label
                 >>> c = CogniteClient()
-                >>> labels = [(external_id="valve"), Label(external_id="pipe")]
+                >>> labels = [Label(external_id="valve"), Label(external_id="pipe")]
                 >>> res = c.labels.create(labels)
         """
         return self._create_multiple(items=label)
