@@ -8,8 +8,9 @@ For a quickstart guide see the main SDK Documentation at https://cognite-docs.re
 
 The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
-* client.assets_playground: `Assets`_ (Playground Assets API with Types support)
+* client.assets_playground: `Assets`_ (Playground Assets API with Types and Labels support)
 * client.types: `Types`_
+* client.labels: `Labels`_
 * client.model_hosting = `Model Hosting`_
 * client.datapoints: includes extensions described in `Synthetic time series`_
 * client.relationships: `Relationships`_
@@ -146,6 +147,29 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.types
     :members:
     :show-inheritance:
+
+
+Labels
+------
+
+Create label definitions
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.labels.LabelsAPI.create
+
+List label definitions
+^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.labels.LabelsAPI.list
+
+Delete label definitions
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.labels.LabelsAPI.delete
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.labels
+    :members:
+    :show-inheritance:
+
 
 Unstructured Search
 -------------------
