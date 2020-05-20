@@ -56,7 +56,7 @@ class TypesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> file_list = c.types.list(limit=5, name="name")
+                >>> type_list = c.types.list(limit=5, name="name")
 
             Iterate over type definitions::
 
@@ -132,7 +132,7 @@ class TypesAPI(APIClient):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
-    def create(self, Type: Union[Type, List[Type]]) -> Union[Type, TypeList]:
+    def create(self, type: Union[Type, List[Type]]) -> Union[Type, TypeList]:
         """`Create one or more Types. <https://docs.cognite.com/api/playground/#operation/createTypeDefinitions>`_
 
         Args:
@@ -149,10 +149,10 @@ class TypesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes import Type
                 >>> c = CogniteClient()
-                >>> Types = [Type(external_id="valve"), Type(external_id="pipe",parent_type={"externalId":"parent","version":123})]
-                >>> res = c.types.create(Types)
+                >>> types = [Type(external_id="valve"), Type(external_id="pipe",parent_type={"externalId":"parent","version":123})]
+                >>> res = c.types.create(types)
         """
-        return self._create_multiple(items=Type)
+        return self._create_multiple(items=type)
 
     def delete(
         self,

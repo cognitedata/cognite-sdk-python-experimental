@@ -20,7 +20,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         chunk_size: int = None,
         name: str = None,
         parent_ids: List[int] = None,
-        parent_external_ids: List[str] = None,
         root_ids: List[int] = None,
         root_external_ids: List[str] = None,
         asset_subtree_ids: List[int] = None,
@@ -34,6 +33,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         root: bool = None,
         external_id_prefix: str = None,
         types: List = None,
+        labels: List = None,
         aggregated_properties: List[str] = None,
         limit: int = None,
     ) -> Generator[Union[Asset, AssetList], None, None]:
@@ -45,7 +45,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
             chunk_size (int, optional): Number of assets to return in each chunk. Defaults to yielding one asset a time.
             name (str): Name of asset. Often referred to as tag.
             parent_ids (List[int]): Return only the direct descendants of the specified assets.
-            parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
             root_ids (List[int], optional): List of root ids ids to filter on.
             root_external_ids (List[str], optional): List of root external ids to filter on.
             asset_subtree_ids (List[int]): List of asset subtrees ids to filter on.
@@ -59,6 +58,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root (bool): filtered assets are root assets or not
             external_id_prefix (str): Filter by this (case-sensitive) prefix for the external ID.
             types (List): List of type filters.
+            labels (List): List of label filters
             aggregated_properties (List[str]): Set of aggregated properties to include.
             limit (int, optional): Maximum number of assets to return. Defaults to return all items.
 
@@ -78,7 +78,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         filter = AssetFilter(
             name=name,
             parent_ids=parent_ids,
-            parent_external_ids=parent_external_ids,
             root_ids=root_ids,
             asset_subtree_ids=asset_subtree_ids,
             data_set_ids=data_set_ids,
@@ -89,6 +88,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root=root,
             external_id_prefix=external_id_prefix,
             types=types,
+            labels=labels,
         ).dump(camel_case=True)
         return self._list_generator(
             method="POST",
@@ -122,7 +122,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         utils._auxiliary.assert_type(asset, "asset", [Asset, list])
         return self._create_multiple(asset)
 
-    @use_v1_instead_of_playground
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Asset]:
         """`Retrieve a single asset by id. <https://docs.cognite.com/api/v1/#operation/getAsset>`_
 
@@ -150,7 +149,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    @use_v1_instead_of_playground
     def retrieve_multiple(
         self,
         ids: Optional[List[int]] = None,
@@ -191,7 +189,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         self,
         name: str = None,
         parent_ids: List[int] = None,
-        parent_external_ids: List[str] = None,
         root_ids: List[int] = None,
         root_external_ids: List[str] = None,
         asset_subtree_ids: List[int] = None,
@@ -205,6 +202,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         root: bool = None,
         external_id_prefix: str = None,
         types: List = None,
+        labels: List = None,
         aggregated_properties: List[str] = None,
         partitions: int = None,
         limit: int = 25,
@@ -214,7 +212,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         Args:
             name (str): Name of asset. Often referred to as tag.
             parent_ids (List[int]): Return only the direct descendants of the specified assets.
-            parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
             root_ids (List[int], optional): List of root ids ids to filter on.
             root_external_ids (List[str], optional): List of root external ids to filter on.
             asset_subtree_ids (List[int]): List of asset subtrees ids to filter on.
@@ -228,6 +225,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root (bool): filtered assets are root assets or not.
             external_id_prefix (str): Filter by this (case-sensitive) prefix for the external ID.
             types (List): List of type filters.
+            labels (List): List of label filters.
             aggregated_properties (List[str]): Set of aggregated properties to include.
             partitions (int): Retrieve assets in parallel using this number of workers. Also requires `limit=None` to be passed.
             limit (int, optional): Maximum number of assets to return. Defaults to 25. Set to -1, float("inf") or None
@@ -273,7 +271,6 @@ class ExperimentalAssetsAPI(AssetsAPI):
         filter = AssetFilter(
             name=name,
             parent_ids=parent_ids,
-            parent_external_ids=parent_external_ids,
             root_ids=root_ids,
             asset_subtree_ids=asset_subtree_ids,
             data_set_ids=data_set_ids,
@@ -284,6 +281,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
             root=root,
             external_id_prefix=external_id_prefix,
             types=types,
+            labels=labels,
         ).dump(camel_case=True)
         return self._list(
             method="POST",

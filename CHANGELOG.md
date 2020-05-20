@@ -13,6 +13,33 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
+## Unreleased
+
+## [0.7.2] - 2020-05-15
+### Fixed
+- Support for no entities passed on predict_ml.
+
+## [0.7.1] - 2020-05-15
+### Added
+- Support for ML Entity matcher from/to columns and retrain.
+
+## [0.7.0] - 2020-05-14
+
+### Added
+- Labels endpoint support
+- Assets labelling support
+
+## [0.6.0] - 2020-05-08
+
+### Changed
+- SDK updated for changes in ML Entity matcher endpoints.
+
+### Fixed
+- `FunctionSchedulesAPI.create()` works when argument `name` contains the character `/`.
+
+## [0.5.8] - 2020-04-30
+- Assets playground API uses playground for retrieve
+
 ## [0.5.7] - 2020-04-29
 
 ### Added
@@ -23,7 +50,7 @@ Changes are grouped as follows
 
 ## [0.5.6] - 2020-04-28
 
-### Added 
+### Added
 - Data classes for contextualization models and job now include time stamps for request_timestamp, start_timestamp, status_timestamp.
 - Unstructured search endpoints added in client.files.unstructured.
 
