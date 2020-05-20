@@ -14,6 +14,8 @@ Changes are grouped as follows
 
 
 ## Unreleased
+### Added
+- Filtering of function calls given call attributes.
 
 ## [0.7.2] - 2020-05-15
 ### Fixed
