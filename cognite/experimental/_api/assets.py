@@ -99,7 +99,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         )
 
     def create(self, asset: Union[Asset, List[Asset]]) -> Union[Asset, AssetList]:
-        """`Create one or more assets. <https://docs.cognite.com/api/v1/#operation/createAssets>`_
+        """`Create one or more assets. <https://docs.cognite.com/api/playground/#operation/createAssets>`_
 
         You can create an arbitrary number of assets, and the SDK will split the request into multiple requests.
 
@@ -123,7 +123,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         return self._create_multiple(asset)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Asset]:
-        """`Retrieve a single asset by id. <https://docs.cognite.com/api/v1/#operation/getAsset>`_
+        """`Retrieve a single asset by id. <https://docs.cognite.com/api/playground/#operation/getAsset>`_
 
         Args:
             id (int, optional): ID
@@ -155,7 +155,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         external_ids: Optional[List[str]] = None,
         ignore_unknown_ids: bool = False,
     ) -> AssetList:
-        """`Retrieve multiple assets by id. <https://docs.cognite.com/api/v1/#operation/byIdsAssets>`_
+        """`Retrieve multiple assets by id. <https://docs.cognite.com/api/playground/#operation/byIdsAssets>`_
 
         Args:
             ids (List[int], optional): IDs
@@ -189,6 +189,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         self,
         name: str = None,
         parent_ids: List[int] = None,
+        parent_external_ids: List[str] = None,
         root_ids: List[int] = None,
         root_external_ids: List[str] = None,
         asset_subtree_ids: List[int] = None,
@@ -207,11 +208,12 @@ class ExperimentalAssetsAPI(AssetsAPI):
         partitions: int = None,
         limit: int = 25,
     ) -> AssetList:
-        """`List assets <https://docs.cognite.com/api/v1/#operation/listAssets>`_
+        """`List assets <https://docs.cognite.com/api/playground/#operation/listAssets>`_
 
         Args:
             name (str): Name of asset. Often referred to as tag.
             parent_ids (List[int]): Return only the direct descendants of the specified assets.
+            parent_external_ids (List[str]): Return only the direct descendants of the specified assets.
             root_ids (List[int], optional): List of root ids ids to filter on.
             root_external_ids (List[str], optional): List of root external ids to filter on.
             asset_subtree_ids (List[int]): List of asset subtrees ids to filter on.
@@ -316,7 +318,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         utils._auxiliary.assert_type(assets, "assets", [list])
         return _AssetPoster(assets, client=self).post()
 
-    @use_v1_instead_of_playground
+    @use_playground_instead_of_playground
     def delete(
         self,
         id: Union[int, List[int]] = None,
@@ -324,7 +326,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         recursive: bool = False,
         ignore_unknown_ids: bool = False,
     ) -> None:
-        """`Delete one or more assets <https://doc.cognitedata.com/api/v1/#operation/deleteAssets>`_
+        """`Delete one or more assets <https://doc.cognitedata.com/api/playground/#operation/deleteAssets>`_
 
         Args:
             id (Union[int, List[int]): Id or list of ids
@@ -351,7 +353,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         )
 
     def update(self, item: Union[Asset, AssetUpdate, List[Union[Asset, AssetUpdate]]]) -> Union[Asset, AssetList]:
-        """`Update one or more assets <https://docs.cognite.com/api/v1/#operation/updateAssets>`_
+        """`Update one or more assets <https://docs.cognite.com/api/playground/#operation/updateAssets>`_
 
         Args:
             item (Union[Asset, AssetUpdate, List[Union[Asset, AssetUpdate]]]): Asset(s) to update
@@ -387,7 +389,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         filter: Union[AssetFilter, Dict] = None,
         limit: int = 100,
     ) -> AssetList:
-        """`Search for assets <https://docs.cognite.com/api/v1/#operation/searchAssets>`_
+        """`Search for assets <https://docs.cognite.com/api/playground/#operation/searchAssets>`_
 
         Args:
             name (str): Fuzzy match on name.

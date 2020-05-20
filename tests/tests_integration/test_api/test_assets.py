@@ -102,6 +102,13 @@ class TestAssetsAPI:
         assert 20 == len(res)
         assert 2 == COGNITE_CLIENT.assets_playground._post.call_count
 
+    def test_parent_external_id_list(self, new_asset_hierarchy):
+        prefix, ext_ids = new_asset_hierarchy
+        with set_request_limit(COGNITE_CLIENT.assets_playground, 10):
+            res = COGNITE_CLIENT.assets_playground.list(limit=20, parent_external_ids=[ext_ids[0]])
+
+        assert 20 == len(res)
+
     def test_partitioned_list(self, post_spy):
         # stop race conditions by cutting off max created time
         maxtime = int(time.time() - 3600) * 1000
