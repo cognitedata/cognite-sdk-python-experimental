@@ -321,12 +321,24 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
-    def list(self, function_id: Optional[int] = None, function_external_id: Optional[str] = None) -> FunctionCallList:
+    def list(
+        self,
+        function_id: Optional[int] = None,
+        function_external_id: Optional[str] = None,
+        status: Optional[str] = None,
+        schedule_id: Optional[int] = None,
+        start_time: Optional[Dict[str, int]] = None,
+        end_time: Optional[Dict[str, int]] = None,
+    ) -> FunctionCallList:
         """`List all calls associated with a specific function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
             external_id (str, optional): External ID of the function on which the calls were made.
+            status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
+            schedule (int, optional): Schedule id of the call.
+            start_time (Union[Dict[str, int], TimestampRange]): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            end_time (Union[Dict[str, int], TimestampRange]): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
 
         Returns:
             FunctionCallList: List of function calls
@@ -350,8 +362,20 @@ class FunctionCallsAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
-        url = f"/functions/{function_id}/calls"
-        res = self._get(url)
+        url = f"/functions/{function_id}/calls/list"
+
+        filter = {}
+        if status:
+            filter["status"] = status
+        if schedule_id:
+            filter["schedule_id"] = schedule_id
+        if start_time:
+            filter["start_time"] = start_time
+        if end_time:
+            filter["end_time"] = end_time
+
+        post_body = {"filter": filter}
+        res = self._post(url, json=post_body)
         return FunctionCallList._load(res.json()["items"], function_id=function_id, cognite_client=self._cognite_client)
 
     def retrieve(

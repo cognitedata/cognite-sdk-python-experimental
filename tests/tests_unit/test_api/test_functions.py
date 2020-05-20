@@ -87,7 +87,7 @@ def mock_functions_delete_response(rsps):
     yield rsps
 
 
-BASE_CALL = {"id": 5678, "startTime": 1585925306822, "endTime": 1585925310822, "status": "Completed"}
+BASE_CALL = {"id": 5678, "startTime": 1585925306822, "endTime": 1585925310822, "status": "Completed", "scheduleId": 123}
 
 
 @pytest.fixture
@@ -289,10 +289,11 @@ class TestFunctionsAPI:
 
 @pytest.fixture
 def mock_function_calls_list_response(rsps):
-    response_body = {"items": [BASE_CALL.copy()]}
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls"
+    calls = [BASE_CALL.copy() for _ in range(3)]
+    response_body = {"items": calls}
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls/list"
     rsps.assert_all_requests_are_fired = False
-    rsps.add(rsps.GET, url, status=200, json=response_body)
+    rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
 
@@ -411,7 +412,13 @@ class TestFunctionSchedulesAPI:
 
 class TestFunctionCallsAPI:
     def test_list_calls_by_function_id(self, mock_function_calls_list_response):
-        res = FUNCTION_CALLS_API.list(function_id=1234)
+        filter_kwargs = {
+            "status": "Completed",
+            "schedule_id": 123,
+            "start_time": {"min": 1585925306822, "max": 1585925306823},
+            "end_time": {"min": 1585925310822, "max": 1585925310823},
+        }
+        res = FUNCTION_CALLS_API.list(function_id=1234, **filter_kwargs)
         assert isinstance(res, FunctionCallList)
         assert mock_function_calls_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 

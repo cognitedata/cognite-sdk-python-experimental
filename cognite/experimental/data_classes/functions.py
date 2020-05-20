@@ -129,6 +129,7 @@ class FunctionCall(CogniteResource):
         end_time: int = None,
         response: str = None,
         status: str = None,
+        schedule_id: int = None,
         error: dict = None,
         function_id: int = None,
         cognite_client=None,
@@ -138,6 +139,7 @@ class FunctionCall(CogniteResource):
         self.end_time = end_time
         self.response = response
         self.status = status
+        self.schedule_id = schedule_id
         self.error = error
         self._function_id = function_id
         self._cognite_client = cognite_client
