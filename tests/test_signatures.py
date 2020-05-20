@@ -15,7 +15,6 @@ class TestListAndIterSignatures:
                 assets.AssetFilter,
                 [
                     "root_external_ids",
-                    "parent_external_ids",
                     "data_set_external_ids",
                     "asset_subtree_external_ids",
                     "aggregated_properties",
