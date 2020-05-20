@@ -13,7 +13,7 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## Unreleased
+## [0.7.3] - 2020-05-20
 ### Added
 - Filtering of function calls given call attributes.
 
