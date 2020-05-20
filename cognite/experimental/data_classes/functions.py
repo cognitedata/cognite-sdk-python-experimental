@@ -52,8 +52,8 @@ class Function(CogniteResource):
     def call(self, data=None, asynchronous: bool = False):
         return self._cognite_client.functions.call(id=self.id, data=data, asynchronous=asynchronous)
 
-    def list_calls(self):
-        return self._cognite_client.functions.calls.list(function_id=self.id)
+    def list_calls(self, kwargs=None):
+        return self._cognite_client.functions.calls.list(function_id=self.id, **kwargs)
 
     def list_schedules(self):
         all_schedules = self._cognite_client.functions.schedules.list()
