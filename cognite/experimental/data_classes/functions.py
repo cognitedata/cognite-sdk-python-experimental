@@ -110,6 +110,7 @@ class FunctionList(CogniteResourceList):
 
 
 class FunctionCall(CogniteResource):
+
     """A representation of a Cognite Function call.
 
     Args:
