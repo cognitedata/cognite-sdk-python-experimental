@@ -161,7 +161,7 @@ class FunctionCallList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
     @classmethod
-    def _load(cls, resource: Union[List, str], function_id: int, cognite_client=None):
+    def _load(cls, resource: Union[List, str], function_id: int = None, cognite_client=None):
         instance = super()._load(resource, cognite_client=cognite_client)
         for obj in instance:
             obj._function_id = function_id

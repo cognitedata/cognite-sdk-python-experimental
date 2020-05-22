@@ -327,6 +327,8 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
+    _LIST_CLASS = FunctionCallList
+
     def list(
         self,
         function_id: Optional[int] = None,
@@ -368,7 +370,7 @@ class FunctionCallsAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
-        url = f"/functions/{function_id}/calls/list"
+        url = f"/functions/{function_id}/calls"
 
         filter = {}
         if status:
@@ -380,8 +382,7 @@ class FunctionCallsAPI(APIClient):
         if end_time:
             filter["end_time"] = end_time
 
-        post_body = {"filter": filter}
-        res = self._post(url, json=post_body)
+        res = self._list(method="POST", resource_path=url, filter=filter)
         return FunctionCallList._load(res.json()["items"], function_id=function_id, cognite_client=self._cognite_client)
 
     def retrieve(
