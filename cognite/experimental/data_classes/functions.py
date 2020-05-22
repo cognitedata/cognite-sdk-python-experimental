@@ -139,30 +139,16 @@ class FunctionCall(CogniteResource):
         self.response = response
         self.status = status
         self.error = error
-        self._function_id = function_id
+        self.function_id = function_id
         self._cognite_client = cognite_client
 
     def get_logs(self):
-        return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self._function_id)
-
-    @classmethod
-    def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):
-        instance = super()._load(resource, cognite_client=cognite_client)
-        if function_id:
-            instance._function_id = function_id
-        return instance
+        return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self.function_id)
 
 
 class FunctionCallList(CogniteResourceList):
     _RESOURCE = FunctionCall
     _ASSERT_CLASSES = False
-
-    @classmethod
-    def _load(cls, resource: Union[List, str], function_id: int, cognite_client=None):
-        instance = super()._load(resource, cognite_client=cognite_client)
-        for obj in instance:
-            obj._function_id = function_id
-        return instance
 
 
 class FunctionCallLogEntry(CogniteResource):
