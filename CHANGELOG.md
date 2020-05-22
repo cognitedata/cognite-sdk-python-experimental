@@ -13,7 +13,7 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## [0.8.0]
+## [0.7.3]
 ### Changed
 - Because the new function call response from the  Cognite functions api now returns functions id, the endpoint for getting logs of a call no longer needs the function_id.
 
