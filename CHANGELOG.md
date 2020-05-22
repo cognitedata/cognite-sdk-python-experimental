@@ -13,7 +13,9 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## Unreleased
+## [0.8.0]
+### Changed
+- Because the new function call response from the  Cognite functions api now returns functions id, the endpoint for getting logs of a call no longer needs the function_id.
 
 ### Fixed
 - Dosctring for `FunctionCallsAPI.list()` erroneously listed `external_id` as optional argument. This has been corrected to `function_external_id`.
