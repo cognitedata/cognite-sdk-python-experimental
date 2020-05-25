@@ -15,6 +15,9 @@ Changes are grouped as follows
 
 ## Unreleased
 
+### Fixed
+- Dosctring for `FunctionCallsAPI.list()` erroneously listed `external_id` as optional argument. This has been corrected to `function_external_id`.
+
 ## [0.7.2] - 2020-05-15
 ### Fixed
 - Support for no entities passed on predict_ml.
