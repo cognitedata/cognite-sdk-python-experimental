@@ -318,7 +318,7 @@ class ExperimentalAssetsAPI(AssetsAPI):
         utils._auxiliary.assert_type(assets, "assets", [list])
         return _AssetPoster(assets, client=self).post()
 
-    @use_playground_instead_of_playground
+    @use_v1_instead_of_playground
     def delete(
         self,
         id: Union[int, List[int]] = None,
