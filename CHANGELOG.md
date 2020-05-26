@@ -15,9 +15,13 @@ Changes are grouped as follows
 
 ## Unreleased
 
-## [0.7.3] - 2020-05-19
+## [0.8.0] - 2020-05-26
 ### Changed
 - In `FunctionsAPI.call()`, the `asynchronous` argument has been removed, reflecting the Functions API which now only supports asynchronous calls. A new argument `wait` has been introduced. When `wait=True` (default), `FunctionsAPI.call()` will block until the call is finished.
+
+## [0.7.3] - 2020-05-19
+### Fixed
+- Dosctring for `FunctionCallsAPI.list()` erroneously listed `external_id` as optional argument. This has been corrected to `function_external_id`.
 
 ## [0.7.2] - 2020-05-15
 ### Fixed
