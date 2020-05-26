@@ -46,7 +46,7 @@ class FunctionsAPI(APIClient):
         Args:
             name (str):                             The name of the function.
             folder (str, optional):                 Path to the folder where the function source code is located.
-            filde_id (int, optional):               File ID of the code uploaded to the Files API.
+            file_id (int, optional):                File ID of the code uploaded to the Files API.
             function_handle (Callable, optional):   Reference to a function object, which must be named `handle`. Valid arguments to `handle` are `data`, `client` and `secret`.
             external_id (str, optional):            External id of the function.
             description (str, optional):            Description of the function.
