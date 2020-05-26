@@ -1,3 +1,4 @@
+import time
 from typing import Dict, List, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
@@ -116,7 +117,7 @@ class FunctionCall(CogniteResource):
         id (int): A server-generated ID for the object.
         start_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         end_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        response (str): Response from the function. The function must return a JSON serializable object.
+        response (str): Response from the function. The function must return a JSON serializable object or nothing.
         status (str): Status of the function call ("Running" or "Completed").
         error (dict): Error from the function call. It contains an error message and the stack trace.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
@@ -144,6 +145,18 @@ class FunctionCall(CogniteResource):
 
     def get_logs(self):
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self._function_id)
+
+    def update(self):
+        latest = self._cognite_client.functions.calls.retrieve(call_id=self.id, function_id=self._function_id)
+        self.status = latest.status
+        self.end_time = latest.end_time
+        self.response = latest.response
+        self.error = latest.error
+
+    def wait(self):
+        while self.status == "Running":
+            self.update()
+            time.sleep(1.0)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):
