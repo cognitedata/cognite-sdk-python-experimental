@@ -21,11 +21,12 @@ FUNCTION_CALLS_API = FUNCTIONS_API.calls
 FUNCTION_SCHEDULES_API = FUNCTIONS_API.schedules
 FILES_API = COGNITE_CLIENT.files
 
+FUNCTION_ID = 1234
 
 EXAMPLE_FUNCTION = {
-    "id": 1234,
+    "id": FUNCTION_ID,
     "name": "myfunction",
-    "externalId": "func-no-1234",
+    "externalId": f"func-no-{FUNCTION_ID}",
     "description": "my fabulous function",
     "owner": "ola.normann@cognite.com",
     "status": "Ready",
@@ -33,6 +34,37 @@ EXAMPLE_FUNCTION = {
     "createdTime": 1585662507939,
     "apiKey": "***",
     "secrets": {"key1": "***", "key2": "***"},
+}
+
+CALL_RUNNING = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Running",
+    "functionId": FUNCTION_ID,
+}
+CALL_COMPLETED = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Completed",
+    "functionId": FUNCTION_ID,
+    "response": {"pi": 3.1415},
+}
+CALL_FAILED = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Failed",
+    "functionId": FUNCTION_ID,
+    "error": {"message": "some message", "trace": "some stack trace"},
+}
+CALL_TIMEOUT = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Timeout",
+    "functionId": FUNCTION_ID,
 }
 
 
@@ -60,7 +92,7 @@ def mock_functions_retrieve_response(rsps):
 def mock_functions_create_response(rsps):
     files_response_body = {
         "name": "myfunction",
-        "id": 1234,
+        "id": FUNCTION_ID,
         "uploaded": True,
         "createdTime": 1585662507939,
         "lastUpdatedTime": 1585662507939,
@@ -87,30 +119,12 @@ def mock_functions_delete_response(rsps):
     yield rsps
 
 
-CALL_RUNNING = {"id": 5678, "startTime": 1585925306822, "endTime": 1585925310822, "status": "Running"}
-CALL_COMPLETED = {
-    "id": 5678,
-    "startTime": 1585925306822,
-    "endTime": 1585925310822,
-    "status": "Completed",
-    "response": {"pi": 3.1415},
-}
-CALL_FAILED = {
-    "id": 5678,
-    "startTime": 1585925306822,
-    "endTime": 1585925310822,
-    "status": "Failed",
-    "error": {"message": "some message", "trace": "some stack trace"},
-}
-CALL_TIMEOUT = {"id": 5678, "startTime": 1585925306822, "endTime": 1585925310822, "status": "Timeout"}
-
-
 @pytest.fixture
 def mock_functions_call_responses(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls/5678"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
     rsps.add(rsps.GET, url, status=200, json=CALL_COMPLETED)
 
     yield rsps
@@ -120,10 +134,10 @@ def mock_functions_call_responses(rsps):
 def mock_functions_call_by_external_id_responses(mock_functions_retrieve_response):
     rsps = mock_functions_retrieve_response
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls/5678"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
     rsps.add(rsps.GET, url, status=200, json=CALL_COMPLETED)
 
     yield rsps
@@ -131,7 +145,8 @@ def mock_functions_call_by_external_id_responses(mock_functions_retrieve_respons
 
 @pytest.fixture
 def mock_functions_call_failed_response(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_FAILED)
 
     yield rsps
@@ -139,7 +154,7 @@ def mock_functions_call_failed_response(rsps):
 
 @pytest.fixture
 def mock_functions_call_timeout_response(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_TIMEOUT)
 
     yield rsps
@@ -267,22 +282,23 @@ class TestFunctionsAPI:
         assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_function_call(self, mock_functions_call_responses):
-        res = FUNCTIONS_API.call(id=1234)
+        res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_responses.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_function_call_by_external_id(self, mock_functions_call_by_external_id_responses):
-        res = FUNCTIONS_API.call(external_id="func-no-1234")
+        res = FUNCTIONS_API.call(external_id=f"func-no-{FUNCTION_ID}")
+
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_by_external_id_responses.calls[2].response.json() == res.dump(camel_case=True)
 
     def test_function_call_failed(self, mock_functions_call_failed_response):
-        res = FUNCTIONS_API.call(id=1234)
+        res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_failed_response.calls[0].response.json() == res.dump(camel_case=True)
 
     def test_function_call_timout(self, mock_functions_call_timeout_response):
-        res = FUNCTIONS_API.call(id=1234)
+        res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
 
@@ -290,7 +306,7 @@ class TestFunctionsAPI:
 @pytest.fixture
 def mock_function_calls_list_response(rsps):
     response_body = {"items": [CALL_COMPLETED]}
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls"
     rsps.add(rsps.GET, url, status=200, json=response_body)
 
     yield rsps
@@ -299,7 +315,7 @@ def mock_function_calls_list_response(rsps):
 @pytest.fixture
 def mock_function_calls_retrieve_response(rsps):
     response_body = CALL_COMPLETED
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls/5678"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
     rsps.add(rsps.GET, url, status=200, json=response_body)
 
     yield rsps
@@ -313,7 +329,7 @@ def mock_function_call_logs_response(rsps):
             {"timestamp": 1585925310822, "message": "message 2"},
         ]
     }
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/calls/5678/logs"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678/logs"
     rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.GET, url, status=200, json=response_body)
 
@@ -409,48 +425,48 @@ class TestFunctionSchedulesAPI:
 
 class TestFunctionCallsAPI:
     def test_list_calls_by_function_id(self, mock_function_calls_list_response):
-        res = FUNCTION_CALLS_API.list(function_id=1234)
+        res = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID)
         assert isinstance(res, FunctionCallList)
         assert mock_function_calls_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_retrieve_response")
     def test_list_calls_by_function_external_id(self, mock_function_calls_list_response):
-        res = FUNCTION_CALLS_API.list(function_external_id="func-no-1234")
+        res = FUNCTION_CALLS_API.list(function_external_id=f"func-no-{FUNCTION_ID}")
         assert isinstance(res, FunctionCallList)
         assert mock_function_calls_list_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
 
     def test_retrieve_call_by_function_id(self, mock_function_calls_retrieve_response):
-        res = FUNCTION_CALLS_API.retrieve(call_id=5678, function_id=1234)
+        res = FUNCTION_CALLS_API.retrieve(call_id=5678, function_id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_function_calls_retrieve_response.calls[0].response.json() == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_retrieve_response")
     def test_retrieve_call_by_function_external_id(self, mock_function_calls_retrieve_response):
-        res = FUNCTION_CALLS_API.retrieve(call_id=5678, function_external_id="func-no-1234")
+        res = FUNCTION_CALLS_API.retrieve(call_id=5678, function_external_id=f"func-no-{FUNCTION_ID}")
         assert isinstance(res, FunctionCall)
         assert mock_function_calls_retrieve_response.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_function_call_logs_by_function_id(self, mock_function_call_logs_response):
-        res = FUNCTION_CALLS_API.get_logs(call_id=5678, function_id=1234)
+        res = FUNCTION_CALLS_API.get_logs(call_id=5678, function_id=FUNCTION_ID)
         assert isinstance(res, FunctionCallLog)
         assert mock_function_call_logs_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_retrieve_response")
     def test_function_call_logs_by_function_external_id(self, mock_function_call_logs_response):
-        res = FUNCTION_CALLS_API.get_logs(call_id=5678, function_external_id="func-no-1234")
+        res = FUNCTION_CALLS_API.get_logs(call_id=5678, function_external_id=f"func-no-{FUNCTION_ID}")
         assert isinstance(res, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_function_calls_retrieve_response")
     def test_get_logs_on_retrieved_call_object(self, mock_function_call_logs_response):
-        call = FUNCTION_CALLS_API.retrieve(call_id=5678, function_id=1234)
+        call = FUNCTION_CALLS_API.retrieve(call_id=5678, function_id=FUNCTION_ID)
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_function_calls_list_response")
     def test_get_logs_on_listed_call_object(self, mock_function_call_logs_response):
-        calls = FUNCTION_CALLS_API.list(function_id=1234)
+        calls = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID)
         call = calls[0]
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
@@ -458,7 +474,7 @@ class TestFunctionCallsAPI:
 
     @pytest.mark.usefixtures("mock_functions_call_responses")
     def test_get_logs_on_created_call_object(self, mock_function_call_logs_response):
-        call = FUNCTIONS_API.call(id=1234)
+        call = FUNCTIONS_API.call(id=FUNCTION_ID)
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[2].response.json()["items"] == logs.dump(camel_case=True)

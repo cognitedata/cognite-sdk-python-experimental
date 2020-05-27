@@ -13,7 +13,9 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## Unreleased
+## [0.8.1] - 2020-05-26
+### Changed
+- Function calls now returns `functionId`, so the getting logs of a call has a simplified internal structure.
 
 ## [0.8.0] - 2020-05-26
 ### Changed

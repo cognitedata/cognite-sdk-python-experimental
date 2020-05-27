@@ -235,8 +235,8 @@ class FunctionsAPI(APIClient):
         if data:
             body = {"data": data}
         res = self._post(url, json=body)
-        function_call = FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
 
+        function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
         if wait:
             function_call.wait()
 
@@ -363,7 +363,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls"
         res = self._get(url)
-        return FunctionCallList._load(res.json()["items"], function_id=function_id, cognite_client=self._cognite_client)
+        return FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
@@ -399,7 +399,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}"
         res = self._get(url)
-        return FunctionCall._load(res.json(), function_id=function_id, cognite_client=self._cognite_client)
+        return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
