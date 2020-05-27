@@ -36,6 +36,37 @@ EXAMPLE_FUNCTION = {
     "secrets": {"key1": "***", "key2": "***"},
 }
 
+CALL_RUNNING = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Running",
+    "functionId": FUNCTION_ID,
+}
+CALL_COMPLETED = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Completed",
+    "functionId": FUNCTION_ID,
+    "response": {"pi": 3.1415},
+}
+CALL_FAILED = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Failed",
+    "functionId": FUNCTION_ID,
+    "error": {"message": "some message", "trace": "some stack trace"},
+}
+CALL_TIMEOUT = {
+    "id": 5678,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "status": "Timeout",
+    "functionId": FUNCTION_ID,
+}
+
 
 @pytest.fixture
 def mock_functions_list_response(rsps):
@@ -88,61 +119,43 @@ def mock_functions_delete_response(rsps):
     yield rsps
 
 
-BASE_CALL = {
-    "id": 5678,
-    "startTime": 1585925306822,
-    "endTime": 1585925310822,
-    "status": "Completed",
-    "functionId": FUNCTION_ID,
-}
-
-
 @pytest.fixture
-def mock_functions_call_completed_response(rsps):
-    response_body_async = BASE_CALL.copy()
-    response_body_sync = BASE_CALL.copy()
-    response_body_sync["response"] = "Hello World!"
+def mock_functions_call_responses(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+    rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
-    url_sync = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
-    url_async = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/async_call"
-    rsps.assert_all_requests_are_fired = False
-    rsps.add(rsps.POST, url_sync, status=201, json=response_body_sync)
-    rsps.add(rsps.POST, url_async, status=201, json=response_body_async)
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
+    rsps.add(rsps.GET, url, status=200, json=CALL_COMPLETED)
 
     yield rsps
 
 
 @pytest.fixture
-def mock_functions_call_by_external_id(mock_functions_retrieve_response):
-    response_body = BASE_CALL.copy()
-    response_body["response"] = "Hello World!"
+def mock_functions_call_by_external_id_responses(mock_functions_retrieve_response):
+    rsps = mock_functions_retrieve_response
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
-    rsps = mock_functions_retrieve_response
-    rsps.add(rsps.POST, url, status=201, json=response_body)
+    rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
+    rsps.add(rsps.GET, url, status=200, json=CALL_COMPLETED)
 
     yield rsps
 
 
 @pytest.fixture
 def mock_functions_call_failed_response(rsps):
-    response_body = BASE_CALL.copy()
-    response_body["status"] = "Failed"
-    response_body["error"] = ({"message": "some message", "trace": "some stack trace"},)
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
-    rsps.add(rsps.POST, url, status=201, json=response_body)
+    rsps.add(rsps.POST, url, status=201, json=CALL_FAILED)
 
     yield rsps
 
 
 @pytest.fixture
 def mock_functions_call_timeout_response(rsps):
-    response_body = BASE_CALL.copy()
-    response_body["status"] = "Timeout"
-
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
-    rsps.add(rsps.POST, url, status=201, json=response_body)
+    rsps.add(rsps.POST, url, status=201, json=CALL_TIMEOUT)
 
     yield rsps
 
@@ -268,20 +281,16 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionList)
         assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
-    def test_function_call(self, mock_functions_call_completed_response):
+    def test_function_call(self, mock_functions_call_responses):
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_functions_call_responses.calls[1].response.json() == res.dump(camel_case=True)
 
-    def test_function_async_call(self, mock_functions_call_completed_response):
-        res = FUNCTIONS_API.call(id=FUNCTION_ID, asynchronous=True)
-        assert isinstance(res, FunctionCall)
-        assert mock_functions_call_completed_response.calls[0].response.json() == res.dump(camel_case=True)
-
-    def test_function_call_by_external_id(self, mock_functions_call_by_external_id):
+    def test_function_call_by_external_id(self, mock_functions_call_by_external_id_responses):
         res = FUNCTIONS_API.call(external_id=f"func-no-{FUNCTION_ID}")
+
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_by_external_id.calls[1].response.json() == res.dump(camel_case=True)
+        assert mock_functions_call_by_external_id_responses.calls[2].response.json() == res.dump(camel_case=True)
 
     def test_function_call_failed(self, mock_functions_call_failed_response):
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
@@ -296,9 +305,8 @@ class TestFunctionsAPI:
 
 @pytest.fixture
 def mock_function_calls_list_response(rsps):
-    response_body = {"items": [BASE_CALL.copy()]}
+    response_body = {"items": [CALL_COMPLETED]}
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/list"
-    rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
@@ -306,9 +314,8 @@ def mock_function_calls_list_response(rsps):
 
 @pytest.fixture
 def mock_function_calls_retrieve_response(rsps):
-    response_body = BASE_CALL.copy()
+    response_body = CALL_COMPLETED
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
-    rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.GET, url, status=200, json=response_body)
 
     yield rsps
@@ -465,9 +472,9 @@ class TestFunctionCallsAPI:
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_functions_call_completed_response")
+    @pytest.mark.usefixtures("mock_functions_call_responses")
     def test_get_logs_on_created_call_object(self, mock_function_call_logs_response):
         call = FUNCTIONS_API.call(id=FUNCTION_ID)
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
-        assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
+        assert mock_function_call_logs_response.calls[2].response.json()["items"] == logs.dump(camel_case=True)
