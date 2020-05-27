@@ -121,7 +121,7 @@ def mock_functions_delete_response(rsps):
 
 @pytest.fixture
 def mock_functions_call_responses(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/1234/call"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678"
