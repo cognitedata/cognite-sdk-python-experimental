@@ -364,8 +364,8 @@ class FunctionCallsAPI(APIClient):
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls"
-
-        return self._list(method="POST", resource_path=url)
+        res = self._get(url)
+        return FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
