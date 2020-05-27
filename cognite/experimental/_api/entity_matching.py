@@ -40,11 +40,13 @@ class EntityMatchingAPI(ContextModelAPI):
             EntityMatchingModel: Resulting queued model."""
         if keys_from_to:
             keys_from_to = [{"keyFrom": f, "keyTo": t} for f, t in keys_from_to]
+        if true_matches:
+            true_matches = list(true_matches)
         return super()._fit_model(
             model_path="/fitml",
             match_from=EntityMatchingModel.dump_entities(match_from),
             match_to=EntityMatchingModel.dump_entities(match_to),
-            true_matches=list(true_matches),
+            true_matches=true_matches,
             keys_from_to=keys_from_to,
             model_type=model_type,
         )
