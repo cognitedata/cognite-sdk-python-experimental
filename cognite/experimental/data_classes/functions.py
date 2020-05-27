@@ -1,3 +1,4 @@
+import time
 from typing import Dict, List, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
@@ -110,13 +111,14 @@ class FunctionList(CogniteResourceList):
 
 
 class FunctionCall(CogniteResource):
+
     """A representation of a Cognite Function call.
 
     Args:
         id (int): A server-generated ID for the object.
         start_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         end_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        response (str): Response from the function. The function must return a JSON serializable object.
+        response (str): Response from the function. The function must return a JSON serializable object or nothing.
         status (str): Status of the function call ("Running" or "Completed").
         schedule_id (int): The schedule id belonging to the call.
         error (dict): Error from the function call. It contains an error message and the stack trace.
@@ -142,30 +144,28 @@ class FunctionCall(CogniteResource):
         self.status = status
         self.schedule_id = schedule_id
         self.error = error
-        self._function_id = function_id
+        self.function_id = function_id
         self._cognite_client = cognite_client
 
     def get_logs(self):
-        return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self._function_id)
+        return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self.function_id)
 
-    @classmethod
-    def _load(cls, resource: Union[Dict, str], function_id: int = None, cognite_client=None):
-        instance = super()._load(resource, cognite_client=cognite_client)
-        if function_id:
-            instance._function_id = function_id
-        return instance
+    def update(self):
+        latest = self._cognite_client.functions.calls.retrieve(call_id=self.id, function_id=self.function_id)
+        self.status = latest.status
+        self.end_time = latest.end_time
+        self.response = latest.response
+        self.error = latest.error
+
+    def wait(self):
+        while self.status == "Running":
+            self.update()
+            time.sleep(1.0)
 
 
 class FunctionCallList(CogniteResourceList):
     _RESOURCE = FunctionCall
     _ASSERT_CLASSES = False
-
-    @classmethod
-    def _load(cls, resource: Union[List, str], function_id: int = None, cognite_client=None):
-        instance = super()._load(resource, cognite_client=cognite_client)
-        for obj in instance:
-            obj._function_id = function_id
-        return instance
 
 
 class FunctionCallLogEntry(CogniteResource):

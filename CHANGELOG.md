@@ -13,9 +13,23 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## [0.7.3] - 2020-05-20
+
+## [0.8.2] - 2020-05-27
 ### Added
 - Filtering of function calls given call attributes.
+
+## [0.8.1] - 2020-05-26
+### Changed
+- Function calls now returns `functionId`, so the getting logs of a call has a simplified internal structure.
+
+## [0.8.0] - 2020-05-26
+### Changed
+- In `FunctionsAPI.call()`, the `asynchronous` argument has been removed, reflecting the Functions API which now only supports asynchronous calls. A new argument `wait` has been introduced. When `wait=True` (default), `FunctionsAPI.call()` will block until the call is finished.
+
+## [0.7.3] - 2020-05-19
+### Fixed
+- Dosctring for `FunctionCallsAPI.list()` erroneously listed `external_id` as optional argument. This has been corrected to `function_external_id`.
+
 
 ## [0.7.2] - 2020-05-15
 ### Fixed

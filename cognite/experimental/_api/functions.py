@@ -46,7 +46,7 @@ class FunctionsAPI(APIClient):
         Args:
             name (str):                             The name of the function.
             folder (str, optional):                 Path to the folder where the function source code is located.
-            filde_id (int, optional):               File ID of the code uploaded to the Files API.
+            file_id (int, optional):                File ID of the code uploaded to the Files API.
             function_handle (Callable, optional):   Reference to a function object, which must be named `handle`. Valid arguments to `handle` are `data`, `client` and `secret`.
             external_id (str, optional):            External id of the function.
             description (str, optional):            Description of the function.
@@ -198,15 +198,15 @@ class FunctionsAPI(APIClient):
         id: Optional[int] = None,
         external_id: Optional[str] = None,
         data: Optional[Dict] = None,
-        asynchronous: bool = False,
+        wait: bool = True,
     ) -> FunctionCall:
-        """Call a function by its ID or external ID. Can be done `synchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_ or `asynchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-functionId-async_call>`_.
+        """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
 
         Args:
             id (int, optional): ID
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
-            asynchronous (bool): Call the function asynchronously. Defaults to false.
+            wait (bool): Wait until the function call is finished. Defaults to True.
 
         Returns:
             FunctionCall: A function call object.
@@ -230,12 +230,17 @@ class FunctionsAPI(APIClient):
         if external_id:
             id = self.retrieve(external_id=external_id).id
 
-        url = f"/functions/{id}/call" if not asynchronous else f"/functions/{id}/async_call"
+        url = f"/functions/{id}/call"
         body = {}
         if data:
             body = {"data": data}
         res = self._post(url, json=body)
-        return FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
+
+        function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
+        if wait:
+            function_call.wait()
+
+        return function_call
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         # / is not allowed in file names
@@ -342,11 +347,11 @@ class FunctionCallsAPI(APIClient):
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
-            external_id (str, optional): External ID of the function on which the calls were made.
             status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
             schedule (int, optional): Schedule id of the call.
             start_time (Union[Dict[str, int], TimestampRange]): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
             end_time (Union[Dict[str, int], TimestampRange]): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            function_external_id (str, optional): External ID of the function on which the calls were made.
 
         Returns:
             FunctionCallList: List of function calls
@@ -371,7 +376,6 @@ class FunctionCallsAPI(APIClient):
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls"
-
         filter = {}
         if status:
             filter["status"] = status
@@ -382,8 +386,7 @@ class FunctionCallsAPI(APIClient):
         if end_time:
             filter["end_time"] = end_time
 
-        res = self._list(method="POST", resource_path=url, filter=filter)
-        return FunctionCallList._load(res.json()["items"], function_id=function_id, cognite_client=self._cognite_client)
+        return self._list(method="POST", resource_path=url, filter=filter)
 
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
@@ -419,7 +422,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}"
         res = self._get(url)
-        return FunctionCall._load(res.json(), function_id=function_id, cognite_client=self._cognite_client)
+        return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
