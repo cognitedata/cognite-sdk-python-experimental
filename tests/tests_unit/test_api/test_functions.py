@@ -308,7 +308,7 @@ def mock_function_calls_list_response(rsps):
 
     response_body = {"items": [CALL_COMPLETED]}
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/list"
-    rsps.add(rsps.GET, url, status=200, json=response_body)
+    rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
 
