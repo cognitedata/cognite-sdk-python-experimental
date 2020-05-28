@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+
+### Fixed
+- The method `Function.call()` now takes an argument `wait` (defaults to `True`) instead of `asynchronous`, which did not work because of the update in release 0.8.0.
+
 ## [0.8.2] - 2020-05-27
 ### Fixed
 - Allow `true_matches` to be `None` in `fit_ml`.
