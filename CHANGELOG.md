@@ -14,7 +14,7 @@ Changes are grouped as follows
 
 ## [0.8.3] - 2020-05-28
 ### Fixed
-- The method `Function.call()` now takes an argument `wait` (defaults to `True`) instead of `asynchronous`, which did not work because of the update in release 0.8.0.
+- The method `Function.call()` now takes an argument `wait` (defaults to `True`) instead of `asynchronous`. This change was supposed to be a part of release 0.8.0.
 
 ## [0.8.2] - 2020-05-27
 ### Fixed
