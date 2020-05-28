@@ -12,6 +12,9 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.8.2] - 2020-05-27
+### Fixed
+- Allow `true_matches` to be `None` in `fit_ml`.
 
 
 ## [0.8.2] - 2020-05-27
