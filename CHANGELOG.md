@@ -12,8 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
-
+## [0.8.3] - 2020-05-28
 ### Fixed
 - The method `Function.call()` now takes an argument `wait` (defaults to `True`) instead of `asynchronous`, which did not work because of the update in release 0.8.0.
 
