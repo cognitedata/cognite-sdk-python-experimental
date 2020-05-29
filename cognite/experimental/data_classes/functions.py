@@ -119,14 +119,12 @@ class FunctionList(CogniteResourceList):
 
 
 class FunctionCall(CogniteResource):
-
     """A representation of a Cognite Function call.
 
     Args:
         id (int): A server-generated ID for the object.
         start_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         end_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        response (str): Response from the function. The function must return a JSON serializable object or nothing.
         status (str): Status of the function call ("Running" or "Completed").
         schedule_id (int): The schedule id belonging to the call.
         error (dict): Error from the function call. It contains an error message and the stack trace.
@@ -138,7 +136,6 @@ class FunctionCall(CogniteResource):
         id: int = None,
         start_time: int = None,
         end_time: int = None,
-        response: str = None,
         status: str = None,
         schedule_id: int = None,
         error: dict = None,
@@ -148,12 +145,14 @@ class FunctionCall(CogniteResource):
         self.id = id
         self.start_time = start_time
         self.end_time = end_time
-        self.response = response
         self.status = status
         self.schedule_id = schedule_id
         self.error = error
         self.function_id = function_id
         self._cognite_client = cognite_client
+
+    def get_response(self):
+        return self._cognite_client.functions.calls.get_response(call_id=self.id, function_id=self.function_id)
 
     def get_logs(self):
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self.function_id)
@@ -162,7 +161,6 @@ class FunctionCall(CogniteResource):
         latest = self._cognite_client.functions.calls.retrieve(call_id=self.id, function_id=self.function_id)
         self.status = latest.status
         self.end_time = latest.end_time
-        self.response = latest.response
         self.error = latest.error
 
     def wait(self):
@@ -174,6 +172,23 @@ class FunctionCall(CogniteResource):
 class FunctionCallList(CogniteResourceList):
     _RESOURCE = FunctionCall
     _ASSERT_CLASSES = False
+
+
+class FunctionCallResponse(CogniteResource):
+    """The response from a function call.
+
+    Args:
+        function_id (int): The ID of the function on which the call was made.
+        call_id (int): The ID of the call.
+        response (str): The function call response.
+        cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
+    """
+
+    def __init__(self, call_id: int = None, function_id: int = None, response: str = None, cognite_client=None):
+        self.call_id = call_id
+        self.function_id = function_id
+        self.response = response
+        self._cognite_client = cognite_client
 
 
 class FunctionCallLogEntry(CogniteResource):

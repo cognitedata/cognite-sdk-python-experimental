@@ -422,6 +422,10 @@ Retrieve function call
 ~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.retrieve
 
+Retrieve function call response
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_response
+
 Retrieve function call logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_logs

@@ -12,6 +12,7 @@ from cognite.experimental.data_classes import (
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
+    FunctionCallResponse,
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
@@ -387,7 +388,7 @@ class FunctionCallsAPI(APIClient):
         Args:
             call_id (int): ID of the call.
             function_id (int, optional): ID of the function on which the call was made.
-            external_id (str, optional): External ID of the function on which the call was made.
+            function_external_id (str, optional): External ID of the function on which the call was made.
 
         Returns:
             FunctionCall: Function call.
@@ -414,6 +415,42 @@ class FunctionCallsAPI(APIClient):
         url = f"/functions/{function_id}/calls/{call_id}"
         res = self._get(url)
         return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
+
+    def get_response(
+        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
+    ) -> FunctionCallResponse:
+        """Retrieve the response from a function call.
+
+        Args:
+            call_id (int): ID of the call.
+            function_id (int, optional): ID of the function on which the call was made.
+            function_external_id (str, optional): External ID of the function on which the call was made.
+
+        Returns:
+            FunctionCallResponse: Response from the function call.
+
+        Examples:
+
+            Retrieve function call response by call ID::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> response = c.functions.calls.get_response(call_id=2, function_id=1)
+
+            Retrieve function call response directly on a call object::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> call = c.functions.calls.retrieve(call_id=2, function_id=1)
+                >>> response = call.get_response()
+
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        if function_external_id:
+            function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
+        url = f"/functions/{function_id}/calls/{call_id}/response"
+        res = self._get(url)
+        return FunctionCallResponse._load(res.json())
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
