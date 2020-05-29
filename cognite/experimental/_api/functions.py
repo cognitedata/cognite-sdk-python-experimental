@@ -341,7 +341,7 @@ class FunctionCallsAPI(APIClient):
         start_time: Optional[Dict[str, int]] = None,
         end_time: Optional[Dict[str, int]] = None,
     ) -> FunctionCallList:
-        """`List all calls associated with a specific function id. Either function_id or function_external_id must be specified.`_
+        """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
