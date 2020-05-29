@@ -332,8 +332,6 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
-    _LIST_CLASS = FunctionCallList
-
     def list(
         self,
         function_id: Optional[int] = None,
@@ -343,7 +341,7 @@ class FunctionCallsAPI(APIClient):
         start_time: Optional[Dict[str, int]] = None,
         end_time: Optional[Dict[str, int]] = None,
     ) -> FunctionCallList:
-        """`List all calls associated with a specific function id. Either function_id or function_external_id must be specified. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
+        """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
