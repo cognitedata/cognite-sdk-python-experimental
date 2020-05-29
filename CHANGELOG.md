@@ -15,7 +15,7 @@ Changes are grouped as follows
 
 ## Unreleased
 ### Added
-- Filtering of function calls given call attributes.
+- Filtering of function calls given call attributes and added  an attribute for schedule id to the FunctionCall data class.
 
 ## [0.8.3] - 2020-05-28
 ### Fixed
