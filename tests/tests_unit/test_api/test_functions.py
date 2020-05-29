@@ -9,6 +9,7 @@ from cognite.experimental.data_classes import (
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
+    FunctionCallResponse,
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
@@ -322,6 +323,16 @@ def mock_function_calls_retrieve_response(rsps):
 
 
 @pytest.fixture
+def mock_function_call_response_response(rsps):
+    response_body = {"callId": 5678, "functionId": 1234, "response": "Some response."}
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/5678/response"
+    rsps.assert_all_requests_are_fired = False
+    rsps.add(rsps.GET, url, status=200, json=response_body)
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_function_call_logs_response(rsps):
     response_body = {
         "items": [
@@ -478,3 +489,21 @@ class TestFunctionCallsAPI:
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[2].response.json()["items"] == logs.dump(camel_case=True)
+
+    def test_function_call_response_by_function_id(self, mock_function_call_response_response):
+        res = FUNCTION_CALLS_API.get_response(call_id=5678, function_id=FUNCTION_ID)
+        assert isinstance(res, FunctionCallResponse)
+        assert mock_function_call_response_response.calls[0].response.json() == res.dump(camel_case=True)
+
+    @pytest.mark.usefixtures("mock_functions_retrieve_response")
+    def test_function_call_response_by_function_external_id(self, mock_function_call_response_response):
+        res = FUNCTION_CALLS_API.get_response(call_id=5678, function_id=FUNCTION_ID)
+        assert isinstance(res, FunctionCallResponse)
+        assert mock_function_call_response_response.calls[0].response.json() == res.dump(camel_case=True)
+
+    @pytest.mark.usefixtures("mock_function_calls_retrieve_response")
+    def test_get_response_on_retrieved_call_object(self, mock_function_call_response_response):
+        call = FUNCTION_CALLS_API.retrieve(call_id=5678, function_id=FUNCTION_ID)
+        response = call.get_response()
+        assert isinstance(response, FunctionCallResponse)
+        assert mock_function_call_response_response.calls[1].response.json() == response.dump(camel_case=True)
