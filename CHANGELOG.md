@@ -14,7 +14,7 @@ Changes are grouped as follows
 
 ## Unreleased
 ### Changed
-- Function response no longer a property of the `FunctionCall` class. Instead, the response can be retrieved by the methods `FunctionCallsAPI.get_response()` or `FunctionCall.get_response()`.
+- Function response is no longer a property of the `FunctionCall` class. Instead, the response can be retrieved by the methods `FunctionCallsAPI.get_response()` or `FunctionCall.get_response()`.
 
 ## [0.8.3] - 2020-05-28
 ### Fixed
