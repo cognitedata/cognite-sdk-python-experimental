@@ -376,16 +376,7 @@ class FunctionCallsAPI(APIClient):
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls"
-        filter = {}
-        if status:
-            filter["status"] = status
-        if schedule_id:
-            filter["schedule_id"] = schedule_id
-        if start_time:
-            filter["start_time"] = start_time
-        if end_time:
-            filter["end_time"] = end_time
-
+        filter = {"status": status, "schedule_id": schedule_id, "start_time": start_time, "end_time": end_time}
         return self._list(method="POST", resource_path=url, filter=filter)
 
     def retrieve(
