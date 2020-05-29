@@ -405,7 +405,7 @@ class FunctionCallsAPI(APIClient):
     def get_response(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCallResponse:
-        """Retrieve response from a function call.
+        """Retrieve the response from a function call.
 
         Args:
             call_id (int): ID of the call.
