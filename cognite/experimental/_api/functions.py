@@ -421,14 +421,14 @@ class FunctionCallsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> logs = c.functions.calls.get_response(call_id=2, function_id=1)
+                >>> response = c.functions.calls.get_response(call_id=2, function_id=1)
 
             Retrieve function call response directly on a call object::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> call = c.functions.calls.retrieve(call_id=2, function_id=1)
-                >>> logs = call.get_response()
+                >>> response = call.get_response()
 
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
