@@ -50,8 +50,8 @@ class Function(CogniteResource):
         self.error = error
         self._cognite_client = cognite_client
 
-    def call(self, data=None, asynchronous: bool = False):
-        return self._cognite_client.functions.call(id=self.id, data=data, asynchronous=asynchronous)
+    def call(self, data=None, wait: bool = True):
+        return self._cognite_client.functions.call(id=self.id, data=data, wait=wait)
 
     def list_calls(self, **kwargs):
         return self._cognite_client.functions.calls.list(function_id=self.id, **kwargs)
