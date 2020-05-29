@@ -267,18 +267,6 @@ class TestFunctionsAPI:
         assert isinstance(res, Function)
         assert mock_functions_retrieve_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
 
-    def test_list_calls(self, mock_function_calls_list_response, mock_functions_retrieve_response):
-        filter_kwargs = {
-            "status": "Completed",
-            "schedule_id": 123,
-            "start_time": {"min": 1585925306822, "max": 1585925306823},
-            "end_time": {"min": 1585925310822, "max": 1585925310823},
-        }
-        res = FUNCTIONS_API.retrieve(id=FUNCTION_ID).list_calls(**filter_kwargs)
-
-        assert isinstance(res, FunctionCallList)
-        assert mock_function_calls_list_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
-
     def test_retrieve_by_external_id(self, mock_functions_retrieve_response):
         res = FUNCTIONS_API.retrieve(external_id="func1")
         assert isinstance(res, Function)
@@ -437,6 +425,18 @@ class TestFunctionSchedulesAPI:
 
 
 class TestFunctionCallsAPI:
+    def test_list_calls_and_filter(self, mock_function_calls_list_response, mock_functions_retrieve_response):
+        filter_kwargs = {
+            "status": "Completed",
+            "schedule_id": 123,
+            "start_time": {"min": 1585925306822, "max": 1585925306823},
+            "end_time": {"min": 1585925310822, "max": 1585925310823},
+        }
+        res = FUNCTIONS_API.retrieve(id=FUNCTION_ID).list_calls(**filter_kwargs)
+
+        assert isinstance(res, FunctionCallList)
+        assert mock_function_calls_list_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
+
     def test_list_calls_by_function_id(self, mock_function_calls_list_response):
         filter_kwargs = {
             "status": "Completed",
