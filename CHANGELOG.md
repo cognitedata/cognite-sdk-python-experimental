@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+### Changed
+- Function response no longer a property of the `FunctionCall` class. Instead, the response can now be retrieved by the methods `FunctionCallsAPI.get_response()` or `FunctionCall.get_response()`.
+
 ## [0.8.3] - 2020-05-28
 ### Fixed
 - The method `Function.call()` now takes the argument `wait` (defaults to `True`) instead of `asynchronous`. This change was supposed to be a part of release 0.8.0.
