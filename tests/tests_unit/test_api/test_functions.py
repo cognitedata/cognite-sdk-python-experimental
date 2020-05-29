@@ -50,7 +50,6 @@ CALL_COMPLETED = {
     "endTime": 1585925310822,
     "status": "Completed",
     "functionId": FUNCTION_ID,
-    "response": {"pi": 3.1415},
 }
 CALL_FAILED = {
     "id": 5678,
