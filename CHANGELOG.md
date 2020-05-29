@@ -16,6 +16,9 @@ Changes are grouped as follows
 ### Changed
 - Function response is no longer a property of the `FunctionCall` class. Instead, the response can be retrieved by the methods `FunctionCallsAPI.get_response()` or `FunctionCall.get_response()`.
 
+### Added
+- Filtering of function calls given call attributes and added  an attribute for schedule id to the FunctionCall data class.
+
 ## [0.8.3] - 2020-05-28
 ### Fixed
 - The method `Function.call()` now takes the argument `wait` (defaults to `True`) instead of `asynchronous`. This change was supposed to be a part of release 0.8.0.
@@ -35,6 +38,7 @@ Changes are grouped as follows
 ## [0.7.3] - 2020-05-19
 ### Fixed
 - Dosctring for `FunctionCallsAPI.list()` erroneously listed `external_id` as optional argument. This has been corrected to `function_external_id`.
+
 
 ## [0.7.2] - 2020-05-15
 ### Fixed

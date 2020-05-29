@@ -1,5 +1,5 @@
 import time
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
@@ -53,8 +53,16 @@ class Function(CogniteResource):
     def call(self, data=None, wait: bool = True):
         return self._cognite_client.functions.call(id=self.id, data=data, wait=wait)
 
-    def list_calls(self):
-        return self._cognite_client.functions.calls.list(function_id=self.id)
+    def list_calls(
+        self,
+        status: Optional[str] = None,
+        schedule_id: Optional[int] = None,
+        start_time: Optional[Dict[str, int]] = None,
+        end_time: Optional[Dict[str, int]] = None,
+    ):
+        return self._cognite_client.functions.calls.list(
+            function_id=self.id, status=status, schedule_id=schedule_id, start_time=start_time, end_time=end_time
+        )
 
     def list_schedules(self):
         all_schedules = self._cognite_client.functions.schedules.list()
@@ -118,6 +126,7 @@ class FunctionCall(CogniteResource):
         start_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         end_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         status (str): Status of the function call ("Running" or "Completed").
+        schedule_id (int): The schedule id belonging to the call.
         error (dict): Error from the function call. It contains an error message and the stack trace.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
@@ -128,6 +137,7 @@ class FunctionCall(CogniteResource):
         start_time: int = None,
         end_time: int = None,
         status: str = None,
+        schedule_id: int = None,
         error: dict = None,
         function_id: int = None,
         cognite_client=None,
@@ -136,6 +146,7 @@ class FunctionCall(CogniteResource):
         self.start_time = start_time
         self.end_time = end_time
         self.status = status
+        self.schedule_id = schedule_id
         self.error = error
         self.function_id = function_id
         self._cognite_client = cognite_client
