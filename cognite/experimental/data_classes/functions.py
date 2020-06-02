@@ -50,7 +50,16 @@ class Function(CogniteResource):
         self.error = error
         self._cognite_client = cognite_client
 
-    def call(self, data=None, wait: bool = True):
+    def call(self, data=None, wait: bool = True) -> "FunctionCall":
+        """`Call this particlar function. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_
+
+        Args:
+            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            wait (bool): Wait until the function call is finished. Defaults to True.
+
+        Returns:
+            FunctionCall: A function call object.
+        """
         return self._cognite_client.functions.call(id=self.id, data=data, wait=wait)
 
     def list_calls(
@@ -59,17 +68,41 @@ class Function(CogniteResource):
         schedule_id: Optional[int] = None,
         start_time: Optional[Dict[str, int]] = None,
         end_time: Optional[Dict[str, int]] = None,
-    ):
+    ) -> "FunctionCallList":
+        """List all calls to this function.
+
+        Args:
+            status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
+            schedule_id (int, optional): Schedule id from which the call belongs (if any).
+            start_time ([Dict[str, int], optional): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            end_time (Dict[str, int], optional): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+
+        Returns:
+            FunctionCallList: List of function calls
+        """
         return self._cognite_client.functions.calls.list(
             function_id=self.id, status=status, schedule_id=schedule_id, start_time=start_time, end_time=end_time
         )
 
-    def list_schedules(self):
+    def list_schedules(self) -> "FunctionSchedulesList":
+        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+
+        Returns:
+            FunctionSchedulesList: List of function schedules
+        """
         all_schedules = self._cognite_client.functions.schedules.list()
         function_schedules = filter(lambda f: f.function_external_id == self.external_id, all_schedules)
         return list(function_schedules)
 
-    def retrieve_call(self, id: int):
+    def retrieve_call(self, id: int) -> "FunctionCall":
+        """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
+
+        Args:
+            call_id (int): ID of the call.
+
+        Returns:
+            FunctionCall: Function call.
+        """
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
 
@@ -151,13 +184,28 @@ class FunctionCall(CogniteResource):
         self.function_id = function_id
         self._cognite_client = cognite_client
 
-    def get_response(self):
+    def get_response(self) -> "FunctionCallResponse":
+        """Retrieve the response from this function call.
+
+        Returns:
+            FunctionCallResponse: Response from the function call.
+        """
         return self._cognite_client.functions.calls.get_response(call_id=self.id, function_id=self.function_id)
 
-    def get_logs(self):
+    def get_logs(self) -> "FunctionCallLog":
+        """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
+
+        Returns:
+            FunctionCallLog: Log for the function call.
+        """
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self.function_id)
 
-    def update(self):
+    def update(self) -> None:
+        """Update the funciton call object. Can be useful if the call was made with wait=False.
+
+        Returns:
+            None
+        """
         latest = self._cognite_client.functions.calls.retrieve(call_id=self.id, function_id=self.function_id)
         self.status = latest.status
         self.end_time = latest.end_time
