@@ -12,9 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
+## [0.9.0] - 2020-05-29
 ### Changed
 - Function response is no longer a property of the `FunctionCall` class. Instead, the response can be retrieved by the methods `FunctionCallsAPI.get_response()` or `FunctionCall.get_response()`.
+- The documentation for function schedules is put under the expand/collapse header Function Schedules.
 
 ### Added
 - Filtering of function calls given call attributes and added  an attribute for schedule id to the FunctionCall data class.
