@@ -145,7 +145,7 @@ class FunctionsAPI(APIClient):
             external_id (str, optional): External ID
 
         Returns:
-            Function: Requested function or None if it does not exist.
+            Function: Requested function.
         Raises:
             ~cognite.client.exceptions.CogniteAPIError: Function id not found
 
