@@ -137,7 +137,7 @@ class FunctionsAPI(APIClient):
         res = self._get(url)
         return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
-    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Function:
         """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name>`_
 
         Args:
@@ -145,7 +145,9 @@ class FunctionsAPI(APIClient):
             external_id (str, optional): External ID
 
         Returns:
-            Optional[Function]: Requested function or None if it does not exist.
+            Function: Requested function or None if it does not exist.
+        Raises:
+            ~cognite.client.exceptions.CogniteAPIError: Function id not found
 
         Examples:
 
