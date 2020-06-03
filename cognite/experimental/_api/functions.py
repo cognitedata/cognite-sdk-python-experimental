@@ -48,7 +48,7 @@ class FunctionsAPI(APIClient):
         - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. The zip-file must contain a file named handler.py whithin which a function named handle must be defined.\n
         - Via the `function_handle` argument, which is a reference to a function object, which must be named `handle`.\n
 
-        The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secret`:\n
+        The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secrets`:\n
         - If the user calls the function with input data, this is passed through the `data` argument.\n
         - If the user gives an `api_key` when creating the function, a pre instantiated CogniteClient is passed through the `client` argument.\n
         - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
