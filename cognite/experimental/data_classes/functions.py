@@ -98,7 +98,7 @@ class Function(CogniteResource):
         """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
 
         Args:
-            call_id (int): ID of the call.
+            id (int): ID of the call.
 
         Returns:
             FunctionCall: Function call.
