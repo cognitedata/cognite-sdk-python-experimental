@@ -193,7 +193,7 @@ class FunctionCall(CogniteResource):
         return self._cognite_client.functions.calls.get_response(call_id=self.id, function_id=self.function_id)
 
     def get_logs(self) -> "FunctionCallLog":
-        """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
+        """`Retrieve logs for this function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
 
         Returns:
             FunctionCallLog: Log for the function call.
