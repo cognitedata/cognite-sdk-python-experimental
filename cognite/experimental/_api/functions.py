@@ -51,7 +51,7 @@ class FunctionsAPI(APIClient):
         The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secret`:\n
         - If the user calls the function with input data, this is passed through the `data` argument.\n
         - If the user gives an `api_key` when creating the function, a pre instantiated CogniteClient is passed through the `client` argument.\n
-        - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument.\n
+        - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
 
         Args:
             name (str):                             The name of the function.
