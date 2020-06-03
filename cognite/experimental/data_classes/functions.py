@@ -85,7 +85,7 @@ class Function(CogniteResource):
         )
 
     def list_schedules(self) -> "FunctionSchedulesList":
-        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+        """`List all schedules associated with this function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
         Returns:
             FunctionSchedulesList: List of function schedules
