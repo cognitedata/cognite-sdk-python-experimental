@@ -44,8 +44,8 @@ class FunctionsAPI(APIClient):
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
-        - Via the `folder` argument, which is the path to the folder where the source code is located. The folder must contain a file named handler.py whithin which a function named handle must be defined.\n
-        - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. The zip-file must contain a file named handler.py whithin which a function named handle must be defined.\n
+        - Via the `folder` argument, which is the path to the folder where the source code is located. The folder must contain a file named handler.py within which a function named handle must be defined.\n
+        - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. The zip-file must contain a file named handler.py within which a function named handle must be defined.\n
         - Via the `function_handle` argument, which is a reference to a function object, which must be named `handle`.\n
 
         The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secrets`:\n
