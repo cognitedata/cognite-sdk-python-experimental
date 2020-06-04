@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.9.1] - 2020-06-03
+## [0.9.1] - 2020-06-04
 
 ### Changed
 - Updated documentation for functions.
