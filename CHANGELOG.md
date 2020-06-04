@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.10.0] - 2020-06-04
+### Changed
+- POST endpoints such as search and list will be retried in experimetal endpoints, as they are in v1.
+
 ## [0.9.1] - 2020-06-04
 
 ### Changed
 - Updated documentation for functions.
+
 
 ## [0.9.0] - 2020-05-29
 ### Changed
