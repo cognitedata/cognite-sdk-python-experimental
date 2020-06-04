@@ -426,6 +426,10 @@ Retrieve function call
 ~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.retrieve
 
+Retrieve function call response
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_response
+
 Retrieve function call logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_logs
@@ -433,15 +437,15 @@ Retrieve function call logs
 Function schedules
 ^^^^^^^^^^^^^^^^^^
 List function schedules
-^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.list
 
 Create function schedule
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.create
 
 Delete function schedule
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.delete
 
 Data classes

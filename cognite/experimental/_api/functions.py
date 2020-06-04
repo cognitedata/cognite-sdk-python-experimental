@@ -12,6 +12,7 @@ from cognite.experimental.data_classes import (
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
+    FunctionCallResponse,
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
@@ -198,15 +199,15 @@ class FunctionsAPI(APIClient):
         id: Optional[int] = None,
         external_id: Optional[str] = None,
         data: Optional[Dict] = None,
-        asynchronous: bool = False,
+        wait: bool = True,
     ) -> FunctionCall:
-        """Call a function by its ID or external ID. Can be done `synchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_ or `asynchronously <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-functionId-async_call>`_.
+        """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
 
         Args:
             id (int, optional): ID
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
-            asynchronous (bool): Call the function asynchronously. Defaults to false.
+            wait (bool): Wait until the function call is finished. Defaults to True.
 
         Returns:
             FunctionCall: A function call object.
@@ -230,12 +231,17 @@ class FunctionsAPI(APIClient):
         if external_id:
             id = self.retrieve(external_id=external_id).id
 
-        url = f"/functions/{id}/call" if not asynchronous else f"/functions/{id}/async_call"
+        url = f"/functions/{id}/call"
         body = {}
         if data:
             body = {"data": data}
         res = self._post(url, json=body)
-        return FunctionCall._load(res.json(), function_id=id, cognite_client=self._cognite_client)
+
+        function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
+        if wait:
+            function_call.wait()
+
+        return function_call
 
     def _zip_and_upload_folder(self, folder, name) -> int:
         # / is not allowed in file names
@@ -327,11 +333,23 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
-    def list(self, function_id: Optional[int] = None, function_external_id: Optional[str] = None) -> FunctionCallList:
-        """`List all calls associated with a specific function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
+    def list(
+        self,
+        function_id: Optional[int] = None,
+        function_external_id: Optional[str] = None,
+        status: Optional[str] = None,
+        schedule_id: Optional[int] = None,
+        start_time: Optional[Dict[str, int]] = None,
+        end_time: Optional[Dict[str, int]] = None,
+    ) -> FunctionCallList:
+        """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
+            status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
+            schedule_id (int, optional): Schedule id from which the call belongs (if any).
+            start_time (Union[Dict[str, int], TimestampRange]): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            end_time (Union[Dict[str, int], TimestampRange]): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
             function_external_id (str, optional): External ID of the function on which the calls were made.
 
         Returns:
@@ -356,9 +374,11 @@ class FunctionCallsAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
-        url = f"/functions/{function_id}/calls"
-        res = self._get(url)
-        return FunctionCallList._load(res.json()["items"], function_id=function_id, cognite_client=self._cognite_client)
+        url = f"/functions/{function_id}/calls/list"
+        filter = {"status": status, "scheduleId": schedule_id, "startTime": start_time, "endTime": end_time}
+        post_body = {"filter": filter}
+        res = self._post(url, json=post_body)
+        return FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
@@ -368,7 +388,7 @@ class FunctionCallsAPI(APIClient):
         Args:
             call_id (int): ID of the call.
             function_id (int, optional): ID of the function on which the call was made.
-            external_id (str, optional): External ID of the function on which the call was made.
+            function_external_id (str, optional): External ID of the function on which the call was made.
 
         Returns:
             FunctionCall: Function call.
@@ -394,7 +414,43 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}"
         res = self._get(url)
-        return FunctionCall._load(res.json(), function_id=function_id, cognite_client=self._cognite_client)
+        return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
+
+    def get_response(
+        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
+    ) -> FunctionCallResponse:
+        """Retrieve the response from a function call.
+
+        Args:
+            call_id (int): ID of the call.
+            function_id (int, optional): ID of the function on which the call was made.
+            function_external_id (str, optional): External ID of the function on which the call was made.
+
+        Returns:
+            FunctionCallResponse: Response from the function call.
+
+        Examples:
+
+            Retrieve function call response by call ID::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> response = c.functions.calls.get_response(call_id=2, function_id=1)
+
+            Retrieve function call response directly on a call object::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> call = c.functions.calls.retrieve(call_id=2, function_id=1)
+                >>> response = call.get_response()
+
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        if function_external_id:
+            function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
+        url = f"/functions/{function_id}/calls/{call_id}/response"
+        res = self._get(url)
+        return FunctionCallResponse._load(res.json())
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None

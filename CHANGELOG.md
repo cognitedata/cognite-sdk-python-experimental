@@ -12,11 +12,34 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.9.0] - 2020-05-29
+### Changed
+- Function response is no longer a property of the `FunctionCall` class. Instead, the response can be retrieved by the methods `FunctionCallsAPI.get_response()` or `FunctionCall.get_response()`.
+- The documentation for function schedules is put under the expand/collapse header Function Schedules.
 
-## Unreleased
+### Added
+- Filtering of function calls given call attributes and added  an attribute for schedule id to the FunctionCall data class.
 
+## [0.8.3] - 2020-05-28
+### Fixed
+- The method `Function.call()` now takes the argument `wait` (defaults to `True`) instead of `asynchronous`. This change was supposed to be a part of release 0.8.0.
+
+## [0.8.2] - 2020-05-27
+### Fixed
+- Allow `true_matches` to be `None` in `fit_ml`.
+
+## [0.8.1] - 2020-05-26
+### Changed
+- Function calls now returns `functionId`, so the getting logs of a call has a simplified internal structure.
+
+## [0.8.0] - 2020-05-26
+### Changed
+- In `FunctionsAPI.call()`, the `asynchronous` argument has been removed, reflecting the Functions API which now only supports asynchronous calls. A new argument `wait` has been introduced. When `wait=True` (default), `FunctionsAPI.call()` will block until the call is finished.
+
+## [0.7.3] - 2020-05-19
 ### Fixed
 - Dosctring for `FunctionCallsAPI.list()` erroneously listed `external_id` as optional argument. This has been corrected to `function_external_id`.
+
 
 ## [0.7.2] - 2020-05-15
 ### Fixed
