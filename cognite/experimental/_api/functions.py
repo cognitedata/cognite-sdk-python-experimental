@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from inspect import getsource
@@ -12,7 +13,6 @@ from cognite.experimental.data_classes import (
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
-    FunctionCallResponse,
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
@@ -425,9 +425,7 @@ class FunctionCallsAPI(APIClient):
         res = self._get(url)
         return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
 
-    def get_response(
-        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
-    ) -> FunctionCallResponse:
+    def get_response(self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None):
         """Retrieve the response from a function call.
 
         Args:
@@ -436,7 +434,7 @@ class FunctionCallsAPI(APIClient):
             function_external_id (str, optional): External ID of the function on which the call was made.
 
         Returns:
-            FunctionCallResponse: Response from the function call.
+            Response from the function call.
 
         Examples:
 
@@ -459,7 +457,10 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/response"
         res = self._get(url)
-        return FunctionCallResponse._load(res.json())
+        response = res.json().get("response")
+        if response:
+            return json.loads(response)
+        return None
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None

@@ -184,11 +184,11 @@ class FunctionCall(CogniteResource):
         self.function_id = function_id
         self._cognite_client = cognite_client
 
-    def get_response(self) -> "FunctionCallResponse":
+    def get_response(self):
         """Retrieve the response from this function call.
 
         Returns:
-            FunctionCallResponse: Response from the function call.
+            Response from the function call.
         """
         return self._cognite_client.functions.calls.get_response(call_id=self.id, function_id=self.function_id)
 
@@ -220,23 +220,6 @@ class FunctionCall(CogniteResource):
 class FunctionCallList(CogniteResourceList):
     _RESOURCE = FunctionCall
     _ASSERT_CLASSES = False
-
-
-class FunctionCallResponse(CogniteResource):
-    """The response from a function call.
-
-    Args:
-        function_id (int): The ID of the function on which the call was made.
-        call_id (int): The ID of the call.
-        response (str): The function call response.
-        cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
-    """
-
-    def __init__(self, call_id: int = None, function_id: int = None, response: str = None, cognite_client=None):
-        self.call_id = call_id
-        self.function_id = function_id
-        self.response = response
-        self._cognite_client = cognite_client
 
 
 class FunctionCallLogEntry(CogniteResource):
