@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.11.0] - 2020-06-08
+### Changed
+- Removed FunctionCallResponse class. Functions `FunctionCallsAPI.get_response()` and `FunctionCall.get_response()` now returns the actual function response (without being wrapped in an object with `call_id`, `function_id` and `response`).
+
 ## [0.10.0] - 2020-06-04
 ### Changed
 - POST endpoints such as search and list will be retried in experimetal endpoints, as they are in v1.
