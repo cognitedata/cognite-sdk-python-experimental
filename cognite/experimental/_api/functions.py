@@ -457,10 +457,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/response"
         res = self._get(url)
-        response = res.json().get("response")
-        if response:
-            return json.loads(response)
-        return None
+        return res.json().get("response")
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
