@@ -14,7 +14,7 @@ Changes are grouped as follows
 
 ## [0.11.0] - 2020-06-08
 ### Changed
-- Removed FunctionCallResponse class. Functions `FunctionCallsAPI.get_response()` and `FunctionCall.get_response()` now returns the actual function response (without `call_id` and `function_id`).
+- Removed FunctionCallResponse class. Functions `FunctionCallsAPI.get_response()` and `FunctionCall.get_response()` now returns the actual function response (without being wrapped in an object with `call_id`, `function_id` and `response`).
 
 ## [0.10.0] - 2020-06-04
 ### Changed
