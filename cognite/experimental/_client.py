@@ -70,7 +70,7 @@ class CogniteClient(Client):
         if client_name is None and not os.environ.get("COGNITE_CLIENT_NAME"):
             client_name = "Cognite Experimental SDK"
 
-        if api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None:
+        if token is None and (api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None):
             key = project.upper().replace("-", "_") + "_API_KEY"
             if os.environ.get(key):
                 api_key = os.environ[key]

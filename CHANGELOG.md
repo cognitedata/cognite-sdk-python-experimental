@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.11.1] - 2020-06-10
+### Fixed
+- Client no longer gives an error on using a token instead of an API key.
+
 ## [0.11.0] - 2020-06-08
 ### Changed
 - Removed FunctionCallResponse class. Functions `FunctionCallsAPI.get_response()` and `FunctionCall.get_response()` now returns the actual function response (without being wrapped in an object with `call_id`, `function_id` and `response`).
