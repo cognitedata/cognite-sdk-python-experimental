@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Function
 
 
