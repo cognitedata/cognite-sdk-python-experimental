@@ -106,7 +106,7 @@ class Function(CogniteResource):
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
     def update(self) -> None:
-        """Update the function object.
+        """Update the function object. Can be useful to check for the latet status of the function ('Queued', 'Deploying', 'Ready' or 'Failed').
 
         Returns:
             None
