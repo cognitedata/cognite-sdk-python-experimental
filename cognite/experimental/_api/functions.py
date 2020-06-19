@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from inspect import getsource
@@ -12,7 +13,6 @@ from cognite.experimental.data_classes import (
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
-    FunctionCallResponse,
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
@@ -42,13 +42,22 @@ class FunctionsAPI(APIClient):
         api_key: Optional[str] = None,
         secrets: Optional[Dict] = None,
     ) -> Function:
-        """`Create a new function from source code located in folder. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
+        """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
+        the source code can be specified in one of three ways:\n
+        - Via the `folder` argument, which is the path to the folder where the source code is located. The folder must contain a file named handler.py within which a function named handle must be defined.\n
+        - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. The zip-file must contain a file named handler.py within which a function named handle must be defined.\n
+        - Via the `function_handle` argument, which is a reference to a function object, which must be named `handle`.\n
+
+        The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secrets`:\n
+        - If the user calls the function with input data, this is passed through the `data` argument.\n
+        - If the user gives an `api_key` when creating the function, a pre instantiated CogniteClient is passed through the `client` argument.\n
+        - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
 
         Args:
             name (str):                             The name of the function.
             folder (str, optional):                 Path to the folder where the function source code is located.
             file_id (int, optional):                File ID of the code uploaded to the Files API.
-            function_handle (Callable, optional):   Reference to a function object, which must be named `handle`. Valid arguments to `handle` are `data`, `client` and `secret`.
+            function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
             external_id (str, optional):            External id of the function.
             description (str, optional):            Description of the function.
             owner (str, optional):                  Owner of this function. Typically used to know who created it.
@@ -348,11 +357,11 @@ class FunctionCallsAPI(APIClient):
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
+            function_external_id (str, optional): External ID of the function on which the calls were made.
             status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
             schedule_id (int, optional): Schedule id from which the call belongs (if any).
-            start_time (Union[Dict[str, int], TimestampRange]): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
-            end_time (Union[Dict[str, int], TimestampRange]): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
-            function_external_id (str, optional): External ID of the function on which the calls were made.
+            start_time (Dict[str, int], optional): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            end_time (Dict[str, int], optional): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
 
         Returns:
             FunctionCallList: List of function calls
@@ -418,9 +427,7 @@ class FunctionCallsAPI(APIClient):
         res = self._get(url)
         return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
 
-    def get_response(
-        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
-    ) -> FunctionCallResponse:
+    def get_response(self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None):
         """Retrieve the response from a function call.
 
         Args:
@@ -429,7 +436,7 @@ class FunctionCallsAPI(APIClient):
             function_external_id (str, optional): External ID of the function on which the call was made.
 
         Returns:
-            FunctionCallResponse: Response from the function call.
+            Response from the function call.
 
         Examples:
 
@@ -452,7 +459,7 @@ class FunctionCallsAPI(APIClient):
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/response"
         res = self._get(url)
-        return FunctionCallResponse._load(res.json())
+        return res.json().get("response")
 
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
@@ -462,7 +469,7 @@ class FunctionCallsAPI(APIClient):
         Args:
             call_id (int): ID of the call.
             function_id (int, optional): ID of the function on which the call was made.
-            external_id (str, optional): External ID of the function on which the call was made.
+            function_external_id (str, optional): External ID of the function on which the call was made.
 
         Returns:
             FunctionCallLog: Log for the function call.
@@ -505,6 +512,13 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> schedules = c.functions.schedules.list()
+            
+            List schedules directly on a function object to get only schedules associated with this particular function:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> func = c.functions.retrieve(id=1)
+                >>> schedules = func.list_schedules()
 
         """
         url = f"/functions/schedules"

@@ -3,6 +3,7 @@ from typing import Callable, Dict, Optional, Union
 
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
+from cognite.client._api_client import APIClient
 from cognite.client._cognite_client import CogniteClient as Client
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.entity_extraction import EntityExtractionAPI
@@ -28,6 +29,16 @@ class ExperimentalFilesApi(FilesAPI):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.unstructured = GrepAPI(self._config, api_version="playground", cognite_client=self)
+
+
+APIClient.RETRYABLE_POST_ENDPOINTS |= {
+    "/timeseries/synthetic/query",
+    "/files/unstructured/search",
+    "/files/unstructured/downloadlink/parsed",
+}
+APIClient.RETRYABLE_POST_ENDPOINTS |= {
+    f"/{api}/{endpoint}" for api in ["types", "labels", "relationships"] for endpoint in ["list", "byids", "search"]
+}
 
 
 class CogniteClient(Client):
@@ -59,7 +70,7 @@ class CogniteClient(Client):
         if client_name is None and not os.environ.get("COGNITE_CLIENT_NAME"):
             client_name = "Cognite Experimental SDK"
 
-        if api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None:
+        if token is None and (api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None):
             key = project.upper().replace("-", "_") + "_API_KEY"
             if os.environ.get(key):
                 api_key = os.environ[key]
