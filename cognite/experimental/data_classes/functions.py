@@ -105,6 +105,22 @@ class Function(CogniteResource):
         """
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
+    def update(self) -> None:
+        """Update the funciton object.
+
+        Returns:
+            None
+        """
+        latest = self._cognite_client.functions.retrieve(id=self.id)
+        if latest is None:
+            return
+
+        for attribute in self.__dict__:
+            if attribute.startswith("_"):
+                continue
+            latest_value = getattr(latest, attribute)
+            setattr(self, attribute, latest_value)
+
 
 class FunctionSchedule(CogniteResource):
     """A representation of a Cognite Function Schedule.
