@@ -106,7 +106,7 @@ class Function(CogniteResource):
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
     def update(self) -> None:
-        """Update the funciton object.
+        """Update the function object.
 
         Returns:
             None
@@ -217,7 +217,7 @@ class FunctionCall(CogniteResource):
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self.function_id)
 
     def update(self) -> None:
-        """Update the funciton call object. Can be useful if the call was made with wait=False.
+        """Update the function call object. Can be useful if the call was made with wait=False.
 
         Returns:
             None
