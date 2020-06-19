@@ -105,6 +105,22 @@ class Function(CogniteResource):
         """
         return self._cognite_client.functions.calls.retrieve(call_id=id, function_id=self.id)
 
+    def update(self) -> None:
+        """Update the function object. Can be useful to check for the latet status of the function ('Queued', 'Deploying', 'Ready' or 'Failed').
+
+        Returns:
+            None
+        """
+        latest = self._cognite_client.functions.retrieve(id=self.id)
+        if latest is None:
+            return
+
+        for attribute in self.__dict__:
+            if attribute.startswith("_"):
+                continue
+            latest_value = getattr(latest, attribute)
+            setattr(self, attribute, latest_value)
+
 
 class FunctionSchedule(CogniteResource):
     """A representation of a Cognite Function Schedule.
@@ -201,7 +217,7 @@ class FunctionCall(CogniteResource):
         return self._cognite_client.functions.calls.get_logs(call_id=self.id, function_id=self.function_id)
 
     def update(self) -> None:
-        """Update the funciton call object. Can be useful if the call was made with wait=False.
+        """Update the function call object. Can be useful if the call was made with wait=False.
 
         Returns:
             None
