@@ -1,23 +1,37 @@
-from cognite.experimental.data_classes import FunctionCall, FunctionCallList
+from unittest.mock import MagicMock
 
-CALL_RESPONSE = {
-    "id": 5678,
-    "startTime": 1585925306822,
-    "endTime": 1585925310822,
-    "status": "Completed",
-    "functionId": 1234,
-}
+import pytest
+
+from cognite.experimental.data_classes import Function
 
 
-class TestFunctionCall:
-    def test_load(self):
-
-        call = FunctionCall._load(CALL_RESPONSE)
-        assert CALL_RESPONSE == call.dump(camel_case=True)
+@pytest.fixture
+def empty_function():
+    return Function(id=123, cognite_client=MagicMock())
 
 
-class TestFunctionCallList:
-    def test_load(self):
+@pytest.fixture
+def function():
+    return Function(
+        id=123,
+        name="my-function",
+        description="some description",
+        owner="somebody",
+        status="Deploying",
+        file_id=456,
+        created_time="2020-06-19 08:49:37",
+        secrets={},
+        cognite_client=MagicMock(),
+    )
 
-        calls = FunctionCallList._load([CALL_RESPONSE])
-        assert [CALL_RESPONSE] == calls.dump(camel_case=True)
+
+class TestFunction:
+    def test_update(self, empty_function, function):
+        empty_function._cognite_client.functions.retrieve.return_value = function
+
+        empty_function.update()
+        assert function == empty_function
+
+    def test_update_on_deleted_function(self, empty_function):
+        empty_function._cognite_client.functions.retrieve.return_value = None
+        empty_function.update()
