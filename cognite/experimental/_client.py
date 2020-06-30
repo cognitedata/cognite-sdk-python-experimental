@@ -14,15 +14,8 @@ from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.relationships import RelationshipsAPI
 from cognite.experimental._api.resource_typing import ResourceTypingAPI
-from cognite.experimental._api.synthetic_time_series import SyntheticDatapointsAPI
 from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.unstructured import GrepAPI
-
-
-class ExperimentalDatapointsApi(DatapointsAPI):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.synthetic = SyntheticDatapointsAPI(self._config, api_version="playground", cognite_client=self)
 
 
 class ExperimentalFilesApi(FilesAPI):
@@ -92,7 +85,6 @@ class CogniteClient(Client):
             debug,
         )
         self.relationships = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)
-        self.datapoints = ExperimentalDatapointsApi(self._config, api_version="v1", cognite_client=self)
         self.files = ExperimentalFilesApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
 

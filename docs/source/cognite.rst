@@ -12,7 +12,6 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.types: `Types`_
 * client.labels: `Labels`_
 * client.model_hosting = `Model Hosting`_
-* client.datapoints: includes extensions described in `Synthetic time series`_
 * client.relationships: `Relationships`_
 * client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
 * client.entity_extraction: `Extract Entities from Files`_
@@ -106,13 +105,6 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.relationships
     :members:
     :show-inheritance:
-
-Synthetic time series
----------------------
-
-Calculate the result of a function on time series
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.synthetic_time_series.SyntheticDatapointsAPI.retrieve
 
 
 Types

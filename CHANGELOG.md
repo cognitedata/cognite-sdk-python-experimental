@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.12.0] - 2020-06-30
+### Changed
+- Synthetic time series removed, as it was moved to non-experimental status in the main SDK.
+
 ## [0.11.1] - 2020-06-10
 ### Fixed
 - Client no longer gives an error on using a token instead of an API key.
@@ -22,13 +26,12 @@ Changes are grouped as follows
 
 ## [0.10.0] - 2020-06-04
 ### Changed
-- POST endpoints such as search and list will be retried in experimetal endpoints, as they are in v1.
+- POST endpoints such as search and list will be retried in experimental endpoints, as they are in v1.
 
 ## [0.9.1] - 2020-06-04
 
 ### Changed
 - Updated documentation for functions.
-
 
 ## [0.9.0] - 2020-05-29
 ### Changed
