@@ -16,6 +16,10 @@ Changes are grouped as follows
 ### Changed
 - Synthetic time series removed, as it was moved to non-experimental status in the main SDK.
 
+## [0.11.2] - 2020-06-19
+### Added
+- The method `Function.update()`, which updates the function object.
+
 ## [0.11.1] - 2020-06-10
 ### Fixed
 - Client no longer gives an error on using a token instead of an API key.
