@@ -14,7 +14,7 @@ Changes are grouped as follows
 
 ## [0.12.0] - 2020-06-30
 ### Changed
-- Synthetic time series removed, as it was moved to non-experimental status in the main SDK.
+- Synthetic time series and labels removed, as they were moved to non-experimental status in the main SDK.
 
 ## [0.11.2] - 2020-06-19
 ### Added

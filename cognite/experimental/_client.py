@@ -90,7 +90,6 @@ class CogniteClient(Client):
 
         self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
-        self.labels = LabelsAPI(self._config, api_version="playground", cognite_client=self)
 
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_extraction = EntityExtractionAPI(self._config, api_version="playground", cognite_client=self)
