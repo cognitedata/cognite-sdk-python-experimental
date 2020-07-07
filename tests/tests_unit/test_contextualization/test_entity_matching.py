@@ -135,6 +135,7 @@ class TestEntityMatching:
                     "matchTo": entities_to,
                     "trueMatches": [[1, 2]],
                     "modelType": "foo",
+                    "completeMissing": False,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
@@ -151,6 +152,7 @@ class TestEntityMatching:
             "matchTo": [entities_to[0].dump()],
             "trueMatches": [[1, 2]],
             "modelType": "foo",
+            "completeMissing": False,
         } == jsgz_load(mock_fit_ml.calls[0].request.body)
 
     def test_fit_fails(self, mock_fit, mock_status_failed):

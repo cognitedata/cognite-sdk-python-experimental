@@ -12,7 +12,7 @@ EEAPI = COGNITE_CLIENT.entity_extraction
 
 
 @pytest.fixture
-def mock_extract(rsps):
+def mock_complete(rsps):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
@@ -48,7 +48,7 @@ def mock_status_failed(rsps):
 
 
 class TestEntityExtraction:
-    def test_extract(self, mock_extract, mock_status_ok):
+    def test_extract(self, mock_complete, mock_status_ok):
         entities = ["a", "b"]
         file_ids = [1, 2]
         job = EEAPI.extract(file_ids, entities)
@@ -60,7 +60,7 @@ class TestEntityExtraction:
 
         extract_calls = 0
         n_status_calls = 0
-        for call in mock_extract.calls:
+        for call in mock_complete.calls:
             if call.request.method == "POST":
                 extract_calls += 1
                 assert {"entities": entities, "fileIds": file_ids} == jsgz_load(call.request.body)
@@ -70,7 +70,7 @@ class TestEntityExtraction:
         assert 1 == extract_calls
         assert 1 == n_status_calls
 
-    def test_run_fails(self, mock_extract, mock_status_failed):
+    def test_run_fails(self, mock_complete, mock_status_failed):
         job = EEAPI.extract([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             job.result()

@@ -145,7 +145,12 @@ class EntityMatchingModel(ContextualizationModel):
         return self._cognite_client.entity_matching._run_job(job_path=f"/{self.model_id}/predict", items=list(entities))
 
     def predict_ml(
-        self, match_from: Optional[List[Dict]] = None, match_to: Optional[List[Dict]] = None, num_matches=1
+        self,
+        match_from: Optional[List[Dict]] = None,
+        match_to: Optional[List[Dict]] = None,
+        num_matches=1,
+        score_threshold=None,
+        complete_missing=False,
     ) -> ContextualizationJob:
         """Predict entity matching.
 
@@ -153,6 +158,9 @@ class EntityMatchingModel(ContextualizationModel):
             match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
             match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
             num_matches (int): number of matches to return for each item.
+            score_threshold (float): only return matches with a score above this threshold
+            complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
+
         Returns:
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
@@ -161,6 +169,8 @@ class EntityMatchingModel(ContextualizationModel):
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
+            score_threshold=score_threshold,
+            complete_missing=complete_missing,
         )
 
     def refit_ml(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":

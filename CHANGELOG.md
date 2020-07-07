@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.12.0] - 2020-07-07
+### Added
+- The entity matching methods now have additional options for classifier and feature types.
+- PNID detect patterns endpoint added.
+- Schema completion endpoint added.
+
 ## [0.11.2] - 2020-06-19
 ### Added
 - The method `Function.update()`, which updates the function object.

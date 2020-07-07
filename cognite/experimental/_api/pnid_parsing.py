@@ -28,3 +28,16 @@ class PNIDParsingAPI(ContextAPI):
             partial_match=partial_match,
             name_mapping=name_mapping,
         )
+
+    def extract_pattern(self, file_id, patterns: List[str]) -> ContextualizationJob:
+        """Extract tags from P&ID based on pattern
+
+        Args:
+            file_id (int): ID of the file, should already be uploaded in the same tenant.
+            patterns (list): List of regular expression patterns to look for in the P&ID. See API docs for details.
+
+        Returns:
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+        return self._run_job(
+            job_path="/extractpattern", status_path="/extractpattern/", file_id=file_id, patterns=patterns,
+        )
