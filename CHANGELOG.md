@@ -18,7 +18,7 @@ Changes are grouped as follows
 - PNID detect patterns endpoint added.
 - Schema completion endpoint added.
 
-## [0.12.0] - 2020-06-30
+## [0.12.0] - 2020-07-07
 ### Changed
 - Synthetic time series and labels removed, as they were moved to non-experimental status in the main SDK.
 
