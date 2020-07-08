@@ -25,7 +25,9 @@ class EntityMatchingAPI(ContextModelAPI):
         match_to: List[Union[Dict, CogniteResource]],
         true_matches: List[Tuple[int, int]] = None,
         keys_from_to: List[Tuple[str, str]] = None,
-        model_type=None,
+        model_type: str = None,
+        classifier: str = None,
+        complete_missing: bool = False,
     ) -> EntityMatchingModel:
         """Fit entity matching model with machine learning methods.
 
@@ -34,8 +36,9 @@ class EntityMatchingAPI(ContextModelAPI):
             match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
             true_matches: Known valid matches given as a list of (id_from,id_to). If ommited, uses an unsupervised model.
             keys_from_to: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
-            model_type: model type that defines features and methods used, see API docs for details.
-
+            model_type (str): model type that defines features and methods used, see API docs for details.
+            classifier (str): classifier used in training, see API docs for details.
+            complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
         Returns:
             EntityMatchingModel: Resulting queued model."""
         if keys_from_to:
@@ -49,6 +52,8 @@ class EntityMatchingAPI(ContextModelAPI):
             true_matches=true_matches,
             keys_from_to=keys_from_to,
             model_type=model_type,
+            classifier=classifier,
+            complete_missing=complete_missing,
         )
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
