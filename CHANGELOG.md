@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.13.0] - 2020-07-23
+### Changed
+- Base version of the SDK changed to 2.x
+
 ## [0.12.1] - 2020-07-07
 ### Added
 - The entity matching methods now have additional options for classifier and feature types.
