@@ -1,10 +1,11 @@
 
 # Examples for the Contextualization API
 ## Entity matcher
+### Basic Entity Matching Model
 ```python
 from cognite.experimental import CogniteClient
 
-client = CogniteClient(client_name="datastudio")
+client = CogniteClient(client_name="cognite-sdk-python-experimental")
 
 training_data = ["21PT1019", "13FV1234", "84PAH93234"]
 model = client.entity_matching.fit(training_data)
@@ -59,6 +60,77 @@ will produce the following output after a few seconds:
 ]
 
 ```
+
+### Machine Learning Entity Matching Model
+Fit a model
+```python
+match_from = [
+    {"id":0, "name" : "IAA_21PT1019.PV", "description": "correct"}, 
+    {"id":1, "name" : "IAA_13FV1234.PV", "description": "ok"}
+]
+match_to = [
+    {"id":0, "name" : "21PT1019", "description": "correct"}, 
+    {"id":1, "name" : "21PT1019", "description": "wrong"}, 
+    {"id":2, "name" : "13FV1234", "description": "not ok"},
+    {"id":3, "name" : "13FV1234", "description": "ok"},
+    {"id":4, "name" : "84PAH93234", "description": "some description"},
+    {"id":5, "name" : "84PAH93234", "description": ""},
+]
+true_matches = [(0,0), (1,3)]
+
+model = client.entity_matching.fit_ml(match_from = match_from,
+                                      match_to = match_to,
+                                      true_matches = true_matches,
+                                      keys_from_to = [("name", "name"), ("description", "description")]
+)
+```
+Predict on the training data
+```python
+job = model.predict_ml(num_matches = 2)
+matches = job.result
+print(matches["items"])
+```
+will produce the following output after a few seconds:
+```python
+[
+  {
+    'matchFrom': {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
+    'matches': [
+      {'matchTo': {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 0.9},
+      {'matchTo': {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.0}
+    ]
+  },
+ {
+   'matchFrom': {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
+   'matches': [
+      {'matchTo': {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 0.9},
+      {'matchTo': {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.2}
+    ]
+  }
+]
+```
+Predict on new data
+```python
+match_from = [
+    {"id":2, "name" : "IAA_84PAH93234.PV", "description": "some description"},
+]
+job = model.predict_ml(num_matches = 2, match_from = match_from)
+matches = job.result
+print(matches["items"])
+```
+will produce the following output after a few seconds:
+```python
+[
+  {
+    'matchFrom': {'description': 'some description', 'id': 2, 'name': 'IAA_84PAH93234.PV'}, 
+    'matches': [
+      {'matchTo': {'description': 'some description', 'id': 4, 'name': '84PAH93234'}, 'score': 0.9}, 
+      {'matchTo': {'description': '', 'id': 5, 'name': '84PAH93234'}, 'score': 0.0}
+    ]
+  }
+]
+```
+
 ## P&ID parser
 This will print the url for the svg as a string after a few seconds.
 ```python
