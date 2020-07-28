@@ -1,12 +1,15 @@
 
 # Examples for the Contextualization API
-## Entity matcher
-### Basic Entity Matching Model
+Create a client
 ```python
 from cognite.experimental import CogniteClient
 
 client = CogniteClient(client_name="cognite-sdk-python-experimental")
+```
 
+## Entity matcher
+### Basic Entity Matching Model
+```python
 training_data = ["21PT1019", "13FV1234", "84PAH93234"]
 model = client.entity_matching.fit(training_data)
 
