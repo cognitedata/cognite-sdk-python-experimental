@@ -132,7 +132,7 @@ will produce the following output after a few seconds:
 ```
 
 ## P&ID parser
-This will print the url for the svg as a string after a few seconds.
+When the file_id is a valid file_id from the project associated with the client, this will print the url for the svg as a string after a few seconds.
 ```python
 job = client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
 svg_url = job.result['svgUrl']
@@ -143,11 +143,11 @@ svg_url = job.result['svgUrl']
 The following methods are available for a project whitelisted for unstructured search, and only for file types supported in the search index. 
 ```python
 job = client.entity_extraction.extract(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
-                               file_ids = [6240763514226915])
+                               file_ids = [1234])
 print(job.result['items'])
 ```
 
-will produce an output similar to:
+When the file_id is a valid file_id from the project associated with the client, will produce the following output:
 ```python
-[{'fileId': 6240763514226915, 'entities': ['23-VG-9102']}]
+[{'fileId': 1234, 'entities': ['23-VG-9102']}]
 ```
