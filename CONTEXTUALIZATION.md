@@ -66,57 +66,6 @@ job = client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
 svg_url = job.result['svgUrl']
 ```
 
-## Resource typing
-```python
-training_data = [
-  {
-    "data": ["05-V-0363", "ISOLATION VALVE Y4-PSH-025"],
-    "target": "valve"
-  },
-  {
-    "data": ["65-V-5284", "BLOCK VALVE FOR STBD MAIN HYDRAULIC PRESSURE SUPPLY TO PORT MAIN HYDRAULIC PRESSURE LINE"],
-    "target": "valve"
-  },
-  {
-    "data": ["0300A-WF-71-L-0837-AD75-04","71-L-0837"],
-    "target": "pipe"
-  },
-  {
-    "data": ["0150J-PL-39-L-5064-TC02-00","39-L-5064"],
-    "target": "pipe"
-  }
-]
-model = client.entity_matching.fit(training_data)
-
-predict_data = [{
-    "data": ["0600-DO-81L5090-AC21", "FROM DRAIN GULLY"]
-  }, {
-    "data": ["65-GC-12002", "FILTER"]
-  }, {
-    "data": ["48-SX-9225-J01", "SAFETY, ESCAPE AND FIREFIGHTING, JUNCTION BOX"]
-  }]
-matches = model.predict(predict_data)
-print(matches.result['items'])
-```
-will produce the following output after a few seconds:
-```python
-{
-  'items': [
-    {
-      'input': ['0600-DO-81L5090-AC21', 'FROM DRAIN GULLY'],
-      'target': 'valve'
-    }, {
-      'input': ['65-GC-12002', 'FILTER'],
-      'target': 'other'
-    }, {
-      'input': ['48-SX-9225-J01', 'SAFETY, ESCAPE AND FIREFIGHTING, JUNCTION BOX'],
-      'target': 'other'
-    }
-  ]
-}
-```
-
-
 ## Entity Extraction
 
 The following methods are available for a project whitelisted for unstructured search, and only for file types supported in the search index. 
