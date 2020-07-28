@@ -7,7 +7,7 @@ from cognite.experimental import CogniteClient
 client = CogniteClient(client_name="cognite-sdk-python-experimental")
 ```
 
-## Entity matcher
+## Entity Matcher
 ### Basic Entity Matching Model
 ```python
 training_data = ["21PT1019", "13FV1234", "84PAH93234"]
@@ -38,7 +38,7 @@ will produce the following output after a few seconds:
 
 ```
 
-### Create rules
+### Create Rules
 After first running the entity matcher
 ```python
 rules_job = client.entity_matching.create_rules(matches["items"])
@@ -134,7 +134,7 @@ will produce the following output after a few seconds:
 ]
 ```
 
-## P&ID parser
+## P&ID Parser
 When the file_id is a valid file_id from the project associated with the client, this will print the url for the svg as a string after a few seconds.
 ```python
 job = client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
