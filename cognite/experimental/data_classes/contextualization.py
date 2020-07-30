@@ -154,7 +154,7 @@ class EntityMatchingModel(ContextualizationModel):
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predict",
+            job_path=f"/{self.model_id}/predictml",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
@@ -173,7 +173,7 @@ class EntityMatchingModel(ContextualizationModel):
         """Duplicate of predict will eventually be removed"""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predict",
+            job_path=f"/{self.model_id}/predictml",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,

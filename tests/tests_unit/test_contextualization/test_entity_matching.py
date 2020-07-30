@@ -123,7 +123,6 @@ class TestEntityMatching:
         assert "Completed" == model.status
         assert 123 == model.model_id
 
-
     def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
         entities_to = [Asset(id=1, name="x")]
