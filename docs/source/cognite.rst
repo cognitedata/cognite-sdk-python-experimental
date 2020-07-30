@@ -327,10 +327,6 @@ Fit Entity Matching Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
 
-Fit Machine Learning Entity Matching Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit_ml
-
 Create Entity Matching Rules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
