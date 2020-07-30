@@ -122,27 +122,7 @@ class TestEntityMatching:
         model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.model_id
-        assert 42 == model.request_timestamp
-        assert 456 == model.status_timestamp
-        assert 789 == model.start_timestamp
 
-        n_fit_calls = 0
-        n_status_calls = 0
-        for call in mock_fit.calls:
-            if "fit" in call.request.url:
-                n_fit_calls += 1
-                assert {
-                    "matchFrom": entities_from,
-                    "matchTo": entities_to,
-                    "trueMatches": [[1, 2]],
-                    "modelType": "foo",
-                    "completeMissing": False,
-                } == jsgz_load(call.request.body)
-            else:
-                n_status_calls += 1
-                assert "/123" in call.request.url
-        assert 1 == n_fit_calls
-        assert 1 == n_status_calls
 
     def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
