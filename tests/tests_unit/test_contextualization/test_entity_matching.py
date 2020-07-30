@@ -16,15 +16,6 @@ EMAPI = COGNITE_CLIENT.entity_matching
 def mock_fit(rsps):
     response_body = {"modelId": 123, "status": "Queued", "requestTimestamp": 42}
     rsps.add(
-        rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fit", status=200, json=response_body
-    )
-    yield rsps
-
-
-@pytest.fixture
-def mock_fit_ml(rsps):
-    response_body = {"modelId": 123, "status": "Queued", "requestTimestamp": 42}
-    rsps.add(
         rsps.POST,
         EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fitml",
         status=200,
@@ -89,32 +80,9 @@ def mock_status_rules_ok(rsps):
 
 class TestEntityMatching:
     def test_fit(self, mock_fit, mock_status_ok):
-        entities = ["a", "b"]
-        model = EMAPI.fit(entities)
-        assert isinstance(model, EntityMatchingModel)
-        assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
-        assert 42 == model.request_timestamp
-        model.wait_for_completion()
-        assert "Completed" == model.status
-        assert 123 == model.model_id
-        assert 42 == model.request_timestamp
-
-        n_fit_calls = 0
-        n_status_calls = 0
-        for call in mock_fit.calls:
-            if "fit" in call.request.url:
-                n_fit_calls += 1
-                assert {"items": entities} == jsgz_load(call.request.body)
-            else:
-                n_status_calls += 1
-                assert "/123" in call.request.url
-        assert 1 == n_fit_calls
-        assert 1 == n_status_calls
-
-    def test_ml_fit(self, mock_fit_ml, mock_status_ok):
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
         assert 42 == model.request_timestamp
@@ -127,7 +95,7 @@ class TestEntityMatching:
 
         n_fit_calls = 0
         n_status_calls = 0
-        for call in mock_fit_ml.calls:
+        for call in mock_fit.calls:
             if "fit" in call.request.url:
                 n_fit_calls += 1
                 assert {
@@ -143,20 +111,55 @@ class TestEntityMatching:
         assert 1 == n_fit_calls
         assert 1 == n_status_calls
 
-    def test_ml_fit_cognite_resource(self, mock_fit_ml):
+    def test_ml_fit(self, mock_fit, mock_status_ok):
+        # fit_ml should produce the same output as fit. Will eventually be removed
+        entities_from = [{"id": 1, "name": "xx"}]
+        entities_to = [{"id": 2, "name": "yy"}]
+        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        assert isinstance(model, EntityMatchingModel)
+        assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
+        assert 42 == model.request_timestamp
+        model.wait_for_completion()
+        assert "Completed" == model.status
+        assert 123 == model.model_id
+        assert 42 == model.request_timestamp
+        assert 456 == model.status_timestamp
+        assert 789 == model.start_timestamp
+
+        n_fit_calls = 0
+        n_status_calls = 0
+        for call in mock_fit.calls:
+            if "fit" in call.request.url:
+                n_fit_calls += 1
+                assert {
+                    "matchFrom": entities_from,
+                    "matchTo": entities_to,
+                    "trueMatches": [[1, 2]],
+                    "modelType": "foo",
+                    "completeMissing": False,
+                } == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/123" in call.request.url
+        assert 1 == n_fit_calls
+        assert 1 == n_status_calls
+
+    def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
         entities_to = [Asset(id=1, name="x")]
-        EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
         assert {
             "matchFrom": [entities_from[0].dump()],
             "matchTo": [entities_to[0].dump()],
             "trueMatches": [[1, 2]],
             "modelType": "foo",
             "completeMissing": False,
-        } == jsgz_load(mock_fit_ml.calls[0].request.body)
+        } == jsgz_load(mock_fit.calls[0].request.body)
 
     def test_fit_fails(self, mock_fit, mock_status_failed):
-        model = EMAPI.fit(["a", "b"])
+        entities_from = [{"id": 1, "name": "xx"}]
+        entities_to = [{"id": 2, "name": "yy"}]
+        model = EMAPI.fit(match_from=entities_from, match_to=entities_to)
         with pytest.raises(ModelFailedException) as exc_info:
             model.wait_for_completion()
         assert exc_info.type is ModelFailedException
