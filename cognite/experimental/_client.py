@@ -30,7 +30,9 @@ APIClient.RETRYABLE_POST_ENDPOINTS |= {
     "/files/unstructured/downloadlink/parsed",
 }
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
-    f"/{api}/{endpoint}" for api in ["types", "labels", "relationships", "functions"] for endpoint in ["list", "byids", "search"]
+    f"/{api}/{endpoint}"
+    for api in ["types", "labels", "relationships", "functions"]
+    for endpoint in ["list", "byids", "search"]
 }
 
 
