@@ -10,20 +10,35 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 class TestEntityMatchingIntegration:
     def test_fit(self):
-        entities = ["a-1", "b-2"]
-        model = EMAPI.fit(entities)
+        entities_from = [{"id": 1, "name": "xx-yy"}]
+        entities_to = [{"id": 2, "bloop": "yy"}]
+        model = EMAPI.fit(
+            match_from=entities_from,
+            match_to=entities_to,
+            true_matches=[(1, 2)],
+            model_type="bigram",
+            keys_from_to=[("name", "bloop")],
+        )
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
 
-        job = model.predict("a1")
+        job = model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"bloop": "foo-42"}])
         assert "Completed" == model.status
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"input", "predicted", "score"} == set(job.result["items"][0].keys())
+        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
+
+        job = model.predict()
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert "Completed" == job.status
+
         EMAPI.delete(model)
 
     def test_ml_fit(self):
+        # fit_ml and predict_ml should produce the same output as fit and predict. Will eventually be removed
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "bloop": "yy"}]
         model = EMAPI.fit_ml(
@@ -54,7 +69,7 @@ class TestEntityMatchingIntegration:
     def test_ml_refit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "name": "xx"}]
-        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram")
+        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
 
@@ -65,15 +80,15 @@ class TestEntityMatchingIntegration:
         assert isinstance(new_model, EntityMatchingModel)
         assert "Queued" == new_model.status
 
-        job = new_model.predict_ml(match_from=[{"name": "foo-bar"}], match_to=[{"name": "foo-42"}])
+        job = new_model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"name": "foo-42"}])
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
         EMAPI.delete(model)
 
-    def test_ml_extra_options(self):
+    def test_extra_options(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "name": "xx", "missing": "yy"}]
-        model = EMAPI.fit_ml(
+        model = EMAPI.fit(
             match_from=entities_from,
             match_to=entities_to,
             true_matches=[(1, 2)],
@@ -84,7 +99,7 @@ class TestEntityMatchingIntegration:
         )
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
-        job = model.predict_ml()
+        job = model.predict()
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
 
         EMAPI.delete(model)
