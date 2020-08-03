@@ -8,63 +8,8 @@ client = CogniteClient(client_name="cognite-sdk-python-experimental")
 ```
 
 ## Entity Matcher
-### Basic Entity Matching Model
-```python
-training_data = ["21PT1019", "13FV1234", "84PAH93234"]
-model = client.entity_matching.fit(training_data)
 
-predict_data = ["IAA_21PT1019.PV", "IAA_13FV1234.PV", "IAA_84PAH93234.PV"]
-job = model.predict(predict_data) # at this point the client waits for model fit completion
-matches = job.result # at this point the client waits for job completion
-print(matches['items'])
-```
-will produce the following output after a few seconds: 
-```python
-[
-    {
-      'input': 'IAA_21PT1019.PV',
-      'predicted': '21PT1019',
-      'score': 0.999998845300462
-    }, {
-      'input': 'IAA_13FV1234.PV',
-      'predicted': '13FV1234',
-      'score': 0.999998845300462
-    }, {
-      'input': 'IAA_84PAH93234.PV',
-      'predicted': '84PAH93234',
-      'score': 0.999998845300462
-    }
-]
-
-```
-
-### Create Rules
-After first running the entity matcher
-```python
-rules_job = client.entity_matching.create_rules(matches["items"])
-rules_job.result
-```
-will produce the following output after a few seconds:
-```python
-[
-    {
-      'avgScore': 0.999998845300462,
-      'inputPattern': '[D2][L3][D1]',
-      'matchIndex': [0, 1],
-      'numMatches': 2,
-      'predictPattern': 'L_[D2][L3][D1].L'
-    }, {
-      'avgScore': 0.999998845300462,
-      'inputPattern': '[D1][L3][D2]',
-      'matchIndex': [2],
-      'numMatches': 1,
-      'predictPattern': 'L_[D1][L3][D2].L'
-    }
-]
-
-```
-
-### Machine Learning Entity Matching Model
+### Fit a supervised Entity Matching Model
 Fit a model
 ```python
 match_from = [
@@ -132,6 +77,99 @@ will produce the following output after a few seconds:
     ]
   }
 ]
+```
+
+### Fit an unsupervised Entity Matching Model
+Fit a model
+```python
+match_from = [
+    {"id":0, "name" : "IAA_21PT1019.PV", "description": "correct"}, 
+    {"id":1, "name" : "IAA_13FV1234.PV", "description": "ok"}
+]
+match_to = [
+    {"id":0, "name" : "21PT1019", "description": "correct"}, 
+    {"id":1, "name" : "21PT1019", "description": "wrong"}, 
+    {"id":2, "name" : "13FV1234", "description": "not ok"},
+    {"id":3, "name" : "13FV1234", "description": "ok"},
+    {"id":4, "name" : "84PAH93234", "description": "some description"},
+    {"id":5, "name" : "84PAH93234", "description": ""},
+]
+
+model = client.entity_matching.fit_ml(match_from = match_from,
+                                      match_to = match_to,
+                                      keys_from_to = [("name", "name"), ("description", "description")]
+)
+```
+Predict on the training data
+```python
+job = model.predict_ml(num_matches = 2)
+matches = job.result
+print(matches["items"])
+```
+will produce the following output after a few seconds:
+```python
+[
+  {
+    'matchFrom': {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
+    'matches': [
+      {'matchTo': {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 1.0},
+      {'matchTo': {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.5000000000000001}
+    ]
+  },
+  {
+    'matchFrom': {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
+    'matches': [
+      {'matchTo': {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 1.0},
+      {'matchTo': {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.8535533905932738}
+    ]
+  }
+]
+```
+
+
+### Create Rules
+
+```python
+matches = [
+  {
+    'input': 'IAA_21PT1019.PV',
+    'predicted': '21PT1019',
+    'score': 0.999998845300462
+  }, {
+    'input': 'IAA_13FV1234.PV',
+    'predicted': '13FV1234',
+    'score': 0.999998845300462
+  }, {
+    'input': 'IAA_84PAH93234.PV',
+    'predicted': '84PAH93234',
+    'score': 0.999998845300462
+  }
+]
+
+```
+
+```python
+rules_job = client.entity_matching.create_rules(matches)
+rules_job.result
+```
+will produce the following output after a few seconds:
+```python
+[
+    {
+      'avgScore': 0.999998845300462,
+      'inputPattern': '[D2][L3][D1]',
+      'matchIndex': [0, 1],
+      'numMatches': 2,
+      'predictPattern': 'L_[D2][L3][D1].L'
+    }, {
+      'avgScore': 0.999998845300462,
+      'inputPattern': '[D1][L3][D2]',
+      'matchIndex': [2],
+      'numMatches': 1,
+      'predictPattern': 'L_[D1][L3][D2].L'
+    }
+]
+
 ```
 
 ## P&ID Parser

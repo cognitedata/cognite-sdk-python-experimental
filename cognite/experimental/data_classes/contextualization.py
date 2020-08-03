@@ -133,18 +133,7 @@ class EntityMatchingModel(ContextualizationModel):
     _RESOURCE_PATH = "/context/entity_matching"
     _STATUS_PATH = _RESOURCE_PATH + "/"
 
-    def predict(self, entities: Iterable[str]) -> ContextualizationJob:
-        """Predict entity matching.
-
-        Args:
-            items (Iterable[str]): entities (e.g. time series) to predict matching entity of (e.g. asset)
-
-        Returns:
-            ContextualizationJob: object which can be used to wait for and retrieve results."""
-        self.wait_for_completion()
-        return self._cognite_client.entity_matching._run_job(job_path=f"/{self.model_id}/predict", items=list(entities))
-
-    def predict_ml(
+    def predict(
         self,
         match_from: Optional[List[Dict]] = None,
         match_to: Optional[List[Dict]] = None,
@@ -165,7 +154,26 @@ class EntityMatchingModel(ContextualizationModel):
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predictml",
+            job_path=f"/{self.model_id}/predict",
+            match_from=self.dump_entities(match_from),
+            match_to=self.dump_entities(match_to),
+            num_matches=num_matches,
+            score_threshold=score_threshold,
+            complete_missing=complete_missing,
+        )
+
+    def predict_ml(
+        self,
+        match_from: Optional[List[Dict]] = None,
+        match_to: Optional[List[Dict]] = None,
+        num_matches=1,
+        score_threshold=None,
+        complete_missing=False,
+    ) -> ContextualizationJob:
+        """Duplicate of predict will eventually be removed"""
+        self.wait_for_completion()
+        return self._cognite_client.entity_matching._run_job(
+            job_path=f"/{self.model_id}/predict",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
