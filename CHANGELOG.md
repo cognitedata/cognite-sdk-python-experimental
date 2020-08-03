@@ -13,7 +13,7 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 =======
-## [0.14.0] - 2020-08-0
+## [0.14.0] - 2020-08-03
 ### Changed
 - Merge fit_ml and fit, and predict_ml and predict endpoints entity matcher - major changes to required parameters and responses.
 
