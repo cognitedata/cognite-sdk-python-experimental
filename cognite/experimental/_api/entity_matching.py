@@ -34,11 +34,11 @@ class EntityMatchingAPI(ContextModelAPI):
         Args:
             match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
             match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
-            true_matches: Known valid matches given as a list of (id_from,id_to). If ommited, uses an unsupervised model.
+            true_matches: Known valid matches given as a list of (id_from,id_to). If omitted, uses an unsupervised model.
             keys_from_to: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
             model_type (str): model type that defines features and methods used, see API docs for details.
-            classifier (str): classifier used in training, see API docs for details.
-            complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
+            classifier (str): classifier used in training. Currently undocumented in API.
+            complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API
         Returns:
             EntityMatchingModel: Resulting queued model."""
         if keys_from_to:
