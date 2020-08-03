@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+=======
+## [0.14.0] - 2020-08-0
+### Changed
+- Merge fit_ml and fit, and predict_ml and predict endpoints entity matcher - major changes to required parameters and responses.
+
 ## [0.13.0] - 2020-07-23
 ### Changed
 - Base version of the SDK changed to 2.x
