@@ -30,7 +30,7 @@ Note that Asset functionality currently points to playground due to typing,
 
 ## Documentation
 * [Experimental SDK Extensions Documentation](https://cognite-sdk-experimental.readthedocs-hosted.com/en/latest/)
-* [Examples for using the contextualization endpoints](CONTEXTUALIZATION.md).
+* [Examples for using the contextualization endpoints](CONTEXTUALIZATION.md)
 * [SDK Documentation](https://cognite-docs.readthedocs-hosted.com/en/latest/)
 * [API Documentation](https://doc.cognitedata.com/)
 * [Cognite Developer Documentation](https://docs.cognite.com/dev/)
