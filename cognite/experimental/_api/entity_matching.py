@@ -9,17 +9,7 @@ class EntityMatchingAPI(ContextModelAPI):
     _RESOURCE_PATH = EntityMatchingModel._RESOURCE_PATH
     _MODEL_CLASS = EntityMatchingModel
 
-    def fit(self, items: List[str]) -> EntityMatchingModel:
-        """Fit entity matching model.
-
-        Args:
-            items: list of entities to create a model for.
-
-        Returns:
-            EntityMatchingModel: Resulting queued model."""
-        return super()._fit_model(items=list(items))
-
-    def fit_ml(
+    def fit(
         self,
         match_from: List[Union[Dict, CogniteResource]],
         match_to: List[Union[Dict, CogniteResource]],
@@ -46,7 +36,33 @@ class EntityMatchingAPI(ContextModelAPI):
         if true_matches:
             true_matches = list(true_matches)
         return super()._fit_model(
-            model_path="/fitml",
+            model_path="/fit",
+            match_from=EntityMatchingModel.dump_entities(match_from),
+            match_to=EntityMatchingModel.dump_entities(match_to),
+            true_matches=true_matches,
+            keys_from_to=keys_from_to,
+            model_type=model_type,
+            classifier=classifier,
+            complete_missing=complete_missing,
+        )
+
+    def fit_ml(
+        self,
+        match_from: List[Union[Dict, CogniteResource]],
+        match_to: List[Union[Dict, CogniteResource]],
+        true_matches: List[Tuple[int, int]] = None,
+        keys_from_to: List[Tuple[str, str]] = None,
+        model_type: str = None,
+        classifier: str = None,
+        complete_missing: bool = False,
+    ) -> EntityMatchingModel:
+        """Duplicate of fit will eventually be removed"""
+        if keys_from_to:
+            keys_from_to = [{"keyFrom": f, "keyTo": t} for f, t in keys_from_to]
+        if true_matches:
+            true_matches = list(true_matches)
+        return super()._fit_model(
+            model_path="/fit",
             match_from=EntityMatchingModel.dump_entities(match_from),
             match_to=EntityMatchingModel.dump_entities(match_to),
             true_matches=true_matches,
