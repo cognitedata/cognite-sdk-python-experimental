@@ -16,10 +16,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 def mock_fit(rsps):
     response_body = {"modelId": 123, "status": "Queued", "requestTimestamp": 42}
     rsps.add(
-        rsps.POST,
-        EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fitml",
-        status=200,
-        json=response_body,
+        rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fit", status=200, json=response_body,
     )
     yield rsps
 
