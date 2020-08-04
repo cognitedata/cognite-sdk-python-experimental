@@ -33,6 +33,7 @@ EXAMPLE_FUNCTION = {
     "owner": "ola.normann@cognite.com",
     "status": "Ready",
     "fileId": 1234,
+    "functionPath": "handler.py",
     "createdTime": 1585662507939,
     "apiKey": "***",
     "secrets": {"key1": "***", "key2": "***"},
@@ -210,7 +211,7 @@ class TestFunctionsAPI:
 
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
-        res = FUNCTIONS_API.create(name="myfunction", folder=folder)
+        res = FUNCTIONS_API.create(name="myfunction", root_folder=folder, function_path="handler.py")
 
         assert isinstance(res, Function)
         assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
@@ -241,7 +242,7 @@ class TestFunctionsAPI:
 
     def test_create_with_path_and_file_id_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
-            FUNCTIONS_API.create(name="myfunction", folder="some/folder", file_id=1234)
+            FUNCTIONS_API.create(name="myfunction", root_folder="some/folder", file_id=1234, function_path="handler.py")
 
     def test_delete_single_id(self, mock_functions_delete_response):
         res = FUNCTIONS_API.delete(id=1)
