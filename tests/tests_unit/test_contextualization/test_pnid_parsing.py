@@ -92,7 +92,7 @@ class TestPNIDParsing:
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
-                    "min_tokens": 2
+                    "min_tokens": 2,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
@@ -120,7 +120,7 @@ class TestPNIDParsing:
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
-                    "min_tokens": 3
+                    "min_tokens": 3,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1

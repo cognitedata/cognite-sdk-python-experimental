@@ -52,7 +52,9 @@ def mock_status_pattern_ok(rsps):
     response_body = {"jobId": 456, "status": "Completed", "items": []}
     rsps.add(
         rsps.GET,
-        re.compile(DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/extractpattern" + "/\\d+"),
+        re.compile(
+            DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/extractpattern" + "/\\d+"
+        ),
         status=200,
         json=response_body,
     )
@@ -72,7 +74,6 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-
     def test_detect(self, mock_parse, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
@@ -93,7 +94,7 @@ class TestPNIDParsing:
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
-                    "min_tokens": 1
+                    "min_tokens": 1,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
