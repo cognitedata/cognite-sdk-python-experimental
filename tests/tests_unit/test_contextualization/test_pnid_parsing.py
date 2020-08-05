@@ -72,7 +72,7 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_extract(self, mock_parse, mock_status_ok):
+    def test_parse(self, mock_parse, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
         job = PNIDAPI.parse(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
@@ -92,6 +92,35 @@ class TestPNIDParsing:
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
+                    "min_tokens": 2
+                } == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/123" in call.request.url
+        assert 1 == n_parse_calls
+        assert 1 == n_status_calls
+
+    def test_detect(self, mock_parse, mock_status_ok):
+        entities = ["a", "b"]
+        file_id = 123432423
+        job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"svgUrl": "x"} == job.result
+        assert "Completed" == job.status
+        assert 123 == job.job_id
+
+        n_parse_calls = 0
+        n_status_calls = 0
+        for call in mock_parse.calls:
+            if "parse" in call.request.url:
+                n_parse_calls += 1
+                assert {
+                    "entities": entities,
+                    "fileId": file_id,
+                    "nameMapping": {"a": "c"},
+                    "partialMatch": False,
+                    "min_tokens": 3
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
@@ -105,7 +134,7 @@ class TestPNIDParsing:
             job.result
         assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)
 
-    def test_detect(self, mock_detect, mock_status_pattern_ok):
+    def test_extract_pattern(self, mock_detect, mock_status_pattern_ok):
         patterns = ["ab{1,2}"]
         file_id = 123432423
         job = PNIDAPI.extract_pattern(file_id, patterns=patterns)
