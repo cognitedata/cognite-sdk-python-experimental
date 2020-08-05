@@ -94,7 +94,7 @@ class TestPNIDParsing:
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
-                    "min_tokens": 1,
+                    "minTokens": 1,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
