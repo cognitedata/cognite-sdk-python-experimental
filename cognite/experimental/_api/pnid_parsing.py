@@ -13,7 +13,7 @@ class PNIDParsingAPI(ContextAPI):
         entities: List[str],
         name_mapping: Dict[str, str] = None,
         partial_match: bool = False,
-        min_tokens: int = 2
+        min_tokens: int = 2,
     ) -> ContextualizationJob:
         """Parse PNID
 
@@ -33,7 +33,7 @@ class PNIDParsingAPI(ContextAPI):
             entities=entities,
             partial_match=partial_match,
             name_mapping=name_mapping,
-            min_tokens=min_tokens
+            min_tokens=min_tokens,
         )
 
     def detect(
@@ -42,7 +42,7 @@ class PNIDParsingAPI(ContextAPI):
         entities: List[str],
         name_mapping: Dict[str, str] = None,
         partial_match: bool = False,
-        min_tokens: int = 1
+        min_tokens: int = 1,
     ) -> ContextualizationJob:
         """Detect entities in a P&ID
 
@@ -61,7 +61,7 @@ class PNIDParsingAPI(ContextAPI):
             entities=entities,
             partial_match=partial_match,
             name_mapping=name_mapping,
-            min_tokens=min_tokens
+            min_tokens=min_tokens,
         )
 
     def extract_pattern(self, file_id, patterns: List[str]) -> ContextualizationJob:

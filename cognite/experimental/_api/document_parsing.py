@@ -13,7 +13,7 @@ class DocumentParsingAPI(ContextAPI):
         entities: List[str],
         name_mapping: Dict[str, str] = None,
         partial_match: bool = False,
-        min_tokens: int = 1
+        min_tokens: int = 1,
     ) -> ContextualizationJob:
         """Detect entities in a document
 
@@ -32,5 +32,5 @@ class DocumentParsingAPI(ContextAPI):
             entities=entities,
             partial_match=partial_match,
             name_mapping=name_mapping,
-            min_tokens=min_tokens
+            min_tokens=min_tokens,
         )
