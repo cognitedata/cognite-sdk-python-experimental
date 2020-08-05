@@ -91,7 +91,7 @@ class FunctionsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> function = c.functions.create(name="myfunction", function_handle=handle)
         """
-        self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
+        self._assert_exactly_one_of_root_folder_or_file_id_or_function_handle(root_folder, file_id, function_handle)
 
         if root_folder:
             validate_function_folder(root_folder, function_path)
@@ -300,7 +300,7 @@ class FunctionsAPI(APIClient):
         return file.id
 
     @staticmethod
-    def _assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle):
+    def _assert_exactly_one_of_root_folder_or_file_id_or_function_handle(folder, file_id, function_handle):
         source_code_options = {"folder": folder, "file_id": file_id, "function_handle": function_handle}
         given_source_code_options = [key for key in source_code_options.keys() if source_code_options[key]]
         if len(given_source_code_options) < 1:

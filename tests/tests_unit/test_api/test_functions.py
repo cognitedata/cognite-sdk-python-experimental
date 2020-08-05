@@ -202,12 +202,13 @@ class TestFunctionsAPI:
         [("function_code", True), ("bad_function_code", False), ("bad_function_code2", False)],
     )
     def test_validate_folder(self, function_folder, will_pass):
-        folder = os.path.join(os.path.dirname(__file__), function_folder)
+        root_folder = os.path.join(os.path.dirname(__file__), function_folder)
+        function_path = "handler.py"
         if will_pass:
-            validate_function_folder(folder)
+            validate_function_folder(root_folder, function_path)
         else:
             with pytest.raises(TypeError):
-                validate_function_folder(folder)
+                validate_function_folder(root_folder, function_path)
 
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
