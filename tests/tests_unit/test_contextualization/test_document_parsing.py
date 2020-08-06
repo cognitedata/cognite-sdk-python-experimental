@@ -58,11 +58,11 @@ class TestPNIDParsing:
         assert "Completed" == job.status
         assert 456 == job.job_id
 
-        n_parse_calls = 0
+        n_detect_calls = 0
         n_status_calls = 0
         for call in mock_detect.calls:
-            if "parse" in call.request.url:
-                n_parse_calls += 1
+            if "detect" in call.request.url:
+                n_detect_calls += 1
                 assert {
                     "entities": entities,
                     "fileId": file_id,
@@ -73,7 +73,7 @@ class TestPNIDParsing:
             else:
                 n_status_calls += 1
                 assert "/456" in call.request.url
-        assert 1 == n_parse_calls
+        assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
     def test_run_fails(self, mock_detect, mock_status_failed):

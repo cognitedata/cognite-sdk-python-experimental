@@ -122,11 +122,11 @@ class TestPNIDParsing:
         assert "Completed" == job.status
         assert 789 == job.job_id
 
-        n_parse_calls = 0
+        n_detect_calls = 0
         n_status_calls = 0
         for call in mock_detect.calls:
-            if "parse" in call.request.url:
-                n_parse_calls += 1
+            if "detect" in call.request.url:
+                n_detect_calls += 1
                 assert {
                     "entities": entities,
                     "fileId": file_id,
@@ -137,7 +137,7 @@ class TestPNIDParsing:
             else:
                 n_status_calls += 1
                 assert "/789" in call.request.url
-        assert 1 == n_parse_calls
+        assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
     def test_run_fails(self, mock_parse, mock_status_failed):
@@ -156,14 +156,14 @@ class TestPNIDParsing:
         assert "Completed" == job.status
         assert 456 == job.job_id
 
-        n_detect_calls = 0
+        n_extract_pattern_calls = 0
         n_status_calls = 0
         for call in mock_extract_pattern.calls:
             if "extractpattern" in call.request.url and call.request.method == "POST":
-                n_detect_calls += 1
+                n_extract_pattern_calls += 1
                 assert {"patterns": patterns, "fileId": file_id} == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/456" in call.request.url
-        assert 1 == n_detect_calls
+        assert 1 == n_extract_pattern_calls
         assert 1 == n_status_calls
