@@ -313,26 +313,28 @@ class FunctionsAPI(APIClient):
             )
 
 
+def convert_file_path_to_module_path(file_path: str):
+    return ".".join(Path(file_path).with_suffix('').parts)
+
+
 def validate_function_folder(root_path, function_path):
     file_extension = Path(function_path).suffix
     if file_extension != ".py":
         raise TypeError(f"{function_path} is not a valid value for function_path. File extension must be .py.")
 
     function_path_full = Path(root_path) / Path(function_path) # This converts function_path to a Windows path if running on Windows
-    
     if not function_path_full.is_file():
         raise TypeError(f"No file found at location '{function_path}' in '{root_path}'.")
 
-    handler = 0
     sys.path.insert(0, root_path)
-    try:
-        def convert_file_path_to_module_path(file_path: str):
-            return ".".join(Path(file_path).with_suffix('').parts)
 
-        module_path = convert_file_path_to_module_path(function_path)
-        handler = importlib.import_module(module_path)
-    except:
-        raise TypeError(f"Could not import python module {function_path_full}.")
+    cached_handler_module = sys.modules.get("handler")
+    if cached_handler_module:	
+        del sys.modules["handler"]
+
+
+    module_path = convert_file_path_to_module_path(function_path)
+    handler = importlib.import_module(module_path)
 
     if "handle" not in handler.__dir__():
         raise TypeError(f"{function_path} must contain a function named 'handle'.")

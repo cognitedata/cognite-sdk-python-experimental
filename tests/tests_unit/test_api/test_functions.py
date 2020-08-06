@@ -198,16 +198,23 @@ def mock_function_calls_list_response(rsps):
 
 class TestFunctionsAPI:
     @pytest.mark.parametrize(
-        "function_folder, will_pass",
-        [("function_code", True), ("bad_function_code", False), ("bad_function_code2", False)],
+        "function_folder, function_path, exception",
+        [
+            ("function_code", "./handler.py", None), 
+            ("bad_function_code", "handler.py", TypeError), 
+            ("bad_function_code2", "handler.py", TypeError),
+            ("./good_absolute_import/", "my_functions/handler.py", None),
+            ("bad_absolute_import", "extra_root_folder/my_functions/handler.py", ModuleNotFoundError),
+            ("relative_imports", "my_functions/good_relative_import.py", None),
+            ("relative_imports", "bad_relative_import.py", ImportError),
+        ],
     )
-    def test_validate_folder(self, function_folder, will_pass):
+    def test_validate_folder(self, function_folder, function_path, exception):
         root_folder = os.path.join(os.path.dirname(__file__), function_folder)
-        function_path = "handler.py"
-        if will_pass:
+        if exception is None:
             validate_function_folder(root_folder, function_path)
         else:
-            with pytest.raises(TypeError):
+            with pytest.raises(exception):
                 validate_function_folder(root_folder, function_path)
 
     def test_create_with_path(self, mock_functions_create_response):
