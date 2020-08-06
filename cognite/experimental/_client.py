@@ -97,7 +97,6 @@ class CogniteClient(Client):
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_extraction = EntityExtractionAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
-        self.resource_typing = ResourceTypingAPI(self._config, api_version="playground", cognite_client=self)
         self.schemas = SchemaCompletionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
