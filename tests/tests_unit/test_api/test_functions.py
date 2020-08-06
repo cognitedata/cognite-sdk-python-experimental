@@ -200,8 +200,8 @@ class TestFunctionsAPI:
     @pytest.mark.parametrize(
         "function_folder, function_path, exception",
         [
-            ("function_code", "./handler.py", None), 
-            ("bad_function_code", "handler.py", TypeError), 
+            ("function_code", "./handler.py", None),
+            ("bad_function_code", "handler.py", TypeError),
             ("bad_function_code2", "handler.py", TypeError),
             ("./good_absolute_import/", "my_functions/handler.py", None),
             ("bad_absolute_import", "extra_root_folder/my_functions/handler.py", ModuleNotFoundError),

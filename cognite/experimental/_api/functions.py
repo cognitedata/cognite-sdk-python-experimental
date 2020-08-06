@@ -101,7 +101,13 @@ class FunctionsAPI(APIClient):
             file_id = self._zip_and_upload_handle(function_handle, name)
 
         url = "/functions"
-        function = {"name": name, "description": description, "owner": owner, "fileId": file_id, "functionPath": function_path}
+        function = {
+            "name": name,
+            "description": description,
+            "owner": owner,
+            "fileId": file_id,
+            "functionPath": function_path,
+        }
         if external_id:
             function.update({"externalId": external_id})
         if api_key:
@@ -314,7 +320,7 @@ class FunctionsAPI(APIClient):
 
 
 def convert_file_path_to_module_path(file_path: str):
-    return ".".join(Path(file_path).with_suffix('').parts)
+    return ".".join(Path(file_path).with_suffix("").parts)
 
 
 def validate_function_folder(root_path, function_path):
@@ -322,16 +328,17 @@ def validate_function_folder(root_path, function_path):
     if file_extension != ".py":
         raise TypeError(f"{function_path} is not a valid value for function_path. File extension must be .py.")
 
-    function_path_full = Path(root_path) / Path(function_path) # This converts function_path to a Windows path if running on Windows
+    function_path_full = Path(root_path) / Path(
+        function_path
+    )  # This converts function_path to a Windows path if running on Windows
     if not function_path_full.is_file():
         raise TypeError(f"No file found at location '{function_path}' in '{root_path}'.")
 
     sys.path.insert(0, root_path)
 
     cached_handler_module = sys.modules.get("handler")
-    if cached_handler_module:	
+    if cached_handler_module:
         del sys.modules["handler"]
-
 
     module_path = convert_file_path_to_module_path(function_path)
     handler = importlib.import_module(module_path)
