@@ -35,7 +35,7 @@ class FunctionsAPI(APIClient):
     def create(
         self,
         name: str,
-        root_folder: Optional[str] = None,
+        folder: Optional[str] = None,
         file_id: Optional[int] = None,
         function_path: Optional[str] = HANDLER_FILE_NAME,
         function_handle: Optional[Callable] = None,
@@ -47,7 +47,7 @@ class FunctionsAPI(APIClient):
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
-        - Via the `root_folder` argument, which is the path to the folder where the source code is located. `function_path` must point to a python file in the folder within which a function named `handle` must be defined.\n
+        - Via the `folder` argument, which is the path to the folder where the source code is located. `function_path` must point to a python file in the folder within which a function named `handle` must be defined.\n
         - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. `function_path` must point to a python file in the zipped folder within which a function named `handle` must be defined.\n
         - Via the `function_handle` argument, which is a reference to a function object, which must be named `handle`.\n
 
@@ -58,7 +58,7 @@ class FunctionsAPI(APIClient):
 
         Args:
             name (str):                             The name of the function.
-            root_folder (str, optional):            Path to the folder where the function source code is located.
+            folder (str, optional):            Path to the folder where the function source code is located.
             file_id (int, optional):                File ID of the code uploaded to the Files API.
             function_path (str, optional):          Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
             function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
@@ -77,7 +77,7 @@ class FunctionsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> function = c.functions.create(name="myfunction", root_folder="path/to/code", function_path="path/to/function.py")
+                >>> function = c.functions.create(name="myfunction", folder="path/to/code", function_path="path/to/function.py")
 
             Create function with file_id from already uploaded source code::
 
@@ -91,11 +91,11 @@ class FunctionsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> function = c.functions.create(name="myfunction", function_handle=handle)
         """
-        self._assert_exactly_one_of_root_folder_or_file_id_or_function_handle(root_folder, file_id, function_handle)
+        self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
-        if root_folder:
-            validate_function_folder(root_folder, function_path)
-            file_id = self._zip_and_upload_folder(root_folder, name)
+        if folder:
+            validate_function_folder(folder, function_path)
+            file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
@@ -306,7 +306,7 @@ class FunctionsAPI(APIClient):
         return file.id
 
     @staticmethod
-    def _assert_exactly_one_of_root_folder_or_file_id_or_function_handle(folder, file_id, function_handle):
+    def _assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle):
         source_code_options = {"folder": folder, "file_id": file_id, "function_handle": function_handle}
         given_source_code_options = [key for key in source_code_options.keys() if source_code_options[key]]
         if len(given_source_code_options) < 1:

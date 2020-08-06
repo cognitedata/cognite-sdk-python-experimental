@@ -210,16 +210,16 @@ class TestFunctionsAPI:
         ],
     )
     def test_validate_folder(self, function_folder, function_path, exception):
-        root_folder = os.path.join(os.path.dirname(__file__), function_folder)
+        folder = os.path.join(os.path.dirname(__file__), function_folder)
         if exception is None:
-            validate_function_folder(root_folder, function_path)
+            validate_function_folder(folder, function_path)
         else:
             with pytest.raises(exception):
-                validate_function_folder(root_folder, function_path)
+                validate_function_folder(folder, function_path)
 
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
-        res = FUNCTIONS_API.create(name="myfunction", root_folder=folder, function_path="handler.py")
+        res = FUNCTIONS_API.create(name="myfunction", folder=folder, function_path="handler.py")
 
         assert isinstance(res, Function)
         assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
@@ -250,7 +250,7 @@ class TestFunctionsAPI:
 
     def test_create_with_path_and_file_id_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
-            FUNCTIONS_API.create(name="myfunction", root_folder="some/folder", file_id=1234, function_path="handler.py")
+            FUNCTIONS_API.create(name="myfunction", folder="some/folder", file_id=1234, function_path="handler.py")
 
     def test_delete_single_id(self, mock_functions_delete_response):
         res = FUNCTIONS_API.delete(id=1)
