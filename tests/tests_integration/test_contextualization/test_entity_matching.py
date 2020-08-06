@@ -66,7 +66,7 @@ class TestEntityMatchingIntegration:
 
         EMAPI.delete(model)
 
-    def test_ml_refit(self):
+    def test_refit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "name": "xx"}]
         model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram")
