@@ -181,7 +181,7 @@ class EntityMatchingModel(ContextualizationModel):
             complete_missing=complete_missing,
         )
 
-    def refit_ml(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
+    def refit(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
         """Re-fits an entity matching on updated data.
 
         Args:
@@ -190,7 +190,7 @@ class EntityMatchingModel(ContextualizationModel):
             EntityMatchingModel: new model refitted to ."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._fit_model(
-            model_path=f"/{self.model_id}/refitml", true_matches=true_matches
+            model_path=f"/{self.model_id}/refit", true_matches=true_matches
         )
 
     @staticmethod
