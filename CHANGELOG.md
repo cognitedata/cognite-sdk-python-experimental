@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.14.4] - 2020-08-06
+### Removed
+- Removed everything related to resource typing (contextualization).
+
 ## [0.14.3] - 2020-08-06
 ### Added
 - A class for Document parsing, allowing detecting entity in documents
