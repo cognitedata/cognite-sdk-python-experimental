@@ -36,20 +36,6 @@ def mock_status_ok(rsps):
 
 
 @pytest.fixture
-def mock_status_pattern_ok(rsps):
-    response_body = {"jobId": 456, "status": "Completed", "items": []}
-    rsps.add(
-        rsps.GET,
-        re.compile(
-            DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/extractpattern" + "/\\d+"
-        ),
-        status=200,
-        json=response_body,
-    )
-    yield rsps
-
-
-@pytest.fixture
 def mock_status_failed(rsps):
     response_body = {"jobId": 123, "status": "Failed", "errorMessage": "error message"}
     rsps.add(
@@ -62,7 +48,7 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_detect(self, mock_parse, mock_status_ok):
+    def test_detect(self, mock_detect, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
         job = DOCUMENT_API.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
@@ -74,7 +60,7 @@ class TestPNIDParsing:
 
         n_parse_calls = 0
         n_status_calls = 0
-        for call in mock_parse.calls:
+        for call in mock_detect.calls:
             if "parse" in call.request.url:
                 n_parse_calls += 1
                 assert {
@@ -90,7 +76,7 @@ class TestPNIDParsing:
         assert 1 == n_parse_calls
         assert 1 == n_status_calls
 
-    def test_run_fails(self, mock_parse, mock_status_failed):
+    def test_run_fails(self, mock_detect, mock_status_failed):
         job = DOCUMENT_API.detect([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             job.result

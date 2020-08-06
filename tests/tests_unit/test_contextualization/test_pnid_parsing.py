@@ -112,7 +112,7 @@ class TestPNIDParsing:
         assert 1 == n_parse_calls
         assert 1 == n_status_calls
 
-    def test_detect(self, mock_parse, mock_status_ok):
+    def test_detect(self, mock_detect, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
         job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
@@ -124,7 +124,7 @@ class TestPNIDParsing:
 
         n_parse_calls = 0
         n_status_calls = 0
-        for call in mock_parse.calls:
+        for call in mock_detect.calls:
             if "parse" in call.request.url:
                 n_parse_calls += 1
                 assert {
@@ -146,7 +146,7 @@ class TestPNIDParsing:
             job.result
         assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)
 
-    def test_extract_pattern(self, mock_detect, mock_status_pattern_ok):
+    def test_extract_pattern(self, mock_extract_pattern, mock_status_pattern_ok):
         patterns = ["ab{1,2}"]
         file_id = 123432423
         job = PNIDAPI.extract_pattern(file_id, patterns=patterns)
@@ -158,7 +158,7 @@ class TestPNIDParsing:
 
         n_detect_calls = 0
         n_status_calls = 0
-        for call in mock_detect.calls:
+        for call in mock_extract_pattern.calls:
             if "extractpattern" in call.request.url and call.request.method == "POST":
                 n_detect_calls += 1
                 assert {"patterns": patterns, "fileId": file_id} == jsgz_load(call.request.body)
