@@ -12,6 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.14.3] - 2020-08-06
+### Added
+- A class for Document parsing, allowing detecting entity in documents
+- Detect function also for pnid, similar to the old parse function, which may get deprecated
+- min_tokens parameter for entity detecting endpoints. Allowing to set the mimimum number of tokens needed for a detection
+
+## [0.14.2] - 2020-08-05
+### Changed
+- Renamed refitml refit entity matcher.
+
 ## [0.14.1] - 2020-08-03
 ### Added
 - Added retry to functions POST endpoints. 

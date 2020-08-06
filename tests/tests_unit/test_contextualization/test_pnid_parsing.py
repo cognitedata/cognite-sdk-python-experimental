@@ -25,6 +25,18 @@ def mock_parse(rsps):
 
 @pytest.fixture
 def mock_detect(rsps):
+    response_body = {"jobId": 789, "status": "Queued"}
+    rsps.add(
+        rsps.POST,
+        PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/detect",
+        status=200,
+        json=response_body,
+    )
+    yield rsps
+
+
+@pytest.fixture
+def mock_extract_pattern(rsps):
     response_body = {"jobId": 456, "status": "Queued"}
     rsps.add(
         rsps.POST,
@@ -72,7 +84,7 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_extract(self, mock_parse, mock_status_ok):
+    def test_parse(self, mock_parse, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423
         job = PNIDAPI.parse(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
@@ -92,11 +104,40 @@ class TestPNIDParsing:
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
+                    "minTokens": 2,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/123" in call.request.url
         assert 1 == n_parse_calls
+        assert 1 == n_status_calls
+
+    def test_detect(self, mock_detect, mock_status_ok):
+        entities = ["a", "b"]
+        file_id = 123432423
+        job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"svgUrl": "x"} == job.result
+        assert "Completed" == job.status
+        assert 789 == job.job_id
+
+        n_detect_calls = 0
+        n_status_calls = 0
+        for call in mock_detect.calls:
+            if "detect" in call.request.url:
+                n_detect_calls += 1
+                assert {
+                    "entities": entities,
+                    "fileId": file_id,
+                    "nameMapping": {"a": "c"},
+                    "partialMatch": False,
+                    "minTokens": 3,
+                } == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/789" in call.request.url
+        assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
     def test_run_fails(self, mock_parse, mock_status_failed):
@@ -105,7 +146,7 @@ class TestPNIDParsing:
             job.result
         assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)
 
-    def test_detect(self, mock_detect, mock_status_pattern_ok):
+    def test_extract_pattern(self, mock_extract_pattern, mock_status_pattern_ok):
         patterns = ["ab{1,2}"]
         file_id = 123432423
         job = PNIDAPI.extract_pattern(file_id, patterns=patterns)
@@ -115,14 +156,14 @@ class TestPNIDParsing:
         assert "Completed" == job.status
         assert 456 == job.job_id
 
-        n_detect_calls = 0
+        n_extract_pattern_calls = 0
         n_status_calls = 0
-        for call in mock_detect.calls:
+        for call in mock_extract_pattern.calls:
             if "extractpattern" in call.request.url and call.request.method == "POST":
-                n_detect_calls += 1
+                n_extract_pattern_calls += 1
                 assert {"patterns": patterns, "fileId": file_id} == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/456" in call.request.url
-        assert 1 == n_detect_calls
+        assert 1 == n_extract_pattern_calls
         assert 1 == n_status_calls
