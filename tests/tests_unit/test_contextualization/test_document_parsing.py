@@ -80,4 +80,4 @@ class TestPNIDParsing:
         job = DOCUMENT_API.detect([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             job.result
-        assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)
+        assert "ContextualizationJob 456 failed with error 'error message'" == str(exc_info.value)
