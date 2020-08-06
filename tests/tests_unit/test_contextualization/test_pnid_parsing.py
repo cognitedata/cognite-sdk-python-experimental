@@ -25,6 +25,17 @@ def mock_parse(rsps):
 
 @pytest.fixture
 def mock_detect(rsps):
+    response_body = {"jobId": 789, "status": "Queued"}
+    rsps.add(
+        rsps.POST,
+        PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/detect",
+        status=200,
+        json=response_body,
+    )
+    yield rsps
+
+@pytest.fixture
+def mock_extract_pattern(rsps):
     response_body = {"jobId": 456, "status": "Queued"}
     rsps.add(
         rsps.POST,
@@ -124,7 +135,7 @@ class TestPNIDParsing:
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
-                assert "/123" in call.request.url
+                assert "/789" in call.request.url
         assert 1 == n_parse_calls
         assert 1 == n_status_calls
 

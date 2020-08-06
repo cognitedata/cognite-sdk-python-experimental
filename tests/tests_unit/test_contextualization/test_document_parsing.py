@@ -12,23 +12,11 @@ DOCUMENT_API = COGNITE_CLIENT.document_parsing
 
 
 @pytest.fixture
-def mock_parse(rsps):
-    response_body = {"jobId": 123, "status": "Queued"}
-    rsps.add(
-        rsps.POST,
-        DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/parse",
-        status=200,
-        json=response_body,
-    )
-    yield rsps
-
-
-@pytest.fixture
 def mock_detect(rsps):
     response_body = {"jobId": 456, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/extractpattern",
+        DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/detect",
         status=200,
         json=response_body,
     )
