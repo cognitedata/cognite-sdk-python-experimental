@@ -14,11 +14,9 @@ Changes are grouped as follows
 
 ## [0.14.3] - 2020-08-06
 ### Added
-- Document parsing class, for the documents/detect endpoint
-- Detect also for pnid, similar to parse
-- min_tokens parameter for detect and parse
-### Changed
-- Renamed tests to fit what they are testing
+- A class for Document parsing, allowing detecting entity in documents
+- Detect function also for pnid, similar to the old parse function, which may get deprecated
+- min_tokens parameter for entity detecting endpoints. Allowing to set the mimimum number of tokens needed for a detection
 
 ## [0.14.2] - 2020-08-05
 ### Changed
