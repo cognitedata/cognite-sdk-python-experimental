@@ -83,7 +83,7 @@ class FunctionsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> function = c.functions.create(name="myfunction", file_id=123, function_path="path/to/_function.py")
+                >>> function = c.functions.create(name="myfunction", file_id=123, function_path="path/to/function.py")
 
             Create function with predefined function object named `handle`::
 
@@ -326,9 +326,11 @@ def validate_function_folder(root_path, function_path):
     handler = 0
     sys.path.insert(0, root_path)
     try:
-        spec = importlib.util.spec_from_file_location("handler", function_path_full)
-        handler = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(handler)
+        def convert_file_path_to_module_path(file_path: str):
+            return ".".join(Path(file_path).with_suffix('').parts)
+
+        module_path = convert_file_path_to_module_path(function_path)
+        handler = importlib.import_module(module_path)
     except:
         raise TypeError(f"Could not import python module {function_path_full}.")
 
