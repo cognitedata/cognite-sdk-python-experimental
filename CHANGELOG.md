@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.14.3] - 2020-08-06
+### Added
+- Document parsing class, for the documents/detect endpoint
+- Detect also for pnid, similar to parse
+- min_tokens parameter for detect and parse
+### Changed
+- Renamed tests to fit what they are testing
+
 ## [0.14.2] - 2020-08-05
 ### Changed
 - Renamed refitml refit entity matcher.
