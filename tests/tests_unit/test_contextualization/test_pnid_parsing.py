@@ -34,6 +34,7 @@ def mock_detect(rsps):
     )
     yield rsps
 
+
 @pytest.fixture
 def mock_extract_pattern(rsps):
     response_body = {"jobId": 456, "status": "Queued"}
