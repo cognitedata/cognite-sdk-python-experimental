@@ -66,14 +66,14 @@ class TestEntityMatchingIntegration:
 
         EMAPI.delete(model)
 
-    def test_ml_refit(self):
+    def test_refit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "name": "xx"}]
         model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
 
-        new_model = model.refit_ml(true_matches=[(1, 3)])
+        new_model = model.refit(true_matches=[(1, 3)])
         assert new_model.model_id is not None
         assert new_model.model_id != model.model_id
         assert "Completed" == model.status

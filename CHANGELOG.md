@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.14.2] - 2020-08-05
+### Changed
+- Renamed refitml refit entity matcher.
+
 ## [0.14.1] - 2020-08-03
 ### Added
 - Added retry to functions POST endpoints. 
