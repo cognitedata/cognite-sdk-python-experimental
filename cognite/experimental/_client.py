@@ -13,7 +13,6 @@ from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.relationships import RelationshipsAPI
-from cognite.experimental._api.resource_typing import ResourceTypingAPI
 from cognite.experimental._api.schema_completion import SchemaCompletionAPI
 from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.unstructured import GrepAPI
