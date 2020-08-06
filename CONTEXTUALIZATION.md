@@ -34,7 +34,7 @@ model = client.entity_matching.fit_ml(match_from = match_from,
 ```
 #### Refit model with additional true match pair
 ```python
-true_matches = [(13)]
+true_matches = [(1,3)]
 
 model = model.refit_ml(true_matches = true_matches)
 ```
