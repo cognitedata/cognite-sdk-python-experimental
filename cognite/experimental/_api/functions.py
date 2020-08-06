@@ -336,6 +336,7 @@ def validate_function_folder(root_path, function_path):
 
     sys.path.insert(0, root_path)
 
+    # Necessary to clear the cache if you have previously imported the module (this would have precedence over sys.path)
     cached_handler_module = sys.modules.get("handler")
     if cached_handler_module:
         del sys.modules["handler"]

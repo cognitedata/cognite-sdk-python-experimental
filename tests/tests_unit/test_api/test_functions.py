@@ -200,6 +200,7 @@ class TestFunctionsAPI:
     @pytest.mark.parametrize(
         "function_folder, function_path, exception",
         [
+            (".", "handler.py", None),
             ("function_code", "./handler.py", None),
             ("bad_function_code", "handler.py", TypeError),
             ("bad_function_code2", "handler.py", TypeError),
