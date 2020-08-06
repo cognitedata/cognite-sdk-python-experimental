@@ -120,7 +120,7 @@ class TestPNIDParsing:
         assert "Queued" == job.status
         assert {"svgUrl": "x"} == job.result
         assert "Completed" == job.status
-        assert 123 == job.job_id
+        assert 789 == job.job_id
 
         n_parse_calls = 0
         n_status_calls = 0

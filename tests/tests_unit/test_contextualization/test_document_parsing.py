@@ -56,7 +56,7 @@ class TestPNIDParsing:
         assert "Queued" == job.status
         assert {"svgUrl": "x"} == job.result
         assert "Completed" == job.status
-        assert 123 == job.job_id
+        assert 456 == job.job_id
 
         n_parse_calls = 0
         n_status_calls = 0
@@ -72,7 +72,7 @@ class TestPNIDParsing:
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
-                assert "/123" in call.request.url
+                assert "/456" in call.request.url
         assert 1 == n_parse_calls
         assert 1 == n_status_calls
 
