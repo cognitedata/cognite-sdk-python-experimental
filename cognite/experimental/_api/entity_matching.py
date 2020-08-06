@@ -15,7 +15,7 @@ class EntityMatchingAPI(ContextModelAPI):
         match_to: List[Union[Dict, CogniteResource]],
         true_matches: List[Tuple[int, int]] = None,
         keys_from_to: List[Tuple[str, str]] = None,
-        model_type: str = None,
+        feature_type: str = None,
         classifier: str = None,
         complete_missing: bool = False,
     ) -> EntityMatchingModel:
@@ -26,7 +26,7 @@ class EntityMatchingAPI(ContextModelAPI):
             match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
             true_matches: Known valid matches given as a list of (id_from,id_to). If omitted, uses an unsupervised model.
             keys_from_to: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
-            model_type (str): model type that defines features and methods used, see API docs for details.
+            feature_type (str): feature type that defines the combination of features used, see API docs for details.
             classifier (str): classifier used in training. Currently undocumented in API.
             complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API
         Returns:
@@ -41,7 +41,7 @@ class EntityMatchingAPI(ContextModelAPI):
             match_to=EntityMatchingModel.dump_entities(match_to),
             true_matches=true_matches,
             keys_from_to=keys_from_to,
-            model_type=model_type,
+            feature_type=feature_type,
             classifier=classifier,
             complete_missing=complete_missing,
         )
@@ -52,7 +52,7 @@ class EntityMatchingAPI(ContextModelAPI):
         match_to: List[Union[Dict, CogniteResource]],
         true_matches: List[Tuple[int, int]] = None,
         keys_from_to: List[Tuple[str, str]] = None,
-        model_type: str = None,
+        feature_type: str = None,
         classifier: str = None,
         complete_missing: bool = False,
     ) -> EntityMatchingModel:
@@ -67,7 +67,7 @@ class EntityMatchingAPI(ContextModelAPI):
             match_to=EntityMatchingModel.dump_entities(match_to),
             true_matches=true_matches,
             keys_from_to=keys_from_to,
-            model_type=model_type,
+            feature_type=feature_type,
             classifier=classifier,
             complete_missing=complete_missing,
         )

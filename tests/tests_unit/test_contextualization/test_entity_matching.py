@@ -79,7 +79,7 @@ class TestEntityMatching:
     def test_fit(self, mock_fit, mock_status_ok):
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="foo")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
         assert 42 == model.request_timestamp
@@ -112,7 +112,7 @@ class TestEntityMatching:
         # fit_ml should produce the same output as fit. Will eventually be removed
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        model = EMAPI.fit_ml(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="foo")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
         assert 42 == model.request_timestamp
@@ -123,7 +123,7 @@ class TestEntityMatching:
     def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
         entities_to = [Asset(id=1, name="x")]
-        EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="foo")
+        EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="foo")
         assert {
             "matchFrom": [entities_from[0].dump()],
             "matchTo": [entities_to[0].dump()],

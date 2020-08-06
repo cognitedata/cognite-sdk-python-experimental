@@ -16,7 +16,7 @@ class TestEntityMatchingIntegration:
             match_from=entities_from,
             match_to=entities_to,
             true_matches=[(1, 2)],
-            model_type="bigram",
+            feature_type="bigram",
             keys_from_to=[("name", "bloop")],
         )
         assert isinstance(model, EntityMatchingModel)
@@ -45,7 +45,7 @@ class TestEntityMatchingIntegration:
             match_from=entities_from,
             match_to=entities_to,
             true_matches=[(1, 2)],
-            model_type="bigram",
+            feature_type="bigram",
             keys_from_to=[("name", "bloop")],
         )
         assert isinstance(model, EntityMatchingModel)
@@ -69,7 +69,7 @@ class TestEntityMatchingIntegration:
     def test_refit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "name": "xx"}]
-        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], model_type="bigram")
+        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
 
@@ -92,7 +92,7 @@ class TestEntityMatchingIntegration:
             match_from=entities_from,
             match_to=entities_to,
             true_matches=[(1, 2)],
-            model_type="bigram",
+            feature_type="bigram",
             keys_from_to=[("name", "missing")],
             complete_missing=True,
             classifier="LogisticRegression",
