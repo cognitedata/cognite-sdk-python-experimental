@@ -33,6 +33,7 @@ EXAMPLE_FUNCTION = {
     "owner": "ola.normann@cognite.com",
     "status": "Ready",
     "fileId": 1234,
+    "functionPath": "handler.py",
     "createdTime": 1585662507939,
     "apiKey": "***",
     "secrets": {"key1": "***", "key2": "***"},
@@ -197,20 +198,29 @@ def mock_function_calls_list_response(rsps):
 
 class TestFunctionsAPI:
     @pytest.mark.parametrize(
-        "function_folder, will_pass",
-        [("function_code", True), ("bad_function_code", False), ("bad_function_code2", False)],
+        "function_folder, function_path, exception",
+        [
+            (".", "handler.py", None),
+            ("function_code", "./handler.py", None),
+            ("bad_function_code", "handler.py", TypeError),
+            ("bad_function_code2", "handler.py", TypeError),
+            ("./good_absolute_import/", "my_functions/handler.py", None),
+            ("bad_absolute_import", "extra_root_folder/my_functions/handler.py", ModuleNotFoundError),
+            ("relative_imports", "my_functions/good_relative_import.py", None),
+            ("relative_imports", "bad_relative_import.py", ImportError),
+        ],
     )
-    def test_validate_folder(self, function_folder, will_pass):
+    def test_validate_folder(self, function_folder, function_path, exception):
         folder = os.path.join(os.path.dirname(__file__), function_folder)
-        if will_pass:
-            validate_function_folder(folder)
+        if exception is None:
+            validate_function_folder(folder, function_path)
         else:
-            with pytest.raises(TypeError):
-                validate_function_folder(folder)
+            with pytest.raises(exception):
+                validate_function_folder(folder, function_path)
 
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
-        res = FUNCTIONS_API.create(name="myfunction", folder=folder)
+        res = FUNCTIONS_API.create(name="myfunction", folder=folder, function_path="handler.py")
 
         assert isinstance(res, Function)
         assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
@@ -241,7 +251,7 @@ class TestFunctionsAPI:
 
     def test_create_with_path_and_file_id_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
-            FUNCTIONS_API.create(name="myfunction", folder="some/folder", file_id=1234)
+            FUNCTIONS_API.create(name="myfunction", folder="some/folder", file_id=1234, function_path="handler.py")
 
     def test_delete_single_id(self, mock_functions_delete_response):
         res = FUNCTIONS_API.delete(id=1)

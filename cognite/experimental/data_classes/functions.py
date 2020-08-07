@@ -14,7 +14,8 @@ class Function(CogniteResource):
         description (str): Description of the function.
         owner (str): Owner of the function.
         status (str): Status of the function.
-        filed_id (int): File id of the code represented by this object.
+        file_id (int): File id of the code represented by this object.
+        function_path (str): Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on posix path format.
         created_time (int): Created time in UNIX.
         api_key (str): Api key attached to the function.
         secrets (Dict[str, str]): Secrets attached to the function ((key, value) pairs).
@@ -31,6 +32,7 @@ class Function(CogniteResource):
         owner: str = None,
         status: str = None,
         file_id: int = None,
+        function_path: str = None,
         created_time: int = None,
         api_key: str = None,
         secrets: Dict = None,
@@ -44,6 +46,7 @@ class Function(CogniteResource):
         self.owner = owner
         self.status = status
         self.file_id = file_id
+        self.function_path = function_path
         self.created_time = created_time
         self.api_key = api_key
         self.secrets = secrets
