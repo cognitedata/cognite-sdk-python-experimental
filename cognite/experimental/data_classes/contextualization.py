@@ -204,42 +204,6 @@ class EntityMatchingModel(ContextualizationModel):
             ]
 
 
-class TypingPredictData(TypedDict):
-    data: List[str]
-
-
-class TypingFitData(TypedDict):
-    data: List[str]
-    target: str
-
-
-class ResourceTypingModel(ContextualizationModel):
-    _RESOURCE_PATH = "/context/resource_typing"
-    _STATUS_PATH = _RESOURCE_PATH + "/"
-
-    @staticmethod
-    def format_items(
-        items: Iterable[Union[TypingFitData, TypingPredictData]]
-    ) -> List[Union[TypingFitData, TypingPredictData]]:
-        items = copy.deepcopy(list(items))
-        for item in items:
-            item["data"] = ["" if isinstance(x, float) and math.isnan(x) else x for x in item["data"]]
-        return items
-
-    def predict(self, items: Iterable[TypingPredictData]) -> ContextualizationJob:
-        """Predict resource types
-
-        Args:
-            items (Iterable[TypingPredictData]): entities to predict type of, in the same for as passed to fit.
-
-        Returns:
-            ContextualizationJob: object which can be used to wait for and retrieve results."""
-        self.wait_for_completion()
-        return self._cognite_client.resource_typing._run_job(
-            job_path=f"/{self.model_id}/predict", items=self.format_items(items)
-        )
-
-
 class ContextualizationModelList(CogniteResourceList):
     _RESOURCE = ContextualizationModel
     _ASSERT_CLASSES = False

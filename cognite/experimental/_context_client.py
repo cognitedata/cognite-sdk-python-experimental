@@ -11,7 +11,6 @@ from cognite.experimental.data_classes import (
     ContextualizationModel,
     ContextualizationModelList,
     EntityMatchingModel,
-    ResourceTypingModel,
 )
 
 
@@ -50,7 +49,7 @@ class ContextAPI(APIClient):
 class ContextModelAPI(ContextAPI):
     _MODEL_CLASS = ContextualizationModel
 
-    def _fit_model(self, model_path="/fit", headers=None, **kwargs) -> Union[EntityMatchingModel, ResourceTypingModel]:
+    def _fit_model(self, model_path="/fit", headers=None, **kwargs) -> Union[EntityMatchingModel]:
         response = self._camel_post(model_path, json=kwargs, headers=headers)
         return self._MODEL_CLASS._load(response.json(), cognite_client=self._cognite_client)
 
