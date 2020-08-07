@@ -1,7 +1,9 @@
+import importlib.util
 import json
 import os
 import sys
 from inspect import getsource
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
@@ -35,6 +37,7 @@ class FunctionsAPI(APIClient):
         name: str,
         folder: Optional[str] = None,
         file_id: Optional[int] = None,
+        function_path: Optional[str] = HANDLER_FILE_NAME,
         function_handle: Optional[Callable] = None,
         external_id: Optional[str] = None,
         description: Optional[str] = "",
@@ -44,8 +47,8 @@ class FunctionsAPI(APIClient):
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
-        - Via the `folder` argument, which is the path to the folder where the source code is located. The folder must contain a file named handler.py within which a function named handle must be defined.\n
-        - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. The zip-file must contain a file named handler.py within which a function named handle must be defined.\n
+        - Via the `folder` argument, which is the path to the folder where the source code is located. `function_path` must point to a python file in the folder within which a function named `handle` must be defined.\n
+        - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. `function_path` must point to a python file in the zipped folder within which a function named `handle` must be defined.\n
         - Via the `function_handle` argument, which is a reference to a function object, which must be named `handle`.\n
 
         The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secrets`:\n
@@ -55,8 +58,9 @@ class FunctionsAPI(APIClient):
 
         Args:
             name (str):                             The name of the function.
-            folder (str, optional):                 Path to the folder where the function source code is located.
+            folder (str, optional):            Path to the folder where the function source code is located.
             file_id (int, optional):                File ID of the code uploaded to the Files API.
+            function_path (str, optional):          Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
             function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
             external_id (str, optional):            External id of the function.
             description (str, optional):            Description of the function.
@@ -73,13 +77,13 @@ class FunctionsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> function = c.functions.create(name="myfunction", folder="path/to/code")
+                >>> function = c.functions.create(name="myfunction", folder="path/to/code", function_path="path/to/function.py")
 
             Create function with file_id from already uploaded source code::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> function = c.functions.create(name="myfunction", file_id=123)
+                >>> function = c.functions.create(name="myfunction", file_id=123, function_path="path/to/function.py")
 
             Create function with predefined function object named `handle`::
 
@@ -90,14 +94,20 @@ class FunctionsAPI(APIClient):
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
         if folder:
-            validate_function_folder(folder)
+            validate_function_folder(folder, function_path)
             file_id = self._zip_and_upload_folder(folder, name)
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
 
         url = "/functions"
-        function = {"name": name, "description": description, "owner": owner, "fileId": file_id}
+        function = {
+            "name": name,
+            "description": description,
+            "owner": owner,
+            "fileId": file_id,
+            "functionPath": function_path,
+        }
         if external_id:
             function.update({"externalId": external_id})
         if api_key:
@@ -309,25 +319,36 @@ class FunctionsAPI(APIClient):
             )
 
 
-def validate_function_folder(path):
-    sys.path.insert(0, path)
-    if HANDLER_FILE_NAME not in os.listdir(path):
-        sys.path.remove(path)
-        raise TypeError(f"Function folder must contain a module named {HANDLER_FILE_NAME}.")
+def convert_file_path_to_module_path(file_path: str):
+    return ".".join(Path(file_path).with_suffix("").parts)
 
+
+def validate_function_folder(root_path, function_path):
+    file_extension = Path(function_path).suffix
+    if file_extension != ".py":
+        raise TypeError(f"{function_path} is not a valid value for function_path. File extension must be .py.")
+
+    function_path_full = Path(root_path) / Path(
+        function_path
+    )  # This converts function_path to a Windows path if running on Windows
+    if not function_path_full.is_file():
+        raise TypeError(f"No file found at location '{function_path}' in '{root_path}'.")
+
+    sys.path.insert(0, root_path)
+
+    # Necessary to clear the cache if you have previously imported the module (this would have precedence over sys.path)
     cached_handler_module = sys.modules.get("handler")
     if cached_handler_module:
         del sys.modules["handler"]
-    import handler
+
+    module_path = convert_file_path_to_module_path(function_path)
+    handler = importlib.import_module(module_path)
 
     if "handle" not in handler.__dir__():
-        sys.path.remove(path)
-        raise TypeError(f"{HANDLER_FILE_NAME} must contain a function named 'handle'.")
+        raise TypeError(f"{function_path} must contain a function named 'handle'.")
 
     _validate_function_handle(handler.handle)
-    sys.path.remove(path)
-    if cached_handler_module:
-        sys.modules["handler"] = cached_handler_module
+    sys.path.remove(root_path)
 
 
 def _validate_function_handle(function_handle):

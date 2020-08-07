@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.14.5] - 2020-08-07
+### Added
+- Allow users to specify custom path to handle function by setting function_path.
+
 ## [0.14.4] - 2020-08-06
 ### Removed
 - Removed everything related to resource typing (contextualization).

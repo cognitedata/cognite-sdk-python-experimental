@@ -19,6 +19,7 @@ def function():
         owner="somebody",
         status="Deploying",
         file_id=456,
+        function_path="handler.py",
         created_time="2020-06-19 08:49:37",
         secrets={},
         cognite_client=MagicMock(),
