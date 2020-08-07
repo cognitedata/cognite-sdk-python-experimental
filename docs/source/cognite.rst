@@ -15,7 +15,6 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
 * client.entity_extraction: `Extract Entities from Files`_
 * client.pnid_parsing: `Parse PNID`_
-* client.resource_typing: `Fit Resource Typing Model`_
 * client.functions: `Functions`_
 * client.files: includes extensions described in `Unstructured Search`_
 
@@ -330,10 +329,6 @@ Fit Entity Matching Model
 Create Entity Matching Rules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
-
-Fit Resource Typing Model
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.resource_typing.ResourceTypingAPI.fit
 
 Parse PNID
 ^^^^^^^^^^
