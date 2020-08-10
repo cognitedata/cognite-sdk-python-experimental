@@ -36,10 +36,7 @@ class TestEntityMatchingIntegration:
         assert "Completed" == job.status
 
         # Retrieve model-info
-        while True:
-            info = EMAPI.retrieve(model_id=model.model_id)
-            if info.status in ["Completed"]:
-                break
+        info = EMAPI.retrieve(model_id=model.model_id)
         assert info.classifier == "RandomForest"
         assert info.feature_type == "bigram"
         assert info.keys_from_to == [["name", "bloop"]]
