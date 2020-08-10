@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.15.1] - 2020-08-10
+### Added
+- Add model info for entity matcher models (classifier, feature_type, model_to, keys_from_to) to the output of retrieve.
+
 ## [0.15.0] - 2020-08-10
 ### Changed
 - Changed name of the parameter indicating the type of features created from model_type to feature_type, entity matcher.
