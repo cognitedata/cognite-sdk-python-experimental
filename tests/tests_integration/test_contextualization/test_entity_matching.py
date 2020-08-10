@@ -51,6 +51,13 @@ class TestEntityMatchingIntegration:
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
 
+        # Retrieve model-info
+        info = EMAPI.retrieve(model_id=model.model_id)
+        assert info.classifier == "RandomForest"
+        assert info.feature_type == "bigram"
+        assert info.keys_from_to == [["name", "bloop"]]
+        assert info.model_type == "Supervised"
+
         job = model.predict_ml(match_from=[{"name": "foo-bar"}], match_to=[{"bloop": "foo-42"}])
         assert "Completed" == model.status
         assert isinstance(job, ContextualizationJob)

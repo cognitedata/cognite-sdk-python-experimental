@@ -91,6 +91,10 @@ class ContextualizationModel(CogniteResource):
         start_timestamp=None,
         status_timestamp=None,
         cognite_client=None,
+        classifier=None,
+        feature_type=None,
+        keys_from_to=None,
+        model_type=None,
     ):
         self.model_id = model_id
         self.status = status
@@ -98,6 +102,10 @@ class ContextualizationModel(CogniteResource):
         self.start_timestamp = start_timestamp
         self.status_timestamp = status_timestamp
         self.error_message = error_message
+        self.classifier = classifier
+        self.feature_type = feature_type
+        self.keys_from_to = keys_from_to
+        self.model_type = model_type
         self._cognite_client = cognite_client
 
     def __str__(self):
@@ -116,6 +124,10 @@ class ContextualizationModel(CogniteResource):
         self.start_timestamp = data.get("startTimestamp")
         self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
         self.error_message = data.get("errorMessage")
+        self.classifier = data.get("classifier")
+        self.feature_type = data.get("featureType")
+        self.keys_from_to = data.get("keysFromTo")
+        self.model_type = data.get("modelType")
         return self.status
 
     def wait_for_completion(self, interval=1):
