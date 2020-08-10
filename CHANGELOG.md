@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.15.0] - 2020-08-10
+### Changed
+- Changed name of the parameter indicating the type of features created from model_type to feature_type, entity matcher.
+
 ## [0.14.5] - 2020-08-07
 ### Added
 - Allow users to specify custom path to handle function by setting function_path.
