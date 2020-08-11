@@ -130,6 +130,28 @@ class ContextualizationModel(CogniteResource):
 
 
 class EntityMatchingModel(ContextualizationModel):
+    def __init__(
+        self,
+        model_id=None,
+        status=None,
+        error_message=None,
+        request_timestamp=None,
+        start_timestamp=None,
+        status_timestamp=None,
+        cognite_client=None,
+        classifier=None,
+        feature_type=None,
+        keys_from_to=None,
+        model_type=None,
+    ):
+        super().__init__(
+            model_id, status, error_message, request_timestamp, start_timestamp, status_timestamp, cognite_client
+        )
+        self.classifier = classifier
+        self.feature_type = feature_type
+        self.keys_from_to = keys_from_to
+        self.model_type = model_type
+
     _RESOURCE_PATH = "/context/entity_matching"
     _STATUS_PATH = _RESOURCE_PATH + "/"
 
