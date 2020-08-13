@@ -24,6 +24,7 @@ from cognite.experimental.data_classes import (
 HANDLER_FILE_NAME = "handler.py"
 MAX_RETRIES = 3
 
+
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
     _LIST_CLASS = FunctionList
@@ -101,10 +102,12 @@ class FunctionsAPI(APIClient):
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
 
-        sleep_time = 1.0 # seconds
+        sleep_time = 1.0  # seconds
         for i in range(MAX_RETRIES):
             try:
-                self._cognite_client.files.retrieve(id=file_id)
+                file = self._cognite_client.files.retrieve(id=file_id)
+                if file is None or not file.uploaded:
+                    continue
             except CogniteAPIError as e:
                 time.sleep(sleep_time * 2)
                 sleep_time *= 2
@@ -113,7 +116,6 @@ class FunctionsAPI(APIClient):
                 break
         else:
             raise IOError("Could not retrieve file from files API") from e
-
 
         url = "/functions"
         function = {
@@ -133,7 +135,7 @@ class FunctionsAPI(APIClient):
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
 
-    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
+    def delete(self, id: Union[int, List[int]]=None, external_id: Union[str, List[str]]=None) -> None:
         """`Delete one or more functions. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-delete>`_
 
         Args:
@@ -318,7 +320,6 @@ class FunctionsAPI(APIClient):
 
             file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
 
-
         return file.id
 
     @staticmethod
@@ -379,14 +380,15 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
+
     def list(
         self,
         function_id: Optional[int] = None,
         function_external_id: Optional[str] = None,
         status: Optional[str] = None,
         schedule_id: Optional[int] = None,
-        start_time: Optional[Dict[str, int]] = None,
-        end_time: Optional[Dict[str, int]] = None,
+        start_time: Optional[Dict[str, int]]=None,
+        end_time: Optional[Dict[str, int]]=None,
     ) -> FunctionCallList:
         """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
@@ -534,6 +536,7 @@ class FunctionCallsAPI(APIClient):
 
 
 class FunctionSchedulesAPI(APIClient):
+
     def list(self) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
@@ -547,7 +550,7 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> schedules = c.functions.schedules.list()
-            
+
             List schedules directly on a function object to get only schedules associated with this particular function:
 
                 >>> from cognite.experimental import CogniteClient
