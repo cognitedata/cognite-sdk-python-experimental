@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.15.1] - 2020-08-13
+### Added
+- Add name, description and external-id parameters to fit entity matcher.
+
 ## [0.15.1] - 2020-08-10
 ### Added
 - Add model info for entity matcher models (classifier, feature_type, model_to, keys_from_to) to the output of retrieve.
