@@ -107,10 +107,10 @@ def mock_functions_create_response(rsps):
 
     files_url = FILES_API._get_base_url_with_base_path() + "/files"
     files_byids_url = FILES_API._get_base_url_with_base_path() + "/files/byids"
-    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [copy.deepcopy(files_response_body)]})
+
     rsps.add(rsps.POST, files_url, status=201, json=files_response_body)
     rsps.add(rsps.PUT, "https://upload.here", status=201)
-
+    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [copy.deepcopy(files_response_body)]})
     functions_url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions"
     rsps.add(rsps.POST, functions_url, status=201, json={"items": [EXAMPLE_FUNCTION]})
 
@@ -233,7 +233,7 @@ class TestFunctionsAPI:
         res = FUNCTIONS_API.create(name="myfunction", file_id=1234)
 
         assert isinstance(res, Function)
-        assert mock_functions_create_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_create_response.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_with_function_handle(self, mock_functions_create_response, function_handle):
         res = FUNCTIONS_API.create(name="myfunction", function_handle=function_handle)
