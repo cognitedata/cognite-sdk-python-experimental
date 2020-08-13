@@ -21,6 +21,7 @@ from cognite.experimental.data_classes import (
 )
 
 HANDLER_FILE_NAME = "handler.py"
+MAX_RETRIES = 5
 
 
 class FunctionsAPI(APIClient):
@@ -99,6 +100,17 @@ class FunctionsAPI(APIClient):
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
+
+        sleep_time = 1.0  # seconds
+        for i in range(MAX_RETRIES):
+            file = self._cognite_client.files.retrieve(id=file_id)
+            if file is None or not file.uploaded:
+                time.sleep(sleep_time)
+                sleep_time *= 2
+            else:
+                break
+        else:
+            raise IOError("Could not retrieve file from files API")
 
         url = "/functions"
         function = {
@@ -531,7 +543,7 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> schedules = c.functions.schedules.list()
-            
+
             List schedules directly on a function object to get only schedules associated with this particular function:
 
                 >>> from cognite.experimental import CogniteClient

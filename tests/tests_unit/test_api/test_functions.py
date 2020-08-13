@@ -1,5 +1,6 @@
 import json
 import os
+from unittest.mock import Mock
 
 import pytest
 
@@ -104,9 +105,11 @@ def mock_functions_create_response(rsps):
     rsps.assert_all_requests_are_fired = False
 
     files_url = FILES_API._get_base_url_with_base_path() + "/files"
+    files_byids_url = FILES_API._get_base_url_with_base_path() + "/files/byids"
+
     rsps.add(rsps.POST, files_url, status=201, json=files_response_body)
     rsps.add(rsps.PUT, "https://upload.here", status=201)
-
+    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [files_response_body]})
     functions_url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions"
     rsps.add(rsps.POST, functions_url, status=201, json={"items": [EXAMPLE_FUNCTION]})
 
@@ -223,19 +226,19 @@ class TestFunctionsAPI:
         res = FUNCTIONS_API.create(name="myfunction", folder=folder, function_path="handler.py")
 
         assert isinstance(res, Function)
-        assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_create_response.calls[3].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_with_file_id(self, mock_functions_create_response):
         res = FUNCTIONS_API.create(name="myfunction", file_id=1234)
 
         assert isinstance(res, Function)
-        assert mock_functions_create_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_create_response.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_with_function_handle(self, mock_functions_create_response, function_handle):
         res = FUNCTIONS_API.create(name="myfunction", function_handle=function_handle)
 
         assert isinstance(res, Function)
-        assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_create_response.calls[3].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_with_function_handle_with_illegal_name_raises(self, function_handle_illegal_name):
         with pytest.raises(TypeError):
