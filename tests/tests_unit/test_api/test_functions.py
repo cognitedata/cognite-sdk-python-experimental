@@ -118,6 +118,7 @@ def mock_functions_create_response(rsps):
 
 @pytest.fixture
 def mock_file_not_uploaded(rsps):
+
     files_response_body = {
         "name": "myfunction",
         "id": FUNCTION_ID,
@@ -127,12 +128,9 @@ def mock_file_not_uploaded(rsps):
         "uploadUrl": "https://upload.here",
     }
 
-    rsps.assert_all_requests_are_fired = False
-
     files_byids_url = FILES_API._get_base_url_with_base_path() + "/files/byids"
 
     rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [files_response_body]})
-
     yield rsps
 
 
@@ -245,7 +243,7 @@ class TestFunctionsAPI:
     def test_create_function_with_file_not_uploaded(self, mock_file_not_uploaded):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
         with pytest.raises(IOError):
-            FUNCTIONS_API.create(name="myfunction", folder=folder, function_path="handler.py")
+            FUNCTIONS_API.create(name="myfunction", file_id=123)
 
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
