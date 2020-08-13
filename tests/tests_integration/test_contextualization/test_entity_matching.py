@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, ContextualizationModelList
+from cognite.experimental.data_classes import ContextualizationJob, ContextualizationModelList, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
