@@ -22,7 +22,7 @@ from cognite.experimental.data_classes import (
 )
 
 HANDLER_FILE_NAME = "handler.py"
-MAX_RETRIES = 3
+MAX_RETRIES = 5
 
 
 class FunctionsAPI(APIClient):
@@ -104,16 +104,12 @@ class FunctionsAPI(APIClient):
 
         sleep_time = 1.0  # seconds
         for i in range(MAX_RETRIES):
-            try:
-                file = self._cognite_client.files.retrieve(id=file_id)
-                if file is None or not file.uploaded:
-                    continue
-            except CogniteAPIError as e:
-                time.sleep(sleep_time * 2)
+            file = self._cognite_client.files.retrieve(id=file_id)
+            if file is None or not file.uploaded:
+                time.sleep(sleep_time)
                 sleep_time *= 2
                 continue
-            else:
-                break
+            
         else:
             raise IOError("Could not retrieve file from files API") from e
 
