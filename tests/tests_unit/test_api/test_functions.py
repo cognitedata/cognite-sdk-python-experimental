@@ -103,10 +103,11 @@ def mock_functions_create_response(rsps):
     }
 
     rsps.assert_all_requests_are_fired = False
+    import copy
 
     files_url = FILES_API._get_base_url_with_base_path() + "/files"
     files_byids_url = FILES_API._get_base_url_with_base_path() + "/files/byids"
-    rsps.add(rsps.POST, files_byids_url, status=201, json=files_response_body)
+    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [copy.deepcopy(files_response_body)]})
     rsps.add(rsps.POST, files_url, status=201, json=files_response_body)
     rsps.add(rsps.PUT, "https://upload.here", status=201)
 
