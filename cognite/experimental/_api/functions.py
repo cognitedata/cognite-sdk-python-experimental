@@ -22,7 +22,7 @@ from cognite.experimental.data_classes import (
 )
 
 HANDLER_FILE_NAME = "handler.py"
-
+MAX_RETRIES = 3
 
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
