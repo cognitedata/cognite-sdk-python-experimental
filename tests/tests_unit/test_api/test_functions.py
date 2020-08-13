@@ -103,7 +103,6 @@ def mock_functions_create_response(rsps):
     }
 
     rsps.assert_all_requests_are_fired = False
-    import copy
 
     files_url = FILES_API._get_base_url_with_base_path() + "/files"
     files_byids_url = FILES_API._get_base_url_with_base_path() + "/files/byids"
