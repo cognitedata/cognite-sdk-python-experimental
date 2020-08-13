@@ -10,6 +10,7 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -99,6 +100,20 @@ class FunctionsAPI(APIClient):
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
+
+        sleep_time = 1.0 # seconds
+        for i in range(MAX_RETRIES):
+            try:
+                self._cognite_client.files.retrieve(id=file_id)
+            except CogniteAPIError as e:
+                time.sleep(sleep_time * 2)
+                sleep_time *= 2
+                continue
+            else:
+                break
+        else:
+            raise IOError("Could not retrieve file from files API") from e
+
 
         url = "/functions"
         function = {
@@ -302,6 +317,7 @@ class FunctionsAPI(APIClient):
             zf.close()
 
             file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+
 
         return file.id
 
