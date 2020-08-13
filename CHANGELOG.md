@@ -14,7 +14,7 @@ Changes are grouped as follows
 
 ## [0.15.2] - 2020-08-13
 ### Added
-- Insert a try-except for files api queries in functions creation
+- Insert sleep cycles for files api queries in functions creation
 
 ## [0.15.1] - 2020-08-10
 ### Added
