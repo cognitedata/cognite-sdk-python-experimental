@@ -103,6 +103,9 @@ class TestEntityMatchingIntegration:
             keys_from_to=[("name", "missing")],
             complete_missing=True,
             classifier="LogisticRegression",
+            name="my_bigram_logReg_model",
+            description="My model with bigram features",
+            external_id="bigram_logReg_01",
         )
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status

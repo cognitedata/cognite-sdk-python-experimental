@@ -18,6 +18,9 @@ class EntityMatchingAPI(ContextModelAPI):
         feature_type: str = None,
         classifier: str = None,
         complete_missing: bool = False,
+        name: str = None,
+        description: str = None,
+        external_id: str = None,
     ) -> EntityMatchingModel:
         """Fit entity matching model with machine learning methods.
 
@@ -28,7 +31,10 @@ class EntityMatchingAPI(ContextModelAPI):
             keys_from_to: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
             feature_type (str): feature type that defines the combination of features used, see API docs for details.
             classifier (str): classifier used in training. Currently undocumented in API.
-            complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API
+            complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API.
+            name (str): Optional user-defined name of model.
+            description (str): Optional user-defined description of model.
+            external_id [str): Optional external id. Must be unique within the project.
         Returns:
             EntityMatchingModel: Resulting queued model."""
         if keys_from_to:
@@ -44,6 +50,9 @@ class EntityMatchingAPI(ContextModelAPI):
             feature_type=feature_type,
             classifier=classifier,
             complete_missing=complete_missing,
+            name=name,
+            description=description,
+            external_id=external_id,
         )
 
     def fit_ml(
@@ -55,6 +64,9 @@ class EntityMatchingAPI(ContextModelAPI):
         feature_type: str = None,
         classifier: str = None,
         complete_missing: bool = False,
+        name: str = None,
+        description: str = None,
+        external_id: str = None,
     ) -> EntityMatchingModel:
         """Duplicate of fit will eventually be removed"""
         if keys_from_to:
@@ -70,6 +82,9 @@ class EntityMatchingAPI(ContextModelAPI):
             feature_type=feature_type,
             classifier=classifier,
             complete_missing=complete_missing,
+            name=name,
+            description=description,
+            external_id=external_id,
         )
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
