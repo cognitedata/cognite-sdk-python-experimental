@@ -110,7 +110,7 @@ def mock_functions_create_response(rsps):
 
     rsps.add(rsps.POST, files_url, status=201, json=files_response_body)
     rsps.add(rsps.PUT, "https://upload.here", status=201)
-    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [copy.deepcopy(files_response_body)]})
+    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [files_response_body]})
     functions_url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions"
     rsps.add(rsps.POST, functions_url, status=201, json={"items": [EXAMPLE_FUNCTION]})
 
