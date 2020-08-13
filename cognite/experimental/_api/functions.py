@@ -107,7 +107,6 @@ class FunctionsAPI(APIClient):
             if file is None or not file.uploaded:
                 time.sleep(sleep_time)
                 sleep_time *= 2
-                continue
             else:
                 break
 
