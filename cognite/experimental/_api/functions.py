@@ -109,9 +109,8 @@ class FunctionsAPI(APIClient):
                 sleep_time *= 2
             else:
                 break
-
         else:
-            raise IOError("Could not retrieve file from files API") from e
+            raise IOError("Could not retrieve file from files API")
 
         url = "/functions"
         function = {
