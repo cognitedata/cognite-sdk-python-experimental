@@ -227,7 +227,7 @@ class TestFunctionsAPI:
         res = FUNCTIONS_API.create(name="myfunction", folder=folder, function_path="handler.py")
 
         assert isinstance(res, Function)
-        assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_create_response.calls[3].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_with_file_id(self, mock_functions_create_response):
         res = FUNCTIONS_API.create(name="myfunction", file_id=1234)
@@ -239,7 +239,7 @@ class TestFunctionsAPI:
         res = FUNCTIONS_API.create(name="myfunction", function_handle=function_handle)
 
         assert isinstance(res, Function)
-        assert mock_functions_create_response.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_create_response.calls[3].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_with_function_handle_with_illegal_name_raises(self, function_handle_illegal_name):
         with pytest.raises(TypeError):
