@@ -10,7 +10,6 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -376,7 +375,6 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
-
     def list(
         self,
         function_id: Optional[int] = None,
@@ -532,7 +530,6 @@ class FunctionCallsAPI(APIClient):
 
 
 class FunctionSchedulesAPI(APIClient):
-
     def list(self) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
