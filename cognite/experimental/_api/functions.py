@@ -108,6 +108,8 @@ class FunctionsAPI(APIClient):
                 time.sleep(sleep_time)
                 sleep_time *= 2
                 continue
+            else:
+                break
 
         else:
             raise IOError("Could not retrieve file from files API") from e
