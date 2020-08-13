@@ -108,7 +108,7 @@ class FunctionsAPI(APIClient):
                 time.sleep(sleep_time)
                 sleep_time *= 2
                 continue
-            
+
         else:
             raise IOError("Could not retrieve file from files API") from e
 
@@ -130,7 +130,7 @@ class FunctionsAPI(APIClient):
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
 
-    def delete(self, id: Union[int, List[int]]=None, external_id: Union[str, List[str]]=None) -> None:
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
         """`Delete one or more functions. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-delete>`_
 
         Args:
@@ -381,8 +381,8 @@ class FunctionCallsAPI(APIClient):
         function_external_id: Optional[str] = None,
         status: Optional[str] = None,
         schedule_id: Optional[int] = None,
-        start_time: Optional[Dict[str, int]]=None,
-        end_time: Optional[Dict[str, int]]=None,
+        start_time: Optional[Dict[str, int]] = None,
+        end_time: Optional[Dict[str, int]] = None,
     ) -> FunctionCallList:
         """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
