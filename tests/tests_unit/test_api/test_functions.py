@@ -239,9 +239,8 @@ class TestFunctionsAPI:
             with pytest.raises(exception):
                 validate_function_folder(folder, function_path)
 
-    @patch("cognite.experimental._api.functions.MAX_RETRIES", 2)
+    @patch("cognite.experimental._api.functions.MAX_RETRIES", 1)
     def test_create_function_with_file_not_uploaded(self, mock_file_not_uploaded):
-        folder = os.path.join(os.path.dirname(__file__), "function_code")
         with pytest.raises(IOError):
             FUNCTIONS_API.create(name="myfunction", file_id=123)
 
