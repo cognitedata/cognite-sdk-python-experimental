@@ -13,7 +13,7 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 ## [0.15.3] - 2020-08-13
-### Added
+### Fixed
 - Fix `import time` bug in functions.
 
 ## [0.15.2] - 2020-08-13
