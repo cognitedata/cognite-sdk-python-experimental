@@ -67,11 +67,23 @@ class ContextModelAPI(ContextAPI):
         """List models
 
         Returns:
-            ContextualizationModelList: List of models."""
+            ContextualizationModelList: List of jobs."""
         return ContextualizationModelList(
             [
                 self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
                 for model in self._camel_get("/").json()["items"]
+            ]
+        )
+
+    def list_models(self) -> ContextualizationModelList:
+        """List models
+
+        Returns:
+            ContextualizationModelList: List of models."""
+        return ContextualizationModelList(
+            [
+                self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
+                for model in self._camel_get("/models").json()["items"]
             ]
         )
 

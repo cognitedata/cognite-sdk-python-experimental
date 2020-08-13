@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
+from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, ContextualizationModelList
 from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
@@ -110,3 +110,9 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
 
         EMAPI.delete(model)
+
+    def test_list_models(self):
+        models_list = EMAPI.list_models()
+        assert len(models_list) > 0
+        assert type(models_list) == ContextualizationModelList
+        assert all([type(x) == EntityMatchingModel for x in models_list])
