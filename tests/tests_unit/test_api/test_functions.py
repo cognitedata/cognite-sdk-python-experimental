@@ -1,6 +1,6 @@
 import json
 import os
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -117,6 +117,26 @@ def mock_functions_create_response(rsps):
 
 
 @pytest.fixture
+def mock_file_not_uploaded(rsps):
+    files_response_body = {
+        "name": "myfunction",
+        "id": FUNCTION_ID,
+        "uploaded": False,
+        "createdTime": 1585662507939,
+        "lastUpdatedTime": 1585662507939,
+        "uploadUrl": "https://upload.here",
+    }
+
+    rsps.assert_all_requests_are_fired = False
+
+    files_byids_url = FILES_API._get_base_url_with_base_path() + "/files/byids"
+
+    rsps.add(rsps.POST, files_byids_url, status=201, json={"items": [files_response_body]})
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_functions_delete_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/delete"
     rsps.add(rsps.POST, url, status=200, json={})
@@ -220,6 +240,12 @@ class TestFunctionsAPI:
         else:
             with pytest.raises(exception):
                 validate_function_folder(folder, function_path)
+
+    @patch("cognite.experimental._api.functions.MAX_RETRIES", 2)
+    def test_create_function_with_file_not_uploaded(self, mock_file_not_uploaded):
+        folder = os.path.join(os.path.dirname(__file__), "function_code")
+        with pytest.raises(IOError):
+            FUNCTIONS_API.create(name="myfunction", folder=folder, function_path="handler.py")
 
     def test_create_with_path(self, mock_functions_create_response):
         folder = os.path.join(os.path.dirname(__file__), "function_code")
