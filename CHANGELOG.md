@@ -12,7 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.15.5] - 2020-08-10
+## [0.15.5] - 2020-08-14
+### Added
+- Add option to filter the models listed based on parameter values. Only exact matches.
+
+## [0.15.5] - 2020-08-13
 ### Added
 - Add model_list that lists all model. Existing list- lists all jobs and models.
 
