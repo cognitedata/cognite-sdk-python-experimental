@@ -12,9 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.15.4] - 2020-08-10
+## [0.15.5] - 2020-08-10
 ### Added
 - Add model_list that lists all model. Existing list- lists all jobs and models.
+
+## [0.15.4] - 2020-08-13
+### Added
+- Add name, description and external-id parameters to fit entity matcher.
 
 ## [0.15.3] - 2020-08-13
 ### Fixed
