@@ -75,16 +75,19 @@ class ContextModelAPI(ContextAPI):
             ]
         )
 
-    def list_models(self) -> ContextualizationModelList:
-        """List models
+    def list_models(self, filter: Dict = None) -> ContextualizationModelList:
+        """List models that pass the filter
+        Args:
+            filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
 
         Returns:
             ContextualizationModelList: List of models."""
+        models = self._camel_get("/models").json()["items"]
+        if filter:
+            filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
+            models = [model for model in models if all([model.get(k) == v for (k, v) in filter.items()])]
         return ContextualizationModelList(
-            [
-                self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
-                for model in self._camel_get("/models").json()["items"]
-            ]
+            [self._MODEL_CLASS._load(model, cognite_client=self._cognite_client) for model in models]
         )
 
     def delete(self, model_id: Union[List, ContextualizationModelList, int, ContextualizationModel]) -> None:

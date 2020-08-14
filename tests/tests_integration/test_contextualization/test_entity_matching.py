@@ -114,7 +114,8 @@ class TestEntityMatchingIntegration:
         EMAPI.delete(model)
 
     def test_list_models(self):
-        models_list = EMAPI.list_models()
+        models_list = EMAPI.list_models(filter={"feature_type": "bigram"})
         assert len(models_list) > 0
         assert type(models_list) == ContextualizationModelList
         assert all([type(x) == EntityMatchingModel for x in models_list])
+        assert set([model.feature_type for model in models_list]) == {"bigram"}
