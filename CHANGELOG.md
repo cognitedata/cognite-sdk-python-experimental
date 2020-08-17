@@ -12,9 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.15.5] - 2020-08-13
+## [0.16.0] - 2020-08-13
+### Changed
+- Change list-method to list all models instead of jobs.
 ### Added
-- Add model_list that lists all model. Existing list- lists all jobs and models.
+- Add list_jobs-method that behaves as old list-method, that is returns all jobs. 
 
 ## [0.15.4] - 2020-08-13
 ### Added
