@@ -113,7 +113,7 @@ class TestEntityMatchingIntegration:
 
         EMAPI.delete(model)
 
-    def test_list_models(self):
+    def test_list(self):
         models_list = EMAPI.list()
         assert len(models_list) > 0
         assert type(models_list) == ContextualizationModelList
