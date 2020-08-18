@@ -71,12 +71,11 @@ class ContextModelAPI(ContextAPI):
 
         Returns:
             ContextualizationModelList: List of models."""
-        model_path = "/models"
         if filter:
             filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
-            models = self._camel_post(model_path, json={"filter": filter}).json()["items"]
+            models = self._camel_post("/list", json={"filter": filter}).json()["items"]
         else:
-            models = self._camel_get(model_path).json()["items"]
+            models = self._camel_get("/").json()["items"]
         return ContextualizationModelList(
             [self._MODEL_CLASS._load(model, cognite_client=self._cognite_client) for model in models]
         )
@@ -89,7 +88,7 @@ class ContextModelAPI(ContextAPI):
         return ContextualizationModelList(
             [
                 self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
-                for model in self._camel_get("/").json()["items"]
+                for model in self._camel_get("/jobs").json()["items"]
             ]
         )
 

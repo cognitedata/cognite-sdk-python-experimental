@@ -15,6 +15,7 @@ Changes are grouped as follows
 ## [0.16.0] - 2020-08-13
 ### Changed
 - Change list-method to list all models instead of jobs.
+- Changed endpoints used for list and list_jobs to comply with updates to the API.
 ### Added
 - Add list_jobs-method that behaves as old list-method, that is returns all jobs. 
 - Option to filter returned models on based on all input parameters. 
