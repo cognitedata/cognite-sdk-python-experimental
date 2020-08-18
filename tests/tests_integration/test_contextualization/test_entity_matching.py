@@ -35,12 +35,18 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
-        # Retrieve model-info
-        info = EMAPI.retrieve(model_id=model.model_id)
-        assert info.classifier == "RandomForest"
-        assert info.feature_type == "bigram"
-        assert info.keys_from_to == [["name", "bloop"]]
-        assert info.model_type == "Supervised"
+        # Retrieve model
+        model = EMAPI.retrieve(model_id=model.model_id)
+        assert model.classifier == "RandomForest"
+        assert model.feature_type == "bigram"
+        assert model.keys_from_to == [["name", "bloop"]]
+        assert model.model_type == "Supervised"
+
+        #Update model
+        model.name = "tralala"
+        res = EMAPI.update(model)
+        a=1
+
 
         EMAPI.delete(model)
 

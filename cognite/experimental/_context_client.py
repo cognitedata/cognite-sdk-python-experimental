@@ -92,6 +92,23 @@ class ContextModelAPI(ContextAPI):
             ]
         )
 
+    def update(self, model: ContextualizationModel):
+        update_dict = {}
+        if model.name:
+            update_dict["name"] = {"set": model.name}
+        return self._camel_post(
+            "/model/update",
+            json={
+                "items": [
+                    {
+                        "modelId": model.model_id,
+                        "update": {"name": {"set": model.name}, "description": {"set": model.description}},
+                    }
+                ]
+            },
+        )
+
+
     def delete(self, model_id: Union[List, ContextualizationModelList, int, ContextualizationModel]) -> None:
         """Delete models
 

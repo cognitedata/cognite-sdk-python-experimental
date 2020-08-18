@@ -151,6 +151,7 @@ class TestEntityMatching:
         assert "Completed" == model.status
         assert 123 == model.model_id
 
+
     def test_rules(self, mock_rules, mock_status_rules_ok):
         job = EMAPI.create_rules({"a": "b"})
         assert isinstance(job, ContextualizationJob)
