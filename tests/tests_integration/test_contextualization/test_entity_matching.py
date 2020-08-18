@@ -42,12 +42,6 @@ class TestEntityMatchingIntegration:
         assert model.keys_from_to == [["name", "bloop"]]
         assert model.model_type == "Supervised"
 
-        #Update model
-        model.name = "tralala"
-        res = EMAPI.update(model)
-        a=1
-
-
         EMAPI.delete(model)
 
     def test_ml_fit(self):
