@@ -71,11 +71,8 @@ class ContextModelAPI(ContextAPI):
 
         Returns:
             ContextualizationModelList: List of models."""
-        if filter:
-            filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
-            models = self._camel_post("/list", json={"filter": filter}).json()["items"]
-        else:
-            models = self._camel_get("/").json()["items"]
+        filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
+        models = self._camel_post("/list", json={"filter": filter}).json()["items"]
         return ContextualizationModelList(
             [self._MODEL_CLASS._load(model, cognite_client=self._cognite_client) for model in models]
         )
