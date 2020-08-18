@@ -63,15 +63,29 @@ class ContextModelAPI(ContextAPI):
             ContextualizationModel: Model requested."""
         return self._MODEL_CLASS._load(self._camel_get(f"/{model_id}").json(), cognite_client=self._cognite_client)
 
-    def list(self) -> ContextualizationModelList:
+    def list(self, filter: Dict = None) -> ContextualizationModelList:
         """List models
+
+        Args:
+            filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
 
         Returns:
             ContextualizationModelList: List of models."""
+        filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
+        models = self._camel_post("/list", json={"filter": filter}).json()["items"]
+        return ContextualizationModelList(
+            [self._MODEL_CLASS._load(model, cognite_client=self._cognite_client) for model in models]
+        )
+
+    def list_jobs(self) -> ContextualizationModelList:
+        """List jobs
+
+        Returns:
+            ContextualizationModelList: List of jobs."""
         return ContextualizationModelList(
             [
                 self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
-                for model in self._camel_get("/").json()["items"]
+                for model in self._camel_get("/jobs").json()["items"]
             ]
         )
 

@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.16.0] - 2020-08-13
+### Changed
+- Change list-method to list all models instead of jobs.
+- Changed endpoints used for list and list_jobs to comply with updates to the API.
+### Added
+- Add list_jobs-method that behaves as old list-method, that is returns all jobs. 
+- Option to filter returned models on based on all input parameters. 
+
 ## [0.15.4] - 2020-08-13
 ### Added
 - Add name, description and external-id parameters to fit entity matcher.

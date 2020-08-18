@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
+from cognite.experimental.data_classes import ContextualizationJob, ContextualizationModelList, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
@@ -35,12 +35,12 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
-        # Retrieve model-info
-        info = EMAPI.retrieve(model_id=model.model_id)
-        assert info.classifier == "RandomForest"
-        assert info.feature_type == "bigram"
-        assert info.keys_from_to == [["name", "bloop"]]
-        assert info.model_type == "Supervised"
+        # Retrieve model
+        model = EMAPI.retrieve(model_id=model.model_id)
+        assert model.classifier == "RandomForest"
+        assert model.feature_type == "bigram"
+        assert model.keys_from_to == [["name", "bloop"]]
+        assert model.model_type == "Supervised"
 
         EMAPI.delete(model)
 
@@ -112,3 +112,16 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
 
         EMAPI.delete(model)
+
+    def test_list(self):
+        models_list = EMAPI.list()
+        assert len(models_list) > 0
+        assert type(models_list) == ContextualizationModelList
+        assert all([type(x) == EntityMatchingModel for x in models_list])
+        # Add filter
+        models_list = EMAPI.list(filter={"feature_type": "bigram"})
+        assert set([model.feature_type for model in models_list]) == {"bigram"}
+        # Filter on two parameters
+        models_list = EMAPI.list(filter={"keys_from_to": [["name", "name"]], "feature_type": "bigram"})
+        assert set([model.feature_type for model in models_list]) == {"bigram"}
+        assert all([model.keys_from_to == [["name", "name"]] for model in models_list])
