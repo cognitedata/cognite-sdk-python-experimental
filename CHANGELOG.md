@@ -17,7 +17,7 @@ Changes are grouped as follows
 - Change list-method to list all models instead of jobs.
 ### Added
 - Add list_jobs-method that behaves as old list-method, that is returns all jobs. 
-- Filter parameter that enables filtering the returned list of models from the list-method based on all input parameters. 
+- Option to filter returned models on based on all input parameters. 
 
 ## [0.15.4] - 2020-08-13
 ### Added

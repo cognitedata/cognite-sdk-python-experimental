@@ -121,7 +121,7 @@ class TestEntityMatchingIntegration:
         # Add filter
         models_list = EMAPI.list(filter={"feature_type": "bigram"})
         assert set([model.feature_type for model in models_list]) == {"bigram"}
-        # Filter on two parameters 
+        # Filter on two parameters
         models_list = EMAPI.list(filter={"keys_from_to": [["name", "name"]], "feature_type": "bigram"})
         assert set([model.feature_type for model in models_list]) == {"bigram"}
         assert all([model.keys_from_to == [["name", "name"]] for model in models_list])
