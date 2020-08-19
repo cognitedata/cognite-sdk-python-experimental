@@ -49,11 +49,11 @@ class ContextAPI(APIClient):
 class ContextModelAPI(ContextAPI):
     _MODEL_CLASS = ContextualizationModel
 
-    def _fit_model(self, model_path="/fit", headers=None, **kwargs) -> Union[EntityMatchingModel]:
+    def _fit_model(self, model_path="/fit", headers=None, **kwargs) -> EntityMatchingModel:
         response = self._camel_post(model_path, json=kwargs, headers=headers)
         return self._MODEL_CLASS._load(response.json(), cognite_client=self._cognite_client)
 
-    def retrieve(self, model_id: int) -> Union[EntityMatchingModel]:
+    def retrieve(self, model_id: int) -> EntityMatchingModel:
         """Retrieve model status
 
         Args:
@@ -89,7 +89,7 @@ class ContextModelAPI(ContextAPI):
             ]
         )
 
-    def update(self, model: Union[EntityMatchingModel]) -> ContextualizationModelList:
+    def update(self, model: EntityMatchingModel) -> ContextualizationModelList:
         """ Update model
 
         Args:
@@ -119,4 +119,4 @@ class ContextModelAPI(ContextAPI):
         if not isinstance(model_id, (list, ContextualizationModelList)):
             model_id = [model_id]
         model_id = [m.model_id if isinstance(m, ContextualizationModel) else m for m in model_id]
-        self._camel_post("/delete", {"items": [{"modelId": id} for id in model_id]})
+        self._camel_post("/delete", {"items": [{"id": id} for id in model_id]})
