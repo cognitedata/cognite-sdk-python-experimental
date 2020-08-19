@@ -31,6 +31,29 @@ class EntityMatchingAPI(ContextAPI):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
+    def update(self, model: EntityMatchingModel):
+        """ Update model
+
+        Args:
+            model (ContextualizationModel) : Model to update
+        """
+        model_attributes = self.retrieve(id=model.model_id).__dict__
+        model_update_attributes = model.__dict__
+        # Find the attributes/parameters that differs and should be updated
+        attributes_update = [
+            key
+            for key in model_attributes.keys()
+            if model_attributes[key] != model_update_attributes[key] and model_update_attributes[key] is not None
+        ]
+        update_dict = {}
+        for attribute in attributes_update:
+            update_dict[attribute] = {"set": model_update_attributes[attribute]}
+
+        self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]})
+        return self._MODEL_CLASS._load(
+            self._camel_get(f"/{model.model_id}").json(), cognite_client=self._cognite_client
+        )
+
     def list(self, filter: Dict = None) -> EntityMatchingModelList:
         """List models
 
