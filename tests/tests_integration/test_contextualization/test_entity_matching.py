@@ -43,9 +43,9 @@ class TestEntityMatchingIntegration:
 
         # Update model
         model.name = "new_name"
-        model_updated_list = EMAPI.update(model)
-        assert type(model_updated_list) == ContextualizationModelList
-        assert model_updated_list[0].name == "new_name"
+        updated_model_list = EMAPI.update(model)["items"]
+        assert type(updated_model_list) == list
+        assert updated_model_list[0]["name"] == "new_name"
 
         EMAPI.delete(model)
 

@@ -89,7 +89,7 @@ class ContextModelAPI(ContextAPI):
             ]
         )
 
-    def update(self, model: EntityMatchingModel) -> ContextualizationModelList:
+    def update(self, model: EntityMatchingModel):
         """ Update model
 
         Args:
@@ -108,8 +108,7 @@ class ContextModelAPI(ContextAPI):
         for attribute in attributes_update:
             update_dict[attribute] = {"set": model_update_attributes[attribute]}
 
-        response = self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]})
-        return ContextualizationModelList([self.retrieve(model_id=model.model_id)])
+        return self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]}).json()
 
     def delete(self, model_id: Union[List, ContextualizationModelList, int, ContextualizationModel]) -> None:
         """Delete models
