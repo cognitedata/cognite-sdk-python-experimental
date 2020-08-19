@@ -10,23 +10,29 @@ class EntityMatchingAPI(ContextAPI):
     _RESOURCE_PATH = EntityMatchingModel._RESOURCE_PATH
     _MODEL_CLASS = EntityMatchingModel
 
-    def retrieve_by_id(self, model_id: int) -> EntityMatchingModel:
-        """Retrieve model status
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingModel]:
+        """Retrieve model
 
         Args:
-            model_id: id of the model to retrieve.
+            id: id of the model to retrieve.
+            external_id: external id of the model to retrieve.
 
         Returns:
             EntityMatchingModel: Model requested."""
-        return self._MODEL_CLASS._load(self._camel_get(f"/{model_id}").json(), cognite_client=self._cognite_client)
-
-    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingModel]:
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def retrieve_multiple(
         self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
     ) -> EntityMatchingModelList:
+        """Retrieve models
+
+        Args:
+            ids: ids of the model to retrieve.
+            external_ids: external ids of the model to retrieve.
+
+        Returns:
+            EntityMatchingModelList: Models requested."""
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
@@ -37,22 +43,7 @@ class EntityMatchingAPI(ContextAPI):
         Args:
             model (ContextualizationModel) : Model to update
         """
-        model_attributes = self.retrieve(id=model.model_id).__dict__
-        model_update_attributes = model.__dict__
-        # Find the attributes/parameters that differs and should be updated
-        attributes_update = [
-            key
-            for key in model_attributes.keys()
-            if model_attributes[key] != model_update_attributes[key] and model_update_attributes[key] is not None
-        ]
-        update_dict = {}
-        for attribute in attributes_update:
-            update_dict[attribute] = {"set": model_update_attributes[attribute]}
-
-        self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]})
-        return self._MODEL_CLASS._load(
-            self._camel_get(f"/{model.model_id}").json(), cognite_client=self._cognite_client
-        )
+        return self._update_multiple(items=model)
 
     def list(self, filter: Dict = None) -> EntityMatchingModelList:
         """List models

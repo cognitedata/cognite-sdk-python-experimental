@@ -1,11 +1,16 @@
 import copy
 import math
 import time
-from typing import Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from typing_extensions import TypedDict
 
-from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import (
+    CognitePrimitiveUpdate,
+    CogniteResource,
+    CogniteResourceList,
+    CogniteUpdate,
+)
 from cognite.client.utils._auxiliary import to_camel_case
 from cognite.experimental.exceptions import ModelFailedException
 
@@ -230,6 +235,27 @@ class EntityMatchingModel(ContextualizationModel):
                 else e
                 for e in entities
             ]
+
+
+class EntityMatchingModelUpdate(CogniteUpdate):
+    """Changes applied to entity matching model
+
+    Args:
+        id (int): A server-generated ID for the object.
+        external_id (str): The external ID provided by the client. Must be unique for the resource type.
+    """
+
+    class _PrimitiveUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "EntityMatchingModelUpdate":
+            return self._set(value)
+
+    @property
+    def name(self):
+        return EntityMatchingModelUpdate._PrimitiveUpdate(self, "name")
+
+    @property
+    def description(self):
+        return EntityMatchingModelUpdate._PrimitiveUpdate(self, "description")
 
 
 class EntityMatchingModelList(CogniteResourceList):
