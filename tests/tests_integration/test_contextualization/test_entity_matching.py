@@ -9,7 +9,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 
 class TestEntityMatchingIntegration:
-    def test_fit(self):
+    def test_fit_retrieve_update(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "bloop": "yy"}]
         model = EMAPI.fit(
@@ -40,7 +40,12 @@ class TestEntityMatchingIntegration:
         assert model.classifier == "RandomForest"
         assert model.feature_type == "bigram"
         assert model.keys_from_to == [["name", "bloop"]]
-        assert model.model_type == "Supervised"
+
+        # Update model
+        model.name = "new_name"
+        updated_model = EMAPI.update(model)
+        assert type(updated_model) == EntityMatchingModel
+        assert updated_model.name == "new_name"
 
         EMAPI.delete(id=model.id)
 
