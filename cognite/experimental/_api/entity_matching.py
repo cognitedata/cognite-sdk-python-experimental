@@ -3,7 +3,12 @@ from typing import Dict, List, Optional, Tuple, Union
 from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource
 from cognite.experimental._context_client import ContextAPI
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
+from cognite.experimental.data_classes import (
+    ContextualizationJob,
+    EntityMatchingModel,
+    EntityMatchingModelList,
+    EntityMatchingModelUpdate,
+)
 
 
 class EntityMatchingAPI(ContextAPI):
@@ -37,13 +42,18 @@ class EntityMatchingAPI(ContextAPI):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
-    def update(self, model: EntityMatchingModel):
+    def update(
+        self,
+        item: Union[
+            EntityMatchingModel, EntityMatchingModelUpdate, List[Union[EntityMatchingModel, EntityMatchingModelUpdate]]
+        ],
+    ) -> Union[EntityMatchingModel, List[EntityMatchingModel]]:
         """ Update model
 
         Args:
-            model (ContextualizationModel) : Model to update
+            item (Union[EntityMatchingModel,EntityMatchingModelUpdate,List[Union[EntityMatchingModel,EntityMatchingModelUpdate]]) : Model(s) to update
         """
-        return self._update_multiple(items=model)
+        return self._update_multiple(items=item)
 
     def list(self, filter: Dict = None) -> EntityMatchingModelList:
         """List models
