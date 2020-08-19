@@ -232,6 +232,6 @@ class EntityMatchingModel(ContextualizationModel):
             ]
 
 
-class ContextualizationModelList(CogniteResourceList):
-    _RESOURCE = ContextualizationModel
+class EntityMatchingModelList(CogniteResourceList):
+    _RESOURCE = EntityMatchingModel
     _ASSERT_CLASSES = False

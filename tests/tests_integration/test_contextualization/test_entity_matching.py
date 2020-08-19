@@ -47,7 +47,7 @@ class TestEntityMatchingIntegration:
         assert type(updated_model) == EntityMatchingModel
         assert updated_model.name == "new_name"
 
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_ml_fit(self):
         # fit_ml and predict_ml should produce the same output as fit and predict. Will eventually be removed
@@ -76,7 +76,7 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_refit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
@@ -95,7 +95,7 @@ class TestEntityMatchingIntegration:
         job = new_model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"name": "foo-42"}])
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_extra_options(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
@@ -116,7 +116,7 @@ class TestEntityMatchingIntegration:
         job = model.predict()
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
 
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_list(self):
         models_list = EMAPI.list()
