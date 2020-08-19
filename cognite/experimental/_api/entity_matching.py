@@ -1,13 +1,69 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
+from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource
-from cognite.experimental._context_client import ContextModelAPI
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
+from cognite.experimental._context_client import ContextAPI
+from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 
 
-class EntityMatchingAPI(ContextModelAPI):
+class EntityMatchingAPI(ContextAPI):
     _RESOURCE_PATH = EntityMatchingModel._RESOURCE_PATH
     _MODEL_CLASS = EntityMatchingModel
+
+    def retrieve_by_id(self, model_id: int) -> EntityMatchingModel:
+        """Retrieve model status
+
+        Args:
+            model_id: id of the model to retrieve.
+
+        Returns:
+            EntityMatchingModel: Model requested."""
+        return self._MODEL_CLASS._load(self._camel_get(f"/{model_id}").json(), cognite_client=self._cognite_client)
+
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingModel]:
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def retrieve_multiple(
+        self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
+    ) -> EntityMatchingModelList:
+        utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
+        utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
+        return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+
+    def list(self, filter: Dict = None) -> EntityMatchingModelList:
+        """List models
+
+        Args:
+            filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
+
+        Returns:
+            EntityMatchingModelList: List of models."""
+        filter = {utils._auxiliary.to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
+        models = self._camel_post("/list", json={"filter": filter}).json()["items"]
+        return EntityMatchingModelList(
+            [self._MODEL_CLASS._load(model, cognite_client=self._cognite_client) for model in models]
+        )
+
+    def list_jobs(self) -> EntityMatchingModelList:
+        """List jobs
+
+        Returns:
+            EntityMatchingModelList: List of jobs."""
+        return EntityMatchingModelList(
+            [
+                self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
+                for model in self._camel_get("/jobs").json()["items"]
+            ]
+        )
+
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
+        """Delete models
+
+        Args:
+            id (Union[int, List[int]): Id or list of ids
+            external_id (Union[str, List[str]]): External ID or list of exgernal ids"""
+        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def fit(
         self,
@@ -41,51 +97,27 @@ class EntityMatchingAPI(ContextModelAPI):
             keys_from_to = [{"keyFrom": f, "keyTo": t} for f, t in keys_from_to]
         if true_matches:
             true_matches = list(true_matches)
-        return super()._fit_model(
-            model_path="/fit",
-            match_from=EntityMatchingModel.dump_entities(match_from),
-            match_to=EntityMatchingModel.dump_entities(match_to),
-            true_matches=true_matches,
-            keys_from_to=keys_from_to,
-            feature_type=feature_type,
-            classifier=classifier,
-            complete_missing=complete_missing,
-            name=name,
-            description=description,
-            external_id=external_id,
-        )
 
-    def fit_ml(
-        self,
-        match_from: List[Union[Dict, CogniteResource]],
-        match_to: List[Union[Dict, CogniteResource]],
-        true_matches: List[Tuple[int, int]] = None,
-        keys_from_to: List[Tuple[str, str]] = None,
-        feature_type: str = None,
-        classifier: str = None,
-        complete_missing: bool = False,
-        name: str = None,
-        description: str = None,
-        external_id: str = None,
-    ) -> EntityMatchingModel:
-        """Duplicate of fit will eventually be removed"""
-        if keys_from_to:
-            keys_from_to = [{"keyFrom": f, "keyTo": t} for f, t in keys_from_to]
-        if true_matches:
-            true_matches = list(true_matches)
-        return super()._fit_model(
-            model_path="/fit",
-            match_from=EntityMatchingModel.dump_entities(match_from),
-            match_to=EntityMatchingModel.dump_entities(match_to),
-            true_matches=true_matches,
-            keys_from_to=keys_from_to,
-            feature_type=feature_type,
-            classifier=classifier,
-            complete_missing=complete_missing,
-            name=name,
-            description=description,
-            external_id=external_id,
+        response = self._camel_post(
+            context_path="/fit",
+            json=dict(
+                match_from=EntityMatchingModel.dump_entities(match_from),
+                match_to=EntityMatchingModel.dump_entities(match_to),
+                true_matches=true_matches,
+                keys_from_to=keys_from_to,
+                feature_type=feature_type,
+                classifier=classifier,
+                complete_missing=complete_missing,
+                name=name,
+                description=description,
+                external_id=external_id,
+            ),
         )
+        return self._MODEL_CLASS._load(response.json(), cognite_client=self._cognite_client)
+
+    def fit_ml(self, *args, **kwargs):
+        """Duplicate of fit will eventually be removed"""
+        return self.fit(*args, **kwargs)
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
