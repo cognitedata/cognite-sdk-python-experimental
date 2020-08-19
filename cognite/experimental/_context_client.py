@@ -108,7 +108,10 @@ class ContextModelAPI(ContextAPI):
         for attribute in attributes_update:
             update_dict[attribute] = {"set": model_update_attributes[attribute]}
 
-        return self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]}).json()
+        self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]})
+        return self._MODEL_CLASS._load(
+            self._camel_get(f"/{model.model_id}").json(), cognite_client=self._cognite_client
+        )
 
     def delete(self, model_id: Union[List, ContextualizationModelList, int, ContextualizationModel]) -> None:
         """Delete models
