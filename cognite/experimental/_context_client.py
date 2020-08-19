@@ -53,7 +53,7 @@ class ContextModelAPI(ContextAPI):
         response = self._camel_post(model_path, json=kwargs, headers=headers)
         return self._MODEL_CLASS._load(response.json(), cognite_client=self._cognite_client)
 
-    def retrieve(self, model_id: int) -> ContextualizationModel:
+    def retrieve(self, model_id: int) -> Union[EntityMatchingModel]:
         """Retrieve model status
 
         Args:
@@ -88,6 +88,28 @@ class ContextModelAPI(ContextAPI):
                 for model in self._camel_get("/jobs").json()["items"]
             ]
         )
+
+    def update(self, model: Union[EntityMatchingModel]) -> ContextualizationModelList:
+        """ Update model
+
+        Args:
+            model (ContextualizationModel) : Model to update
+        """
+        model_attributes = self.retrieve(model_id=model.model_id).__dict__
+        model_update_attributes = model.__dict__
+        # Find the attributes/parameters that differs and should be updated
+        attributes_update = [
+            key
+            for key in model_attributes.keys()
+            if model_attributes[key] != model_update_attributes[key]
+            and key not in ContextualizationModel().__dict__.keys()
+        ]
+        update_dict = {}
+        for attribute in attributes_update:
+            update_dict[attribute] = {"set": model_update_attributes[attribute]}
+
+        response = self._camel_post("/update", json={"items": [{"modelId": model.model_id, "update": update_dict}]})
+        return ContextualizationModelList([self.retrieve(model_id=model.model_id)])
 
     def delete(self, model_id: Union[List, ContextualizationModelList, int, ContextualizationModel]) -> None:
         """Delete models

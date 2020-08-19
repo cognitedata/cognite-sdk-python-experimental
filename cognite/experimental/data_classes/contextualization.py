@@ -143,6 +143,9 @@ class EntityMatchingModel(ContextualizationModel):
         feature_type=None,
         keys_from_to=None,
         model_type=None,
+        name=None,
+        description=None,
+        external_id=None,
     ):
         super().__init__(
             model_id, status, error_message, request_timestamp, start_timestamp, status_timestamp, cognite_client
@@ -151,6 +154,9 @@ class EntityMatchingModel(ContextualizationModel):
         self.feature_type = feature_type
         self.keys_from_to = keys_from_to
         self.model_type = model_type
+        self.name = name
+        self.description = description
+        self.external_id = external_id
 
     _RESOURCE_PATH = "/context/entity_matching"
     _STATUS_PATH = _RESOURCE_PATH + "/"
