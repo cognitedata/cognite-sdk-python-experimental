@@ -131,7 +131,7 @@ description = "Client library for Cognite Data Fusion (CDF)"
 name = "cognite-sdk"
 optional = false
 python-versions = ">=3.5"
-version = "2.2.1"
+version = "2.2.2"
 
 [package.dependencies]
 pandas = "*"
@@ -1036,8 +1036,8 @@ click = [
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
 ]
 cognite-sdk = [
-    {file = "cognite-sdk-2.2.1.tar.gz", hash = "sha256:fb2c5f9c1b869357d91e0ee5d74be10275809cdfb83de5120e680711889f3520"},
-    {file = "cognite_sdk-2.2.1-py3-none-any.whl", hash = "sha256:6f81ef9947e71f6282b352f66ecd39596c6424a75ce69b6193d49bbdab946597"},
+    {file = "cognite-sdk-2.2.2.tar.gz", hash = "sha256:30684251a9aadea529152dc11788a545dbf5a49bec06594f762ab922b73f93d2"},
+    {file = "cognite_sdk-2.2.2-py3-none-any.whl", hash = "sha256:353b4c521ed38ec54b0756e890a336163cfeee6e5844e93a16a32c8723eff1d7"},
 ]
 colorama = [
     {file = "colorama-0.4.3-py2.py3-none-any.whl", hash = "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff"},

@@ -1,11 +1,16 @@
 import copy
 import math
 import time
-from typing import Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from typing_extensions import TypedDict
 
-from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import (
+    CognitePrimitiveUpdate,
+    CogniteResource,
+    CogniteResourceList,
+    CogniteUpdate,
+)
 from cognite.client.utils._auxiliary import to_camel_case
 from cognite.experimental.exceptions import ModelFailedException
 
@@ -77,10 +82,9 @@ class ContextualizationJob(CogniteResource):
         return obj
 
 
-class ContextualizationModel(CogniteResource):
-    """Abstract base class for contextualization models"""
-
-    _STATUS_PATH = None
+class EntityMatchingModel(CogniteResource):
+    _RESOURCE_PATH = "/context/entity_matching"
+    _STATUS_PATH = _RESOURCE_PATH + "/"
 
     def __init__(
         self,
@@ -91,26 +95,42 @@ class ContextualizationModel(CogniteResource):
         start_timestamp=None,
         status_timestamp=None,
         cognite_client=None,
+        classifier=None,
+        feature_type=None,
+        keys_from_to=None,
+        model_type=None,
+        name=None,
+        description=None,
+        external_id=None,
     ):
         self.model_id = model_id
+        self.id = self.model_id
         self.status = status
         self.request_timestamp = request_timestamp
         self.start_timestamp = start_timestamp
         self.status_timestamp = status_timestamp
         self.error_message = error_message
+        self.classifier = classifier
+        self.feature_type = feature_type
+        self.keys_from_to = keys_from_to
+        self.model_type = model_type
+        self.name = name
+        self.description = description
+        self.external_id = external_id
         self._cognite_client = cognite_client
 
     def __str__(self):
-        return "%s(id: %d,status: %s,error: %s)" % (
-            self.__class__.__name__,
-            self.model_id,
-            self.status,
-            self.error_message,
-        )
+        return "%s(id: %d,status: %s,error: %s)" % (self.__class__.__name__, self.id, self.status, self.error_message,)
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        ret = super()._load(resource, cognite_client)
+        ret.id = ret.model_id
+        return ret
 
     def update_status(self) -> str:
         """Updates the model status and returns it"""
-        data = self._cognite_client.entity_matching._get(f"{self._STATUS_PATH}{self.model_id}").json()
+        data = self._cognite_client.entity_matching._get(f"{self._STATUS_PATH}{self.id}").json()
         self.status = data["status"]
         self.status_timestamp = data.get("statusTimestamp")
         self.start_timestamp = data.get("startTimestamp")
@@ -126,34 +146,7 @@ class ContextualizationModel(CogniteResource):
                 break
             time.sleep(interval)
         if self.status == "Failed":
-            raise ModelFailedException(self.__class__.__name__, self.model_id, self.error_message)
-
-
-class EntityMatchingModel(ContextualizationModel):
-    def __init__(
-        self,
-        model_id=None,
-        status=None,
-        error_message=None,
-        request_timestamp=None,
-        start_timestamp=None,
-        status_timestamp=None,
-        cognite_client=None,
-        classifier=None,
-        feature_type=None,
-        keys_from_to=None,
-        model_type=None,
-    ):
-        super().__init__(
-            model_id, status, error_message, request_timestamp, start_timestamp, status_timestamp, cognite_client
-        )
-        self.classifier = classifier
-        self.feature_type = feature_type
-        self.keys_from_to = keys_from_to
-        self.model_type = model_type
-
-    _RESOURCE_PATH = "/context/entity_matching"
-    _STATUS_PATH = _RESOURCE_PATH + "/"
+            raise ModelFailedException(self.__class__.__name__, self.id, self.error_message)
 
     def predict(
         self,
@@ -176,7 +169,7 @@ class EntityMatchingModel(ContextualizationModel):
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predict",
+            job_path=f"/{self.id}/predict",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
@@ -195,7 +188,7 @@ class EntityMatchingModel(ContextualizationModel):
         """Duplicate of predict will eventually be removed"""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predict",
+            job_path=f"/{self.id}/predict",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
@@ -211,9 +204,10 @@ class EntityMatchingModel(ContextualizationModel):
         Returns:
             EntityMatchingModel: new model refitted to ."""
         self.wait_for_completion()
-        return self._cognite_client.entity_matching._fit_model(
-            model_path=f"/{self.model_id}/refit", true_matches=true_matches
+        response = self._cognite_client.entity_matching._camel_post(
+            f"/{self.id}/refit", json={"trueMatches": true_matches}
         )
+        return self._load(response.json(), cognite_client=self._cognite_client)
 
     @staticmethod
     def dump_entities(entities: List[Union[Dict, CogniteResource]]) -> Optional[List[Dict]]:
@@ -226,6 +220,27 @@ class EntityMatchingModel(ContextualizationModel):
             ]
 
 
-class ContextualizationModelList(CogniteResourceList):
-    _RESOURCE = ContextualizationModel
-    _ASSERT_CLASSES = False
+class EntityMatchingModelUpdate(CogniteUpdate):
+    """Changes applied to entity matching model
+
+    Args:
+        id (int): A server-generated ID for the object.
+        external_id (str): The external ID provided by the client. Must be unique for the resource type.
+    """
+
+    class _PrimitiveUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "EntityMatchingModelUpdate":
+            return self._set(value)
+
+    @property
+    def name(self):
+        return EntityMatchingModelUpdate._PrimitiveUpdate(self, "name")
+
+    @property
+    def description(self):
+        return EntityMatchingModelUpdate._PrimitiveUpdate(self, "description")
+
+
+class EntityMatchingModelList(CogniteResourceList):
+    _RESOURCE = EntityMatchingModel
+    _UPDATE = EntityMatchingModelUpdate

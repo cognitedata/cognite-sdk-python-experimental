@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, ContextualizationModelList, EntityMatchingModel
+from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
@@ -9,7 +9,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 
 class TestEntityMatchingIntegration:
-    def test_fit(self):
+    def test_fit_retrieve_update(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "bloop": "yy"}]
         model = EMAPI.fit(
@@ -36,13 +36,24 @@ class TestEntityMatchingIntegration:
         assert "Completed" == job.status
 
         # Retrieve model
-        model = EMAPI.retrieve(model_id=model.model_id)
+        model = EMAPI.retrieve(id=model.model_id)
         assert model.classifier == "RandomForest"
         assert model.feature_type == "bigram"
         assert model.keys_from_to == [["name", "bloop"]]
-        assert model.model_type == "Supervised"
 
-        EMAPI.delete(model)
+        # Retrieve model
+        models = EMAPI.retrieve_multiple(ids=[model.model_id, model.model_id])
+        assert 2 == len(models)
+        assert model == models[0]
+        assert model == models[1]
+
+        # Update model
+        model.name = "new_name"
+        updated_model = EMAPI.update(model)
+        assert type(updated_model) == EntityMatchingModel
+        assert updated_model.name == "new_name"
+
+        EMAPI.delete(id=model.id)
 
     def test_ml_fit(self):
         # fit_ml and predict_ml should produce the same output as fit and predict. Will eventually be removed
@@ -71,7 +82,7 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_refit(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
@@ -90,7 +101,7 @@ class TestEntityMatchingIntegration:
         job = new_model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"name": "foo-42"}])
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_extra_options(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
@@ -111,12 +122,12 @@ class TestEntityMatchingIntegration:
         job = model.predict()
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
 
-        EMAPI.delete(model)
+        EMAPI.delete(id=model.id)
 
     def test_list(self):
         models_list = EMAPI.list()
         assert len(models_list) > 0
-        assert type(models_list) == ContextualizationModelList
+        assert type(models_list) == EntityMatchingModelList
         assert all([type(x) == EntityMatchingModel for x in models_list])
         # Add filter
         models_list = EMAPI.list(filter={"feature_type": "bigram"})
