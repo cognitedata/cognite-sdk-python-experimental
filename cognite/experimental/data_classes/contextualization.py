@@ -103,7 +103,8 @@ class EntityMatchingModel(CogniteResource):
         description=None,
         external_id=None,
     ):
-        self.id = model_id
+        self.model_id = model_id
+        self.id = self.model_id
         self.status = status
         self.request_timestamp = request_timestamp
         self.start_timestamp = start_timestamp
@@ -119,16 +120,17 @@ class EntityMatchingModel(CogniteResource):
         self._cognite_client = cognite_client
 
     def __str__(self):
-        return "%s(id: %d,status: %s,error: %s)" % (
-            self.__class__.__name__,
-            self.model_id,
-            self.status,
-            self.error_message,
-        )
+        return "%s(id: %d,status: %s,error: %s)" % (self.__class__.__name__, self.id, self.status, self.error_message,)
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        ret = super()._load(resource, cognite_client)
+        ret.id = ret.model_id
+        return ret
 
     def update_status(self) -> str:
         """Updates the model status and returns it"""
-        data = self._cognite_client.entity_matching._get(f"{self._STATUS_PATH}{self.model_id}").json()
+        data = self._cognite_client.entity_matching._get(f"{self._STATUS_PATH}{self.id}").json()
         self.status = data["status"]
         self.status_timestamp = data.get("statusTimestamp")
         self.start_timestamp = data.get("startTimestamp")
@@ -144,7 +146,7 @@ class EntityMatchingModel(CogniteResource):
                 break
             time.sleep(interval)
         if self.status == "Failed":
-            raise ModelFailedException(self.__class__.__name__, self.model_id, self.error_message)
+            raise ModelFailedException(self.__class__.__name__, self.id, self.error_message)
 
     def predict(
         self,
@@ -167,7 +169,7 @@ class EntityMatchingModel(CogniteResource):
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predict",
+            job_path=f"/{self.id}/predict",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
@@ -186,7 +188,7 @@ class EntityMatchingModel(CogniteResource):
         """Duplicate of predict will eventually be removed"""
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
-            job_path=f"/{self.model_id}/predict",
+            job_path=f"/{self.id}/predict",
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
@@ -203,7 +205,7 @@ class EntityMatchingModel(CogniteResource):
             EntityMatchingModel: new model refitted to ."""
         self.wait_for_completion()
         response = self._cognite_client.entity_matching._camel_post(
-            f"/{self.model_id}/refit", json={"trueMatches": true_matches}
+            f"/{self.id}/refit", json={"trueMatches": true_matches}
         )
         return self._load(response.json(), cognite_client=self._cognite_client)
 
