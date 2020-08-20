@@ -13,7 +13,6 @@ from cognite.experimental.data_classes import (
 
 class EntityMatchingAPI(ContextAPI):
     _RESOURCE_PATH = EntityMatchingModel._RESOURCE_PATH
-    _MODEL_CLASS = EntityMatchingModel
     _LIST_CLASS = EntityMatchingModelList
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingModel]:
@@ -67,7 +66,7 @@ class EntityMatchingAPI(ContextAPI):
         filter = {utils._auxiliary.to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
         models = self._camel_post("/list", json={"filter": filter}).json()["items"]
         return EntityMatchingModelList(
-            [self._MODEL_CLASS._load(model, cognite_client=self._cognite_client) for model in models]
+            [self._LIST_CLASS._RESOURCE._load(model, cognite_client=self._cognite_client) for model in models]
         )
 
     def list_jobs(self) -> EntityMatchingModelList:
@@ -77,7 +76,7 @@ class EntityMatchingAPI(ContextAPI):
             EntityMatchingModelList: List of jobs."""
         return EntityMatchingModelList(
             [
-                self._MODEL_CLASS._load(model, cognite_client=self._cognite_client)
+                self._LIST_CLASS._RESOURCE._load(model, cognite_client=self._cognite_client)
                 for model in self._camel_get("/jobs").json()["items"]
             ]
         )
@@ -138,7 +137,7 @@ class EntityMatchingAPI(ContextAPI):
                 external_id=external_id,
             ),
         )
-        return self._MODEL_CLASS._load(response.json(), cognite_client=self._cognite_client)
+        return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
 
     def fit_ml(self, *args, **kwargs):
         """Duplicate of fit will eventually be removed"""

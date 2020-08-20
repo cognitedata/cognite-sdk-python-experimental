@@ -41,6 +41,12 @@ class TestEntityMatchingIntegration:
         assert model.feature_type == "bigram"
         assert model.keys_from_to == [["name", "bloop"]]
 
+        # Retrieve model
+        models = EMAPI.retrieve_multiple(ids=[model.model_id, model.model_id])
+        assert 2 == len(models)
+        assert model == models[0]
+        assert model == models[1]
+
         # Update model
         model.name = "new_name"
         updated_model = EMAPI.update(model)

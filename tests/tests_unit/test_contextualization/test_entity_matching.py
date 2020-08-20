@@ -40,6 +40,28 @@ def mock_status_ok(rsps):
 
 
 @pytest.fixture
+def mock_retrieve(rsps):
+    response_body = {
+        "items": [
+            {
+                "modelId": 123,
+                "status": "Completed",
+                "requestTimestamp": 42,
+                "statusTimestamp": 456,
+                "startTimestamp": 789,
+            }
+        ]
+    }
+    rsps.add(
+        rsps.POST,
+        re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/byids"),
+        status=200,
+        json=response_body,
+    )
+    yield rsps
+
+
+@pytest.fixture
 def mock_status_failed(rsps):
     response_body = {"modelId": 123, "status": "Failed", "errorMessage": "error message"}
     rsps.add(
@@ -85,7 +107,7 @@ class TestEntityMatching:
         assert 42 == model.request_timestamp
         model.wait_for_completion()
         assert "Completed" == model.status
-        assert 123 == model.model_id
+        assert 123 == model.id
         assert 42 == model.request_timestamp
         assert 456 == model.status_timestamp
         assert 789 == model.start_timestamp
@@ -120,7 +142,7 @@ class TestEntityMatching:
         assert 42 == model.request_timestamp
         model.wait_for_completion()
         assert "Completed" == model.status
-        assert 123 == model.model_id
+        assert 123 == model.id
 
     def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
@@ -145,11 +167,11 @@ class TestEntityMatching:
         assert "error message" == exc_info.value.error_message
         assert "EntityMatchingModel 123 failed with error 'error message'" == str(exc_info.value)
 
-    def test_retrieve(self, mock_status_ok):
-        model = EMAPI.retrieve(model_id=123)
+    def test_retrieve(self, mock_retrieve):
+        model = EMAPI.retrieve(id=123)
         assert isinstance(model, EntityMatchingModel)
         assert "Completed" == model.status
-        assert 123 == model.model_id
+        assert 123 == model.id
 
     def test_rules(self, mock_rules, mock_status_rules_ok):
         job = EMAPI.create_rules({"a": "b"})
