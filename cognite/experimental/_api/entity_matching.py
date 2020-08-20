@@ -14,6 +14,7 @@ from cognite.experimental.data_classes import (
 class EntityMatchingAPI(ContextAPI):
     _RESOURCE_PATH = EntityMatchingModel._RESOURCE_PATH
     _MODEL_CLASS = EntityMatchingModel
+    _LIST_CLASS = EntityMatchingModelList
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingModel]:
         """Retrieve model
