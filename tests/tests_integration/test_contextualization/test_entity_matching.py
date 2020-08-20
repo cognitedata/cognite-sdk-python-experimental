@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, ContextualizationModelList, EntityMatchingModel
+from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
@@ -36,7 +36,7 @@ class TestEntityMatchingIntegration:
         assert "Completed" == job.status
 
         # Retrieve model
-        model = EMAPI.retrieve(model_id=model.model_id)
+        model = EMAPI.retrieve(id=model.model_id)
         assert model.classifier == "RandomForest"
         assert model.feature_type == "bigram"
         assert model.keys_from_to == [["name", "bloop"]]
@@ -121,7 +121,7 @@ class TestEntityMatchingIntegration:
     def test_list(self):
         models_list = EMAPI.list()
         assert len(models_list) > 0
-        assert type(models_list) == ContextualizationModelList
+        assert type(models_list) == EntityMatchingModelList
         assert all([type(x) == EntityMatchingModel for x in models_list])
         # Add filter
         models_list = EMAPI.list(filter={"feature_type": "bigram"})
