@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.17.0] - 2020-08-20
+### Changed
+- Some methods in entity matcher now take `id` instead of `model_id`
+
+### Added
+- Update and retrieve_multiple methods for entity matcher.
+- Changed entity matching methods to take external_id where possible.
+
 ## [0.16.0] - 2020-08-13
 ### Changed
 - Change list-method to list all models instead of jobs.
