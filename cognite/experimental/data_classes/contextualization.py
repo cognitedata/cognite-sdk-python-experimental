@@ -82,10 +82,9 @@ class ContextualizationJob(CogniteResource):
         return obj
 
 
-class ContextualizationModel(CogniteResource):
-    """Abstract base class for contextualization models"""
-
-    _STATUS_PATH = None
+class EntityMatchingModel(CogniteResource):
+    _RESOURCE_PATH = "/context/entity_matching"
+    _STATUS_PATH = _RESOURCE_PATH + "/"
 
     def __init__(
         self,
@@ -96,13 +95,27 @@ class ContextualizationModel(CogniteResource):
         start_timestamp=None,
         status_timestamp=None,
         cognite_client=None,
+        classifier=None,
+        feature_type=None,
+        keys_from_to=None,
+        model_type=None,
+        name=None,
+        description=None,
+        external_id=None,
     ):
-        self.model_id = model_id
+        self.id = model_id
         self.status = status
         self.request_timestamp = request_timestamp
         self.start_timestamp = start_timestamp
         self.status_timestamp = status_timestamp
         self.error_message = error_message
+        self.classifier = classifier
+        self.feature_type = feature_type
+        self.keys_from_to = keys_from_to
+        self.model_type = model_type
+        self.name = name
+        self.description = description
+        self.external_id = external_id
         self._cognite_client = cognite_client
 
     def __str__(self):
@@ -132,39 +145,6 @@ class ContextualizationModel(CogniteResource):
             time.sleep(interval)
         if self.status == "Failed":
             raise ModelFailedException(self.__class__.__name__, self.model_id, self.error_message)
-
-
-class EntityMatchingModel(ContextualizationModel):
-    def __init__(
-        self,
-        model_id=None,
-        status=None,
-        error_message=None,
-        request_timestamp=None,
-        start_timestamp=None,
-        status_timestamp=None,
-        cognite_client=None,
-        classifier=None,
-        feature_type=None,
-        keys_from_to=None,
-        model_type=None,
-        name=None,
-        description=None,
-        external_id=None,
-    ):
-        super().__init__(
-            model_id, status, error_message, request_timestamp, start_timestamp, status_timestamp, cognite_client
-        )
-        self.classifier = classifier
-        self.feature_type = feature_type
-        self.keys_from_to = keys_from_to
-        self.model_type = model_type
-        self.name = name
-        self.description = description
-        self.external_id = external_id
-
-    _RESOURCE_PATH = "/context/entity_matching"
-    _STATUS_PATH = _RESOURCE_PATH + "/"
 
     def predict(
         self,
@@ -222,9 +202,10 @@ class EntityMatchingModel(ContextualizationModel):
         Returns:
             EntityMatchingModel: new model refitted to ."""
         self.wait_for_completion()
-        return self._cognite_client.entity_matching._fit_model(
-            model_path=f"/{self.model_id}/refit", true_matches=true_matches
+        response = self._cognite_client.entity_matching._camel_post(
+            f"/{self.model_id}/refit", json={"trueMatches": true_matches}
         )
+        return self._load(response.json(), cognite_client=self._cognite_client)
 
     @staticmethod
     def dump_entities(entities: List[Union[Dict, CogniteResource]]) -> Optional[List[Dict]]:
@@ -260,5 +241,4 @@ class EntityMatchingModelUpdate(CogniteUpdate):
 
 class EntityMatchingModelList(CogniteResourceList):
     _RESOURCE = EntityMatchingModel
-    _ASSERT_CLASSES = False
     _UPDATE = EntityMatchingModelUpdate
