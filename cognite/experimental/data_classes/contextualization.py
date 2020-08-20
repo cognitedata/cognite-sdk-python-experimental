@@ -261,3 +261,4 @@ class EntityMatchingModelUpdate(CogniteUpdate):
 class EntityMatchingModelList(CogniteResourceList):
     _RESOURCE = EntityMatchingModel
     _ASSERT_CLASSES = False
+    _UPDATE = EntityMatchingModelUpdate
