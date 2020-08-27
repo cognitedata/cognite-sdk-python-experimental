@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.xx.0] - 2020-08-xx
+
+### Changed
+- Entity matcher methods now all take and return `id` and accept `id` or `external_id`
+
+
 ## [0.17.0] - 2020-08-20
 ### Changed
 - Some methods in entity matcher now take `id` instead of `model_id`

@@ -36,7 +36,7 @@ class TestEntityMatchingIntegration:
         assert "Completed" == job.status
 
         # Retrieve model
-        model = EMAPI.retrieve(id=model.model_id)
+        model = EMAPI.retrieve(id=model.id)
         assert model.classifier == "RandomForest"
         assert model.feature_type == "bigram"
         assert model.keys_from_to == [["name", "bloop"]]

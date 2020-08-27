@@ -114,7 +114,7 @@ class EntityMatchingAPI(ContextAPI):
             complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API.
             name (str): Optional user-defined name of model.
             description (str): Optional user-defined description of model.
-            external_id [str): Optional external id. Must be unique within the project.
+            external_id (str): Optional external id. Must be unique within the project.
         Returns:
             EntityMatchingModel: Resulting queued model."""
         if keys_from_to:
