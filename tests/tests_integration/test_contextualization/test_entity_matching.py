@@ -18,7 +18,7 @@ class TestEntityMatchingIntegration:
             true_matches=[(1, 2)],
             feature_type="bigram",
             keys_from_to=[("name", "bloop")],
-            external_id="abc"
+            external_id="abc",
         )
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
