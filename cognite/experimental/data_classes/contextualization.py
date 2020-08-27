@@ -83,7 +83,7 @@ class ContextualizationJob(CogniteResource):
 
 
 class EntityMatchingModel(CogniteResource):
-    _RESOURCE_PATH = "/context/entity_matching"
+    _RESOURCE_PATH = "/context/entitymatching"
     _STATUS_PATH = _RESOURCE_PATH + "/"
 
     def __init__(
