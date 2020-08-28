@@ -139,10 +139,6 @@ class EntityMatchingAPI(ContextAPI):
         )
         return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
 
-    def fit_ml(self, *args, **kwargs):
-        """Duplicate of fit will eventually be removed"""
-        return self.fit(*args, **kwargs)
-
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
 

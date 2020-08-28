@@ -14,7 +14,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 @pytest.fixture
 def mock_fit(rsps):
-    response_body = {"modelId": 123, "status": "Queued", "requestTimestamp": 42}
+    response_body = {"id": 123, "status": "Queued", "requestTimestamp": 42}
     rsps.add(
         rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fit", status=200, json=response_body,
     )
@@ -24,7 +24,7 @@ def mock_fit(rsps):
 @pytest.fixture
 def mock_status_ok(rsps):
     response_body = {
-        "modelId": 123,
+        "id": 123,
         "status": "Completed",
         "requestTimestamp": 42,
         "statusTimestamp": 456,
@@ -43,13 +43,7 @@ def mock_status_ok(rsps):
 def mock_retrieve(rsps):
     response_body = {
         "items": [
-            {
-                "modelId": 123,
-                "status": "Completed",
-                "requestTimestamp": 42,
-                "statusTimestamp": 456,
-                "startTimestamp": 789,
-            }
+            {"id": 123, "status": "Completed", "requestTimestamp": 42, "statusTimestamp": 456, "startTimestamp": 789,}
         ]
     }
     rsps.add(
@@ -63,7 +57,7 @@ def mock_retrieve(rsps):
 
 @pytest.fixture
 def mock_status_failed(rsps):
-    response_body = {"modelId": 123, "status": "Failed", "errorMessage": "error message"}
+    response_body = {"id": 123, "status": "Failed", "errorMessage": "error message"}
     rsps.add(
         rsps.GET,
         re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/\\d+"),
@@ -134,9 +128,7 @@ class TestEntityMatching:
         # fit_ml should produce the same output as fit. Will eventually be removed
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit_ml(
-            match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="bigram"
-        )
+        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
         assert 42 == model.request_timestamp

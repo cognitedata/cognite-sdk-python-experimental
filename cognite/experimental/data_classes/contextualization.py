@@ -41,7 +41,7 @@ class ContextualizationJob(CogniteResource):
 
     def update_status(self) -> str:
         """Updates the model status and returns it"""
-        data = self._cognite_client.entity_matching._get(f"{self._status_path}{self.job_id}").json()  # any playground
+        data = self._cognite_client.entity_matching._get(f"{self._status_path}{self.job_id}").json()
         self.status = data["status"]
         self.status_timestamp = data.get("statusTimestamp")
         self.start_timestamp = data.get("startTimestamp")
@@ -143,8 +143,6 @@ class EntityMatchingModel(CogniteResource):
 
     def predict(
         self,
-        id: Optional[int] = None,
-        external_id: Optional[str] = None,
         match_from: Optional[List[Dict]] = None,
         match_to: Optional[List[Dict]] = None,
         num_matches=1,
@@ -165,9 +163,8 @@ class EntityMatchingModel(CogniteResource):
         self.wait_for_completion()
         return self._cognite_client.entity_matching._run_job(
             job_path=f"/predict",
-            status_path=f"/jobs",
-            id=id,
-            external_id=external_id,
+            status_path=f"/jobs/",
+            id=self.id,
             match_from=self.dump_entities(match_from),
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
