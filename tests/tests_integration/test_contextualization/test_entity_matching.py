@@ -5,7 +5,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.experimental.exceptions import ModelFailedException
 
-COGNITE_CLIENT = CogniteClient()
+COGNITE_CLIENT = CogniteClient(debug=True)
 EMAPI = COGNITE_CLIENT.entity_matching
 
 
@@ -17,7 +17,7 @@ def fitted_model():
     except CogniteAPIError as e:
         print(e)
     entities_from = [{"id": 1, "name": "xx-yy"}]
-    entities_to = [{"id": 2, "bloop": "yy"}]
+    entities_to = [{"id": 2, "bloop": "yy"}, {"id": 3, "bloop": "zz"}]
     model = EMAPI.fit(
         match_from=entities_from,
         match_to=entities_to,
@@ -50,7 +50,8 @@ class TestEntityMatchingIntegration:
 
         mr = EMAPI._get(f"/context/entitymatching/{fitted_model.id}")
         print(mr.json())
-
+        mr = EMAPI._get(f"/context/entity_matching/{fitted_model.id}")
+        print(mr.json())
         # Retrieve model
         model = EMAPI.retrieve(id=fitted_model.id)
         print(model.dump())
@@ -108,7 +109,7 @@ class TestEntityMatchingIntegration:
         assert isinstance(new_model, EntityMatchingModel)
         assert "Queued" == new_model.status
 
-        job = new_model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"name": "foo-42"}])
+        job = new_model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"bloop": "foo-42"}])
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 

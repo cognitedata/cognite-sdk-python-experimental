@@ -172,9 +172,7 @@ class EntityMatchingModel(CogniteResource):
             complete_missing=complete_missing,
         )
 
-    def refit(
-        self, true_matches: List[Tuple[int, int]], id: Optional[int] = None, external_id: Optional[str] = None
-    ) -> "EntityMatchingModel":
+    def refit(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
         """Re-fits an entity matching on updated data.
 
         Args:
@@ -183,7 +181,7 @@ class EntityMatchingModel(CogniteResource):
             EntityMatchingModel: new model refitted to ."""
         self.wait_for_completion()
         response = self._cognite_client.entity_matching._camel_post(
-            f"/refit", json={"trueMatches": true_matches, "id": id, "externalId": external_id}
+            f"/refit", json={"trueMatches": true_matches, "id": self.id}
         )
         return self._load(response.json(), cognite_client=self._cognite_client)
 
