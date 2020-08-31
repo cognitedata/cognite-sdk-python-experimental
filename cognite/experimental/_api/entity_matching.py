@@ -114,7 +114,7 @@ class EntityMatchingAPI(ContextAPI):
             complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API.
             name (str): Optional user-defined name of model.
             description (str): Optional user-defined description of model.
-            external_id [str): Optional external id. Must be unique within the project.
+            external_id (str): Optional external id. Must be unique within the project.
         Returns:
             EntityMatchingModel: Resulting queued model."""
         if keys_from_to:
@@ -138,10 +138,6 @@ class EntityMatchingAPI(ContextAPI):
             ),
         )
         return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
-
-    def fit_ml(self, *args, **kwargs):
-        """Duplicate of fit will eventually be removed"""
-        return self.fit(*args, **kwargs)
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.

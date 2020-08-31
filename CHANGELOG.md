@@ -12,6 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.18.0] - 2020-08-31
+
+### Changed
+- Entity matcher methods now all take and return `id` instead of `model_id` and accept `id` or `external_id`.
+- Entity matcher uses the new `/entitymatching` endpoints
+
+### Removed
+- `fit_ml` and `predict_ml` methods in entity matcher.
+
 ## [0.17.0] - 2020-08-20
 ### Changed
 - Some methods in entity matcher now take `id` instead of `model_id`

@@ -26,7 +26,7 @@ match_to = [
 ]
 true_matches = [(0,0)]
 
-model = client.entity_matching.fit_ml(match_from = match_from,
+model = client.entity_matching.fit(match_from = match_from,
                                       match_to = match_to,
                                       true_matches = true_matches,
                                       keys_from_to = [("name", "name"), ("description", "description")]
@@ -36,12 +36,12 @@ model = client.entity_matching.fit_ml(match_from = match_from,
 ```python
 true_matches = [(1,3)]
 
-model = model.refit_ml(true_matches = true_matches)
+model = model.refit(true_matches = true_matches)
 ```
 
 #### Predict on the training data
 ```python
-job = model.predict_ml(num_matches = 2)
+job = model.predict(num_matches = 2)
 matches = job.result
 print(matches["items"])
 ```
@@ -69,7 +69,7 @@ will produce the following output after a few seconds:
 match_from = [
     {"id":2, "name" : "IAA_84PAH93234.PV", "description": "some description"},
 ]
-job = model.predict_ml(num_matches = 2, match_from = match_from)
+job = model.predict(num_matches = 2, match_from = match_from)
 matches = job.result
 print(matches["items"])
 ```
@@ -102,14 +102,14 @@ match_to = [
     {"id":5, "name" : "84PAH93234", "description": ""},
 ]
 
-model = client.entity_matching.fit_ml(match_from = match_from,
+model = client.entity_matching.fit(match_from = match_from,
                                       match_to = match_to,
                                       keys_from_to = [("name", "name"), ("description", "description")]
 )
 ```
 #### Predict on the training data
 ```python
-job = model.predict_ml(num_matches = 2)
+job = model.predict(num_matches = 2)
 matches = job.result
 print(matches["items"])
 ```
