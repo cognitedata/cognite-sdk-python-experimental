@@ -7,7 +7,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.experimental.exceptions import ModelFailedException
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 EMAPI = COGNITE_CLIENT.entity_matching
 
 
@@ -50,13 +50,8 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
-        mr = EMAPI._get(f"/context/entitymatching/{fitted_model.id}")
-        print(mr.json())
-        mr = EMAPI._get(f"/context/entity_matching/{fitted_model.id}")
-        print(mr.json())
         # Retrieve model
         model = EMAPI.retrieve(id=fitted_model.id)
-        print(model.dump())
         assert model.classifier == "RandomForest"
         assert model.feature_type == "bigram"
         assert model.keys_from_to == [["name", "bloop"]]

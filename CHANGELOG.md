@@ -16,6 +16,10 @@ Changes are grouped as follows
 
 ### Changed
 - Entity matcher methods now all take and return `id` instead of `model_id` and accept `id` or `external_id`.
+- Entity matcher uses the new `/entitymatching` endpoints
+
+### Removed
+- `fit_ml` and `predict_ml` methods in entity matcher.
 
 ## [0.17.0] - 2020-08-20
 ### Changed
