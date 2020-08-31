@@ -1,3 +1,5 @@
+import random
+
 import pytest
 
 from cognite.client.exceptions import CogniteAPIError
@@ -11,7 +13,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 @pytest.fixture
 def fitted_model():
-    extid = "abc123456"
+    extid = "abc" + str(random.randint(1, 1000000000))
     try:
         EMAPI.delete(external_id=extid)
     except CogniteAPIError as e:
