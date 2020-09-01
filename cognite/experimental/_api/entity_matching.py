@@ -102,7 +102,7 @@ class EntityMatchingAPI(ContextAPI):
         description: str = None,
         external_id: str = None,
     ) -> EntityMatchingModel:
-        """Fit entity matching model with machine learning methods.
+        """Fit entity matching model.
 
         Args:
             match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
@@ -138,6 +138,36 @@ class EntityMatchingAPI(ContextAPI):
             ),
         )
         return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
+
+    def predict(
+        self,
+        match_from: Optional[List[Dict]] = None,
+        match_to: Optional[List[Dict]] = None,
+        num_matches=1,
+        score_threshold=None,
+        complete_missing=False,
+        id: Optional[int] = None,
+        external_id: Optional[str] = None,
+    ) -> ContextualizationJob:
+        """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
+
+        Args:
+            match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
+            match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
+            num_matches (int): number of matches to return for each item.
+            score_threshold (float): only return matches with a score above this threshold
+            complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
+        Returns:
+            ContextualizationJob: object which can be used to wait for and retrieve results."""
+        return self.retrieve(
+            id=id, external_id=external_id
+        ).predict(  # could call predict directly but this is friendlier
+            match_from=EntityMatchingModel.dump_entities(match_from),
+            match_to=EntityMatchingModel.dump_entities(match_to),
+            num_matches=num_matches,
+            score_threshold=score_threshold,
+            complete_missing=complete_missing,
+        )
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.

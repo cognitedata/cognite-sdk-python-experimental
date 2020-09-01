@@ -149,7 +149,7 @@ class EntityMatchingModel(CogniteResource):
         score_threshold=None,
         complete_missing=False,
     ) -> ContextualizationJob:
-        """Predict entity matching.
+        """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
 
         Args:
             match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.

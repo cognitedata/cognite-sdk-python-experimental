@@ -113,3 +113,6 @@ class TestEntityMatchingIntegration:
         models_list = EMAPI.list(filter={"keys_from_to": [["name", "name"]], "feature_type": "bigram"})
         assert set([model.feature_type for model in models_list]) == {"bigram"}
         assert all([model.keys_from_to == [["name", "name"]] for model in models_list])
+
+    def test_predict(self, fitted_model):
+        result = EMAPI.predict(external_id=fitted_model.external_id)
