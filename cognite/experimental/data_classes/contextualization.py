@@ -149,7 +149,7 @@ class EntityMatchingModel(CogniteResource):
         score_threshold=None,
         complete_missing=False,
     ) -> ContextualizationJob:
-        """Predict entity matching.
+        """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
 
         Args:
             match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
@@ -173,12 +173,12 @@ class EntityMatchingModel(CogniteResource):
         )
 
     def refit(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
-        """Re-fits an entity matching on updated data.
+        """Re-fits an entity matching model, using the combination of the old and new true matches.
 
         Args:
             true_matches: Updated known valid matches given as a list of (id_from,id_to).
         Returns:
-            EntityMatchingModel: new model refitted to ."""
+            EntityMatchingModel: new model refitted to true_matches."""
         self.wait_for_completion()
         response = self._cognite_client.entity_matching._camel_post(
             f"/refit", json={"trueMatches": true_matches, "id": self.id}

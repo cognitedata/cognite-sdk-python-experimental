@@ -133,6 +133,11 @@ will produce the following output after a few seconds:
 ]
 ```
 
+You can also call predict by external_id or id directly.
+```python
+job = client.entity_matching.predict(num_matches = 2,external_id="my_model")
+job = client.entity_matching.predict(num_matches = 2,id=1234)
+```
 
 ### Create Rules
 
