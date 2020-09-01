@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.20.0] - 2020-09-01
+### Added
+- Entity matcher `predict` and `refit` methods now exist on `client.entity_matching` in addition to the model object.
+
 ## [0.19.0] - 2020-08-31
 ### Changed
 - Entity matcher methods now all take and return `id` instead of `model_id` and accept `id` or `external_id`.
