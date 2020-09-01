@@ -173,7 +173,7 @@ class EntityMatchingModel(CogniteResource):
         )
 
     def refit(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
-        """Re-fits an entity matching on updated data.
+        """Re-fits an entity matching model, using the combination of the old and new true matches.
 
         Args:
             true_matches: Updated known valid matches given as a list of (id_from,id_to).
