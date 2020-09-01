@@ -114,5 +114,15 @@ class TestEntityMatchingIntegration:
         assert set([model.feature_type for model in models_list]) == {"bigram"}
         assert all([model.keys_from_to == [["name", "name"]] for model in models_list])
 
-    def test_predict(self, fitted_model):
-        result = EMAPI.predict(external_id=fitted_model.external_id)
+    def test_direct_predict(self, fitted_model):
+        job = EMAPI.predict(external_id=fitted_model.external_id)
+        job2 = EMAPI.predict(id=fitted_model.id)
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert isinstance(job2, ContextualizationJob)
+
+    def test_direct_refit(self, fitted_model):
+        new_model = EMAPI.refit(external_id=fitted_model.external_id, true_matches=[(1, 3)])
+        new_model2 = EMAPI.refit(id=fitted_model.id, true_matches=[(1, 3)])
+        assert isinstance(new_model, EntityMatchingModel)
+        assert isinstance(new_model2, EntityMatchingModel)

@@ -178,7 +178,7 @@ class EntityMatchingModel(CogniteResource):
         Args:
             true_matches: Updated known valid matches given as a list of (id_from,id_to).
         Returns:
-            EntityMatchingModel: new model refitted to ."""
+            EntityMatchingModel: new model refitted to true_matches."""
         self.wait_for_completion()
         response = self._cognite_client.entity_matching._camel_post(
             f"/refit", json={"trueMatches": true_matches, "id": self.id}

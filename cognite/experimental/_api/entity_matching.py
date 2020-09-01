@@ -86,7 +86,7 @@ class EntityMatchingAPI(ContextAPI):
 
         Args:
             id (Union[int, List[int]): Id or list of ids
-            external_id (Union[str, List[str]]): External ID or list of exgernal ids"""
+            external_id (Union[str, List[str]]): External ID or list of external ids"""
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def fit(
@@ -157,6 +157,8 @@ class EntityMatchingAPI(ContextAPI):
             num_matches (int): number of matches to return for each item.
             score_threshold (float): only return matches with a score above this threshold
             complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
+            id: ids of the model to use.
+            external_id: external ids of the model to use.
         Returns:
             ContextualizationJob: object which can be used to wait for and retrieve results."""
         return self.retrieve(
@@ -168,6 +170,19 @@ class EntityMatchingAPI(ContextAPI):
             score_threshold=score_threshold,
             complete_missing=complete_missing,
         )
+
+    def refit(
+        self, true_matches: List[Tuple[int, int]], id: Optional[int] = None, external_id: Optional[str] = None
+    ) -> "EntityMatchingModel":
+        """Re-fits an entity matching on updated data.
+
+        Args:
+            true_matches: Updated known valid matches given as a list of (id_from,id_to).
+            id: ids of the model to use.
+            external_id: external ids of the model to use.
+        Returns:
+            EntityMatchingModel: new model refitted to true_matches."""
+        return self.retrieve(id=id, external_id=external_id).refit(true_matches=true_matches)
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
