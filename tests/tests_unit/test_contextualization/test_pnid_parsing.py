@@ -11,7 +11,6 @@ COGNITE_CLIENT = CogniteClient()
 PNIDAPI = COGNITE_CLIENT.pnid_parsing
 
 
-
 @pytest.fixture
 def mock_detect(rsps):
     response_body = {"jobId": 789, "status": "Queued"}
@@ -73,7 +72,6 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-
     def test_detect(self, mock_detect, mock_status_ok):
         entities = ["a", "b"]
         file_id = 123432423

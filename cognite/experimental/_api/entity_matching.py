@@ -48,7 +48,7 @@ class EntityMatchingAPI(ContextAPI):
             EntityMatchingModel, EntityMatchingModelUpdate, List[Union[EntityMatchingModel, EntityMatchingModelUpdate]]
         ],
     ) -> Union[EntityMatchingModel, List[EntityMatchingModel]]:
-        """ Update model
+        """Update model
 
         Args:
             item (Union[EntityMatchingModel,EntityMatchingModelUpdate,List[Union[EntityMatchingModel,EntityMatchingModelUpdate]]) : Model(s) to update
