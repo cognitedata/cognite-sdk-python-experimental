@@ -100,12 +100,6 @@ class TestPNIDParsing:
         assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
-    def test_run_fails(self, mock_parse, mock_status_failed):
-        job = PNIDAPI.parse([1], [])
-        with pytest.raises(ModelFailedException) as exc_info:
-            job.result
-        assert "ContextualizationJob 123 failed with error 'error message'" == str(exc_info.value)
-
     def test_extract_pattern(self, mock_extract_pattern, mock_status_pattern_ok):
         patterns = ["ab{1,2}"]
         file_id = 123432423
