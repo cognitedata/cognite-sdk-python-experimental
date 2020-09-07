@@ -326,6 +326,14 @@ Fit Entity Matching Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
 
+Re-fit Entity Matching Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.refit
+
+Predict Using an Entity Matching Model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.predict
+
 Create Entity Matching Rules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
@@ -334,9 +342,21 @@ Parse PNID
 ^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.parse
 
+Detect entities in a PNID
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.detect
+
+Extract tags from P&ID based on pattern
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.extract_pattern
+
 Extract Entities from Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_extraction.EntityExtractionAPI.extract
+
+Complete a Schema or Template
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.schema_completion.SchemaCompletionAPI.complete
 
 Contextualization Data Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
