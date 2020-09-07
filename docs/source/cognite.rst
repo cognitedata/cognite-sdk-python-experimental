@@ -338,10 +338,6 @@ Create Entity Matching Rules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
 
-Parse PNID
-^^^^^^^^^^
-.. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.parse
-
 Detect entities in a PNID
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.detect
