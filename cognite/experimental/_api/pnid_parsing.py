@@ -15,7 +15,7 @@ class PNIDParsingAPI(ContextAPI):
         partial_match: bool = False,
         min_tokens: int = 1,
     ) -> ContextualizationJob:
-        """Detect entities in a P&ID
+        """Detect entities in a PNID
 
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.

@@ -145,7 +145,6 @@ class EntityMatchingAPI(ContextAPI):
         match_to: Optional[List[Dict]] = None,
         num_matches=1,
         score_threshold=None,
-        complete_missing=False,
         id: Optional[int] = None,
         external_id: Optional[str] = None,
     ) -> ContextualizationJob:
@@ -168,7 +167,6 @@ class EntityMatchingAPI(ContextAPI):
             match_to=EntityMatchingModel.dump_entities(match_to),
             num_matches=num_matches,
             score_threshold=score_threshold,
-            complete_missing=complete_missing,
         )
 
     def refit(
