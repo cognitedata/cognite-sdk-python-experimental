@@ -147,7 +147,6 @@ class EntityMatchingModel(CogniteResource):
         match_to: Optional[List[Dict]] = None,
         num_matches=1,
         score_threshold=None,
-        complete_missing=False,
     ) -> ContextualizationJob:
         """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
 
@@ -169,7 +168,6 @@ class EntityMatchingModel(CogniteResource):
             match_to=self.dump_entities(match_to),
             num_matches=num_matches,
             score_threshold=score_threshold,
-            complete_missing=complete_missing,
         )
 
     def refit(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
