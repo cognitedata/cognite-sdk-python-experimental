@@ -36,11 +36,23 @@ def mock_extract_pattern(rsps):
 
 
 @pytest.fixture
-def mock_status_ok(rsps):
-    response_body = {"jobId": 123, "status": "Completed", "svgUrl": "x"}
+def mock_convert(rsps):
+    response_body = {"jobId": 345, "status": "Queued"}
+    rsps.add(
+        rsps.POST,
+        PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/convert",
+        status=200,
+        json=response_body,
+    )
+    yield rsps
+
+
+@pytest.fixture
+def mock_status_detect_ok(rsps):
+    response_body = {"jobId": 123, "status": "Completed", "items": []}
     rsps.add(
         rsps.GET,
-        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/\\d+"),
+        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/detect" + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -60,6 +72,18 @@ def mock_status_pattern_ok(rsps):
 
 
 @pytest.fixture
+def mock_status_convert_ok(rsps):
+    response_body = {"jobId": 123, "status": "Completed", "svgUrl": "svg.url.com", "pngUrl": "png.url.com"}
+    rsps.add(
+        rsps.GET,
+        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/convert" + "/\\d+"),
+        status=200,
+        json=response_body,
+    )
+    yield rsps
+
+
+@pytest.fixture
 def mock_status_failed(rsps):
     response_body = {"jobId": 123, "status": "Failed", "errorMessage": "error message"}
     rsps.add(
@@ -72,20 +96,20 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_detect(self, mock_detect, mock_status_ok):
+    def test_detect(self, mock_detect, mock_status_detect_ok):
         entities = ["a", "b"]
         file_id = 123432423
         job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"svgUrl": "x"} == job.result
+        assert "items" in job.result
         assert "Completed" == job.status
         assert 789 == job.job_id
 
         n_detect_calls = 0
         n_status_calls = 0
         for call in mock_detect.calls:
-            if "detect" in call.request.url:
+            if "detect" in call.request.url and call.request.method == "POST":
                 n_detect_calls += 1
                 assert {
                     "entities": entities,
@@ -120,4 +144,36 @@ class TestPNIDParsing:
                 n_status_calls += 1
                 assert "/456" in call.request.url
         assert 1 == n_extract_pattern_calls
+        assert 1 == n_status_calls
+
+    def test_convert(self, mock_convert, mock_status_convert_ok):
+        items = [
+            {
+                "text": "21-PT-1019",
+                "boundingBox": {
+                    "xMax": 0.5895183277794608,
+                    "xMin": 0.573159648591336,
+                    "yMax": 0.3737254901960784,
+                    "yMin": 0.3611764705882352,
+                },
+            }
+        ]
+        file_id = 123432423
+        job = PNIDAPI.convert(file_id, items=items, grayscale=True)
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert "svgUrl" in job.result
+        assert "Completed" == job.status
+        assert 345 == job.job_id
+
+        n_convert_calls = 0
+        n_status_calls = 0
+        for call in mock_convert.calls:
+            if "convert" in call.request.url and call.request.method == "POST":
+                n_convert_calls += 1
+                assert {"fileId": file_id, "items": items, "grayscale": True,} == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/345" in call.request.url
+        assert 1 == n_convert_calls
         assert 1 == n_status_calls

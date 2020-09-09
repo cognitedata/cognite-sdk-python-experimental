@@ -27,7 +27,7 @@ class PNIDParsingAPI(ContextAPI):
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
         return self._run_job(
             job_path="/detect",
-            status_path="/",
+            status_path="/detect/",
             file_id=file_id,
             entities=entities,
             partial_match=partial_match,
@@ -46,4 +46,19 @@ class PNIDParsingAPI(ContextAPI):
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
         return self._run_job(
             job_path="/extractpattern", status_path="/extractpattern/", file_id=file_id, patterns=patterns,
+        )
+
+    def convert(self, file_id: int, items: List[Dict], grayscale: bool = None,) -> ContextualizationJob:
+        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted
+
+        Args:
+            file_id (int): ID of the file, should already be uploaded in the same tenant.
+            items (List[Dict]): List of entity annotations for entities detected in the P&ID.
+            grayscale (bool, optional): Return the SVG version in grayscale colors only (reduces the file size). Defaults to None.
+
+        Returns:
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
+        """
+        return self._run_job(
+            job_path="/convert", status_path="/convert/", file_id=file_id, items=items, grayscale=grayscale,
         )
