@@ -11,6 +11,7 @@ from cognite.experimental._api.entity_extraction import EntityExtractionAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
+from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.relationships import RelationshipsAPI
 from cognite.experimental._api.schema_completion import SchemaCompletionAPI
@@ -98,5 +99,6 @@ class CogniteClient(Client):
         self.entity_extraction = EntityExtractionAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.schemas = SchemaCompletionAPI(self._config, api_version="playground", cognite_client=self)
+        self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
