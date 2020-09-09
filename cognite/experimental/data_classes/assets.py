@@ -386,7 +386,7 @@ class AssetFilter(CogniteFilter):
         root (bool): filtered assets are root assets or not
         external_id_prefix (str): External Id provided by client. Should be unique within the project.
         types (List[Dict[str, Any]]): No description.
-        labels (List[List[Dict[str, Any]]]): A label filter is composed in the following manner: [<label> AND <label> AND ...] OR [<label> AND <label> AND ...] OR ... In the associated example, the applied filter will return all the ACTIVE PUMPs and all the VALVEs. 
+        labels (List[List[Dict[str, Any]]]): A label filter is composed in the following manner: [<label> AND <label> AND ...] OR [<label> AND <label> AND ...] OR ... In the associated example, the applied filter will return all the ACTIVE PUMPs and all the VALVEs.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
