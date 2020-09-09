@@ -5,13 +5,13 @@ from cognite.experimental.data_classes import ContextualizationJob
 
 COGNITE_CLIENT = CogniteClient()
 PNIDAPI = COGNITE_CLIENT.pnid_parsing
-PNID_ID = 3261066797848581
+PNID_FILE_ID = 3261066797848581
 
 
 class TestPNIDParsingIntegration:
     def test_run_detect(self):
         entities = ["a", "b"]
-        file_id = PNID_ID
+        file_id = PNID_FILE_ID
         job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
@@ -30,7 +30,7 @@ class TestPNIDParsingIntegration:
                 },
             }
         ]
-        file_id = PNID_ID
+        file_id = PNID_FILE_ID
         job = PNIDAPI.convert(file_id, items=items, grayscale=True)
         assert isinstance(job, ContextualizationJob)
         assert {"pngUrl", "requestTimestamp", "startTimestamp", "statusTimestamp", "svgUrl"} == set(job.result.keys())

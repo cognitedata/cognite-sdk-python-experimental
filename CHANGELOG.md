@@ -12,6 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.20.2] - 2020-09-09
+### Removed
+- Removed `/parse` in Pnid Parser
+### Added
+- Added `/convert` in Pnid Parser
+### Fixed
+- pnid integration test with a uploaded pnid file
+- pnid unit test
+
 ## [0.20.1] - 2020-09-07
 ### Fixed
 - Fix in EntityMatcher predict method.
