@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.22.0] - 2020-09-09
+### Added
+- Added `/findobjects` in Pnid Object Detection
+
 ## [0.21.0] - 2020-09-09
 ### Removed
 - Removed `/parse` in Pnid Parser
