@@ -101,9 +101,8 @@ class TestPNIDParsing:
         file_id = 123432423
         job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
         assert isinstance(job, ContextualizationJob)
-        assert "Queued" == job.status
+        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert "items" in job.result
-        assert "Completed" == job.status
         assert 789 == job.job_id
 
         n_detect_calls = 0

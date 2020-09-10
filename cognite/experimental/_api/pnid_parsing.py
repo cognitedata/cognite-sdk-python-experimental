@@ -21,16 +21,15 @@ class PNIDParsingAPI(ContextAPI):
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
             entities (List[Union[str, dict]]): List of entities to detect
+            search_field (str): the field to search in entities, only relevant if entities is a list of dict
             name_mapping (Dict[str,str]): Optional mapping between entity names and their synonyms in the P&ID. Used if the P&ID contains names on a different form than the entity list (e.g a substring only). The response will contain names as given in the entity list.
             partial_match (bool): Allow for a partial match (e.g. missing prefix).
             min_tokens (int): Minimal number of tokens a match must be based on
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+        entities, entities_return = self._detect_before_hook(entities, search_field)
 
-        if entities and isinstance(entities[0], dict):
-            entities = [entity.get(search_field) for entity in entities]
-
-        return self._run_job(
+        job = self._run_job(
             job_path="/detect",
             status_path="/detect/",
             file_id=file_id,
@@ -39,6 +38,31 @@ class PNIDParsingAPI(ContextAPI):
             name_mapping=name_mapping,
             min_tokens=min_tokens,
         )
+        job.result
+        if job.status == "Completed":
+            job = self._detect_after_hook(job, entities_return, search_field)
+        return job
+
+    @staticmethod
+    def _detect_before_hook(entities, search_field):
+        """To decide whether to use search_field or not and make sure the entities are of type List[str]
+        """
+        entities_return = None
+        if entities and isinstance(entities[0], dict):
+            entities_return = entities.copy()
+            entities = [entity.get(search_field) for entity in entities]
+        return entities, entities_return
+
+    @staticmethod
+    def _detect_after_hook(job, entities_return, search_field):
+        """Insert the entities into the result if search_field is used
+        """
+        if entities_return:
+            texts = {item.get("text") for item in job.result["items"]}
+            entities_return = [entity for entity in entities_return if entity.get(search_field) in texts]
+            for item in job.result["items"]:
+                item["entities"] = [entity for entity in entities_return if entity.get(search_field) == item["text"]]
+        return job
 
     def extract_pattern(self, file_id, patterns: List[str]) -> ContextualizationJob:
         """Extract tags from P&ID based on pattern

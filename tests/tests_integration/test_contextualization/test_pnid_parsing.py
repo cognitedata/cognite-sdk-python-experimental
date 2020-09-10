@@ -14,9 +14,8 @@ class TestPNIDParsingIntegration:
         file_id = PNID_FILE_ID
         job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
         assert isinstance(job, ContextualizationJob)
-        assert "Queued" == job.status
+        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert {"items", "requestTimestamp", "startTimestamp", "statusTimestamp"} == set(job.result.keys())
-        assert "Completed" == job.status
 
     def test_run_convert(self):
         items = [
