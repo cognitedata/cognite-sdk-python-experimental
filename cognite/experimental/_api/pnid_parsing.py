@@ -45,7 +45,7 @@ class PNIDParsingAPI(ContextAPI):
             name_mapping=name_mapping,
             min_tokens=min_tokens,
         )
-        job.result
+        job.wait_for_completion()
         if job.status == "Completed":
             job = self._detect_after_hook(job, entities_return, search_field)
         return job
