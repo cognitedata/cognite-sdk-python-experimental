@@ -1,4 +1,5 @@
 import re
+import unittest
 
 import pytest
 
@@ -96,6 +97,12 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
+    def test_detect_entities_type_check(self):
+        entities = ["a", {"name": "b"}]
+        file_id = 123432423
+        with pytest.raises(AssertionError) as e_info:
+            PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+
     def test_detect_entities_str(self, mock_detect, mock_status_detect_ok):
         entities = ["a", "b"]
         file_id = 123432423
