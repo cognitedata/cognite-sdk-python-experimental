@@ -27,9 +27,13 @@ class PNIDParsingAPI(ContextAPI):
             min_tokens (int): Minimal number of tokens a match must be based on
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
-        assert all([isinstance(entity, str) for entity in entities]) or all(
-            [isinstance(entity, dict) for entity in entities]
-        ), "all the elements in entities must have same type (either str or dict)"
+
+        if not (
+            all([isinstance(entity, str) for entity in entities])
+            or all([isinstance(entity, dict) for entity in entities])
+        ):
+            raise ValueError("all the elements in entities must have same type (either str or dict)")
+
         entities, entities_return = self._detect_before_hook(entities, search_field)
 
         job = self._run_job(
