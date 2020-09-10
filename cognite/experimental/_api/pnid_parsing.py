@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import ContextualizationJob
@@ -10,7 +10,8 @@ class PNIDParsingAPI(ContextAPI):
     def detect(
         self,
         file_id: int,
-        entities: List[str],
+        entities: List[Union[str, dict]],
+        search_field: str = "name",
         name_mapping: Dict[str, str] = None,
         partial_match: bool = False,
         min_tokens: int = 1,
@@ -19,12 +20,16 @@ class PNIDParsingAPI(ContextAPI):
 
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
-            entities (List[str]): List of entities to detect
+            entities (List[Union[str, dict]]): List of entities to detect
             name_mapping (Dict[str,str]): Optional mapping between entity names and their synonyms in the P&ID. Used if the P&ID contains names on a different form than the entity list (e.g a substring only). The response will contain names as given in the entity list.
             partial_match (bool): Allow for a partial match (e.g. missing prefix).
             min_tokens (int): Minimal number of tokens a match must be based on
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+
+        if entities and isinstance(entities[0], dict):
+            entities = [entity.get(search_field) for entity in entities]
+
         return self._run_job(
             job_path="/detect",
             status_path="/detect/",
