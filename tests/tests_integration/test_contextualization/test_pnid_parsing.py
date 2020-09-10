@@ -9,14 +9,21 @@ PNID_FILE_ID = 3261066797848581
 
 
 class TestPNIDParsingIntegration:
-    def test_run_detect(self):
-        entities = ["a", "b"]
+    def test_run_detect_str(self):
+        entities = ["YT-96122", "XE-96125"]
         file_id = PNID_FILE_ID
-        job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+        job = PNIDAPI.detect(file_id, entities)
         assert isinstance(job, ContextualizationJob)
-        assert "Queued" == job.status
+        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert {"items", "requestTimestamp", "startTimestamp", "statusTimestamp"} == set(job.result.keys())
-        assert "Completed" == job.status
+
+    def test_run_detect_entities_dict(self):
+        entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
+        file_id = PNID_FILE_ID
+        job = PNIDAPI.detect(file_id, entities)
+        assert isinstance(job, ContextualizationJob)
+        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
+        assert {"items", "requestTimestamp", "startTimestamp", "statusTimestamp"} == set(job.result.keys())
 
     def test_run_convert(self):
         items = [

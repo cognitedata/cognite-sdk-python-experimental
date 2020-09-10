@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.22.1] - 2020-09-09
+### Added
+- `/detect` in Pnid Parser can accept entities with type `List[Union[str, dict]]` and returns `entities` if the type of input `entities` has type of `List[dict]`
+
 ## [0.22.0] - 2020-09-09
 ### Added
 - Added `/findobjects` in Pnid Object Detection
