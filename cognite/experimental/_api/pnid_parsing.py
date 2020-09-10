@@ -21,7 +21,7 @@ class PNIDParsingAPI(ContextAPI):
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
             entities (List[Union[str, dict]]): List of entities to detect
-            search_field (str): the field to search in entities, only relevant if entities is a list of dict
+            search_field (str): If entities is a list of dictionaries, this is the key to the values to detect in the PnId 
             name_mapping (Dict[str,str]): Optional mapping between entity names and their synonyms in the P&ID. Used if the P&ID contains names on a different form than the entity list (e.g a substring only). The response will contain names as given in the entity list.
             partial_match (bool): Allow for a partial match (e.g. missing prefix).
             min_tokens (int): Minimal number of tokens a match must be based on
