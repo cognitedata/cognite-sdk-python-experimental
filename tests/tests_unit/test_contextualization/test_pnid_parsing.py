@@ -96,7 +96,7 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_detect(self, mock_detect, mock_status_detect_ok):
+    def test_detect_entities_str(self, mock_detect, mock_status_detect_ok):
         entities = ["a", "b"]
         file_id = 123432423
         job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
@@ -112,6 +112,33 @@ class TestPNIDParsing:
                 n_detect_calls += 1
                 assert {
                     "entities": entities,
+                    "fileId": file_id,
+                    "nameMapping": {"a": "c"},
+                    "partialMatch": False,
+                    "minTokens": 3,
+                } == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/789" in call.request.url
+        assert 1 == n_detect_calls
+        assert 1 == n_status_calls
+
+    def test_detect_entities_dict(self, mock_detect, mock_status_detect_ok):
+        entities = [{"name": "a"}, {"name": "b"}]
+        file_id = 123432423
+        job = PNIDAPI.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+        assert isinstance(job, ContextualizationJob)
+        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
+        assert "items" in job.result
+        assert 789 == job.job_id
+
+        n_detect_calls = 0
+        n_status_calls = 0
+        for call in mock_detect.calls:
+            if "detect" in call.request.url and call.request.method == "POST":
+                n_detect_calls += 1
+                assert {
+                    "entities": ["a", "b"],
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
