@@ -77,7 +77,9 @@ class PNIDParsingAPI(ContextAPI):
                 item["entities"] = [entity for entity in entities_return if entity.get(search_field) == item["text"]]
         return job
 
-    def extract_pattern(self, patterns: List[str], file_id: int = None, file_external_id: str=None) -> ContextualizationJob:
+    def extract_pattern(
+        self, patterns: List[str], file_id: int = None, file_external_id: str = None
+    ) -> ContextualizationJob:
         """Extract tags from P&ID based on pattern
 
         Args:
@@ -91,10 +93,16 @@ class PNIDParsingAPI(ContextAPI):
             raise ValueError("File id and file external id cannot be both none")
 
         return self._run_job(
-            job_path="/extractpattern", status_path="/extractpattern/", file_id=file_id, file_external_id=file_external_id, patterns=patterns,
+            job_path="/extractpattern",
+            status_path="/extractpattern/",
+            file_id=file_id,
+            file_external_id=file_external_id,
+            patterns=patterns,
         )
 
-    def convert(self, items: List[Dict], grayscale: bool = None, file_id: int =None, file_external_id: str=None) -> ContextualizationJob:
+    def convert(
+        self, items: List[Dict], grayscale: bool = None, file_id: int = None, file_external_id: str = None
+    ) -> ContextualizationJob:
         """Convert a P&ID to an interactive SVG where the provided annotations are highlighted
 
         Args:
@@ -109,5 +117,10 @@ class PNIDParsingAPI(ContextAPI):
             raise ValueError("File id and file external id cannot be both none")
 
         return self._run_job(
-            job_path="/convert", status_path="/convert/", file_id=file_id, file_external_id=file_external_id, items=items, grayscale=grayscale,
+            job_path="/convert",
+            status_path="/convert/",
+            file_id=file_id,
+            file_external_id=file_external_id,
+            items=items,
+            grayscale=grayscale,
         )

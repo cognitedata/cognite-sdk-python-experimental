@@ -50,7 +50,13 @@ def mock_convert(rsps):
 
 @pytest.fixture
 def mock_status_detect_ok(rsps):
-    response_body = {"jobId": 123, "status": "Completed", "items": [], "fileId":123432423, "fileExternalId":"123432423"}
+    response_body = {
+        "jobId": 123,
+        "status": "Completed",
+        "items": [],
+        "fileId": 123432423,
+        "fileExternalId": "123432423",
+    }
     rsps.add(
         rsps.GET,
         re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/detect" + "/\\d+"),
@@ -62,7 +68,13 @@ def mock_status_detect_ok(rsps):
 
 @pytest.fixture
 def mock_status_pattern_ok(rsps):
-    response_body = {"jobId": 456, "status": "Completed", "items": [], "fileId":123432423, "fileExternalId":"123432423"}
+    response_body = {
+        "jobId": 456,
+        "status": "Completed",
+        "items": [],
+        "fileId": 123432423,
+        "fileExternalId": "123432423",
+    }
     rsps.add(
         rsps.GET,
         re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/extractpattern" + "/\\d+"),
@@ -74,7 +86,14 @@ def mock_status_pattern_ok(rsps):
 
 @pytest.fixture
 def mock_status_convert_ok(rsps):
-    response_body = {"jobId": 123, "status": "Completed", "svgUrl": "svg.url.com", "pngUrl": "png.url.com", "fileId":123432423, "fileExternalId":"123432423"}
+    response_body = {
+        "jobId": 123,
+        "status": "Completed",
+        "svgUrl": "svg.url.com",
+        "pngUrl": "png.url.com",
+        "fileId": 123432423,
+        "fileExternalId": "123432423",
+    }
     rsps.add(
         rsps.GET,
         re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/convert" + "/\\d+"),
@@ -102,13 +121,17 @@ class TestPNIDParsing:
         file_id = 123432423
 
         with pytest.raises(ValueError) as exc_info:
-            PNIDAPI.detect(file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+            PNIDAPI.detect(
+                file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
+            )
         assert "all the elements in entities must have same type (either str or dict)" == str(exc_info.value)
 
     def test_detect_entities_str(self, mock_detect, mock_status_detect_ok):
         entities = ["a", "b"]
         file_id = 123432423
-        job = PNIDAPI.detect(file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+        job = PNIDAPI.detect(
+            file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
+        )
         assert isinstance(job, ContextualizationJob)
         assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert "items" in job.result
@@ -135,7 +158,9 @@ class TestPNIDParsing:
     def test_detect_entities_dict(self, mock_detect, mock_status_detect_ok):
         entities = [{"name": "a"}, {"name": "b"}]
         file_id = 123432423
-        job = PNIDAPI.detect(file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3)
+        job = PNIDAPI.detect(
+            file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
+        )
         assert isinstance(job, ContextualizationJob)
         assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert "items" in job.result
@@ -216,8 +241,13 @@ class TestPNIDParsing:
     def test_file_external_id(self, mock_detect, mock_status_detect_ok):
         entities = [{"name": "a"}, {"name": "b"}]
         file_external_id = "123432423"
-        job = PNIDAPI.detect(file_external_id=file_external_id, entities=entities, name_mapping={"a": "c"}, partial_match=False,
-                             min_tokens=3)
+        job = PNIDAPI.detect(
+            file_external_id=file_external_id,
+            entities=entities,
+            name_mapping={"a": "c"},
+            partial_match=False,
+            min_tokens=3,
+        )
         assert isinstance(job, ContextualizationJob)
         assert "Completed" == job.status
         assert "fileId" in job.result
