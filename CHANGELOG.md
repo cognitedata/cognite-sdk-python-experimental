@@ -14,7 +14,7 @@ Changes are grouped as follows
 
 ## [0.22.2] - 2020-09-14
 ### Changed
-- `/detect, /convert, /extractpattern, /ocr` FileId or fileExternalId is required for requests. FileId and fileExternalId are returned for responses.
+- `/detect, /convert, /extractpattern, /ocr` supports referring to a file using file_id and/or file_external_id. file_id and file_external_id are returned in the responses.
 
 ## [0.22.1] - 2020-09-09
 ### Added

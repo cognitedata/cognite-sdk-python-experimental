@@ -37,7 +37,7 @@ class PNIDParsingAPI(ContextAPI):
             raise ValueError("all the elements in entities must have same type (either str or dict)")
 
         if file_id is None and file_external_id is None:
-            raise ValueError("File id and file external id cannot be both none")
+            raise ValueError("File id and file external id cannot both be none")
 
         entities, entities_return = self._detect_before_hook(entities, search_field)
 
@@ -90,7 +90,7 @@ class PNIDParsingAPI(ContextAPI):
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
 
         if file_id is None and file_external_id is None:
-            raise ValueError("File id and file external id cannot be both none")
+            raise ValueError("File id and file external id cannot both be none")
 
         return self._run_job(
             job_path="/extractpattern",
@@ -114,7 +114,7 @@ class PNIDParsingAPI(ContextAPI):
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
         """
         if file_id is None and file_external_id is None:
-            raise ValueError("File id and file external id cannot be both none")
+            raise ValueError("File id and file external id cannot both be none")
 
         return self._run_job(
             job_path="/convert",
