@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.22.3] - 2020-09-15
+### Changed
+- `/fit` in entity matcher supports defining which field in matchFrom and matchTo to use as the id field by specifying `id_field`
+
 ## [0.22.2] - 2020-09-14
 ### Changed
 - `/detect, /convert, /extractpattern, /ocr` supports referring to a file using file_id and/or file_external_id. file_id and file_external_id are returned in the responses.
