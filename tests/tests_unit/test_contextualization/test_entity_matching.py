@@ -114,6 +114,7 @@ class TestEntityMatching:
                 assert {
                     "matchFrom": entities_from,
                     "matchTo": entities_to,
+                    "idField": "id",
                     "trueMatches": [[1, 2]],
                     "featureType": "bigram",
                     "completeMissing": False,
@@ -143,6 +144,7 @@ class TestEntityMatching:
         assert {
             "matchFrom": [entities_from[0].dump()],
             "matchTo": [entities_to[0].dump()],
+            "idField": "id",
             "trueMatches": [[1, 2]],
             "featureType": "bigram",
             "completeMissing": False,
@@ -158,6 +160,13 @@ class TestEntityMatching:
         assert 123 == exc_info.value.id
         assert "error message" == exc_info.value.error_message
         assert "EntityMatchingModel 123 failed with error 'error message'" == str(exc_info.value)
+
+    def test_fit_id_field_fails(self):
+        entities_from = [{"id": 1, "name": "xx"}]
+        entities_to = [{"id": 2, "name": "yy"}]
+        with pytest.raises(ValueError) as exc_info:
+            model = EMAPI.fit(match_from=entities_from, match_to=entities_to, id_field="not_id_nor_external_id")
+        assert "id_field: not_id_nor_external_id must be 'id' or 'external_id'" == str(exc_info.value)
 
     def test_retrieve(self, mock_retrieve):
         model = EMAPI.retrieve(id=123)

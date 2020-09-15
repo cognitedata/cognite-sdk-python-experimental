@@ -93,6 +93,7 @@ class EntityMatchingAPI(ContextAPI):
         self,
         match_from: List[Union[Dict, CogniteResource]],
         match_to: List[Union[Dict, CogniteResource]],
+        id_field: str = "id",
         true_matches: List[Tuple[int, int]] = None,
         keys_from_to: List[Tuple[str, str]] = None,
         feature_type: str = None,
@@ -107,6 +108,7 @@ class EntityMatchingAPI(ContextAPI):
         Args:
             match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
             match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
+            id_field (str): use 'id' or 'external_id' as the id field to match resources
             true_matches: Known valid matches given as a list of (id_from,id_to). If omitted, uses an unsupervised model.
             keys_from_to: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
             feature_type (str): feature type that defines the combination of features used, see API docs for details.
@@ -121,12 +123,15 @@ class EntityMatchingAPI(ContextAPI):
             keys_from_to = [{"keyFrom": f, "keyTo": t} for f, t in keys_from_to]
         if true_matches:
             true_matches = list(true_matches)
+        if id_field not in ["id", "external_id"]:
+            raise ValueError(f"id_field: {id_field} must be 'id' or 'external_id'")
 
         response = self._camel_post(
             context_path="/fit",
             json=dict(
                 match_from=EntityMatchingModel.dump_entities(match_from),
                 match_to=EntityMatchingModel.dump_entities(match_to),
+                id_field=id_field,
                 true_matches=true_matches,
                 keys_from_to=keys_from_to,
                 feature_type=feature_type,
