@@ -16,6 +16,8 @@ from cognite.experimental.exceptions import ModelFailedException
 
 
 class ContextualizationJob(CogniteResource):
+    _COMMON_FIELDS = {"status", "jobId", "errorMessage", "requestTimestamp", "startTimestamp", "statusTimestamp"}
+
     def __init__(
         self,
         job_id=None,
@@ -47,7 +49,7 @@ class ContextualizationJob(CogniteResource):
         self.start_timestamp = data.get("startTimestamp")
         self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
         self.error_message = data.get("errorMessage")
-        self._result = {k: v for k, v in data.items() if k not in {"status", "jobId", "errorMessage"}}
+        self._result = {k: v for k, v in data.items() if k not in self._COMMON_FIELDS}
         return self.status
 
     def wait_for_completion(self, interval=1):
@@ -218,3 +220,79 @@ class EntityMatchingModelUpdate(CogniteUpdate):
 class EntityMatchingModelList(CogniteResourceList):
     _RESOURCE = EntityMatchingModel
     _UPDATE = EntityMatchingModelUpdate
+
+
+class EntityMatchingPipeline(CogniteResource):
+    _RESOURCE_PATH = "/context/entitymatching/pipelines"
+    _STATUS_PATH = _RESOURCE_PATH + "/"
+
+    def __init__(
+        self,
+        id: int = None,
+        external_id: str = None,
+        name: str = None,
+        description: str = None,
+        model_id: int = None,
+        match_from: Dict = None,
+        match_to: Dict = None,
+        matches: List = None,
+        rules: List = None,
+        status=None,
+        error_message=None,
+        request_timestamp=None,
+        start_timestamp=None,
+        status_timestamp=None,
+        cognite_client=None,
+    ):
+        """
+        external_id, name, description: standard fields for a resource.
+        model_id: id of the entity matching model to deploy
+        match_from, match_to: descriptions
+        matches: true matches to use in training
+        rules: list of matching rules
+        The other fields should be left empty when creating a pipeline, and return status information on successful creation and retrieval.
+        """
+
+        self.id = id
+        self.external_id = external_id
+        self.name = name
+        self.description = description
+        self.model_id = model_id
+        self.match_from = match_from
+        self.match_to = match_to
+        self.matches = matches
+        self.rules = rules
+
+        self.status = status
+        self.request_timestamp = request_timestamp
+        self.start_timestamp = start_timestamp
+        self.status_timestamp = status_timestamp
+        self.error_message = error_message
+
+        self._cognite_client = cognite_client
+
+    def run(self):
+        self._cognite_client.entity_matching.pipelines.run(id=self.id)
+
+
+class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
+    pass
+
+
+class EntityMatchingPipelineList(CogniteResourceList):
+    _RESOURCE = EntityMatchingPipeline
+    _UPDATE = EntityMatchingPipelineUpdate
+
+
+class EntityMatchingPipelineRun(ContextualizationJob):
+    _COMMON_FIELDS = ContextualizationJob._COMMON_FIELDS & {"pipeline_id"}
+
+    def __init__(self, pipeline_id=None, **kwargs):
+        super().__init__(**kwargs)
+        self.pipeline_id = pipeline_id
+
+
+class EntityMatchingPipelineRunList(CogniteResourceList):
+    _RESOURCE = EntityMatchingPipelineRun
+    _UPDATE = None
+    _ASSERT_CLASSES = False
