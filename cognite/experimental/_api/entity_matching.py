@@ -29,7 +29,7 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
             EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
         return self._camel_get(f"{id}")
 
-    def list(self, id=None, external_id=None):
+    def list(self, id=None, external_id=None) -> EntityMatchingPipelineRunList:
         """List pipeline runs
 
         Args:
@@ -37,7 +37,7 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
             external_id: external id of the pipeline to retrieve runs for.
 
         Returns:
-            ...."""
+            EntityMatchingPipelineRunList: list of pipeline runs"""
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         runs = self._camel_post("/list", json={"id": id, "external_id": external_id}).json()["items"]
         return EntityMatchingPipelineRunList._load(runs)
