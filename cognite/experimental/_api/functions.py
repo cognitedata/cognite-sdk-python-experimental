@@ -127,7 +127,7 @@ class FunctionsAPI(APIClient):
             "owner": owner,
             "fileId": file_id,
             "functionPath": function_path,
-            "resources": {"cpu": str(cpu), "memory": str(memory)},
+            "resources": {"cpu": float(cpu), "memory": float(memory)},
         }
         if external_id:
             function.update({"externalId": external_id})
