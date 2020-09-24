@@ -14,7 +14,10 @@ Changes are grouped as follows
 
 ## [0.23.0] - 2020-09-xx
 ### Added
-- Entity matching pipelines
+- Entity matching pipelines, which allows you to deploy an entity matching model with confirmed matches and rules.
+
+### Changed
+- Entity matching list calls have a limit parameter which defaults to 100.
 
 ## [0.22.3] - 2020-09-15
 ### Changed
