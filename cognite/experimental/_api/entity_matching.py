@@ -17,6 +17,7 @@ from cognite.experimental.data_classes import (
 
 class EntityMatchingPipelineRunsAPI(ContextAPI):
     _RESOURCE_PATH = EntityMatchingPipeline._RESOURCE_PATH + "/run"
+    _LIST_CLASS = EntityMatchingPipelineRunList
 
     def retrieve(self, id: int) -> EntityMatchingPipelineRun:
         """Run pipeline
@@ -27,20 +28,19 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
-        return self._camel_get(f"{id}")
+        return self._retrieve(id=id)
 
-    def list(self, id=None, external_id=None) -> EntityMatchingPipelineRunList:
+    def list(self, id=None, external_id=None, limit=100) -> EntityMatchingPipelineRunList:
         """List pipeline runs
 
         Args:
             id: id of the pipeline to retrieve runs for.
             external_id: external id of the pipeline to retrieve runs for.
+            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingPipelineRunList: list of pipeline runs"""
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
-        runs = self._camel_post("/list", json={"id": id, "external_id": external_id}).json()["items"]
-        return EntityMatchingPipelineRunList._load(runs)
+        return self._list(method="POST", limit=limit)
 
 
 class EntityMatchingPipelinesAPI(ContextAPI):
@@ -88,13 +88,14 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
-    def list(self) -> EntityMatchingPipelineList:
+    def list(self, limit=100) -> EntityMatchingPipelineList:
         """List pipelines
+        Args:
+            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingModelList: List of pipelines."""
-        pipelines = self._camel_post("/list").json()["items"]
-        return EntityMatchingPipelineList._load(pipelines)
+        return self._list(method="POST", limit=limit)
 
     def run(self, id: int = None, external_id: str = None) -> ContextualizationJob:
         """Run pipeline
@@ -157,19 +158,17 @@ class EntityMatchingAPI(ContextAPI):
         """
         return self._update_multiple(items=item)
 
-    def list(self, filter: Dict = None) -> EntityMatchingModelList:
+    def list(self, filter: Dict = None, limit=100) -> EntityMatchingModelList:
         """List models
 
         Args:
             filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
+            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingModelList: List of models."""
         filter = {utils._auxiliary.to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
-        models = self._camel_post("/list", json={"filter": filter}).json()["items"]
-        return EntityMatchingModelList(
-            [self._LIST_CLASS._RESOURCE._load(model, cognite_client=self._cognite_client) for model in models]
-        )
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def list_jobs(self) -> EntityMatchingModelList:
         """List jobs
@@ -229,7 +228,7 @@ class EntityMatchingAPI(ContextAPI):
             raise ValueError(f"id_field: {id_field} must be 'id' or 'external_id'")
 
         response = self._camel_post(
-            context_path="/fit",
+            context_path="/",
             json=dict(
                 match_from=EntityMatchingModel.dump_entities(match_from),
                 match_to=EntityMatchingModel.dump_entities(match_to),
