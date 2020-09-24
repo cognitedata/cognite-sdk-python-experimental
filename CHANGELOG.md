@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.22.4] - 2020-09-24
+### Added
+- Arguments `cpu` and `memory` to `FunctionsAPI.create()`, making it possible to customize function resources.
+
 ## [0.22.3] - 2020-09-15
 ### Changed
 - `/fit` in entity matcher supports defining which field in matchFrom and matchTo to use as the id field by specifying `id_field`
