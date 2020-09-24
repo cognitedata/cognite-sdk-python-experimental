@@ -1,4 +1,5 @@
 import time
+from numbers import Number
 from typing import Dict, List, Optional, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
@@ -19,8 +20,8 @@ class Function(CogniteResource):
         created_time (int): Created time in UNIX.
         api_key (str): Api key attached to the function.
         secrets (Dict[str, str]): Secrets attached to the function ((key, value) pairs).
-        cpu (float): Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
-        memory (float): Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
+        cpu (Number): Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
+        memory (Number): Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
         error(Dict[str, str]): Dictionary with keys "message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
@@ -38,8 +39,8 @@ class Function(CogniteResource):
         created_time: int = None,
         api_key: str = None,
         secrets: Dict = None,
-        cpu: float = None,
-        memory: float = None,
+        cpu: Number = None,
+        memory: Number = None,
         error: Dict = None,
         cognite_client=None,
     ):
