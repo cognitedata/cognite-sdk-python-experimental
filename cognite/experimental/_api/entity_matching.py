@@ -40,7 +40,8 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipelineRunList: list of pipeline runs"""
-        return self._list(method="POST", limit=limit)
+        runs = self._camel_post("/list", json={"id": id, "externalId": external_id, "limit": limit}).json()["items"]
+        return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
 
 
 class EntityMatchingPipelinesAPI(ContextAPI):
@@ -95,7 +96,8 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
         Returns:
             EntityMatchingModelList: List of pipelines."""
-        return self._list(method="POST", limit=limit)
+        pipelines = self._camel_post("/list", json={"limit": limit}).json()["items"]
+        return EntityMatchingPipelineList._load(pipelines, cognite_client=self._cognite_client)
 
     def run(self, id: int = None, external_id: str = None) -> ContextualizationJob:
         """Run pipeline
@@ -168,7 +170,10 @@ class EntityMatchingAPI(ContextAPI):
         Returns:
             EntityMatchingModelList: List of models."""
         filter = {utils._auxiliary.to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
-        return self._list(method="POST", limit=limit, filter=filter)
+        models = self._camel_post("/list", json={"filter": filter}).json()["items"]
+        return EntityMatchingModelList(
+            [self._LIST_CLASS._RESOURCE._load(model, cognite_client=self._cognite_client) for model in models]
+        )
 
     def list_jobs(self) -> EntityMatchingModelList:
         """List jobs
