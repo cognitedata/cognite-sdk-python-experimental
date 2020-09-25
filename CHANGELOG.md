@@ -18,6 +18,7 @@ Changes are grouped as follows
 
 ### Changed
 - Entity matching list calls have a limit parameter which defaults to 100.
+- ContextualizationJobs now have timestamp fields consistently as members, and no longer return them in result.
 
 ## [0.22.3] - 2020-09-15
 ### Changed

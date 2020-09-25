@@ -15,9 +15,7 @@ class TestPNIDParsingIntegration:
         job = PNIDAPI.detect(file_id=file_id, entities=entities)
         assert isinstance(job, ContextualizationJob)
         assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
-        assert {"items", "requestTimestamp", "startTimestamp", "statusTimestamp", "fileId", "fileExternalId"} == set(
-            job.result.keys()
-        )
+        assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
 
     def test_run_detect_entities_dict(self):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
@@ -25,9 +23,7 @@ class TestPNIDParsingIntegration:
         job = PNIDAPI.detect(file_id=file_id, entities=entities)
         assert isinstance(job, ContextualizationJob)
         assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
-        assert {"items", "requestTimestamp", "startTimestamp", "statusTimestamp", "fileId", "fileExternalId"} == set(
-            job.result.keys()
-        )
+        assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
 
     def test_run_convert(self):
         items = [
@@ -44,13 +40,5 @@ class TestPNIDParsingIntegration:
         file_id = PNID_FILE_ID
         job = PNIDAPI.convert(file_id=file_id, items=items, grayscale=True)
         assert isinstance(job, ContextualizationJob)
-        assert {
-            "pngUrl",
-            "requestTimestamp",
-            "startTimestamp",
-            "statusTimestamp",
-            "svgUrl",
-            "fileId",
-            "fileExternalId",
-        } == set(job.result.keys())
+        assert {"pngUrl", "svgUrl", "fileId", "fileExternalId",} == set(job.result.keys())
         assert "Completed" == job.status
