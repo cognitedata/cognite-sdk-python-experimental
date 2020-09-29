@@ -1,1 +1,2 @@
 from cognite.experimental._client import CogniteClient
+from cognite.experimental._relationships_query import RelationshipsQuery

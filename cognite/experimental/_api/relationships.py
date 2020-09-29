@@ -3,6 +3,13 @@ from typing import Any, Dict, Generator, List, Optional, Set, Union
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes.labels import LabelFilter
+from cognite.experimental._relationships_query import (
+    RelationshipsQuery,
+    RelationshipWithResource,
+    Resource,
+    ResourceFilter,
+)
 from cognite.experimental.data_classes import Relationship, RelationshipFilter, RelationshipList
 
 
@@ -351,3 +358,81 @@ class RelationshipsAPI(APIClient):
                 >>> c.relationships.delete(external_id=["a","b"])
         """
         self._delete_multiple(external_ids=external_id, wrap_ids=True)
+
+        def query(
+            self,
+            sources: List[Resource] = None,
+            source_types: List[str] = None,
+            sources_filter: ResourceFilter = None,
+            targets: List[Resource] = None,
+            targets_types: List[str] = None,
+            targets_filter: ResourceFilter = None,
+            data_set_ids: List[Dict[str, Any]] = None,
+            labels: LabelFilter = None,
+            limit: int = None,
+        ) -> Generator[RelationshipWithResource, None, None]:
+            """Query relationships and resolve referenced resources in one go.
+
+            Args:
+                sources (List[Resource]): Return only the relationships matching one of these resources as the source of a relationship
+                source_types (List[str]): Include relationships that have any of these values in their source Type field
+                sources_filter: ResourceFilter: Filter source resources by their label
+                targets (List[Resource]): Return only the relationships matching one of these resources as the target of a relationship
+                target_types (List[str]): Include relationships that have any of these values in their target Type field
+                targets_filter: ResourceFilter: Filter target resources by their label
+                data_set_ids (List[Dict[str, Any]]): Either one of internalId (int) or externalId (str)
+                labels (LabelFilter): Return only the resource matching the specified label constraint
+                limit (int): Maximum number of relationships to return. Defaults to 100. Set to -1, float("inf") or None
+                    to return all items.
+
+            Returns:
+                Generator[RelationshipWithResource, None, None]: Generator of requested relationships where each relationship also has 'source_resource' and 'target_resource'.
+
+            Examples:
+
+                List relationships::
+
+                    >>> from cognite.client.beta import CogniteClient
+                    >>> from cognite.experimental import RelationshipsQuery
+                    >>> c = CogniteClient()
+                    >>> rel_query = RelationshipsQuery(c)
+                    >>> rel_query.query()
+
+                Filter relationships by target node label::
+
+                    >>> from cognite.client.beta import CogniteClient
+                    >>> from cognite.experimental import RelationshipsQuery
+                    >>> c = CogniteClient()
+                    >>> rel_query = RelationshipsQuery(c)
+                    >>> rel_query.query(targets_filter=ResourceFilter(labels = ["Pump", "Valve"]))
+
+                Filter relationships by sources::
+
+                    >>> from cognite.client.beta import CogniteClient
+                    >>> from cognite.experimental import RelationshipsQuery
+                    >>> c = CogniteClient()
+                    >>> rel_query = RelationshipsQuery(c)
+                    >>> sources = c.assets.list()
+                    >>> rel_query.query(sources=sources)
+
+                Use result of a query::
+
+                    >>> from cognite.client.beta import CogniteClient
+                    >>> from cognite.experimental import RelationshipsQuery
+                    >>> c = CogniteClient()
+                    >>> rel_query = RelationshipsQuery(c)
+                    >>> result = rel_query.query()
+                    >>> for res in result:
+                    >>>     print(res.source_resource.name, res.target_resource.name)
+            """
+            RelationshipsQuery(self._cognite_client).query(
+                sources=sources,
+                source_types=source_types,
+                sources_filter=sources_filter,
+                targets=targets,
+                targets_types=targets_types,
+                targets_filter=targets_filter,
+                data_set_ids=data_set_ids,
+                labels=labels,
+                limit=limit,
+            )

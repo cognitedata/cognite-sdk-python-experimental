@@ -4,7 +4,7 @@ from typing import Callable, Dict, Optional, Union
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
 from cognite.client._api_client import APIClient
-from cognite.client._cognite_client import CogniteClient as Client
+from cognite.client.beta import CogniteClient as Client
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_extraction import EntityExtractionAPI
