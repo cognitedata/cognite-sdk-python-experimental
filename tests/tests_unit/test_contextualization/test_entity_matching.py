@@ -16,7 +16,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 def mock_fit(rsps):
     response_body = {"id": 123, "status": "Queued", "requestTimestamp": 42}
     rsps.add(
-        rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/fit", status=200, json=response_body,
+        rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/", status=200, json=response_body,
     )
     yield rsps
 
@@ -109,7 +109,7 @@ class TestEntityMatching:
         n_fit_calls = 0
         n_status_calls = 0
         for call in mock_fit.calls:
-            if "fit" in call.request.url:
+            if call.request.method == "POST":
                 n_fit_calls += 1
                 assert {
                     "matchFrom": entities_from,
