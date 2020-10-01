@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.24.0] - 2020-10-01
+### Changed
+- Inherit from the `beta` client
+- Old relationships moved to
+
 ## [0.23.1] - 2020-10-01
 ### Added
 - Arguments `cpu` and `memory` to `FunctionsAPI.create()`, making it possible to customize function resources.

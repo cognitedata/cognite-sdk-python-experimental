@@ -4,7 +4,7 @@ from typing import Callable, Dict, Optional, Union
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
 from cognite.client._api_client import APIClient
-from cognite.client._cognite_client import CogniteClient as Client
+from cognite.client.beta import CogniteClient as Client
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_extraction import EntityExtractionAPI
@@ -26,7 +26,6 @@ class ExperimentalFilesApi(FilesAPI):
 
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
-    "/timeseries/synthetic/query",
     "/files/unstructured/search",
     "/files/unstructured/downloadlink/parsed",
 }
@@ -87,11 +86,13 @@ class CogniteClient(Client):
             disable_pypi_version_check,
             debug,
         )
-        self.relationships = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)
+        # OLD relationships - planned to be removed soon
+        self.relationships_playground = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)
+        # NEW assets features - e.g. types
+        self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
+
         self.files = ExperimentalFilesApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
-
-        self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
