@@ -8,12 +8,117 @@ from cognite.experimental.data_classes import (
     EntityMatchingModel,
     EntityMatchingModelList,
     EntityMatchingModelUpdate,
+    EntityMatchingPipeline,
+    EntityMatchingPipelineList,
+    EntityMatchingPipelineRun,
+    EntityMatchingPipelineRunList,
 )
+
+
+class EntityMatchingPipelineRunsAPI(ContextAPI):
+    _RESOURCE_PATH = EntityMatchingPipeline._RESOURCE_PATH + "/run"
+    _LIST_CLASS = EntityMatchingPipelineRunList
+
+    def retrieve(self, id: int) -> EntityMatchingPipelineRun:
+        """Run pipeline
+
+        Args:
+            id: id of the pipeline to run.
+            external_id: external id of the pipeline to run.
+
+        Returns:
+            EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
+        return self._retrieve(id=id)
+
+    def list(self, id=None, external_id=None, limit=100) -> EntityMatchingPipelineRunList:
+        """List pipeline runs
+
+        Args:
+            id: id of the pipeline to retrieve runs for.
+            external_id: external id of the pipeline to retrieve runs for.
+            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+
+        Returns:
+            EntityMatchingPipelineRunList: list of pipeline runs"""
+        runs = self._camel_post("/list", json={"id": id, "externalId": external_id, "limit": limit}).json()["items"]
+        return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
+
+
+class EntityMatchingPipelinesAPI(ContextAPI):
+    _RESOURCE_PATH = EntityMatchingPipeline._RESOURCE_PATH
+    _LIST_CLASS = EntityMatchingPipelineList
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.runs = EntityMatchingPipelineRunsAPI(*args, **kwargs)
+
+    def create(self, pipeline: EntityMatchingPipeline) -> EntityMatchingPipeline:
+        """Create an Entity Matching Pipeline.
+        Args:
+            pipeline (EntityMatchingPipeline): pipeline to create.
+
+        Returns:
+            EntityMatchingPipeline: created pipeline."""
+        result = self._camel_post("", json=pipeline.dump()).json()
+        return EntityMatchingPipeline._load(result)
+
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingPipeline]:
+        """Retrieve pipeline
+
+            Args:
+                id: id of the pipeline to retrieve.
+                external_id: external id of the pipeline to retrieve.
+
+            Returns:
+                EntityMatchingPipeline: Model requested."""
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def retrieve_multiple(
+        self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
+    ) -> EntityMatchingPipelineList:
+        """Retrieve models
+
+        Args:
+            ids: ids of the pipelines retrieve.
+            external_ids: external ids of the pipelines to retrieve.
+
+        Returns:
+            EntityMatchingModelList: Models requested."""
+        utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
+        utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
+        return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+
+    def list(self, limit=100) -> EntityMatchingPipelineList:
+        """List pipelines
+        Args:
+            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+
+        Returns:
+            EntityMatchingModelList: List of pipelines."""
+        pipelines = self._camel_post("/list", json={"limit": limit}).json()["items"]
+        return EntityMatchingPipelineList._load(pipelines, cognite_client=self._cognite_client)
+
+    def run(self, id: int = None, external_id: str = None) -> ContextualizationJob:
+        """Run pipeline
+
+        Args:
+            id: id of the pipeline to run.
+            external_id: external id of the pipeline to run.
+
+        Returns:
+            ContextualizationJob: object which can be used to wait for and retrieve results."""
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        return self._run_job(job_path="/run", id=id, external_id=external_id)
 
 
 class EntityMatchingAPI(ContextAPI):
     _RESOURCE_PATH = EntityMatchingModel._RESOURCE_PATH
     _LIST_CLASS = EntityMatchingModelList
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.pipelines = EntityMatchingPipelinesAPI(*args, **kwargs)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingModel]:
         """Retrieve model
@@ -55,11 +160,12 @@ class EntityMatchingAPI(ContextAPI):
         """
         return self._update_multiple(items=item)
 
-    def list(self, filter: Dict = None) -> EntityMatchingModelList:
+    def list(self, filter: Dict = None, limit=100) -> EntityMatchingModelList:
         """List models
 
         Args:
             filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
+            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingModelList: List of models."""
@@ -127,7 +233,7 @@ class EntityMatchingAPI(ContextAPI):
             raise ValueError(f"id_field: {id_field} must be 'id' or 'external_id'")
 
         response = self._camel_post(
-            context_path="/fit",
+            context_path="/",
             json=dict(
                 match_from=EntityMatchingModel.dump_entities(match_from),
                 match_to=EntityMatchingModel.dump_entities(match_to),

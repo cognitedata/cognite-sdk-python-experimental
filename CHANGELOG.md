@@ -12,9 +12,17 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.22.4] - 2020-09-24
+## [0.23.1] - 2020-10-01
 ### Added
 - Arguments `cpu` and `memory` to `FunctionsAPI.create()`, making it possible to customize function resources.
+
+## [0.23.0] - 2020-09-xx
+### Added
+- Entity matching pipelines, which allows you to deploy an entity matching model with confirmed matches and rules.
+
+### Changed
+- Entity matching list calls have a limit parameter which defaults to 100.
+- ContextualizationJobs now have timestamp fields consistently as members, and no longer return them in result.
 
 ## [0.22.3] - 2020-09-15
 ### Changed

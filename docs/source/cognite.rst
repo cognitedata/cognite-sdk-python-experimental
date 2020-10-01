@@ -14,7 +14,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.relationships: `Relationships`_
 * client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
 * client.entity_extraction: `Extract Entities from Files`_
-* client.pnid_parsing: `Parse PNID`_
+* client.pnid_parsing: `Detect entities in a PNID`_
 * client.functions: `Functions`_
 * client.files: includes extensions described in `Unstructured Search`_
 
@@ -326,9 +326,24 @@ Fit Entity Matching Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
 
+
 Re-fit Entity Matching Model
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.refit
+
+Retrieve Entity Matching Models
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.retrieve
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.retrieve_multiple
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.list
+
+Delete Entity Matching Models
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.delete
+
+Update Entity Matching Models
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.update
 
 Predict Using an Entity Matching Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -337,6 +352,26 @@ Predict Using an Entity Matching Model
 Create Entity Matching Rules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
+
+Create Entity Matching Pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.create
+
+Retrieve Entity Matching Pipelines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.retrieve
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.retrieve_multiple
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.list
+
+Run Entity Matching Pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.run
+
+Retrieve Entity Matching Pipelines Run
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.retrieve
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.list
+
 
 Detect entities in a PNID
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -347,7 +382,7 @@ Extract tags from P&ID based on pattern
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.extract_pattern
 
 Convert a P&ID to an interactive SVG where the provided annotations are highlighted
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.convert
 
 Extract Entities from Files
