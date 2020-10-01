@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.23.1] - 2020-10-01
+### Added
+- Arguments `cpu` and `memory` to `FunctionsAPI.create()`, making it possible to customize function resources.
+
 ## [0.23.0] - 2020-09-xx
 ### Added
 - Entity matching pipelines, which allows you to deploy an entity matching model with confirmed matches and rules.

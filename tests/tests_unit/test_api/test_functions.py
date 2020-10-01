@@ -38,6 +38,8 @@ EXAMPLE_FUNCTION = {
     "createdTime": 1585662507939,
     "apiKey": "***",
     "secrets": {"key1": "***", "key2": "***"},
+    "cpu": 0.25,
+    "memory": 1,
 }
 
 CALL_RUNNING = {
@@ -278,6 +280,28 @@ class TestFunctionsAPI:
     def test_create_with_path_and_file_id_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
             FUNCTIONS_API.create(name="myfunction", folder="some/folder", file_id=1234, function_path="handler.py")
+
+    def test_create_with_cpu_and_memory(self, mock_functions_create_response):
+        res = FUNCTIONS_API.create(name="myfunction", file_id=1234, cpu=0.2, memory=1)
+
+        assert isinstance(res, Function)
+        assert mock_functions_create_response.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_create_with_cpu_none_raises(self, mock_functions_create_response):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", file_id=1234, cpu=None)
+
+    def test_create_with_cpu_not_float_raises(self, mock_functions_create_response):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", file_id=1234, cpu="0.2")
+
+    def test_create_with_memory_none_raises(self, mock_functions_create_response):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", file_id=1234, memory=None)
+
+    def test_create_with_memory_not_float_raises(self, mock_functions_create_response):
+        with pytest.raises(TypeError):
+            FUNCTIONS_API.create(name="myfunction", file_id=1234, memory="0.5")
 
     def test_delete_single_id(self, mock_functions_delete_response):
         res = FUNCTIONS_API.delete(id=1)
