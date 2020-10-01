@@ -13,7 +13,7 @@ from cognite.experimental.data_classes import Asset, Relationship, RelationshipL
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
-REL_API = COGNITE_CLIENT.relationships
+REL_API = COGNITE_CLIENT.relationships_playground
 
 
 @pytest.fixture

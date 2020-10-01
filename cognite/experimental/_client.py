@@ -7,7 +7,6 @@ from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
-from cognite.experimental._api.entity_extraction import EntityExtractionAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
@@ -97,7 +96,6 @@ class CogniteClient(Client):
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
-        self.entity_extraction = EntityExtractionAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.schemas = SchemaCompletionAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
