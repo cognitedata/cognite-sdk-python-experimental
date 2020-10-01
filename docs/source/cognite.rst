@@ -341,13 +341,10 @@ Delete Entity Matching Models
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.delete
 
-<<<<<<< HEAD
-=======
 Update Entity Matching Models
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.update
 
->>>>>>> 38675f9af2d4c597091f212afa6aa2eb85b71aa2
 Predict Using an Entity Matching Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.predict
