@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from inspect import getsource
+from numbers import Number
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, Dict, List, Optional, Union
@@ -46,6 +47,8 @@ class FunctionsAPI(APIClient):
         owner: Optional[str] = "",
         api_key: Optional[str] = None,
         secrets: Optional[Dict] = None,
+        cpu: Number = 0.25,
+        memory: Number = 1.0,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -69,6 +72,8 @@ class FunctionsAPI(APIClient):
             owner (str, optional):                  Owner of this function. Typically used to know who created it.
             api_key (str, optional):                API key that can be used inside the function to access data in CDF.
             secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
+            cpu (Number):                           Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
+            memory (Number):                        Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
 
         Returns:
             Function: The created function.
@@ -101,6 +106,8 @@ class FunctionsAPI(APIClient):
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
+        utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=False)
+        utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=False)
 
         sleep_time = 1.0  # seconds
         for i in range(MAX_RETRIES):
@@ -120,6 +127,8 @@ class FunctionsAPI(APIClient):
             "owner": owner,
             "fileId": file_id,
             "functionPath": function_path,
+            "cpu": float(cpu),
+            "memory": float(memory),
         }
         if external_id:
             function.update({"externalId": external_id})
