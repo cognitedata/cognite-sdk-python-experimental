@@ -15,7 +15,7 @@ Changes are grouped as follows
 ## [0.24.0] - 2020-10-01
 ### Changed
 - Inherit from the `beta` client
-- Old relationships moved to
+- Old relationships moved to `.relationships_playground`, as beta client contains the new version.
 
 ## [0.23.1] - 2020-10-01
 ### Added
