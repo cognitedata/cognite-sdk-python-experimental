@@ -16,6 +16,7 @@ Changes are grouped as follows
 ### Changed
 - Inherit from the `beta` client
 - Old relationships moved to `.relationships_playground`, as beta client contains the new version.
+- Entity extraction removed as the API no longer exists.
 
 ## [0.23.1] - 2020-10-01
 ### Added
