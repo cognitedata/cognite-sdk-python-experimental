@@ -245,12 +245,13 @@ class EntityMatchingPipeline(CogniteResource):
         cognite_client=None,
     ):
         """
-        external_id, name, description: standard fields for a resource.
-        model_id: id of the entity matching model to deploy
-        match_from, match_to: descriptions
-        matches: true matches to use in training
-        rules: list of matching rules
-        The other fields should be left empty when creating a pipeline, and return status information on successful creation and retrieval.
+        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
+        Args:
+            external_id, name, description: standard fields for a resource.
+            model_id: id of the entity matching model to deploy
+            match_from, match_to: descriptions
+            matches: true matches to use in training
+            rules: list of matching rules
         """
 
         self.id = id

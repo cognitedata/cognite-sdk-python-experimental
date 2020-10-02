@@ -20,11 +20,10 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
     _LIST_CLASS = EntityMatchingPipelineRunList
 
     def retrieve(self, id: int) -> EntityMatchingPipelineRun:
-        """Run pipeline
+        """Retrieve pipeline run
 
         Args:
-            id: id of the pipeline to run.
-            external_id: external id of the pipeline to run.
+            id: id of the pipeline run to retrieve.
 
         Returns:
             EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
