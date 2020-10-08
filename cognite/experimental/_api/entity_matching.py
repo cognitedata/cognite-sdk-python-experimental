@@ -12,6 +12,7 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineList,
     EntityMatchingPipelineRun,
     EntityMatchingPipelineRunList,
+    convert_true_match,
 )
 
 
@@ -198,12 +199,11 @@ class EntityMatchingAPI(ContextAPI):
         self,
         match_from: List[Union[Dict, CogniteResource]],
         match_to: List[Union[Dict, CogniteResource]],
-        id_field: str = "id",
-        true_matches: List[Tuple[int, int]] = None,
-        keys_from_to: List[Tuple[str, str]] = None,
+        true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]] = None,
+        match_fields: List[Tuple[str, str]] = None,
         feature_type: str = None,
         classifier: str = None,
-        complete_missing: bool = False,
+        ignore_missing_fields: bool = False,
         name: str = None,
         description: str = None,
         external_id: str = None,
@@ -214,34 +214,33 @@ class EntityMatchingAPI(ContextAPI):
             match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
             match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
             id_field (str): use 'id' or 'external_id' as the id field to match resources
-            true_matches: Known valid matches given as a list of (id_from,id_to). If omitted, uses an unsupervised model.
-            keys_from_to: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
+            true_matches: Known valid matches given as a list of dicts with keys 'fromId', 'fromExternalId', 'toId', 'toExternalId'). If omitted, uses an unsupervised model.
+             A tuple can be used instead of the dictionary for convenience, interpreted as id/externalId based on type.
+            match_fields: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
             feature_type (str): feature type that defines the combination of features used, see API docs for details.
             classifier (str): classifier used in training. Currently undocumented in API.
-            complete_missing (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API.
+            ignore_missing_fields (bool): whether missing data in keyFrom or keyTo should return error or be filled in with an empty string. Currently undocumented in API.
             name (str): Optional user-defined name of model.
             description (str): Optional user-defined description of model.
             external_id (str): Optional external id. Must be unique within the project.
         Returns:
             EntityMatchingModel: Resulting queued model."""
-        if keys_from_to:
-            keys_from_to = [{"keyFrom": f, "keyTo": t} for f, t in keys_from_to]
-        if true_matches:
-            true_matches = list(true_matches)
-        if id_field not in ["id", "external_id"]:
-            raise ValueError(f"id_field: {id_field} must be 'id' or 'external_id'")
 
+        if match_fields:
+            match_fields = [ft if isinstance(ft, dict) else {"from": ft[0], "to": ft[1]} for ft in match_fields]
+        if true_matches:
+            true_matches = [convert_true_match(true_match) for true_match in true_matches]
+        print("STUFF")
         response = self._camel_post(
             context_path="/",
             json=dict(
                 match_from=EntityMatchingModel.dump_entities(match_from),
                 match_to=EntityMatchingModel.dump_entities(match_to),
-                id_field=id_field,
                 true_matches=true_matches,
-                keys_from_to=keys_from_to,
+                match_fields=match_fields,
                 feature_type=feature_type,
                 classifier=classifier,
-                complete_missing=complete_missing,
+                ignore_missing_fields=ignore_missing_fields,
                 name=name,
                 description=description,
                 external_id=external_id,
@@ -265,7 +264,7 @@ class EntityMatchingAPI(ContextAPI):
             match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
             num_matches (int): number of matches to return for each item.
             score_threshold (float): only return matches with a score above this threshold
-            complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
+            ignore_missing_fields (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
             id: ids of the model to use.
             external_id: external ids of the model to use.
         Returns:
@@ -280,12 +279,16 @@ class EntityMatchingAPI(ContextAPI):
         )
 
     def refit(
-        self, true_matches: List[Tuple[int, int]], id: Optional[int] = None, external_id: Optional[str] = None
+        self,
+        true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]],
+        id: Optional[int] = None,
+        external_id: Optional[str] = None,
     ) -> "EntityMatchingModel":
         """Re-fits an entity matching model, using the combination of the old and new true matches.
 
         Args:
-            true_matches: Updated known valid matches given as a list of (id_from,id_to).
+            true_matches: Updated known valid matches given as a list of dicts with keys 'fromId', 'fromExternalId', 'toId', 'toExternalId').
+                 A tuple can be used instead of the dictionary for convenience, interpreted as id/externalId based on type.
             id: ids of the model to use.
             external_id: external ids of the model to use.
         Returns:

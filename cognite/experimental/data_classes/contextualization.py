@@ -15,6 +15,19 @@ from cognite.client.utils._auxiliary import to_camel_case
 from cognite.experimental.exceptions import ModelFailedException
 
 
+def convert_true_match(true_match):
+    if not isinstance(true_match, dict) and len(true_match) == 2:
+        converted_true_match = {}
+        for i, fromto in enumerate(["from", "to"]):
+            if isinstance(true_match[i], str):
+                converted_true_match[fromto + "ExternalId"] = true_match[i]
+            else:
+                converted_true_match[fromto + "Id"] = true_match[i]
+        return converted_true_match
+    else:
+        return true_match
+
+
 class ContextualizationJob(CogniteResource):
     _COMMON_FIELDS = {"status", "jobId", "errorMessage", "requestTimestamp", "startTimestamp", "statusTimestamp"}
 
@@ -99,7 +112,7 @@ class EntityMatchingModel(CogniteResource):
         cognite_client=None,
         classifier=None,
         feature_type=None,
-        keys_from_to=None,
+        match_fields=None,
         model_type=None,
         name=None,
         description=None,
@@ -113,7 +126,7 @@ class EntityMatchingModel(CogniteResource):
         self.error_message = error_message
         self.classifier = classifier
         self.feature_type = feature_type
-        self.keys_from_to = keys_from_to
+        self.match_fields = match_fields
         self.model_type = model_type
         self.name = name
         self.description = description
@@ -157,7 +170,7 @@ class EntityMatchingModel(CogniteResource):
             match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
             num_matches (int): number of matches to return for each item.
             score_threshold (float): only return matches with a score above this threshold
-            complete_missing (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
+            ignore_missing_fields (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
 
         Returns:
             ContextualizationJob: object which can be used to wait for and retrieve results."""
@@ -172,13 +185,15 @@ class EntityMatchingModel(CogniteResource):
             score_threshold=score_threshold,
         )
 
-    def refit(self, true_matches: List[Tuple[int, int]]) -> "EntityMatchingModel":
+    def refit(self, true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]]) -> "EntityMatchingModel":
         """Re-fits an entity matching model, using the combination of the old and new true matches.
 
         Args:
-            true_matches: Updated known valid matches given as a list of (id_from,id_to).
+            true_matches: Updated known valid matches given as a list of dicts with keys 'fromId', 'fromExternalId', 'toId', 'toExternalId').
+                 A tuple can be used instead of the dictionary for convenience, interpreted as id/externalId based on type.
         Returns:
             EntityMatchingModel: new model refitted to true_matches."""
+        true_matches = [convert_true_match(true_match) for true_match in true_matches]
         self.wait_for_completion()
         response = self._cognite_client.entity_matching._camel_post(
             f"/refit", json={"trueMatches": true_matches, "id": self.id}

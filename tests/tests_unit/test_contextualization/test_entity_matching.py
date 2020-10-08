@@ -114,10 +114,9 @@ class TestEntityMatching:
                 assert {
                     "matchFrom": entities_from,
                     "matchTo": entities_to,
-                    "idField": "id",
-                    "trueMatches": [[1, 2]],
+                    "trueMatches": [{"fromId": 1, "toId": 2}],
                     "featureType": "bigram",
-                    "completeMissing": False,
+                    "ignoreMissingFields": False,
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
@@ -139,15 +138,14 @@ class TestEntityMatching:
 
     def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
-        entities_to = [Asset(id=1, name="x")]
-        EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="bigram")
+        entities_to = [Asset(id=1, external_id="abc", name="x")]
+        EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, "abc")], feature_type="bigram")
         assert {
-            "matchFrom": [entities_from[0].dump()],
-            "matchTo": [entities_to[0].dump()],
-            "idField": "id",
-            "trueMatches": [[1, 2]],
+            "matchFrom": [entities_from[0].dump(camel_case=True)],
+            "matchTo": [entities_to[0].dump(camel_case=True)],
+            "trueMatches": [{"fromId": 1, "toExternalId": "abc"}],
             "featureType": "bigram",
-            "completeMissing": False,
+            "ignoreMissingFields": False,
         } == jsgz_load(mock_fit.calls[0].request.body)
 
     def test_fit_fails(self, mock_fit, mock_status_failed):
@@ -160,13 +158,6 @@ class TestEntityMatching:
         assert 123 == exc_info.value.id
         assert "error message" == exc_info.value.error_message
         assert "EntityMatchingModel 123 failed with error 'error message'" == str(exc_info.value)
-
-    def test_fit_id_field_fails(self):
-        entities_from = [{"id": 1, "name": "xx"}]
-        entities_to = [{"id": 2, "name": "yy"}]
-        with pytest.raises(ValueError) as exc_info:
-            model = EMAPI.fit(match_from=entities_from, match_to=entities_to, id_field="not_id_nor_external_id")
-        assert "id_field: not_id_nor_external_id must be 'id' or 'external_id'" == str(exc_info.value)
 
     def test_retrieve(self, mock_retrieve):
         model = EMAPI.retrieve(id=123)
