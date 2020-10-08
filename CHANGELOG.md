@@ -106,7 +106,7 @@ Changes are grouped as follows
 
 ## [0.15.1] - 2020-08-10
 ### Added
-- Add model info for entity matcher models (classifier, feature_type, model_to, match_fields) to the output of retrieve.
+- Add model info for entity matcher models (classifier, feature_type, model_to, keys_from_to) to the output of retrieve.
 
 ## [0.15.0] - 2020-08-10
 ### Changed
