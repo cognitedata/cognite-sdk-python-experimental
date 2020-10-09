@@ -23,9 +23,9 @@ def fitted_model():
     model = EMAPI.fit(
         match_from=entities_from,
         match_to=entities_to,
-        true_matches=[(1, 2)],
+        true_matches=[{"fromId": 1, "toId": 2}],
         feature_type="bigram",
-        keys_from_to=[("name", "bloop")],
+        match_fields=[("name", "bloop")],
         external_id=extid,
     )
     yield model
@@ -54,7 +54,7 @@ class TestEntityMatchingIntegration:
         model = EMAPI.retrieve(id=fitted_model.id)
         assert model.classifier == "RandomForest"
         assert model.feature_type == "bigram"
-        assert model.keys_from_to == [["name", "bloop"]]
+        assert model.match_fields == [{"from": "name", "to": "bloop"}]
 
         # Retrieve models
         models = EMAPI.retrieve_multiple(ids=[model.id, model.id])
@@ -80,6 +80,15 @@ class TestEntityMatchingIntegration:
         assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
+    def test_true_match_formats(self):
+        entities_from = [{"id": 1, "name": "xx-yy"}]
+        entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "externalId": "aa", "name": "xx"}]
+        model = EMAPI.fit(
+            match_from=entities_from, match_to=entities_to, true_matches=[{"fromId": 1, "toExternalId": "aa"}, (1, 2)],
+        )
+        assert isinstance(model, EntityMatchingModel)
+        assert "Queued" == model.status
+
     def test_extra_options(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "name": "xx", "missing": "yy"}]
@@ -88,8 +97,8 @@ class TestEntityMatchingIntegration:
             match_to=entities_to,
             true_matches=[(1, 2)],
             feature_type="bigram",
-            keys_from_to=[("name", "missing")],
-            complete_missing=True,
+            match_fields=[("name", "missing")],
+            ignore_missing_fields=True,
             classifier="LogisticRegression",
             name="my_bigram_logReg_model",
             description="My model with bigram features",
@@ -110,9 +119,9 @@ class TestEntityMatchingIntegration:
         models_list = EMAPI.list(filter={"feature_type": "bigram"})
         assert set([model.feature_type for model in models_list]) == {"bigram"}
         # Filter on two parameters
-        models_list = EMAPI.list(filter={"keys_from_to": [["name", "name"]], "feature_type": "bigram"})
+        models_list = EMAPI.list(filter={"feature_type": "bigram"})
+
         assert set([model.feature_type for model in models_list]) == {"bigram"}
-        assert all([model.keys_from_to == [["name", "name"]] for model in models_list])
 
     def test_direct_predict(self, fitted_model):
         job = EMAPI.predict(external_id=fitted_model.external_id)

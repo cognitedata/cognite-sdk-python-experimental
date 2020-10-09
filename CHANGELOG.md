@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.25.0] - 2020-10-08
+### Changed
+- Entity matcher fields renamed, and added a new format for true_matches. complete_missing -> ignore_missing_fields, keys_from_to -> match_fields.
+
 ## [0.24.0] - 2020-10-01
 ### Changed
 - Inherit from the `beta` client
