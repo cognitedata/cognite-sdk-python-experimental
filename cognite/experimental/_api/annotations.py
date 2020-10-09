@@ -46,9 +46,7 @@ class AnnotationsAPI(APIClient):
             ]
 
         response = self._post(self._RESOURCE_PATH + "/list", json={"limit": limit, "filter": filter})
-        list_of_annots = [Annotation._load(item) for item in response.json()["items"]]
-        annots = AnnotationList(list_of_annots, cognite_client=self._cognite_client)
-        return annots
+        return AnnotationList._load(response.json()["items"])
 
     def delete(self, id: Union[int, List[int]]) -> None:
         """Delete annotations
