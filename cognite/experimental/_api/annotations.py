@@ -12,14 +12,13 @@ class AnnotationsAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def create(self, annotations: List[Annotation]) -> List[Annotation]:
-
-        [assert_type(annotation, "annotation", [Annotation]) for annotation in annotations]
+    def create(self, annotations: Union[Annotation, List[Annotation]]) -> Union[Annotation, List[Annotation]]:
+        assert_type(annotations, "annotation", [Annotation, list])
         # response = self._post(
         #     self._RESOURCE_PATH + "/", json={"items": [annotation.dump(camel_case=True) for annotation in annotations]}
         # )
         # return self._response_to_annotations(response)
-        return self._create_multiple(items=annotations)
+        return self._create_multiple(resource_path=self._RESOURCE_PATH+"/",items=annotations)
 
     def list(self, limit: int = None, filter: AnnotationFilter = None):
         assert_type(limit, "limit", [int], allow_none=True)
@@ -37,8 +36,8 @@ class AnnotationsAPI(APIClient):
         response = self._post(self._RESOURCE_PATH + "/list", json={"limit": limit, "filter": filter})
         return self._response_to_annotations(response)
 
-    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
-        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+    def delete(self, id: Union[int, List[int]] = None) -> None:
+        self._delete_multiple(ids=id, wrap_ids=True)
 
     @staticmethod
     def _response_to_annotations(response):
