@@ -230,7 +230,6 @@ class EntityMatchingAPI(ContextAPI):
             match_fields = [ft if isinstance(ft, dict) else {"from": ft[0], "to": ft[1]} for ft in match_fields]
         if true_matches:
             true_matches = [convert_true_match(true_match) for true_match in true_matches]
-        print("STUFF")
         response = self._camel_post(
             context_path="/",
             json=dict(
