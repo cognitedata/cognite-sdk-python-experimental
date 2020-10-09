@@ -12,36 +12,62 @@ class AnnotationsAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def create(self, annotations: Union[Annotation, List[Annotation]]) -> Union[Annotation, List[Annotation]]:
-        assert_type(annotations, "annotation", [Annotation, list])
-        # response = self._post(
-        #     self._RESOURCE_PATH + "/", json={"items": [annotation.dump(camel_case=True) for annotation in annotations]}
-        # )
-        # return self._response_to_annotations(response)
-        return self._create_multiple(resource_path=self._RESOURCE_PATH+"/",items=annotations)
+    def create(self, annotations: Union[Annotation, List[Annotation]]) -> AnnotationList:
+        """Create annotations
 
-    def list(self, limit: int = None, filter: AnnotationFilter = None):
+        Args:
+            annotations (Union[Annotation, List[Annotation]]): annotations to create
+
+        Returns:
+            AnnotationList: created annotations
+        """
+        assert_type(annotations, "annotation", [Annotation, list])
+        return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
+
+    def list(self, limit: int = None, filter: AnnotationFilter = None) -> AnnotationList:
+        """List annotations
+
+        Args:
+            limit (int, optional): Maximum number of annotations to return. Defaults to None.
+            filter (AnnotationFilter, optional): If not None, return annotations with parameter values that matches what is specified. Defaults to None.
+
+        Returns:
+            AnnotationList: list of annotations
+        """
         assert_type(limit, "limit", [int], allow_none=True)
-        assert_type(filter, "filter", [AnnotationFilter], allow_none=True)
-        filter = filter.dump(camel_case=True)
-        print(filter)
+        assert_type(filter, "filter", [AnnotationFilter, dict], allow_none=True)
+
+        if isinstance(filter, AnnotationFilter):
+            filter = filter.dump(camel_case=True)
+
         if filter.get("annotatedResourceIds"):
             filter["annotatedResourceIds"] = [
                 {to_camel_case(k): v for k, v in f.items()} for f in filter["annotatedResourceIds"]
             ]
 
-        if limit is None or limit == -1 or limit > self._LIST_LIMIT:
+        if limit is None or limit == -1:
             limit = self._LIST_LIMIT
 
         response = self._post(self._RESOURCE_PATH + "/list", json={"limit": limit, "filter": filter})
-        return self._response_to_annotations(response)
+        list_of_annots = [Annotation._load(item) for item in response.json()["items"]]
+        annots = AnnotationList(list_of_annots, cognite_client=self._cognite_client)
+        return annots
 
-    def delete(self, id: Union[int, List[int]] = None) -> None:
+    def delete(self, id: Union[int, List[int]]) -> None:
+        """Delete annotations
+
+        Args:
+            id (Union[int, List[int]]): ID or list of IDs to be deleted
+        """
         self._delete_multiple(ids=id, wrap_ids=True)
 
-    @staticmethod
-    def _response_to_annotations(response):
-        items = response.json()["items"]
-        snake_cased_items = [{to_snake_case(k): v for k, v in item.items()} for item in items]
+    def retrieve(self, ids: Union[int, List[int]]) -> AnnotationList:
+        """Retrieve annotations by IDs
 
-        return [Annotation(**item) for item in snake_cased_items]
+        Args:
+            ids (Union[int, List[int]]): ID or list of IDs to be retrieved
+
+        Returns:
+            AnnotationList: list of annotations
+        """
+        return self._retrieve_multiple(ids=ids, wrap_ids=True)
