@@ -29,7 +29,7 @@ true_matches = [(0,0)]
 model = client.entity_matching.fit(match_from = match_from,
                                       match_to = match_to,
                                       true_matches = true_matches,
-                                      keys_from_to = [("name", "name"), ("description", "description")]
+                                      match_fields = [("name", "name"), ("description", "description")]
 )
 ```
 #### Refit model with additional true match pair
@@ -104,7 +104,7 @@ match_to = [
 
 model = client.entity_matching.fit(match_from = match_from,
                                       match_to = match_to,
-                                      keys_from_to = [("name", "name"), ("description", "description")]
+                                      match_fields = [("name", "name"), ("description", "description")]
 )
 ```
 #### Predict on the training data
