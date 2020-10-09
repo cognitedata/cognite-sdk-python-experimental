@@ -24,17 +24,17 @@ class AnnotationsAPI(APIClient):
         assert_type(annotations, "annotation", [Annotation, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
 
-    def list(self, limit: int = None, filter: AnnotationFilter = None) -> AnnotationList:
+    def list(self, limit: int = 100, filter: AnnotationFilter = None) -> AnnotationList:
         """List annotations
 
         Args:
-            limit (int, optional): Maximum number of annotations to return. Defaults to None.
+            limit (int): Maximum number of annotations to return. Defaults to 100.
             filter (AnnotationFilter, optional): If not None, return annotations with parameter values that matches what is specified. Defaults to None.
 
         Returns:
             AnnotationList: list of annotations
         """
-        assert_type(limit, "limit", [int], allow_none=True)
+        assert_type(limit, "limit", [int], allow_none=False)
         assert_type(filter, "filter", [AnnotationFilter, dict], allow_none=True)
 
         if isinstance(filter, AnnotationFilter):
@@ -44,9 +44,6 @@ class AnnotationsAPI(APIClient):
             filter["annotatedResourceIds"] = [
                 {to_camel_case(k): v for k, v in f.items()} for f in filter["annotatedResourceIds"]
             ]
-
-        if limit is None or limit == -1:
-            limit = self._LIST_LIMIT
 
         response = self._post(self._RESOURCE_PATH + "/list", json={"limit": limit, "filter": filter})
         list_of_annots = [Annotation._load(item) for item in response.json()["items"]]
@@ -61,13 +58,26 @@ class AnnotationsAPI(APIClient):
         """
         self._delete_multiple(ids=id, wrap_ids=True)
 
-    def retrieve(self, ids: Union[int, List[int]]) -> AnnotationList:
+    def retrieve_multiple(self, ids: List[int]) -> AnnotationList:
         """Retrieve annotations by IDs
 
         Args:
-            ids (Union[int, List[int]]): ID or list of IDs to be retrieved
+            ids (List[int]]: list of IDs to be retrieved
 
         Returns:
             AnnotationList: list of annotations
         """
+        assert_type(ids, "ids", [List], allow_none=False)
         return self._retrieve_multiple(ids=ids, wrap_ids=True)
+
+    def retrieve(self, id: int) -> Annotation:
+        """Retrieve an annotation by id
+
+        Args:
+            id (int): id of the annotation to be retrieved
+
+        Returns:
+            Annotation: annotation requested
+        """
+        assert_type(id, "id", [int], allow_none=False)
+        return self._retrieve_multiple(ids=id, wrap_ids=True)
