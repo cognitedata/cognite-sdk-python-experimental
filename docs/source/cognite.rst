@@ -12,9 +12,10 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.types: `Types`_
 * client.model_hosting = `Model Hosting`_
 * client.relationships: `Relationships`_
+* client.annotations: `Annotations` _
 * client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
-* client.entity_extraction: `Extract Entities from Files`_
 * client.pnid_parsing: `Detect entities in a PNID`_
+* client.pnid_object_detection: `Detect common objects in a PNID` _
 * client.functions: `Functions`_
 * client.files: includes extensions described in `Unstructured Search`_
 
@@ -104,6 +105,35 @@ Data classes
     :members:
     :show-inheritance:
 
+
+Annotations
+-------------
+
+Retrieve an annotation by id
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.retrieve
+
+Retrieve multiple annotations by id
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.retrieve_multiple
+
+List annotation
+^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.list
+
+Create an annotation
+^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.create
+
+Delete annotations
+^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.delete
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.annotation
+    :members:
+    :show-inheritance:
 
 Types
 -----

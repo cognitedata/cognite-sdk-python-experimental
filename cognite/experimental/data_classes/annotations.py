@@ -42,7 +42,7 @@ class Annotation(CogniteResource):
 
 # GenStop
 
-# GenClass: annotationsAdvancedListRequest.filter
+
 class AnnotationFilter(CogniteFilter):
     def __init__(self, annotation_type: str = None, annotated_resource_ids: list = None):
         self.annotation_type = annotation_type
