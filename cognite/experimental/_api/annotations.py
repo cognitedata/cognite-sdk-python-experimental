@@ -15,17 +15,19 @@ class AnnotationsAPI(APIClient):
     def create(self, annotations: List[Annotation]) -> List[Annotation]:
 
         [assert_type(annotation, "annotation", [Annotation]) for annotation in annotations]
-        response = self._post(
-            self._RESOURCE_PATH + "/", json={"items": [annotation.dump(camel_case=True) for annotation in annotations]}
-        )
-        return self._response_to_annotations(response)
+        # response = self._post(
+        #     self._RESOURCE_PATH + "/", json={"items": [annotation.dump(camel_case=True) for annotation in annotations]}
+        # )
+        # return self._response_to_annotations(response)
+        return self._create_multiple(items=annotations)
 
     def list(self, limit: int = None, filter: AnnotationFilter = None):
         assert_type(limit, "limit", [int], allow_none=True)
         assert_type(filter, "filter", [AnnotationFilter], allow_none=True)
         filter = filter.dump(camel_case=True)
-        if filter.get("annotated_resource_ids"):
-            filter["annotated_resource_ids"] = [
+        print(filter)
+        if filter.get("annotatedResourceIds"):
+            filter["annotatedResourceIds"] = [
                 {to_camel_case(k): v for k, v in f.items()} for f in filter["annotatedResourceIds"]
             ]
 
