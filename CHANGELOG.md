@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.26.1] - 2020-10-13
+### Added
+- FunctionsAPI.create now accepts data_set_id.
+
 ## [0.26.0] - 2020-10-09
 ### Added
 - AnnotationsAPI with create, list, retrieve, retrieve_multiple, delete functionalities
@@ -93,8 +97,8 @@ Changes are grouped as follows
 - Change list-method to list all models instead of jobs.
 - Changed endpoints used for list and list_jobs to comply with updates to the API.
 ### Added
-- Add list_jobs-method that behaves as old list-method, that is returns all jobs. 
-- Option to filter returned models on based on all input parameters. 
+- Add list_jobs-method that behaves as old list-method, that is returns all jobs.
+- Option to filter returned models on based on all input parameters.
 
 ## [0.15.4] - 2020-08-13
 ### Added
@@ -136,7 +140,7 @@ Changes are grouped as follows
 
 ## [0.14.1] - 2020-08-03
 ### Added
-- Added retry to functions POST endpoints. 
+- Added retry to functions POST endpoints.
 
 ## [0.14.0] - 2020-08-03
 ### Changed
@@ -263,8 +267,8 @@ Changes are grouped as follows
 ## [0.5.2] - 2020-04-16
 
 ### Added
-- A `FunctionSchedule` class and corresponding api attached to the `Functions` api to interact with function schedules. 
-Function schedules can now also be listed using the `Function` object through the `list_schedules` method. 
+- A `FunctionSchedule` class and corresponding api attached to the `Functions` api to interact with function schedules.
+Function schedules can now also be listed using the `Function` object through the `list_schedules` method.
 
 ## [0.5.1] - 2020-04-15
 
