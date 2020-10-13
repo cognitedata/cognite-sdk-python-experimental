@@ -1,5 +1,4 @@
 import importlib.util
-import json
 import os
 import sys
 import time
@@ -7,7 +6,7 @@ from inspect import getsource
 from numbers import Number
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
 from cognite.client import utils
@@ -49,6 +48,7 @@ class FunctionsAPI(APIClient):
         secrets: Optional[Dict] = None,
         cpu: Number = 0.25,
         memory: Number = 1.0,
+        data_set_id: Optional[int] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -63,7 +63,7 @@ class FunctionsAPI(APIClient):
 
         Args:
             name (str):                             The name of the function.
-            folder (str, optional):            Path to the folder where the function source code is located.
+            folder (str, optional):                 Path to the folder where the function source code is located.
             file_id (int, optional):                File ID of the code uploaded to the Files API.
             function_path (str, optional):          Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
             function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
@@ -74,6 +74,7 @@ class FunctionsAPI(APIClient):
             secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
             cpu (Number):                           Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
             memory (Number):                        Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
+            data_set_id: Optional[int]:             ID of the data set where the uploaded code is stored (Files API). Only applicable when using the `folder` or `function_handle` argument.
 
         Returns:
             Function: The created function.
@@ -102,10 +103,10 @@ class FunctionsAPI(APIClient):
 
         if folder:
             validate_function_folder(folder, function_path)
-            file_id = self._zip_and_upload_folder(folder, name)
+            file_id = self._zip_and_upload_folder(folder, name, data_set_id=data_set_id)
         elif function_handle:
             _validate_function_handle(function_handle)
-            file_id = self._zip_and_upload_handle(function_handle, name)
+            file_id = self._zip_and_upload_handle(function_handle, name, data_set_id=data_set_id)
         utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=False)
         utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=False)
 
@@ -284,7 +285,7 @@ class FunctionsAPI(APIClient):
 
         return function_call
 
-    def _zip_and_upload_folder(self, folder, name) -> int:
+    def _zip_and_upload_folder(self, folder, name, data_set_id) -> int:
         # / is not allowed in file names
         name = name.replace("/", "-")
 
@@ -301,14 +302,14 @@ class FunctionsAPI(APIClient):
                         zf.write(os.path.join(root, filename))
                 zf.close()
 
-                file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+                file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip", data_set_id=data_set_id)
 
             return file.id
 
         finally:
             os.chdir(current_dir)
 
-    def _zip_and_upload_handle(self, function_handle, name) -> int:
+    def _zip_and_upload_handle(self, function_handle, name, data_set_id) -> int:
         # / is not allowed in file names
         name = name.replace("/", "-")
 
@@ -323,7 +324,7 @@ class FunctionsAPI(APIClient):
             zf.write(handle_path, arcname=HANDLER_FILE_NAME)
             zf.close()
 
-            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip", data_set_id=data_set_id)
 
         return file.id
 
@@ -562,7 +563,7 @@ class FunctionSchedulesAPI(APIClient):
                 >>> schedules = func.list_schedules()
 
         """
-        url = f"/functions/schedules"
+        url = "/functions/schedules"
         res = self._get(url)
         return FunctionSchedulesList._load(res.json()["items"])
 
@@ -612,7 +613,7 @@ class FunctionSchedulesAPI(APIClient):
         if data:
             json["items"][0]["data"] = data
 
-        url = f"/functions/schedules"
+        url = "/functions/schedules"
         res = self._post(url, json=json)
         return FunctionSchedule._load(res.json()["items"][0])
 
@@ -634,6 +635,6 @@ class FunctionSchedulesAPI(APIClient):
                 >>> c.functions.schedules.delete(id = 123)
 
         """
-        json = {"items": [{"id": id,}]}
-        url = f"/functions/schedules/delete"
+        json = {"items": [{"id": id}]}
+        url = "/functions/schedules/delete"
         self._post(url, json=json)
