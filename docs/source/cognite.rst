@@ -131,7 +131,7 @@ Delete annotations
 
 Data classes
 ^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.annotation
+.. automodule:: cognite.experimental.data_classes.annotations
     :members:
     :show-inheritance:
 
@@ -414,10 +414,6 @@ Extract tags from P&ID based on pattern
 Convert a P&ID to an interactive SVG where the provided annotations are highlighted
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.convert
-
-Extract Entities from Files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_extraction.EntityExtractionAPI.extract
 
 Complete a Schema or Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
