@@ -7,7 +7,7 @@ from cognite.experimental.data_classes import ContextualizationJob
 
 
 class PlotDataExtractionAPI(ContextAPI):
-    _RESOURCE_PATH = "/plotextractor"
+    _RESOURCE_PATH = "/context/plotextractor"
 
     def extract(self, image: Union[str, "PIL.Image"], plot_axes: Dict, num_curves=None) -> ContextualizationJob:
         """Completes a schema uploaded in CDF as a type.
