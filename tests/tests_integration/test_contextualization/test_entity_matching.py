@@ -106,7 +106,7 @@ class TestEntityMatchingIntegration:
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
         job = model.predict()
-        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
 
         EMAPI.delete(id=model.id)
 
