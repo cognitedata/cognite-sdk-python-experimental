@@ -104,5 +104,4 @@ class CogniteClient(Client):
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
-
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
