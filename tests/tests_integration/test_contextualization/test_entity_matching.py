@@ -41,18 +41,18 @@ class TestEntityMatchingIntegration:
         assert "Completed" == fitted_model.status
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
         job = fitted_model.predict()
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
         # Retrieve model
         model = EMAPI.retrieve(id=fitted_model.id)
-        assert model.classifier == "RandomForest"
+        assert model.classifier == "randomforest"
         assert model.feature_type == "bigram"
         assert model.match_fields == [{"from": "name", "to": "bloop"}]
 
@@ -77,7 +77,7 @@ class TestEntityMatchingIntegration:
         assert "Queued" == new_model.status
 
         job = new_model.predict(match_from=[{"name": "foo-bar"}], match_to=[{"bloop": "foo-42"}])
-        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
         assert "Completed" == job.status
 
     def test_true_match_formats(self):
@@ -106,7 +106,7 @@ class TestEntityMatchingIntegration:
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
         job = model.predict()
-        assert {"matches", "matchFrom"} == set(job.result["items"][0].keys())
+        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
 
         EMAPI.delete(id=model.id)
 

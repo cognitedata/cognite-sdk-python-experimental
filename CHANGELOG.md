@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.27.0] - 2020-10-20
+### Added
+- Plot Data Extraction API
+
 ## [0.26.0] - 2020-10-09
 ### Added
 - AnnotationsAPI with create, list, retrieve, retrieve_multiple, delete functionalities
