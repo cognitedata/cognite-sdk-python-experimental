@@ -17,8 +17,12 @@ Changes are grouped as follows
 ### Changed
 - Renamed match_from and match_to in entity matcher, as well as timestamp->time in contextualization jobs.
 - Entity matching matches renamed to true_matches
+
 ### Added
 - Entity matching pipelines rejected_matches and score_threshold options
+
+### Fixed
+- Entity matching pipelines now correctly takes model_parameters instead of model_id
 
 ## [0.27.0] - 2020-10-20
 ### Added

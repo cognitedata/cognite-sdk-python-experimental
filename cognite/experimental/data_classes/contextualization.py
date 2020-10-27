@@ -29,7 +29,16 @@ def convert_true_match(true_match):
 
 
 class ContextualizationJob(CogniteResource):
-    _COMMON_FIELDS = {"status", "jobId", "errorMessage", "createdTime", "startTime", "statusTime"}
+    _COMMON_FIELDS = {
+        "status",
+        "jobId",
+        "modelId",
+        "pipelineId",
+        "errorMessage",
+        "createdTime",
+        "startTime",
+        "statusTime",
+    }
 
     def __init__(
         self,
@@ -247,7 +256,7 @@ class EntityMatchingPipeline(CogniteResource):
         external_id: str = None,
         name: str = None,
         description: str = None,
-        model_id: int = None,
+        model_parameters: Dict = None,
         sources: Dict = None,
         targets: Dict = None,
         true_matches: List = None,
@@ -265,9 +274,9 @@ class EntityMatchingPipeline(CogniteResource):
         The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
         Args:
             external_id, name, description: standard fields for a resource.
-            model_id: id of the entity matching model to deploy
-            sources, targets: descriptions
-            matches: true matches to use in training
+            model_parameters: TODO: doc
+            sources, targets: TODO: doc
+            true_matches: true matches to use in training and overriding any other results
             rules: list of matching rules
         """
 
@@ -275,7 +284,7 @@ class EntityMatchingPipeline(CogniteResource):
         self.external_id = external_id
         self.name = name
         self.description = description
-        self.model_id = model_id
+        self.model_parameters = model_parameters
         self.sources = sources
         self.targets = targets
         self.true_matches = true_matches
