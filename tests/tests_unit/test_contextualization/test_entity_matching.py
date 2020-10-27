@@ -14,7 +14,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 @pytest.fixture
 def mock_fit(rsps):
-    response_body = {"id": 123, "status": "Queued", "requestTimestamp": 42}
+    response_body = {"id": 123, "status": "Queued", "createdTime": 42}
     rsps.add(
         rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/", status=200, json=response_body,
     )
@@ -26,9 +26,9 @@ def mock_status_ok(rsps):
     response_body = {
         "id": 123,
         "status": "Completed",
-        "requestTimestamp": 42,
-        "statusTimestamp": 456,
-        "startTimestamp": 789,
+        "createdTime": 42,
+        "statusTime": 456,
+        "startTime": 789,
     }
     rsps.add(
         rsps.GET,
@@ -43,7 +43,7 @@ def mock_status_ok(rsps):
 def mock_retrieve(rsps):
     response_body = {
         "items": [
-            {"id": 123, "status": "Completed", "requestTimestamp": 42, "statusTimestamp": 456, "startTimestamp": 789,}
+            {"id": 123, "status": "Completed", "createdTime": 42, "statusTime": 456, "startTime": 789,}
         ]
     }
     rsps.add(
@@ -95,16 +95,16 @@ class TestEntityMatching:
     def test_fit(self, mock_fit, mock_status_ok):
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="bigram")
+        model = EMAPI.fit(sources=entities_from, targets=entities_to, true_matches=[(1, 2)], feature_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
-        assert 42 == model.request_timestamp
+        assert 42 == model.created_time
         model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.id
-        assert 42 == model.request_timestamp
-        assert 456 == model.status_timestamp
-        assert 789 == model.start_timestamp
+        assert 42 == model.created_time
+        assert 456 == model.status_time
+        assert 789 == model.start_time
 
         n_fit_calls = 0
         n_status_calls = 0
@@ -112,9 +112,9 @@ class TestEntityMatching:
             if call.request.method == "POST":
                 n_fit_calls += 1
                 assert {
-                    "matchFrom": entities_from,
-                    "matchTo": entities_to,
-                    "trueMatches": [{"fromId": 1, "toId": 2}],
+                    "sources": entities_from,
+                    "targets": entities_to,
+                    "trueMatches": [{"sourceId": 1, "targetId": 2}],
                     "featureType": "bigram",
                     "ignoreMissingFields": False,
                 } == jsgz_load(call.request.body)
@@ -128,10 +128,10 @@ class TestEntityMatching:
         # fit_ml should produce the same output as fit. Will eventually be removed
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, 2)], feature_type="bigram")
+        model = EMAPI.fit(sources=entities_from, targets=entities_to, true_matches=[(1, 2)], feature_type="bigram")
         assert isinstance(model, EntityMatchingModel)
         assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
-        assert 42 == model.request_timestamp
+        assert 42 == model.created_time
         model.wait_for_completion()
         assert "Completed" == model.status
         assert 123 == model.id
@@ -139,11 +139,11 @@ class TestEntityMatching:
     def test_fit_cognite_resource(self, mock_fit):
         entities_from = [TimeSeries(id=1, name="x")]
         entities_to = [Asset(id=1, external_id="abc", name="x")]
-        EMAPI.fit(match_from=entities_from, match_to=entities_to, true_matches=[(1, "abc")], feature_type="bigram")
+        EMAPI.fit(sources=entities_from, targets=entities_to, true_matches=[(1, "abc")], feature_type="bigram")
         assert {
-            "matchFrom": [entities_from[0].dump(camel_case=True)],
-            "matchTo": [entities_to[0].dump(camel_case=True)],
-            "trueMatches": [{"fromId": 1, "toExternalId": "abc"}],
+            "sources": [entities_from[0].dump(camel_case=True)],
+            "targets": [entities_to[0].dump(camel_case=True)],
+            "trueMatches": [{"sourceId": 1, "targetExternalId": "abc"}],
             "featureType": "bigram",
             "ignoreMissingFields": False,
         } == jsgz_load(mock_fit.calls[0].request.body)
@@ -151,7 +151,7 @@ class TestEntityMatching:
     def test_fit_fails(self, mock_fit, mock_status_failed):
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit(match_from=entities_from, match_to=entities_to)
+        model = EMAPI.fit(sources=entities_from, targets=entities_to)
         with pytest.raises(ModelFailedException) as exc_info:
             model.wait_for_completion()
         assert exc_info.type is ModelFailedException

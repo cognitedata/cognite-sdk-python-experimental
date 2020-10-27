@@ -18,7 +18,7 @@ from cognite.experimental.exceptions import ModelFailedException
 def convert_true_match(true_match):
     if not isinstance(true_match, dict) and len(true_match) == 2:
         converted_true_match = {}
-        for i, fromto in enumerate(["from", "to"]):
+        for i, fromto in enumerate(["source", "target"]):
             if isinstance(true_match[i], str):
                 converted_true_match[fromto + "ExternalId"] = true_match[i]
             else:
@@ -29,16 +29,16 @@ def convert_true_match(true_match):
 
 
 class ContextualizationJob(CogniteResource):
-    _COMMON_FIELDS = {"status", "jobId", "errorMessage", "requestTimestamp", "startTimestamp", "statusTimestamp"}
+    _COMMON_FIELDS = {"status", "jobId", "errorMessage", "createdTime", "startTime", "statusTime"}
 
     def __init__(
         self,
         job_id=None,
         status=None,
         error_message=None,
-        request_timestamp=None,
-        start_timestamp=None,
-        status_timestamp=None,
+        created_time=None,
+        start_time=None,
+        status_time=None,
         status_path=None,
         cognite_client=None,
         **kwargs,
@@ -46,9 +46,9 @@ class ContextualizationJob(CogniteResource):
         """Data class for the result of a contextualization job. All keys in the body become snake-cased variables in the class (e.g. `items`, `svg_url`)"""
         self.job_id = job_id
         self.status = status
-        self.request_timestamp = request_timestamp
-        self.start_timestamp = start_timestamp
-        self.status_timestamp = status_timestamp
+        self.created_time = created_time
+        self.start_time = start_time
+        self.status_time = status_time
         self.error_message = error_message
         self._cognite_client = cognite_client
         self._result = None
@@ -58,9 +58,9 @@ class ContextualizationJob(CogniteResource):
         """Updates the model status and returns it"""
         data = self._cognite_client.entity_matching._get(f"{self._status_path}{self.job_id}").json()
         self.status = data["status"]
-        self.status_timestamp = data.get("statusTimestamp")
-        self.start_timestamp = data.get("startTimestamp")
-        self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
+        self.status_time = data.get("statusTime")
+        self.start_time = data.get("startTime")
+        self.created_time = self.created_time or data.get("createdTime")
         self.error_message = data.get("errorMessage")
         self._result = {k: v for k, v in data.items() if k not in self._COMMON_FIELDS}
         return self.status
@@ -106,9 +106,9 @@ class EntityMatchingModel(CogniteResource):
         id=None,
         status=None,
         error_message=None,
-        request_timestamp=None,
-        start_timestamp=None,
-        status_timestamp=None,
+        created_time=None,
+        start_time=None,
+        status_time=None,
         cognite_client=None,
         classifier=None,
         feature_type=None,
@@ -120,9 +120,9 @@ class EntityMatchingModel(CogniteResource):
     ):
         self.id = id
         self.status = status
-        self.request_timestamp = request_timestamp
-        self.start_timestamp = start_timestamp
-        self.status_timestamp = status_timestamp
+        self.created_time = created_time
+        self.start_time = start_time
+        self.status_time = status_time
         self.error_message = error_message
         self.classifier = classifier
         self.feature_type = feature_type
@@ -140,9 +140,9 @@ class EntityMatchingModel(CogniteResource):
         """Updates the model status and returns it"""
         data = self._cognite_client.entity_matching._get(f"{self._STATUS_PATH}{self.id}").json()
         self.status = data["status"]
-        self.status_timestamp = data.get("statusTimestamp")
-        self.start_timestamp = data.get("startTimestamp")
-        self.request_timestamp = self.request_timestamp or data.get("requestTimestamp")
+        self.status_time = data.get("statusTime")
+        self.start_time = data.get("startTime")
+        self.created_time = self.created_time or data.get("createdTime")
         self.error_message = data.get("errorMessage")
         return self.status
 
@@ -158,16 +158,16 @@ class EntityMatchingModel(CogniteResource):
 
     def predict(
         self,
-        match_from: Optional[List[Dict]] = None,
-        match_to: Optional[List[Dict]] = None,
+        sources: Optional[List[Dict]] = None,
+        targets: Optional[List[Dict]] = None,
         num_matches=1,
         score_threshold=None,
     ) -> ContextualizationJob:
         """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
 
         Args:
-            match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
-            match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
+            sources: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
+            targets: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
             num_matches (int): number of matches to return for each item.
             score_threshold (float): only return matches with a score above this threshold
             ignore_missing_fields (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
@@ -179,8 +179,8 @@ class EntityMatchingModel(CogniteResource):
             job_path=f"/predict",
             status_path=f"/jobs/",
             id=self.id,
-            match_from=self.dump_entities(match_from),
-            match_to=self.dump_entities(match_to),
+            sources=self.dump_entities(sources),
+            targets=self.dump_entities(targets),
             num_matches=num_matches,
             score_threshold=score_threshold,
         )
@@ -248,15 +248,15 @@ class EntityMatchingPipeline(CogniteResource):
         name: str = None,
         description: str = None,
         model_id: int = None,
-        match_from: Dict = None,
-        match_to: Dict = None,
+        sources: Dict = None,
+        targets: Dict = None,
         matches: List = None,
         rules: List = None,
         status=None,
         error_message=None,
-        request_timestamp=None,
-        start_timestamp=None,
-        status_timestamp=None,
+        created_time=None,
+        start_time=None,
+        status_time=None,
         cognite_client=None,
     ):
         """
@@ -264,7 +264,7 @@ class EntityMatchingPipeline(CogniteResource):
         Args:
             external_id, name, description: standard fields for a resource.
             model_id: id of the entity matching model to deploy
-            match_from, match_to: descriptions
+            sources, targets: descriptions
             matches: true matches to use in training
             rules: list of matching rules
         """
@@ -274,15 +274,15 @@ class EntityMatchingPipeline(CogniteResource):
         self.name = name
         self.description = description
         self.model_id = model_id
-        self.match_from = match_from
-        self.match_to = match_to
+        self.sources = sources
+        self.targets = targets
         self.matches = matches
         self.rules = rules
 
         self.status = status
-        self.request_timestamp = request_timestamp
-        self.start_timestamp = start_timestamp
-        self.status_timestamp = status_timestamp
+        self.created_time = created_time
+        self.start_time = start_time
+        self.status_time = status_time
         self.error_message = error_message
 
         self._cognite_client = cognite_client

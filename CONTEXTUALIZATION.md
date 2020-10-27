@@ -12,11 +12,11 @@ client = CogniteClient(client_name="cognite-sdk-python-experimental")
 ### Fit a supervised Entity Matching Model
 Fit a model
 ```python
-match_from = [
+sources = [
     {"id":0, "name" : "IAA_21PT1019.PV", "description": "correct"}, 
     {"id":1, "name" : "IAA_13FV1234.PV", "description": "ok"}
 ]
-match_to = [
+targets = [
     {"id":0, "name" : "21PT1019", "description": "correct"}, 
     {"id":1, "name" : "21PT1019", "description": "wrong"}, 
     {"id":2, "name" : "13FV1234", "description": "not ok"},
@@ -26,8 +26,8 @@ match_to = [
 ]
 true_matches = [(0,0)]
 
-model = client.entity_matching.fit(match_from = match_from,
-                                      match_to = match_to,
+model = client.entity_matching.fit(sources = sources,
+                                      targets = targets,
                                       true_matches = true_matches,
                                       match_fields = [("name", "name"), ("description", "description")]
 )
@@ -66,10 +66,10 @@ will produce the following output after a few seconds:
 ```
 #### Predict on new data
 ```python
-match_from = [
+sources = [
     {"id":2, "name" : "IAA_84PAH93234.PV", "description": "some description"},
 ]
-job = model.predict(num_matches = 2, match_from = match_from)
+job = model.predict(num_matches = 2, sources = sources)
 matches = job.result
 print(matches["items"])
 ```
@@ -89,11 +89,11 @@ will produce the following output after a few seconds:
 ### Fit an unsupervised Entity Matching Model
 Fit a model
 ```python
-match_from = [
+sources = [
     {"id":0, "name" : "IAA_21PT1019.PV", "description": "correct"}, 
     {"id":1, "name" : "IAA_13FV1234.PV", "description": "ok"}
 ]
-match_to = [
+targets = [
     {"id":0, "name" : "21PT1019", "description": "correct"}, 
     {"id":1, "name" : "21PT1019", "description": "wrong"}, 
     {"id":2, "name" : "13FV1234", "description": "not ok"},
@@ -102,8 +102,8 @@ match_to = [
     {"id":5, "name" : "84PAH93234", "description": ""},
 ]
 
-model = client.entity_matching.fit(match_from = match_from,
-                                      match_to = match_to,
+model = client.entity_matching.fit(sources = sources,
+                                      targets = targets,
                                       match_fields = [("name", "name"), ("description", "description")]
 )
 ```
