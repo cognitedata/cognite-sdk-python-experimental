@@ -49,17 +49,17 @@ will produce the following output after a few seconds:
 ```python
 [
   {
-    'matchFrom': {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
+    "source": {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
     'matches': [
-      {'matchTo': {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 0.9},
-      {'matchTo': {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.0}
+      {"target": {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 0.9},
+      {"target": {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.0}
     ]
   },
  {
-   'matchFrom': {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
+   "source": {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
    'matches': [
-      {'matchTo': {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 0.9},
-      {'matchTo': {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.2}
+      {"target": {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 0.9},
+      {"target": {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.2}
     ]
   }
 ]
@@ -77,10 +77,10 @@ will produce the following output after a few seconds:
 ```python
 [
   {
-    'matchFrom': {'description': 'some description', 'id': 2, 'name': 'IAA_84PAH93234.PV'}, 
+    "source": {'description': 'some description', 'id': 2, 'name': 'IAA_84PAH93234.PV'}, 
     'matches': [
-      {'matchTo': {'description': 'some description', 'id': 4, 'name': '84PAH93234'}, 'score': 0.9}, 
-      {'matchTo': {'description': '', 'id': 5, 'name': '84PAH93234'}, 'score': 0.0}
+      {"target": {'description': 'some description', 'id': 4, 'name': '84PAH93234'}, 'score': 0.9}, 
+      {"target": {'description': '', 'id': 5, 'name': '84PAH93234'}, 'score': 0.0}
     ]
   }
 ]
@@ -103,8 +103,8 @@ targets = [
 ]
 
 model = client.entity_matching.fit(sources = sources,
-                                      targets = targets,
-                                      match_fields = [("name", "name"), ("description", "description")]
+                                   targets = targets,
+                                   match_fields = [("name", "name"), ("description", "description")]
 )
 ```
 #### Predict on the training data
@@ -117,17 +117,17 @@ will produce the following output after a few seconds:
 ```python
 [
   {
-    'matchFrom': {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
+    "source": {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
     'matches': [
-      {'matchTo': {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 1.0},
-      {'matchTo': {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.5000000000000001}
+      {"target": {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 1.0},
+      {"target": {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.5000000000000001}
     ]
   },
   {
-    'matchFrom': {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
+    "source": {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
     'matches': [
-      {'matchTo': {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 1.0},
-      {'matchTo': {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.8535533905932738}
+      {"target": {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 1.0},
+      {"target": {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.8535533905932738}
     ]
   }
 ]
