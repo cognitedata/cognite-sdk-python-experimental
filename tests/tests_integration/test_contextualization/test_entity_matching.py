@@ -41,20 +41,20 @@ class TestEntityMatchingIntegration:
         assert "Completed" == fitted_model.status
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
+        assert {"matches", "source"} == set(job.result["items"][0].keys()) - {"matchFrom"}
         assert "Completed" == job.status
 
         job = fitted_model.predict()
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
+        assert {"matches", "source"} == set(job.result["items"][0].keys()) - {"matchFrom"}
         assert "Completed" == job.status
 
         # Retrieve model
         model = EMAPI.retrieve(id=fitted_model.id)
         assert model.classifier == "randomforest"
         assert model.feature_type == "bigram"
-        assert model.match_fields == [{"from": "name", "to": "bloop"}]
+        assert model.match_fields == [{"source": "name", "target": "bloop"}]
 
         # Retrieve models
         models = EMAPI.retrieve_multiple(ids=[model.id, model.id])
@@ -77,14 +77,16 @@ class TestEntityMatchingIntegration:
         assert "Queued" == new_model.status
 
         job = new_model.predict(sources=[{"name": "foo-bar"}], targets=[{"bloop": "foo-42"}])
-        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
+        assert {"matches", "source"} == set(job.result["items"][0].keys()) - {"matchFrom"}
         assert "Completed" == job.status
 
     def test_true_match_formats(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
         entities_to = [{"id": 2, "name": "yy"}, {"id": 3, "externalId": "aa", "name": "xx"}]
         model = EMAPI.fit(
-            sources=entities_from, targets=entities_to, true_matches=[{"sourceId": 1, "toExternalId": "aa"}, (1, 2)],
+            sources=entities_from,
+            targets=entities_to,
+            true_matches=[{"sourceId": 1, "targetExternalId": "aa"}, (1, 2)],
         )
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
@@ -106,7 +108,7 @@ class TestEntityMatchingIntegration:
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
         job = model.predict()
-        assert {"matches", "matchFrom", "ignoreMissingFields"} == set(job.result["items"][0].keys())
+        assert {"matches", "source"} == set(job.result["items"][0].keys()) - {"matchFrom"}
 
         EMAPI.delete(id=model.id)
 
