@@ -38,7 +38,7 @@ class TestEntityMatchingIntegration:
         assert "Queued" == fitted_model.status
 
         job = fitted_model.predict(sources=[{"name": "foo-bar"}], targets=[{"bloop": "foo-42"}])
-        assert "Completed" == fitted_model.status
+        assert "Completed" == fitted_model.statusf
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert {"matches", "source"} == set(job.result["items"][0].keys()) - {"matchFrom"}

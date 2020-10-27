@@ -250,7 +250,9 @@ class EntityMatchingPipeline(CogniteResource):
         model_id: int = None,
         sources: Dict = None,
         targets: Dict = None,
-        matches: List = None,
+        true_matches: List = None,
+        rejected_matches: List = None,
+        score_threshold: float = None,
         rules: List = None,
         status=None,
         error_message=None,
@@ -276,7 +278,9 @@ class EntityMatchingPipeline(CogniteResource):
         self.model_id = model_id
         self.sources = sources
         self.targets = targets
-        self.matches = matches
+        self.true_matches = true_matches
+        self.rejected_matches = rejected_matches
+        self.score_threshold = score_threshold
         self.rules = rules
 
         self.status = status
