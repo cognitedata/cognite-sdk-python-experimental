@@ -42,9 +42,7 @@ def mock_status_ok(rsps):
 @pytest.fixture
 def mock_retrieve(rsps):
     response_body = {
-        "items": [
-            {"id": 123, "status": "Completed", "createdTime": 42, "statusTime": 456, "startTime": 789,}
-        ]
+        "items": [{"id": 123, "status": "Completed", "createdTime": 42, "statusTime": 456, "startTime": 789,}]
     }
     rsps.add(
         rsps.POST,
