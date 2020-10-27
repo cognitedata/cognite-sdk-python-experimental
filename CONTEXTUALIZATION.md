@@ -12,11 +12,11 @@ client = CogniteClient(client_name="cognite-sdk-python-experimental")
 ### Fit a supervised Entity Matching Model
 Fit a model
 ```python
-match_from = [
+sources = [
     {"id":0, "name" : "IAA_21PT1019.PV", "description": "correct"}, 
     {"id":1, "name" : "IAA_13FV1234.PV", "description": "ok"}
 ]
-match_to = [
+targets = [
     {"id":0, "name" : "21PT1019", "description": "correct"}, 
     {"id":1, "name" : "21PT1019", "description": "wrong"}, 
     {"id":2, "name" : "13FV1234", "description": "not ok"},
@@ -26,8 +26,8 @@ match_to = [
 ]
 true_matches = [(0,0)]
 
-model = client.entity_matching.fit(match_from = match_from,
-                                      match_to = match_to,
+model = client.entity_matching.fit(sources = sources,
+                                      targets = targets,
                                       true_matches = true_matches,
                                       match_fields = [("name", "name"), ("description", "description")]
 )
@@ -49,27 +49,27 @@ will produce the following output after a few seconds:
 ```python
 [
   {
-    'matchFrom': {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
+    "source": {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
     'matches': [
-      {'matchTo': {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 0.9},
-      {'matchTo': {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.0}
+      {"target": {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 0.9},
+      {"target": {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.0}
     ]
   },
  {
-   'matchFrom': {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
+   "source": {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
    'matches': [
-      {'matchTo': {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 0.9},
-      {'matchTo': {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.2}
+      {"target": {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 0.9},
+      {"target": {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.2}
     ]
   }
 ]
 ```
 #### Predict on new data
 ```python
-match_from = [
+sources = [
     {"id":2, "name" : "IAA_84PAH93234.PV", "description": "some description"},
 ]
-job = model.predict(num_matches = 2, match_from = match_from)
+job = model.predict(num_matches = 2, sources = sources)
 matches = job.result
 print(matches["items"])
 ```
@@ -77,10 +77,10 @@ will produce the following output after a few seconds:
 ```python
 [
   {
-    'matchFrom': {'description': 'some description', 'id': 2, 'name': 'IAA_84PAH93234.PV'}, 
+    "source": {'description': 'some description', 'id': 2, 'name': 'IAA_84PAH93234.PV'}, 
     'matches': [
-      {'matchTo': {'description': 'some description', 'id': 4, 'name': '84PAH93234'}, 'score': 0.9}, 
-      {'matchTo': {'description': '', 'id': 5, 'name': '84PAH93234'}, 'score': 0.0}
+      {"target": {'description': 'some description', 'id': 4, 'name': '84PAH93234'}, 'score': 0.9}, 
+      {"target": {'description': '', 'id': 5, 'name': '84PAH93234'}, 'score': 0.0}
     ]
   }
 ]
@@ -89,11 +89,11 @@ will produce the following output after a few seconds:
 ### Fit an unsupervised Entity Matching Model
 Fit a model
 ```python
-match_from = [
+sources = [
     {"id":0, "name" : "IAA_21PT1019.PV", "description": "correct"}, 
     {"id":1, "name" : "IAA_13FV1234.PV", "description": "ok"}
 ]
-match_to = [
+targets = [
     {"id":0, "name" : "21PT1019", "description": "correct"}, 
     {"id":1, "name" : "21PT1019", "description": "wrong"}, 
     {"id":2, "name" : "13FV1234", "description": "not ok"},
@@ -102,9 +102,9 @@ match_to = [
     {"id":5, "name" : "84PAH93234", "description": ""},
 ]
 
-model = client.entity_matching.fit(match_from = match_from,
-                                      match_to = match_to,
-                                      match_fields = [("name", "name"), ("description", "description")]
+model = client.entity_matching.fit(sources = sources,
+                                   targets = targets,
+                                   match_fields = [("name", "name"), ("description", "description")]
 )
 ```
 #### Predict on the training data
@@ -117,17 +117,17 @@ will produce the following output after a few seconds:
 ```python
 [
   {
-    'matchFrom': {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
+    "source": {'description': 'correct', 'id': 0, 'name': 'IAA_21PT1019.PV'},
     'matches': [
-      {'matchTo': {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 1.0},
-      {'matchTo': {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.5000000000000001}
+      {"target": {'description': 'correct', 'id': 0,'name': '21PT1019'}, 'score': 1.0},
+      {"target": {'description': 'wrong', 'id': 1, 'name': '21PT1019'}, 'score': 0.5000000000000001}
     ]
   },
   {
-    'matchFrom': {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
+    "source": {'description': 'ok', 'id': 1, 'name': 'IAA_13FV1234.PV'},
     'matches': [
-      {'matchTo': {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 1.0},
-      {'matchTo': {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.8535533905932738}
+      {"target": {'description': 'ok', 'id': 3, 'name': '13FV1234'}, 'score': 1.0},
+      {"target": {'description': 'not ok', 'id': 2, 'name': '13FV1234'}, 'score': 0.8535533905932738}
     ]
   }
 ]

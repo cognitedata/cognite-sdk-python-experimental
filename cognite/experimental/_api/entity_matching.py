@@ -197,8 +197,8 @@ class EntityMatchingAPI(ContextAPI):
 
     def fit(
         self,
-        match_from: List[Union[Dict, CogniteResource]],
-        match_to: List[Union[Dict, CogniteResource]],
+        sources: List[Union[Dict, CogniteResource]],
+        targets: List[Union[Dict, CogniteResource]],
         true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]] = None,
         match_fields: List[Tuple[str, str]] = None,
         feature_type: str = None,
@@ -211,10 +211,10 @@ class EntityMatchingAPI(ContextAPI):
         """Fit entity matching model.
 
         Args:
-            match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
-            match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
+            sources: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
+            targets: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
             id_field (str): use 'id' or 'external_id' as the id field to match resources
-            true_matches: Known valid matches given as a list of dicts with keys 'fromId', 'fromExternalId', 'toId', 'toExternalId'). If omitted, uses an unsupervised model.
+            true_matches: Known valid matches given as a list of dicts with keys 'sourceId', 'sourceExternalId', 'sourceId', 'sourceExternalId'). If omitted, uses an unsupervised model.
              A tuple can be used instead of the dictionary for convenience, interpreted as id/externalId based on type.
             match_fields: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
             feature_type (str): feature type that defines the combination of features used, see API docs for details.
@@ -227,14 +227,14 @@ class EntityMatchingAPI(ContextAPI):
             EntityMatchingModel: Resulting queued model."""
 
         if match_fields:
-            match_fields = [ft if isinstance(ft, dict) else {"from": ft[0], "to": ft[1]} for ft in match_fields]
+            match_fields = [ft if isinstance(ft, dict) else {"source": ft[0], "target": ft[1]} for ft in match_fields]
         if true_matches:
             true_matches = [convert_true_match(true_match) for true_match in true_matches]
         response = self._camel_post(
             context_path="/",
             json=dict(
-                match_from=EntityMatchingModel.dump_entities(match_from),
-                match_to=EntityMatchingModel.dump_entities(match_to),
+                sources=EntityMatchingModel.dump_entities(sources),
+                targets=EntityMatchingModel.dump_entities(targets),
                 true_matches=true_matches,
                 match_fields=match_fields,
                 feature_type=feature_type,
@@ -249,8 +249,8 @@ class EntityMatchingAPI(ContextAPI):
 
     def predict(
         self,
-        match_from: Optional[List[Dict]] = None,
-        match_to: Optional[List[Dict]] = None,
+        sources: Optional[List[Dict]] = None,
+        targets: Optional[List[Dict]] = None,
         num_matches=1,
         score_threshold=None,
         id: Optional[int] = None,
@@ -259,8 +259,8 @@ class EntityMatchingAPI(ContextAPI):
         """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
 
         Args:
-            match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
-            match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
+            sources: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
+            targets: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
             num_matches (int): number of matches to return for each item.
             score_threshold (float): only return matches with a score above this threshold
             ignore_missing_fields (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
@@ -271,8 +271,8 @@ class EntityMatchingAPI(ContextAPI):
         return self.retrieve(
             id=id, external_id=external_id
         ).predict(  # could call predict directly but this is friendlier
-            match_from=EntityMatchingModel.dump_entities(match_from),
-            match_to=EntityMatchingModel.dump_entities(match_to),
+            sources=EntityMatchingModel.dump_entities(sources),
+            targets=EntityMatchingModel.dump_entities(targets),
             num_matches=num_matches,
             score_threshold=score_threshold,
         )

@@ -12,6 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+
+## [0.28.0] - 2020-10-27
+### Changed
+- Renamed match_from and match_to in entity matcher, as well as timestamp->time in contextualization jobs.
+- Entity matching matches renamed to true_matches
+
+### Added
+- Entity matching pipelines rejected_matches and score_threshold options
+
+### Fixed
+- Entity matching pipelines now correctly takes model_parameters instead of model_id
+
 ## [0.27.0] - 2020-10-20
 ### Added
 - Plot Data Extraction API
@@ -34,7 +46,7 @@ Changes are grouped as follows
 ### Added
 - Arguments `cpu` and `memory` to `FunctionsAPI.create()`, making it possible to customize function resources.
 
-## [0.23.0] - 2020-09-xx
+## [0.23.0] - 2020-09-29
 ### Added
 - Entity matching pipelines, which allows you to deploy an entity matching model with confirmed matches and rules.
 
@@ -246,7 +258,7 @@ Changes are grouped as follows
 ## [0.5.6] - 2020-04-28
 
 ### Added
-- Data classes for contextualization models and job now include time stamps for request_timestamp, start_timestamp, status_timestamp.
+- Data classes for contextualization models and job now include time stamps for created_time, start_time, status_time.
 - Unstructured search endpoints added in client.files.unstructured.
 
 ## [0.5.5] - 2020-04-21
