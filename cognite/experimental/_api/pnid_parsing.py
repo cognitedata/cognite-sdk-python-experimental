@@ -17,7 +17,9 @@ class PNIDParsingAPI(ContextAPI):
         file_id: int = None,
         file_external_id: str = None,
     ) -> ContextualizationJob:
-        """Detect entities in a PNID
+        """Detect entities in a PNID.
+        Note: All users on this CDF subscription with assets read-all and files read-all capabilities in the project,
+        are able to access the data sent to this endpoint.
 
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
