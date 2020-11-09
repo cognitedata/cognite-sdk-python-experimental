@@ -37,7 +37,7 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
         Args:
             id: id of the pipeline to retrieve runs for.
             external_id: external id of the pipeline to retrieve runs for.
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingPipelineRunList: list of pipeline runs"""
@@ -207,7 +207,7 @@ class EntityMatchingAPI(ContextAPI):
 
         Args:
             filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingModelList: List of models."""
