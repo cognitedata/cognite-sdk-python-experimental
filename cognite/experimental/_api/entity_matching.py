@@ -12,7 +12,8 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineList,
     EntityMatchingPipelineRun,
     EntityMatchingPipelineRunList,
-    convert_true_match, EntityMatchingPipelineUpdate,
+    convert_true_match,
+    EntityMatchingPipelineUpdate,
 )
 
 
@@ -140,7 +141,9 @@ class EntityMatchingPipelinesAPI(ContextAPI):
     def update(
         self,
         item: Union[
-            EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]
+            EntityMatchingPipeline,
+            EntityMatchingPipelineUpdate,
+            List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]],
         ],
     ) -> Union[EntityMatchingPipeline, List[EntityMatchingPipeline]]:
         """Update model
@@ -149,7 +152,6 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             items (Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]]) : Pipeline(s) to update
         """
         return self._update_multiple(items=item)
-
 
 
 class EntityMatchingAPI(ContextAPI):
