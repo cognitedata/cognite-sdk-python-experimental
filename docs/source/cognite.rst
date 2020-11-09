@@ -396,9 +396,14 @@ Run Entity Matching Pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.run
 
+Delete Entity Matching Pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.delete
+
 Retrieve Entity Matching Pipelines Run
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.retrieve
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.retrieve_latest
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.list
 
 

@@ -13,6 +13,13 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
+## [0.29.0] - 2020-11-09
+### Added
+- Arguments `confirmed_matches` and `schedule_interval` for EntityMatchingPipeline
+- Method `retrieve_latest` for entity matching pipeline run.
+- Various helper methods on EntityMatchingPipeline and EntityMatchingPipelineRun
+- EntityMatchingPipeline Update class and method
+
 ## [0.28.0] - 2020-10-27
 ### Changed
 - Renamed match_from and match_to in entity matcher, as well as timestamp->time in contextualization jobs.

@@ -12,6 +12,7 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineList,
     EntityMatchingPipelineRun,
     EntityMatchingPipelineRunList,
+    EntityMatchingPipelineUpdate,
     convert_true_match,
 )
 
@@ -36,11 +37,29 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
         Args:
             id: id of the pipeline to retrieve runs for.
             external_id: external id of the pipeline to retrieve runs for.
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingPipelineRunList: list of pipeline runs"""
         runs = self._camel_post("/list", json={"id": id, "externalId": external_id, "limit": limit}).json()["items"]
+        return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
+
+    def retrieve_latest(
+        self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None
+    ) -> Union[EntityMatchingPipelineRun, EntityMatchingPipelineRunList]:
+        """List latest pipeline run for pipelines. Note that pipelines without a run are not returned, so output may not align with input.
+
+        Args:
+            id: id or list of ids of the pipelines to retrieve the latest run for.
+            external_id: external id or list of external ids of the pipelines to retrieve the latest run for.
+
+        Returns:
+            Union[EntityMatchingPipelineRun,EntityMatchingPipelineRunList]: list of latest pipeline runs, or a single object if a single id was given and the run was found"""
+        all_ids = self._process_ids(id, external_id, wrap_ids=True)
+        is_single_id = self._is_single_identifier(id, external_id)
+        runs = self._camel_post("/latest", json={"items": all_ids}).json()["items"]
+        if is_single_id and runs:
+            return EntityMatchingPipelineRun._load(runs[0], cognite_client=self._cognite_client)
         return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
 
 
@@ -60,7 +79,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         Returns:
             EntityMatchingPipeline: created pipeline."""
         result = self._camel_post("", json=pipeline.dump()).json()
-        return EntityMatchingPipeline._load(result)
+        return EntityMatchingPipeline._load(result, cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingPipeline]:
         """Retrieve pipeline
@@ -99,7 +118,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         pipelines = self._camel_post("/list", json={"limit": limit}).json()["items"]
         return EntityMatchingPipelineList._load(pipelines, cognite_client=self._cognite_client)
 
-    def run(self, id: int = None, external_id: str = None) -> ContextualizationJob:
+    def run(self, id: int = None, external_id: str = None) -> EntityMatchingPipelineRun:
         """Run pipeline
 
         Args:
@@ -107,9 +126,32 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             external_id: external id of the pipeline to run.
 
         Returns:
-            ContextualizationJob: object which can be used to wait for and retrieve results."""
+            EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
-        return self._run_job(job_path="/run", id=id, external_id=external_id)
+        return self._run_job(job_path="/run", id=id, external_id=external_id, job_cls=EntityMatchingPipelineRun)
+
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
+        """Delete pipelines
+
+        Args:
+            id (Union[int, List[int]): Id or list of ids
+            external_id (Union[str, List[str]]): External ID or list of external ids"""
+        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def update(
+        self,
+        item: Union[
+            EntityMatchingPipeline,
+            EntityMatchingPipelineUpdate,
+            List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]],
+        ],
+    ) -> Union[EntityMatchingPipeline, List[EntityMatchingPipeline]]:
+        """Update model
+
+        Args:
+            items (Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]]) : Pipeline(s) to update
+        """
+        return self._update_multiple(items=item)
 
 
 class EntityMatchingAPI(ContextAPI):
@@ -165,7 +207,7 @@ class EntityMatchingAPI(ContextAPI):
 
         Args:
             filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingModelList: List of models."""
