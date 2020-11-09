@@ -150,7 +150,7 @@ class TestEntityMatchingIntegration:
     def test_pipeline(self):
         pipeline = EntityMatchingPipeline(
             name="foo",
-            sources={"dataSetIds": [], "resource": "timeseries"},
+            sources={"dataSetIds": [], "resource": "sequences"},
             targets={"dataSetIds": []},
             model_parameters={"featureType": "insensitive"},
         )
@@ -171,7 +171,9 @@ class TestEntityMatchingIntegration:
         assert run2 == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
 
         EMAPI.pipelines.update(EntityMatchingPipelineUpdate(id=new_pipeline.id).name.set("abc").sources.set({}))
-        assert "abc" == EMAPI.pipelines.retrieve(id=new_pipeline.id).name
+        retrieved = EMAPI.pipelines.retrieve(id=new_pipeline.id)
+        assert "abc" == retrieved.name
+        assert {"resource": "time_series", "dataSetIds": []} == retrieved.sources
         EMAPI.pipelines.update(new_pipeline)
         assert pipeline.name == EMAPI.pipelines.retrieve(id=new_pipeline.id).name
 
