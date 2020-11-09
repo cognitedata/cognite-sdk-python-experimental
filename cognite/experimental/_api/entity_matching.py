@@ -12,8 +12,8 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineList,
     EntityMatchingPipelineRun,
     EntityMatchingPipelineRunList,
-    convert_true_match,
     EntityMatchingPipelineUpdate,
+    convert_true_match,
 )
 
 
