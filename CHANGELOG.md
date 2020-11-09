@@ -17,6 +17,7 @@ Changes are grouped as follows
 ### Added
 - Arguments `confirmed_matches` and `schedule_interval` for EntityMatchingPipeline
 - Method `retrieve_latest` for entity matching pipeline run.
+- Various helper methods on EntityMatchingPipeline and EntityMatchingPipelineRun
 
 ## [0.28.0] - 2020-10-27
 ### Changed
