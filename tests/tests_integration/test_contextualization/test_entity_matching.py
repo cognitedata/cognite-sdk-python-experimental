@@ -4,7 +4,13 @@ import pytest
 
 from cognite.client.exceptions import CogniteAPIError
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
+from cognite.experimental.data_classes import (
+    ContextualizationJob,
+    EntityMatchingModel,
+    EntityMatchingModelList,
+    EntityMatchingPipeline,
+    EntityMatchingPipelineRunList,
+)
 from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
@@ -17,7 +23,7 @@ def fitted_model():
     try:
         EMAPI.delete(external_id=extid)
     except CogniteAPIError as e:
-        print(e)
+        pass  # expected
     entities_from = [{"id": 1, "name": "xx-yy"}]
     entities_to = [{"id": 2, "bloop": "yy"}, {"id": 3, "bloop": "zz"}]
     model = EMAPI.fit(
@@ -79,6 +85,7 @@ class TestEntityMatchingIntegration:
         job = new_model.predict(sources=[{"name": "foo-bar"}], targets=[{"bloop": "foo-42"}])
         assert {"matches", "source"} == set(job.result["items"][0].keys()) - {"matchFrom"}
         assert "Completed" == job.status
+        EMAPI.delete(id=new_model.id)
 
     def test_true_match_formats(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
@@ -90,6 +97,7 @@ class TestEntityMatchingIntegration:
         )
         assert isinstance(model, EntityMatchingModel)
         assert "Queued" == model.status
+        EMAPI.delete(id=model.id)
 
     def test_extra_options(self):
         entities_from = [{"id": 1, "name": "xx-yy"}]
@@ -137,3 +145,27 @@ class TestEntityMatchingIntegration:
         new_model2 = EMAPI.refit(id=fitted_model.id, true_matches=[(1, 3)])
         assert isinstance(new_model, EntityMatchingModel)
         assert isinstance(new_model2, EntityMatchingModel)
+
+    def test_pipeline(self):
+        new_pipeline = EMAPI.pipelines.create(
+            EntityMatchingPipeline(
+                sources={"dataSetIds": [], "resource": "timeseries"},
+                targets={"dataSetIds": []},
+                model_parameters={"featureType": "insensitive"},
+            )
+        )
+        run = new_pipeline.run()
+        assert {"suggestedRules", "matches"} == run.result.keys()
+        list_runs = new_pipeline.runs()
+        assert isinstance(list_runs, EntityMatchingPipelineRunList)
+        assert [run] == list_runs
+        assert run == new_pipeline.latest_run()
+        assert run == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
+        assert [run] == EMAPI.pipelines.runs.retrieve_latest(id=[new_pipeline.id])
+        assert run.result == new_pipeline.latest_run().result
+        assert isinstance(run.suggested_rules, list)
+        assert isinstance(run.matches, list)
+
+        run2 = new_pipeline.run()
+        assert run2 == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
+        EMAPI.pipelines.delete(id=new_pipeline.id)
