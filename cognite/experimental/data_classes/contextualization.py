@@ -341,7 +341,60 @@ class EntityMatchingPipeline(CogniteResource):
 
 
 class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
-    pass
+    """Changes applied to entity matching pipeline
+
+    Args:
+        id (int): A server-generated ID for the object.
+        external_id (str): The external ID provided by the client. Must be unique for the resource type.
+    """
+
+    class _PrimitiveUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "EntityMatchingPipelineUpdate":
+            return self._set(value)
+
+    @property
+    def name(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "name")
+
+    @property
+    def description(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "description")
+
+    @property
+    def model_parameters(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "modelParameters")
+
+    @property
+    def sources(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "sources")
+
+    @property
+    def targets(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "targets")
+
+    @property
+    def true_matches(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "trueMatches")
+
+    @property
+    def confirmed_matches(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "confirmedMatches")
+
+    @property
+    def rejected_matches(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "rejectedMatches")
+
+    @property
+    def rules(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "rules")
+
+    @property
+    def score_threshold(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "scoreThreshold")
+
+    @property
+    def schedule_interval(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "scheduleInterval")
 
 
 class EntityMatchingPipelineList(CogniteResourceList):

@@ -12,7 +12,7 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineList,
     EntityMatchingPipelineRun,
     EntityMatchingPipelineRunList,
-    convert_true_match,
+    convert_true_match, EntityMatchingPipelineUpdate,
 )
 
 
@@ -136,6 +136,20 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             id (Union[int, List[int]): Id or list of ids
             external_id (Union[str, List[str]]): External ID or list of external ids"""
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def update(
+        self,
+        item: Union[
+            EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]
+        ],
+    ) -> Union[EntityMatchingPipeline, List[EntityMatchingPipeline]]:
+        """Update model
+
+        Args:
+            items (Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]]) : Pipeline(s) to update
+        """
+        return self._update_multiple(items=item)
+
 
 
 class EntityMatchingAPI(ContextAPI):

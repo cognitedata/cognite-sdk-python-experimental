@@ -10,6 +10,7 @@ from cognite.experimental.data_classes import (
     EntityMatchingModelList,
     EntityMatchingPipeline,
     EntityMatchingPipelineRunList,
+    EntityMatchingPipelineUpdate,
 )
 from cognite.experimental.exceptions import ModelFailedException
 
@@ -147,13 +148,13 @@ class TestEntityMatchingIntegration:
         assert isinstance(new_model2, EntityMatchingModel)
 
     def test_pipeline(self):
-        new_pipeline = EMAPI.pipelines.create(
-            EntityMatchingPipeline(
-                sources={"dataSetIds": [], "resource": "timeseries"},
-                targets={"dataSetIds": []},
-                model_parameters={"featureType": "insensitive"},
-            )
+        pipeline = EntityMatchingPipeline(
+            name="foo",
+            sources={"dataSetIds": [], "resource": "timeseries"},
+            targets={"dataSetIds": []},
+            model_parameters={"featureType": "insensitive"},
         )
+        new_pipeline = EMAPI.pipelines.create(pipeline)
         run = new_pipeline.run()
         assert {"suggestedRules", "matches"} == run.result.keys()
         list_runs = new_pipeline.runs()
@@ -168,4 +169,10 @@ class TestEntityMatchingIntegration:
 
         run2 = new_pipeline.run()
         assert run2 == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
+
+        EMAPI.pipelines.update(EntityMatchingPipelineUpdate(id=new_pipeline.id).name.set("abc").sources.set({}))
+        assert "abc" == EMAPI.pipelines.retrieve(id=new_pipeline.id).name
+        EMAPI.pipelines.update(new_pipeline)
+        assert pipeline.name == EMAPI.pipelines.retrieve(id=new_pipeline.id).name
+
         EMAPI.pipelines.delete(id=new_pipeline.id)
