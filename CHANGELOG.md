@@ -13,6 +13,11 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
+## [0.29.1] - 2020-11-12
+### Security
+- Add try/except in _context_client to not exposed stack trace.
+
+
 ## [0.29.0] - 2020-11-09
 ### Added
 - Arguments `confirmed_matches` and `schedule_interval` for EntityMatchingPipeline
