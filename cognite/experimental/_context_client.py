@@ -32,11 +32,17 @@ class ContextAPI(APIClient):
                 raise Exception(error.message)
 
     def _camel_get(self, context_path: str, params: Dict[str, Any] = None, headers: Dict[str, Any] = None) -> Response:
-        return self._get(
-            self._RESOURCE_PATH + context_path,
-            params={to_camel_case(k): v for k, v in (params or {}).items() if v is not None},
-            headers=headers,
-        )
+        try:
+            return self._get(
+                self._RESOURCE_PATH + context_path,
+                params={to_camel_case(k): v for k, v in (params or {}).items() if v is not None},
+                headers=headers,
+            )
+        except CogniteAPIError as error:
+            if "BadToken" in error.message:
+                raise Exception("Not authorized to use this method.")
+            else:
+                raise Exception(error.message)
 
     def _run_job(self, job_path, status_path=None, headers=None, job_cls=None, **kwargs) -> ContextualizationJob:
         job_cls = job_cls or ContextualizationJob
