@@ -14,6 +14,6 @@ class TestPNIDObjectDetectionIntegration:
         job = PNID_OBJECT_DETECTION_API.find_objects(file_id)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert "items" in set(job.result.keys())
+        assert {"items", "fileId"} == set(job.result.keys())
         assert "Completed" == job.status
         assert {"boundingBox", "score", "type"} == set(job.result["items"][0].keys())

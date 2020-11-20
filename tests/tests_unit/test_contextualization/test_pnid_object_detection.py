@@ -27,13 +27,13 @@ def mock_find_objects(rsps):
 
 @pytest.fixture
 def mock_status_find_objects_ok(rsps):
-    response_body = {"jobId": 789, "status": "Completed", "items": []}
+    response_body = {"jobId": 789, "status": "Completed", "fileId": 123432423, "items": []}
     rsps.add(
         rsps.GET,
         re.compile(
             PNID_OBJECT_DETECTION_API._get_base_url_with_base_path()
             + PNID_OBJECT_DETECTION_API._RESOURCE_PATH
-            + "/\\d+"
+            + "/findobjects/"
         ),
         status=200,
         json=response_body,
@@ -49,7 +49,7 @@ def mock_status_failed(rsps):
         re.compile(
             PNID_OBJECT_DETECTION_API._get_base_url_with_base_path()
             + PNID_OBJECT_DETECTION_API._RESOURCE_PATH
-            + "/\\d+"
+            + "/findobjects/"
         ),
         status=200,
         json=response_body,

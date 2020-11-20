@@ -12,6 +12,9 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.30.0] - 2020-11-22
+### Fixed
+- Pnid Object Detection GET endpoint fixed after separation between `/findobjects` and `/findsimilar`
 
 ## [0.29.0] - 2020-11-09
 ### Added
