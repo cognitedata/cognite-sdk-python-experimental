@@ -1,7 +1,7 @@
 import pytest
 
-from cognite.experimental import CogniteClient
 from cognite.client.data_classes import ContextualizationJob
+from cognite.experimental import CogniteClient
 
 COGNITE_CLIENT = CogniteClient()
 PNID_OBJECT_DETECTION_API = COGNITE_CLIENT.pnid_object_detection

@@ -2,9 +2,8 @@ import re
 
 import pytest
 
-from cognite.client.data_classes import Asset, TimeSeries
+from cognite.client.data_classes import Asset, ContextualizationJob, EntityMatchingModel, TimeSeries
 from cognite.experimental import CogniteClient
-from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
 from tests.utils import jsgz_load
 

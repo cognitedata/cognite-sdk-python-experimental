@@ -2,8 +2,8 @@ import base64
 from io import BytesIO
 from typing import Dict, List, Union
 
-from cognite.experimental._context_client import ContextAPI
 from cognite.client.data_classes import ContextualizationJob
+from cognite.experimental._context_client import ContextAPI
 
 
 class PlotDataExtractionAPI(ContextAPI):
