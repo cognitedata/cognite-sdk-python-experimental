@@ -11,11 +11,11 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.assets_playground: `Assets`_ (Playground Assets API with Types and Labels support)
 * client.types: `Types`_
 * client.model_hosting = `Model Hosting`_
-* client.relationships: `Relationships`_
-* client.annotations: `Annotations` _
-* client.entity_matching: `Fit Entity Matching Model`_ and  `Create Entity Matching Rules`_
+* client.relationships_playground: `Relationships`_
+* client.annotations: `Annotations`_
+* client.entity_matching: Extensions for entity matching `Create Entity Matching Rules`_ `Create Entity Matching Pipeline`_
 * client.pnid_parsing: `Detect entities in a PNID`_
-* client.pnid_object_detection: `Detect common objects in a PNID` _
+* client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
 * client.files: includes extensions described in `Unstructured Search`_
 

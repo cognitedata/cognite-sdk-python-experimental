@@ -3,9 +3,9 @@ import unittest
 
 import pytest
 
+from cognite.client.data_classes import ContextualizationJob
+from cognite.client.exceptions import ModelFailedException
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob
-from cognite.experimental.exceptions import ModelFailedException
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()

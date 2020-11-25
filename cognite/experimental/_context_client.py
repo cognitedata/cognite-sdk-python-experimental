@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Union
 from requests import Response
 
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes import ContextualizationJob
 from cognite.client.utils._auxiliary import to_camel_case, to_snake_case
-from cognite.experimental.data_classes import ContextualizationJob
 
 
 class ContextAPI(APIClient):
