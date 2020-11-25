@@ -5,6 +5,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from typing_extensions import TypedDict
 
+from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import (
     CognitePrimitiveUpdate,
     CogniteResource,
@@ -13,8 +14,6 @@ from cognite.client.data_classes._base import (
 )
 from cognite.client.utils._auxiliary import to_camel_case
 from cognite.experimental.exceptions import ModelFailedException
-
-from cognite.client.data_classes import     ContextualizationJob
 
 
 class EntityMatchingPipelineRun(ContextualizationJob):
