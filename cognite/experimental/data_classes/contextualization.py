@@ -12,8 +12,8 @@ from cognite.client.data_classes._base import (
     CogniteResourceList,
     CogniteUpdate,
 )
+from cognite.client.exceptions import ModelFailedException
 from cognite.client.utils._auxiliary import to_camel_case
-from cognite.experimental.exceptions import ModelFailedException
 
 
 class EntityMatchingPipelineRun(ContextualizationJob):
