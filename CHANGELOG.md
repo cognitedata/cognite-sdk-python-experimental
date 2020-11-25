@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.31.0] - 2020-11-22
+## [0.31.0] - 2020-11-25
 ### Changed
 - Core entity matching moved to beta client, experimental now extends this.
 
