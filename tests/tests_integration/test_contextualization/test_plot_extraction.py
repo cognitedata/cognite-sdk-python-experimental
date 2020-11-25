@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob
+from cognite.client.data_classes import ContextualizationJob
 
 COGNITE_CLIENT = CogniteClient()
 PLOT_EXTRACTION_API = COGNITE_CLIENT.plot_extraction

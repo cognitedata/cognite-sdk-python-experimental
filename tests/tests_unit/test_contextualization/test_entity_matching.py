@@ -4,7 +4,7 @@ import pytest
 
 from cognite.client.data_classes import Asset, TimeSeries
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob, EntityMatchingModel
+from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel
 from cognite.experimental.exceptions import ModelFailedException
 from tests.utils import jsgz_load
 

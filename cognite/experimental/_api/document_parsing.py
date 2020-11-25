@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from cognite.experimental._context_client import ContextAPI
-from cognite.experimental.data_classes import ContextualizationJob
+from cognite.client.data_classes import ContextualizationJob
 
 
 class DocumentParsingAPI(ContextAPI):

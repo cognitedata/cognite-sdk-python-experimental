@@ -2,17 +2,14 @@ import random
 
 import pytest
 
+from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.client.exceptions import CogniteAPIError
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
-    ContextualizationJob,
-    EntityMatchingModel,
-    EntityMatchingModelList,
     EntityMatchingPipeline,
     EntityMatchingPipelineRunList,
     EntityMatchingPipelineUpdate,
 )
-from cognite.experimental.exceptions import ModelFailedException
 
 COGNITE_CLIENT = CogniteClient()
 EMAPI = COGNITE_CLIENT.entity_matching
@@ -127,11 +124,7 @@ class TestEntityMatchingIntegration:
         assert type(models_list) == EntityMatchingModelList
         assert all([type(x) == EntityMatchingModel for x in models_list])
         # Add filter
-        models_list = EMAPI.list(filter={"feature_type": "bigram"})
-        assert set([model.feature_type for model in models_list]) == {"bigram"}
-        # Filter on two parameters
-        models_list = EMAPI.list(filter={"feature_type": "bigram"})
-
+        models_list = EMAPI.list(feature_type="bigram")
         assert set([model.feature_type for model in models_list]) == {"bigram"}
 
     def test_direct_predict(self, fitted_model):
