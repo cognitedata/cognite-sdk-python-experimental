@@ -31,10 +31,11 @@ class ContextAPI(APIClient):
             headers=headers,
         )
 
-    def _run_job(self, job_path, status_path=None, headers=None, **kwargs) -> ContextualizationJob:
+    def _run_job(self, job_path, status_path=None, headers=None, job_cls=None, **kwargs) -> ContextualizationJob:
+        job_cls = job_cls or ContextualizationJob
         if status_path is None:
             status_path = job_path + "/"
-        return ContextualizationJob._load_with_status(
+        return job_cls._load_with_status(
             self._camel_post(job_path, json=kwargs, headers=headers).json(),
             status_path=self._RESOURCE_PATH + status_path,
             cognite_client=self._cognite_client,

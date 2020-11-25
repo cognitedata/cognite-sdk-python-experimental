@@ -105,9 +105,8 @@ Data classes
     :members:
     :show-inheritance:
 
-
 Annotations
--------------
+-----------
 
 Retrieve an annotation by id
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -397,9 +396,14 @@ Run Entity Matching Pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.run
 
+Delete Entity Matching Pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelinesAPI.delete
+
 Retrieve Entity Matching Pipelines Run
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.retrieve
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.retrieve_latest
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.list
 
 
@@ -427,6 +431,12 @@ Contextualization Data Classes
     :show-inheritance:
     :inherited-members:
 
+Plot Data Extraction
+--------------------
+
+Extract curve data
+^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.plot_extraction.PlotDataExtractionAPI.extract
 
 Functions
 ---------

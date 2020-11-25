@@ -12,6 +12,7 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineList,
     EntityMatchingPipelineRun,
     EntityMatchingPipelineRunList,
+    EntityMatchingPipelineUpdate,
     convert_true_match,
 )
 
@@ -36,11 +37,29 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
         Args:
             id: id of the pipeline to retrieve runs for.
             external_id: external id of the pipeline to retrieve runs for.
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingPipelineRunList: list of pipeline runs"""
         runs = self._camel_post("/list", json={"id": id, "externalId": external_id, "limit": limit}).json()["items"]
+        return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
+
+    def retrieve_latest(
+        self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None
+    ) -> Union[EntityMatchingPipelineRun, EntityMatchingPipelineRunList]:
+        """List latest pipeline run for pipelines. Note that pipelines without a run are not returned, so output may not align with input.
+
+        Args:
+            id: id or list of ids of the pipelines to retrieve the latest run for.
+            external_id: external id or list of external ids of the pipelines to retrieve the latest run for.
+
+        Returns:
+            Union[EntityMatchingPipelineRun,EntityMatchingPipelineRunList]: list of latest pipeline runs, or a single object if a single id was given and the run was found"""
+        all_ids = self._process_ids(id, external_id, wrap_ids=True)
+        is_single_id = self._is_single_identifier(id, external_id)
+        runs = self._camel_post("/latest", json={"items": all_ids}).json()["items"]
+        if is_single_id and runs:
+            return EntityMatchingPipelineRun._load(runs[0], cognite_client=self._cognite_client)
         return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
 
 
@@ -60,7 +79,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         Returns:
             EntityMatchingPipeline: created pipeline."""
         result = self._camel_post("", json=pipeline.dump()).json()
-        return EntityMatchingPipeline._load(result)
+        return EntityMatchingPipeline._load(result, cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingPipeline]:
         """Retrieve pipeline
@@ -99,7 +118,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         pipelines = self._camel_post("/list", json={"limit": limit}).json()["items"]
         return EntityMatchingPipelineList._load(pipelines, cognite_client=self._cognite_client)
 
-    def run(self, id: int = None, external_id: str = None) -> ContextualizationJob:
+    def run(self, id: int = None, external_id: str = None) -> EntityMatchingPipelineRun:
         """Run pipeline
 
         Args:
@@ -107,9 +126,32 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             external_id: external id of the pipeline to run.
 
         Returns:
-            ContextualizationJob: object which can be used to wait for and retrieve results."""
+            EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
-        return self._run_job(job_path="/run", id=id, external_id=external_id)
+        return self._run_job(job_path="/run", id=id, external_id=external_id, job_cls=EntityMatchingPipelineRun)
+
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
+        """Delete pipelines
+
+        Args:
+            id (Union[int, List[int]): Id or list of ids
+            external_id (Union[str, List[str]]): External ID or list of external ids"""
+        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def update(
+        self,
+        item: Union[
+            EntityMatchingPipeline,
+            EntityMatchingPipelineUpdate,
+            List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]],
+        ],
+    ) -> Union[EntityMatchingPipeline, List[EntityMatchingPipeline]]:
+        """Update model
+
+        Args:
+            items (Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]]) : Pipeline(s) to update
+        """
+        return self._update_multiple(items=item)
 
 
 class EntityMatchingAPI(ContextAPI):
@@ -165,7 +207,7 @@ class EntityMatchingAPI(ContextAPI):
 
         Args:
             filter (dict): If not None, return models with parameter values that matches what is specified in the filter.
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to -1, float("inf") or None to return all items.
 
         Returns:
             EntityMatchingModelList: List of models."""
@@ -197,8 +239,8 @@ class EntityMatchingAPI(ContextAPI):
 
     def fit(
         self,
-        match_from: List[Union[Dict, CogniteResource]],
-        match_to: List[Union[Dict, CogniteResource]],
+        sources: List[Union[Dict, CogniteResource]],
+        targets: List[Union[Dict, CogniteResource]],
         true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]] = None,
         match_fields: List[Tuple[str, str]] = None,
         feature_type: str = None,
@@ -209,12 +251,13 @@ class EntityMatchingAPI(ContextAPI):
         external_id: str = None,
     ) -> EntityMatchingModel:
         """Fit entity matching model.
+        Note: All users on this CDF subscription with assets read-all capability in the project, are able to access the data sent to this endpoint.
 
         Args:
-            match_from: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
-            match_to: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
+            sources: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list)
+            targets: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
             id_field (str): use 'id' or 'external_id' as the id field to match resources
-            true_matches: Known valid matches given as a list of dicts with keys 'fromId', 'fromExternalId', 'toId', 'toExternalId'). If omitted, uses an unsupervised model.
+            true_matches: Known valid matches given as a list of dicts with keys 'sourceId', 'sourceExternalId', 'sourceId', 'sourceExternalId'). If omitted, uses an unsupervised model.
              A tuple can be used instead of the dictionary for convenience, interpreted as id/externalId based on type.
             match_fields: List of (from,to) keys to use in matching. Default in the API is [('name','name')]
             feature_type (str): feature type that defines the combination of features used, see API docs for details.
@@ -227,14 +270,14 @@ class EntityMatchingAPI(ContextAPI):
             EntityMatchingModel: Resulting queued model."""
 
         if match_fields:
-            match_fields = [ft if isinstance(ft, dict) else {"from": ft[0], "to": ft[1]} for ft in match_fields]
+            match_fields = [ft if isinstance(ft, dict) else {"source": ft[0], "target": ft[1]} for ft in match_fields]
         if true_matches:
             true_matches = [convert_true_match(true_match) for true_match in true_matches]
         response = self._camel_post(
             context_path="/",
             json=dict(
-                match_from=EntityMatchingModel.dump_entities(match_from),
-                match_to=EntityMatchingModel.dump_entities(match_to),
+                sources=EntityMatchingModel.dump_entities(sources),
+                targets=EntityMatchingModel.dump_entities(targets),
                 true_matches=true_matches,
                 match_fields=match_fields,
                 feature_type=feature_type,
@@ -249,18 +292,20 @@ class EntityMatchingAPI(ContextAPI):
 
     def predict(
         self,
-        match_from: Optional[List[Dict]] = None,
-        match_to: Optional[List[Dict]] = None,
+        sources: Optional[List[Dict]] = None,
+        targets: Optional[List[Dict]] = None,
         num_matches=1,
         score_threshold=None,
         id: Optional[int] = None,
         external_id: Optional[str] = None,
     ) -> ContextualizationJob:
         """Predict entity matching. NB. blocks and waits for the model to be ready if it has been recently created.
+        Note: All users on this CDF subscription with assets read-all capability in the project, are able to access the
+        data sent to this endpoint.
 
         Args:
-            match_from: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
-            match_to: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
+            sources: entities to match from, does not need an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). If omitted, will use data from fit.
+            targets: entities to match to, does not need an 'id' field.  Tolerant to passing more than is needed or used. If omitted, will use data from fit.
             num_matches (int): number of matches to return for each item.
             score_threshold (float): only return matches with a score above this threshold
             ignore_missing_fields (bool): whether missing data in keyFrom or keyTo should be filled in with an empty string.
@@ -271,8 +316,8 @@ class EntityMatchingAPI(ContextAPI):
         return self.retrieve(
             id=id, external_id=external_id
         ).predict(  # could call predict directly but this is friendlier
-            match_from=EntityMatchingModel.dump_entities(match_from),
-            match_to=EntityMatchingModel.dump_entities(match_to),
+            sources=EntityMatchingModel.dump_entities(sources),
+            targets=EntityMatchingModel.dump_entities(targets),
             num_matches=num_matches,
             score_threshold=score_threshold,
         )
@@ -284,6 +329,7 @@ class EntityMatchingAPI(ContextAPI):
         external_id: Optional[str] = None,
     ) -> "EntityMatchingModel":
         """Re-fits an entity matching model, using the combination of the old and new true matches.
+        Note: All users on this CDF subscription with assets read-all capability in the project, are able to access the data sent to this endpoint.
 
         Args:
             true_matches: Updated known valid matches given as a list of dicts with keys 'fromId', 'fromExternalId', 'toId', 'toExternalId').

@@ -144,6 +144,7 @@ class TestAssetsAPI:
         )
         assert COGNITE_CLIENT.assets_playground.retrieve(id=a.id) is None
 
+    @pytest.mark.skip("rate limiting problems")
     def test_post_asset_hierarchy(self, new_asset_hierarchy):
         prefix, ext_ids = new_asset_hierarchy
         posted_assets = COGNITE_CLIENT.assets_playground.retrieve_multiple(external_ids=ext_ids)
@@ -159,6 +160,7 @@ class TestAssetsAPI:
         assert 781 == len(COGNITE_CLIENT.assets_playground.retrieve_subtree(root_test_asset.id))
         assert 6 == len(COGNITE_CLIENT.assets_playground.retrieve_subtree(root_test_asset.id, depth=1))
 
+    @pytest.mark.skip("rate limiting problems")
     def test_create_asset_hierarchy_parent_external_id_not_in_request(self, new_root_asset):
         root = new_root_asset
         children = generate_asset_tree(
