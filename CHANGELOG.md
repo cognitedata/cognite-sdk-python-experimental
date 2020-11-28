@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.32.0] - 2020-11-30
+## [0.31.1] - 2020-11-30
 ### Added
 - Property `scheduled_time` on `FunctionCall` class.
 
