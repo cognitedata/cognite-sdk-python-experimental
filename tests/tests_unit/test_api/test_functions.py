@@ -71,6 +71,15 @@ CALL_TIMEOUT = {
     "status": "Timeout",
     "functionId": FUNCTION_ID,
 }
+CALL_SCHEDULED = {
+    "id": CALL_ID,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "scheduledTime": 1585925306000,
+    "status": "Completed",
+    "scheduleId": 6789,
+    "functionId": FUNCTION_ID,
+}
 
 
 @pytest.fixture
@@ -212,7 +221,7 @@ def function_handle_illegal_argument():
 @pytest.fixture
 def mock_function_calls_list_response(rsps):
 
-    response_body = {"items": [CALL_COMPLETED]}
+    response_body = {"items": [CALL_COMPLETED, CALL_SCHEDULED]}
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/list"
     rsps.add(rsps.POST, url, status=200, json=response_body)
 
