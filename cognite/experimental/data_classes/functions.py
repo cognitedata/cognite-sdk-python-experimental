@@ -166,7 +166,7 @@ class FunctionSchedule(CogniteResource):
         self.data = data
         self._cognite_client = cognite_client
 
-    def get_data(self):
+    def get_data(self) -> dict:
         """
         Get the input data associated to this schedule.
 
