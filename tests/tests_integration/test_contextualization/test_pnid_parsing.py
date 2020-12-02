@@ -1,7 +1,7 @@
 import pytest
 
+from cognite.client.data_classes import ContextualizationJob
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ContextualizationJob
 
 COGNITE_CLIENT = CogniteClient()
 PNIDAPI = COGNITE_CLIENT.pnid_parsing

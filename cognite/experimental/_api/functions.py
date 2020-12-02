@@ -56,14 +56,15 @@ class FunctionsAPI(APIClient):
         - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. `function_path` must point to a python file in the zipped folder within which a function named `handle` must be defined.\n
         - Via the `function_handle` argument, which is a reference to a function object, which must be named `handle`.\n
 
-        The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client` and `secrets`:\n
+        The function named `handle` is the entrypoint of the created function. Valid arguments to `handle` are `data`, `client`, `secrets` and `function_call_info`:\n
         - If the user calls the function with input data, this is passed through the `data` argument.\n
         - If the user gives an `api_key` when creating the function, a pre instantiated CogniteClient is passed through the `client` argument.\n
         - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
+        - Data about the function call can be accessed via the argument `function_call_info`, which is a dictionary with keys `function_id` and, if the call is scheduled, `schedule_id` and `scheduled_time`.\n
 
         Args:
             name (str):                             The name of the function.
-            folder (str, optional):            Path to the folder where the function source code is located.
+            folder (str, optional):                 Path to the folder where the function source code is located.
             file_id (int, optional):                File ID of the code uploaded to the Files API.
             function_path (str, optional):          Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
             function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
@@ -377,10 +378,10 @@ def _validate_function_handle(function_handle):
     if not function_handle.__code__.co_name == "handle":
         raise TypeError("Function referenced by function_handle must be named handle.")
     if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
-        set(["data", "client", "secrets"])
+        set(["data", "client", "secrets", "function_call_info"])
     ):
         raise TypeError(
-            "Arguments to function referenced by function_handle must be a subset of (data, client, secrets)"
+            "Arguments to function referenced by function_handle must be a subset of (data, client, secrets, function_call_info)"
         )
 
 
