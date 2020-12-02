@@ -166,6 +166,9 @@ class FunctionSchedule(CogniteResource):
         self.data = data
         self._cognite_client = cognite_client
 
+    def get_data(self):
+        return self._cognite_client.functions.schedules.get_data(id=self.id)
+
 
 class FunctionSchedulesList(CogniteResourceList):
     _RESOURCE = FunctionSchedule
