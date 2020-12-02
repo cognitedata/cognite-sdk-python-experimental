@@ -637,3 +637,25 @@ class FunctionSchedulesAPI(APIClient):
         json = {"items": [{"id": id,}]}
         url = f"/functions/schedules/delete"
         self._post(url, json=json)
+
+    def get_data(self, id: int) -> Dict:
+        """
+        Get the data associated with a specific schedule.
+        Args:
+            id (int): Id of the schedule
+
+        Returns:
+            The data passed to the function tied to the schedule.
+
+        Examples:
+
+            Get schedule data::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.functions.schedules.get_data(id = 123)
+        """
+        url = f"/functions/schedules/{id}/data"
+        res = self._get(url)
+
+        return res.json()["data"]
