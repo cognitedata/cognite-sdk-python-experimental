@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.32.0] - 2020-12-03
+### Fixed
+- Fix the client initialization to correctly pass all keyword arguments.
+
 ## [0.31.2] - 2020-12-03
 ### Fixed
 - Fix the filter functionality of `annotations`
