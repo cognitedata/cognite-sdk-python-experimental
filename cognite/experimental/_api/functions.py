@@ -641,13 +641,13 @@ class FunctionSchedulesAPI(APIClient):
 
     def get_input_data(self, id: int) -> Dict:
         """
-        Get the input data associated with a specific schedule.
+        Retrieve the input data to the associated function.
         Args:
             id (int): Id of the schedule
 
         Returns:
-            The data passed to the function tied to the schedule.
-
+            Input data to the associated function. This data is passed
+            deserialized into the function through the data argument.
         Examples:
 
             Get schedule input data::
