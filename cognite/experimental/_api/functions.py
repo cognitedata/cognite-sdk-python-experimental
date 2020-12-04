@@ -641,7 +641,7 @@ class FunctionSchedulesAPI(APIClient):
 
     def get_data(self, id: int) -> Dict:
         """
-        Get the data associated with a specific schedule.
+        Get the input data associated with a specific schedule.
         Args:
             id (int): Id of the schedule
 
