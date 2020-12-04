@@ -166,6 +166,16 @@ class FunctionSchedule(CogniteResource):
         self.data = data
         self._cognite_client = cognite_client
 
+    def get_input_data(self) -> dict:
+        """
+        Retrieve the input data to the associated function.
+
+        Returns:
+            Input data to the associated function. This data is passed
+            deserialized into the function through the data argument.
+        """
+        return self._cognite_client.functions.schedules.get_input_data(id=self.id)
+
 
 class FunctionSchedulesList(CogniteResourceList):
     _RESOURCE = FunctionSchedule

@@ -140,6 +140,7 @@ class TestEntityMatchingIntegration:
         assert isinstance(new_model, EntityMatchingModel)
         assert isinstance(new_model2, EntityMatchingModel)
 
+    @pytest.mark.skip(reason="Broken test. See MLOPS-604")
     def test_pipeline(self):
         pipeline = EntityMatchingPipeline(
             name="foo",
