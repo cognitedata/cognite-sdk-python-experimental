@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.31.2] - 2020-12-02
+## [0.32.0] - 2020-12-02
 ### Added
 - Method `get_data` on the `FunctionSchedule`-class. 
 - Method `get_data` on the `FunctionScheduleAPI`-class.
