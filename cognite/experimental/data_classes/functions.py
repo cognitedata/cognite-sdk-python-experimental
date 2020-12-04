@@ -173,7 +173,7 @@ class FunctionSchedule(CogniteResource):
         Returns:
             Input data associated with this schedule.
         """
-        return self._cognite_client.functions.schedules.get_data(id=self.id)
+        return self._cognite_client.functions.schedules.get_input_data(id=self.id)
 
 
 class FunctionSchedulesList(CogniteResourceList):

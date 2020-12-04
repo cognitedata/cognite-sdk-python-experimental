@@ -639,7 +639,7 @@ class FunctionSchedulesAPI(APIClient):
         url = f"/functions/schedules/delete"
         self._post(url, json=json)
 
-    def get_data(self, id: int) -> Dict:
+    def get_input_data(self, id: int) -> Dict:
         """
         Get the input data associated with a specific schedule.
         Args:
@@ -650,13 +650,13 @@ class FunctionSchedulesAPI(APIClient):
 
         Examples:
 
-            Get schedule data::
+            Get schedule input data::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> c.functions.schedules.get_data(id = 123)
+                >>> c.functions.schedules.get_input_data(id = 123)
         """
-        url = f"/functions/schedules/{id}/data"
+        url = f"/functions/schedules/{id}/input_data"
         res = self._get(url)
 
         return res.json()["data"]

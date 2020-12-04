@@ -509,7 +509,7 @@ class TestFunctionSchedulesAPI:
         assert None == res
 
     def test_schedule_get_data(self, mock_schedule_get_data_response):
-        res = FUNCTION_SCHEDULES_API.get_data(id=8012683333564363)
+        res = FUNCTION_SCHEDULES_API.get_input_data(id=8012683333564363)
 
         assert isinstance(res, dict)
         expected = mock_schedule_get_data_response.calls[0].response.json()["data"]
