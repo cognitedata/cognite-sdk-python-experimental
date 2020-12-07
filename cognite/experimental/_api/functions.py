@@ -542,7 +542,7 @@ class FunctionCallsAPI(APIClient):
 
 class FunctionSchedulesAPI(APIClient):
     def retrieve(self, id: int) -> FunctionSchedule:
-        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-function-scheudles-by-id>`_
+        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/getFunctionSchedule>`_
 
         Args:
             id (int): ID
