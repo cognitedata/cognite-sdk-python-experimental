@@ -18,6 +18,8 @@ from cognite.experimental._api.relationships import RelationshipsAPI
 from cognite.experimental._api.schema_completion import SchemaCompletionAPI
 from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.unstructured import GrepAPI
+from cognite.experimental._api.integrations import IntegrationsAPI
+from cognite.experimental._api.integrationruns import IntegrationsRunsAPI
 
 
 class ExperimentalFilesApi(FilesAPI):
@@ -105,3 +107,5 @@ class CogniteClient(Client):
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
+        self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
+        self.runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
