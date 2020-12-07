@@ -24,7 +24,7 @@ class AnnotationsAPI(APIClient):
         assert_type(annotations, "annotation", [Annotation, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
 
-    def list(self, limit: int = 100, filter: AnnotationFilter = None) -> AnnotationList:
+    def list(self, limit: int = 100, filter: Union[AnnotationFilter, Dict] = {}) -> AnnotationList:
         """List annotations
 
         Args:
@@ -35,10 +35,13 @@ class AnnotationsAPI(APIClient):
             AnnotationList: list of annotations
         """
         assert_type(limit, "limit", [int], allow_none=False)
-        assert_type(filter, "filter", [AnnotationFilter, dict], allow_none=True)
+        assert_type(filter, "filter", [AnnotationFilter, dict], allow_none=False)
 
         if isinstance(filter, AnnotationFilter):
             filter = filter.dump(camel_case=True)
+
+        elif isinstance(filter, dict):
+            filter = {to_camel_case(k): v for k, v in filter.items()}
 
         if filter.get("annotatedResourceIds"):
             filter["annotatedResourceIds"] = [

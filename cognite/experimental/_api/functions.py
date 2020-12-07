@@ -638,3 +638,25 @@ class FunctionSchedulesAPI(APIClient):
         json = {"items": [{"id": id,}]}
         url = f"/functions/schedules/delete"
         self._post(url, json=json)
+
+    def get_input_data(self, id: int) -> Dict:
+        """
+        Retrieve the input data to the associated function.
+        Args:
+            id (int): Id of the schedule
+
+        Returns:
+            Input data to the associated function. This data is passed
+            deserialized into the function through the data argument.
+        Examples:
+
+            Get schedule input data::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.functions.schedules.get_input_data(id = 123)
+        """
+        url = f"/functions/schedules/{id}/input_data"
+        res = self._get(url)
+
+        return res.json()["data"]
