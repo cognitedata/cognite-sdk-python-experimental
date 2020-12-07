@@ -541,6 +541,29 @@ class FunctionCallsAPI(APIClient):
 
 
 class FunctionSchedulesAPI(APIClient):
+
+    def retrieve(self, id) -> FunctionSchedule:
+        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-function-scheudles-by-id>`_
+
+        Args:
+            id (int): ID
+
+        Returns:
+            Optional[FunctionSchedule]: Requested function schedule or None if it does not exist.
+
+        Examples:
+
+            Get function schedule by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.functions.schedules.retrieve(id=1)
+
+        """
+        url = f"/functions/schedules/{id}"
+        res = self._get(url)
+        return FunctionSchedule._load(res.json(), cognite_client=self._cognite_client)
+
     def list(self) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
