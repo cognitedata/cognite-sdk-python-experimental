@@ -548,7 +548,8 @@ class FunctionSchedulesAPI(APIClient):
             id (int): ID
 
         Returns:
-            FunctionSchedule: Requested function schedule or None if it does not exist.
+            FunctionSchedule: Requested function schedule.
+
 
         Examples:
 

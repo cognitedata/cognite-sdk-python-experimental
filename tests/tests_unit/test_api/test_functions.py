@@ -450,7 +450,6 @@ def mock_function_schedules_response(rsps):
 @pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/{SCHEDULE1['id']}"
-    rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.GET, url, status=200, json=SCHEDULE1)
 
     yield rsps
