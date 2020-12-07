@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
+
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList
 
 

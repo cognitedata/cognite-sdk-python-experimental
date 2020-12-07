@@ -8,6 +8,7 @@ from cognite.client.data_classes import (
     EntityMatchingModelList,
     EntityMatchingModelUpdate,
 )
+
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
     EntityMatchingPipeline,

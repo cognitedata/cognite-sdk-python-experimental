@@ -1,9 +1,9 @@
 from typing import Dict, List, Tuple, Union
 
 import requests
-
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+
 from cognite.experimental.data_classes.unstructured import UnstructuredAggregateList, UnstructuredSearchResultList
 
 

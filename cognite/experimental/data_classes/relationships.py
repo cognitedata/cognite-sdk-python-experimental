@@ -62,7 +62,8 @@ class Relationship(CogniteResource):
             return target
 
         from cognite.client.data_classes import Asset as NonExperimentalAsset
-        from cognite.client.data_classes import Event, FileMetadata, TimeSeries, Sequence
+        from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
+
         from cognite.experimental.data_classes import Asset as ExperimentalAsset
 
         _TARGET_TYPES = {
