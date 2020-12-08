@@ -1,9 +1,9 @@
 import random
 
 import pytest
+
 from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.client.exceptions import CogniteAPIError
-
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
     EntityMatchingPipeline,
@@ -30,7 +30,11 @@ class TestEntityMatchingIntegration:
             "resource": "assets",
         }
         pipeline = EntityMatchingPipeline(
-            name="foo", sources=sources, targets=targets, model_parameters={"featureType": "insensitive"},
+            name="foo",
+            sources=sources,
+            targets=targets,
+            model_parameters={"featureType": "insensitive"},
+            use_existing_matches=True,
         )
         new_pipeline = EMAPI.pipelines.create(pipeline)
         run = new_pipeline.run()
