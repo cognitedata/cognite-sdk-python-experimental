@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 from cognite.client.data_classes import TimestampRange
 from cognite.client.data_classes._base import *
+
 from cognite.experimental.data_classes.shared import AssetIdsFilter, GeoShape
 
 
