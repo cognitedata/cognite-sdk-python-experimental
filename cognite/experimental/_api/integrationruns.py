@@ -26,7 +26,7 @@ class IntegrationsRunsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> runsList = c.runs.list(external_id="test ext id", limit=5)
+                >>> runsList = c.integration_runs.list(external_id="test ext id", limit=5)
         """
 
         self._LIST_CLASS = IntegrationWithStatusesList
@@ -55,7 +55,7 @@ class IntegrationsRunsAPI(APIClient):
                 >>> from cognite.experimental.data_classes import IntegrationRun
                 >>> c = CogniteClient()
                 >>> integrationRuns = [IntegrationRun(status="success", external_id="extId"),...]
-                >>> res = c.runs.create(integrationRuns)
+                >>> res = c.integration_runs.create(integrationRuns)
         """
         self._LIST_CLASS = IntegrationRunList
         utils._auxiliary.assert_type(run, "run", [IntegrationRun, list])

@@ -4,10 +4,9 @@ import pytest
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import IntegrationRun, IntegrationRunList, IntegrationWithStatuses, IntegrationWithStatusesList
-from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
-TEST_API = COGNITE_CLIENT.runs
+TEST_API = COGNITE_CLIENT.integration_runs
 
 
 @pytest.fixture

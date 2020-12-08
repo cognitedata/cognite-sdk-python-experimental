@@ -110,4 +110,4 @@ class CogniteClient(Client):
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
-        self.runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
+        self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
