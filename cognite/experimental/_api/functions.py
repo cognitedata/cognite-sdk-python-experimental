@@ -12,6 +12,7 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,

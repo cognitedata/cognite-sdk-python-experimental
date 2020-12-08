@@ -1,8 +1,8 @@
 import re
 
 import pytest
-
 from cognite.client.data_classes import ContextualizationJob
+
 from cognite.experimental import CogniteClient
 
 COGNITE_CLIENT = CogniteClient()

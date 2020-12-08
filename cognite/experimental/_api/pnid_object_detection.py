@@ -1,4 +1,5 @@
 from cognite.client.data_classes import ContextualizationJob
+
 from cognite.experimental._context_client import ContextAPI
 
 

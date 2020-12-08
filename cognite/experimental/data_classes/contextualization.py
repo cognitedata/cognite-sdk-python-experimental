@@ -3,8 +3,6 @@ import math
 import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
-from typing_extensions import TypedDict
-
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import (
     CognitePrimitiveUpdate,
@@ -14,6 +12,7 @@ from cognite.client.data_classes._base import (
 )
 from cognite.client.exceptions import ModelFailedException
 from cognite.client.utils._auxiliary import to_camel_case
+from typing_extensions import TypedDict
 
 
 class EntityMatchingPipelineRun(ContextualizationJob):
