@@ -30,7 +30,11 @@ class TestEntityMatchingIntegration:
             "resource": "assets",
         }
         pipeline = EntityMatchingPipeline(
-            name="foo", sources=sources, targets=targets, model_parameters={"featureType": "insensitive"},
+            name="foo",
+            sources=sources,
+            targets=targets,
+            model_parameters={"featureType": "insensitive"},
+            use_existing_matches=True,
         )
         new_pipeline = EMAPI.pipelines.create(pipeline)
         run = new_pipeline.run()
