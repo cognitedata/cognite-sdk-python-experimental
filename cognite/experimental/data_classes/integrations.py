@@ -16,7 +16,7 @@ class Integration(CogniteResource):
         schedule (str): undefined/triggered/streamed/cron regex.
         owner (dict[str, Any]): owner record in dict format: {"name": "value", "email": "value"}.
         authors (List[Dict[str, Any]]): list of responsible users [{"name": "value", "email": "value"},...]
-        metadata (Dict[str, Any]): Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 128 bytes, value 10240 bytes, up to 256 key-value pairs, of total size at most 10240.
+        metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 128 bytes, value 10240 bytes, up to 256 key-value pairs, of total size at most 10240.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         cognite_client (CogniteClient): The client to associate with this object.
@@ -35,7 +35,7 @@ class Integration(CogniteResource):
             schedule: str = None,
             owner: Dict[str, Any] = None,
             authors: List[Dict[str, Any]] = None,
-            metadata: Dict[str, Any] = None,
+            metadata: Dict[str, str] = None,
             created_time: int = None,
             last_updated_time: int = None,
             cognite_client=None,

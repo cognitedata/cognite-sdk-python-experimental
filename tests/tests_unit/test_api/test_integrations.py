@@ -27,8 +27,8 @@ def mock_int_response(rsps):
                     "email": "aaa@cognite.com"
                 },
                 "metadata": {
-                    "step": 22,
-                    "version": 1
+                    "step": "22",
+                    "version": "1"
                 }
             }
         ]
@@ -59,8 +59,8 @@ def mock_int_retrieve_response(rsps):
                     "email": "aaa@cognite.com"
                 },
                 "metadata": {
-                    "step": 22,
-                    "version": 1
+                    "step": "22",
+                    "version": "1"
                 }
             }
     url_pattern = re.compile(
