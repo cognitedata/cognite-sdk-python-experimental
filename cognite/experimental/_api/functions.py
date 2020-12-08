@@ -560,9 +560,8 @@ class FunctionSchedulesAPI(APIClient):
                 >>> res = c.functions.schedules.retrieve(id=1)
 
         """
-        url = f"/functions/schedules/{id}"
-        res = self._get(url)
-        return FunctionSchedule._load(res.json(), cognite_client=self._cognite_client)
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id)
+        return self._retrieve_multiple(ids=id, wrap_ids=True)
 
     def list(self) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
