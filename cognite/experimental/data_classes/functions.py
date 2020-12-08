@@ -166,6 +166,16 @@ class FunctionSchedule(CogniteResource):
         self.data = data
         self._cognite_client = cognite_client
 
+    def get_input_data(self) -> dict:
+        """
+        Retrieve the input data to the associated function.
+
+        Returns:
+            Input data to the associated function. This data is passed
+            deserialized into the function through the data argument.
+        """
+        return self._cognite_client.functions.schedules.get_input_data(id=self.id)
+
 
 class FunctionSchedulesList(CogniteResourceList):
     _RESOURCE = FunctionSchedule
@@ -182,9 +192,10 @@ class FunctionCall(CogniteResource):
 
     Args:
         id (int): A server-generated ID for the object.
-        start_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        end_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        status (str): Status of the function call ("Running" or "Completed").
+        start_time (int): Start time of the call, measured in number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        end_time (int): End time of the call, measured in number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        scheduled_time (int): Scheduled time of the call, measured in number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        status (str): Status of the function call ("Running", "Completed" or "Failed").
         schedule_id (int): The schedule id belonging to the call.
         error (dict): Error from the function call. It contains an error message and the stack trace.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
@@ -195,6 +206,7 @@ class FunctionCall(CogniteResource):
         id: int = None,
         start_time: int = None,
         end_time: int = None,
+        scheduled_time: int = None,
         status: str = None,
         schedule_id: int = None,
         error: dict = None,
@@ -204,6 +216,7 @@ class FunctionCall(CogniteResource):
         self.id = id
         self.start_time = start_time
         self.end_time = end_time
+        self.scheduled_time = scheduled_time
         self.status = status
         self.schedule_id = schedule_id
         self.error = error

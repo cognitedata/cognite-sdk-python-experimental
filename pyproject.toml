@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cognite-sdk-experimental"
-version = "0.31.0"
+version = "0.33.0"
 description = "Experimental additions to the Python SDK"
 authors = ["Sander Land <sander.land@cognite.com>"]
 
@@ -14,11 +14,8 @@ target_version = ['py37']
 include = '\.py$'
 
 [tool.isort]
-line_length=120                # corresponds to -w  flag
-multi_line_output=3            # corresponds to -m  flag
-include_trailing_comma=true    # corresponds to -tc flag
-skip_glob = '^((?!py$).)*$'    # this makes sort all Python files
-known_third_party = ["black", "pytest", "requests", "responses", "shared", "typing_extensions", "util"]
+profile = "black"
+line_length = 120
 
 [tool.tox]
 legacy_tox_ini = """
@@ -51,11 +48,9 @@ sympy = "^1.3.0"
 typing-extensions = "^3.7.4"
 
 [tool.poetry.dev-dependencies]
-isort = "^4.3.21"
 pre-commit = "^2.1.1"
 pytest = "^5.3.5"
 pytest-cov = "^2.8.1"
-black = "^19.10b0"
 tox = "^3.14.5"
 tox-pyenv = "^1.1.0"
 sphinx = "^2.4.4"

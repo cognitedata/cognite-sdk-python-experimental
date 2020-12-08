@@ -1,10 +1,10 @@
 from datetime import datetime
 from unittest import mock
 
-import pytest
-
 import cognite.client.utils._time
+import pytest
 from cognite.client.utils._auxiliary import random_string
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Asset, AssetUpdate, Type, TypeFilter, TypeList
 from tests.utils import set_request_limit

@@ -71,6 +71,15 @@ CALL_TIMEOUT = {
     "status": "Timeout",
     "functionId": FUNCTION_ID,
 }
+CALL_SCHEDULED = {
+    "id": CALL_ID,
+    "startTime": 1585925306822,
+    "endTime": 1585925310822,
+    "scheduledTime": 1585925306000,
+    "status": "Completed",
+    "scheduleId": 6789,
+    "functionId": FUNCTION_ID,
+}
 
 
 @pytest.fixture
@@ -120,7 +129,6 @@ def mock_functions_create_response(rsps):
 
 @pytest.fixture
 def mock_file_not_uploaded(rsps):
-
     files_response_body = {
         "name": "myfunction",
         "id": FUNCTION_ID,
@@ -170,7 +178,6 @@ def mock_functions_call_by_external_id_responses(mock_functions_retrieve_respons
 
 @pytest.fixture
 def mock_functions_call_failed_response(rsps):
-
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_FAILED)
 
@@ -211,8 +218,7 @@ def function_handle_illegal_argument():
 
 @pytest.fixture
 def mock_function_calls_list_response(rsps):
-
-    response_body = {"items": [CALL_COMPLETED]}
+    response_body = {"items": [CALL_COMPLETED, CALL_SCHEDULED]}
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/list"
     rsps.add(rsps.POST, url, status=200, json=response_body)
 
@@ -457,6 +463,14 @@ def mock_function_schedules_delete_response(rsps):
     yield rsps
 
 
+@pytest.fixture
+def mock_schedule_get_data_response(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/{SCHEDULE2['id']}/input_data"
+    rsps.add(rsps.GET, url, status=200, json={"id": SCHEDULE2["id"], "data": SCHEDULE2["data"]})
+
+    yield rsps
+
+
 class TestFunctionSchedulesAPI:
     def test_list_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
@@ -493,6 +507,13 @@ class TestFunctionSchedulesAPI:
     def test_delete_schedules(self, mock_function_schedules_delete_response):
         res = FUNCTION_SCHEDULES_API.delete(id=8012683333564363)
         assert None == res
+
+    def test_schedule_get_data(self, mock_schedule_get_data_response):
+        res = FUNCTION_SCHEDULES_API.get_input_data(id=8012683333564363)
+
+        assert isinstance(res, dict)
+        expected = mock_schedule_get_data_response.calls[0].response.json()["data"]
+        assert res == expected
 
 
 class TestFunctionCallsAPI:

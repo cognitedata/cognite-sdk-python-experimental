@@ -5,6 +5,7 @@ from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
+
 from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
@@ -43,7 +44,7 @@ class CogniteClient(Client):
     Args:
         * api_key (str): Your api key. If not given, looks for it in environment variables COGNITE_API_KEY and [PROJECT]_API_KEY
         * server (str): Sets base_url to https://[server].cognitedata.com, e.g. server=greenfield.
-        * Other arguments are passed to the base SDK directly.
+        * Other keyword arguments are passed to the base SDK directly.
     """
 
     def __init__(
@@ -59,6 +60,7 @@ class CogniteClient(Client):
         disable_pypi_version_check: Optional[bool] = None,
         debug: bool = False,
         server=None,
+        **kwargs,
     ):
         if base_url is None and server is not None:
             base_url = "https://" + server + ".cognitedata.com"
@@ -76,16 +78,17 @@ class CogniteClient(Client):
                 )
 
         super().__init__(
-            api_key,
-            project,
-            client_name,
-            base_url,
-            max_workers,
-            headers,
-            timeout,
-            token,
-            disable_pypi_version_check,
-            debug,
+            api_key=api_key,
+            project=project,
+            client_name=client_name,
+            base_url=base_url,
+            max_workers=max_workers,
+            headers=headers,
+            timeout=timeout,
+            token=token,
+            disable_pypi_version_check=disable_pypi_version_check,
+            debug=debug,
+            **kwargs,
         )
         # OLD relationships - planned to be removed soon
         self.relationships_playground = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)

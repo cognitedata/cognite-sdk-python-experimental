@@ -1,9 +1,9 @@
 import random
 
 import pytest
-
 from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
 from cognite.client.exceptions import CogniteAPIError
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
     EntityMatchingPipeline,
@@ -140,6 +140,7 @@ class TestEntityMatchingIntegration:
         assert isinstance(new_model, EntityMatchingModel)
         assert isinstance(new_model2, EntityMatchingModel)
 
+    @pytest.mark.skip(reason="Broken test. See MLOPS-604")
     def test_pipeline(self):
         pipeline = EntityMatchingPipeline(
             name="foo",

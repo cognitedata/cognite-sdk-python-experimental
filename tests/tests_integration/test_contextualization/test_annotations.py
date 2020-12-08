@@ -1,6 +1,6 @@
 import pytest
-
 from cognite.client.exceptions import CogniteAPIError
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, ContextualizationJob
 
@@ -61,6 +61,19 @@ class TestAnnotationsIntegration:
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, AnnotationList)
         assert all([l.annotation_type == "abc" for l in l_annots])
+
+    def test_list_annotation_type_dict_filter(self, new_annotations):
+        assert isinstance(new_annotations, AnnotationList)
+
+        fil = {"annotation_type": "abc"}
+        l_annots = ANNOTATIONSAPI.list(filter=fil)
+        assert isinstance(l_annots, AnnotationList)
+        assert all([l.annotation_type == "abc" for l in l_annots])
+
+    def test_list_annotation_type_no_filter(self, new_annotations):
+        assert isinstance(new_annotations, AnnotationList)
+        l_annots = ANNOTATIONSAPI.list()
+        assert isinstance(l_annots, AnnotationList)
 
     def test_list_annotated_resource_external_id(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)
