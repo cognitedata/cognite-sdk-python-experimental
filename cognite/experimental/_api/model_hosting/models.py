@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 
 from cognite.client._api_client import APIClient
 from cognite.client.exceptions import CogniteAPIError
+
 from cognite.experimental.data_classes.model_hosting.models import Model, ModelList
 
 

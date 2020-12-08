@@ -1,6 +1,6 @@
 import pytest
-
 from cognite.client.exceptions import CogniteAPIError
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, ContextualizationJob
 

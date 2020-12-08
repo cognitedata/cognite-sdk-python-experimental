@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import Dict, List, Union
 
 from cognite.client.data_classes import ContextualizationJob
+
 from cognite.experimental._context_client import ContextAPI
 
 
