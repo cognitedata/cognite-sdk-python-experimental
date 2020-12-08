@@ -7,6 +7,7 @@ from cognite.client import utils
 from cognite.client._api.assets import AssetsAPI
 from cognite.client.data_classes import TimestampRange
 from cognite.client.exceptions import CogniteAPIError
+
 from cognite.experimental.data_classes import Asset, AssetFilter, AssetList, AssetUpdate
 from cognite.experimental.utils import use_v1_instead_of_playground
 

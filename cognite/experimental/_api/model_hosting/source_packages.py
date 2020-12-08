@@ -4,6 +4,7 @@ from subprocess import check_call
 from typing import Dict, List, Tuple
 
 from cognite.client._api_client import APIClient
+
 from cognite.experimental.data_classes.model_hosting.source_packages import (
     CreateSourcePackageResponse,
     SourcePackage,

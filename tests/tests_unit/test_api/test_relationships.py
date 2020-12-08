@@ -5,9 +5,9 @@ import re
 import string
 
 import pytest
-
 from cognite.client.data_classes import Event, FileMetadata, Sequence, TimeSeries
 from cognite.client.utils._auxiliary import random_string, to_snake_case
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Asset, Relationship, RelationshipList
 from tests.utils import jsgz_load

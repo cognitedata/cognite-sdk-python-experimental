@@ -2,6 +2,7 @@ from typing import Any, Dict, Generator, List, Optional, Set, Union
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+
 from cognite.experimental.data_classes import ParentTypeDefinitionFilter, Type, TypeFilter, TypeList
 
 
