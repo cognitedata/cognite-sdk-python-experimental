@@ -35,40 +35,11 @@ def mock_int_response(rsps):
     }
     url_pattern = re.compile(
         re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations(?:/?.+|/update|/delete|/list|/search|$|\?.+)"
+        + r"/integrations(?:/byids|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
-    rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
-    yield rsps
-
-
-@pytest.fixture
-def mock_int_retrieve_response(rsps):
-    response_body = {
-                "id": 1,
-                "externalId": "int-123",
-                "name": "test_name",
-                "description": "description",
-                "createdTime": 1565965333132,
-                "lastUpdatedTime": 1565965333132,
-                "dataSetId": 1,
-                "owner": {
-                    "name": "test name",
-                    "email": "aaa@cognite.com"
-                },
-                "metadata": {
-                    "step": "22",
-                    "version": "1"
-                }
-            }
-    url_pattern = re.compile(
-        re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations/1"
-    )
-    rsps.assert_all_requests_are_fired = False
-
     rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
     yield rsps
 
@@ -78,7 +49,7 @@ def mock_int_empty(rsps):
     response_body = {"items": []}
     url_pattern = re.compile(
         re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations(?:/?.+|/update|/delete|/list|/search|$|\?.+)"
+        + r"/integrations(?:/byids|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -88,10 +59,15 @@ def mock_int_empty(rsps):
 
 
 class TestIntegrations:
-    def test_retrieve_single(self, mock_int_retrieve_response):
+    def test_retrieve_single(self, mock_int_response):
         res = TEST_API.retrieve(id=1)
         assert isinstance(res, Integration)
-        assert mock_int_retrieve_response.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_retrieve_multiple(self, mock_int_response):
+        res = TEST_API.retrieve_multiple(ids=[1])
+        assert isinstance(res, IntegrationList)
+        assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_list(self, mock_int_response):
         res = TEST_API.list()

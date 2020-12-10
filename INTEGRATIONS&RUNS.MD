@@ -42,6 +42,11 @@ res = client.integrations.update(up)
 res1 = client.integrations.retrieve(id=res.id)
 ```
 
+##Retrieve integrations by ids and external ids
+```python
+intList = client.integrations.retrieve_multiple(ids=[23,24,25, 120], external_ids=['test_id'])
+```
+
 ##List integration runs 
 ```python
 runsList = client.integration_runs.list(external_id=res1.external_id)

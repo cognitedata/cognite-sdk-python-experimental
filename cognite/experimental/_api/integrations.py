@@ -9,13 +9,12 @@ class IntegrationsAPI(APIClient):
     _RESOURCE_PATH = "/integrations"
     _LIST_CLASS = IntegrationList
 
-    # def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Integration]:
-    def retrieve(self, id: Optional[int] = None) -> Optional[Integration]:
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Integration]:
         """`Retrieve a single Integration by id. `_
 
         Args:
             id (int, optional): ID
-            todo external_id (str, optional): External ID
+            external_id (str, optional): External ID
 
         Returns:
             Optional[Integration]: Requested integration or None if it does not exist.
@@ -34,9 +33,45 @@ class IntegrationsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> res = c.integrations.retrieve(external_id="1")
         """
-        # utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
-        # return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
-        return self._retrieve(id=id)
+
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def retrieve_multiple(
+            self,
+            ids: Optional[List[int]] = None,
+            external_ids: Optional[List[str]] = None,
+            ignore_unknown_ids: bool = False,
+    ) -> IntegrationList:
+        """`Retrieve multiple integrations by ids and external ids. <>`_
+
+        Args:
+            ids (List[int], optional): IDs
+            external_ids (List[str], optional): External IDs
+            ignore_unknown_ids (bool): Ignore IDs and external IDs that are not found rather than throw an exception.
+
+        Returns:
+            IntegrationList: The requested integrations.
+
+        Examples:
+
+            Get integrations by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.integrations.retrieve_multiple(ids=[1, 2, 3])
+
+            Get assets by external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.integrations.retrieve_multiple(external_ids=["abc", "def"], ignore_unknown_ids=True)
+        """
+        utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
+        utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
+        return self._retrieve_multiple(
+            ids=ids, external_ids=external_ids, ignore_unknown_ids=ignore_unknown_ids, wrap_ids=True
+        )
 
     def list(self, limit: int = 25) -> IntegrationList:
         """`List integrations <>`_
