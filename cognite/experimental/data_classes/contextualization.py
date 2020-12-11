@@ -3,8 +3,6 @@ import math
 import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
-from typing_extensions import TypedDict
-
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import (
     CognitePrimitiveUpdate,
@@ -14,6 +12,7 @@ from cognite.client.data_classes._base import (
 )
 from cognite.client.exceptions import ModelFailedException
 from cognite.client.utils._auxiliary import to_camel_case
+from typing_extensions import TypedDict
 
 
 class EntityMatchingPipelineRun(ContextualizationJob):
@@ -55,6 +54,8 @@ class EntityMatchingPipeline(CogniteResource):
         true_matches: List = None,
         rejected_matches: List = None,
         confirmed_matches: List = None,
+        use_existing_matches: bool = None,
+        relationships_label: str = None,
         score_threshold: float = None,
         schedule_interval: int = None,
         rules: List = None,
@@ -74,6 +75,8 @@ class EntityMatchingPipeline(CogniteResource):
             true_matches: existing matches with reasonable certainty to use in training.
             confirmed_matches: user-confirmed certain matches which will be used to override any other results.
             rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
+            use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
+            relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
             rules: list of matching rules
             schedule_interval: automatically schedule pipeline to be run every this many seconds.
         """
@@ -88,6 +91,8 @@ class EntityMatchingPipeline(CogniteResource):
         self.true_matches = true_matches
         self.confirmed_matches = confirmed_matches
         self.rejected_matches = rejected_matches
+        self.use_existing_matches = use_existing_matches
+        self.relationships_label = relationships_label
         self.score_threshold = score_threshold
         self.rules = rules
         self.schedule_interval = schedule_interval
