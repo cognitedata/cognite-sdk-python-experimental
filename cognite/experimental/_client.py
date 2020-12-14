@@ -11,6 +11,8 @@ from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.functions import FunctionsAPI
+from cognite.experimental._api.integrationruns import IntegrationsRunsAPI
+from cognite.experimental._api.integrations import IntegrationsAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
@@ -108,3 +110,5 @@ class CogniteClient(Client):
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
+        self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
+        self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
