@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Dict, Optional, Union, List
+from typing import Callable, Dict, List, Optional, Union
 
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
