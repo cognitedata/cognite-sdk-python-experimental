@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, Optional, Union, List
 
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
@@ -59,6 +59,11 @@ class CogniteClient(Client):
         headers: Dict[str, str] = None,
         timeout: int = None,
         token: Union[str, Callable[[], str], None] = None,
+        token_url: Optional[str] = None,
+        token_client_id: Optional[str] = None,
+        token_client_secret: Optional[str] = None,
+        token_scopes: Optional[List[str]] = None,
+        token_custom_args: Optional[Dict[str, str]] = None,
         disable_pypi_version_check: Optional[bool] = None,
         debug: bool = False,
         server=None,
@@ -70,7 +75,8 @@ class CogniteClient(Client):
         if client_name is None and not os.environ.get("COGNITE_CLIENT_NAME"):
             client_name = "Cognite Experimental SDK"
 
-        if token is None and (api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None):
+        no_auth_args = token is None and token_url is None and api_key is None
+        if no_auth_args and not os.environ.get("COGNITE_API_KEY") and project is not None:
             key = project.upper().replace("-", "_") + "_API_KEY"
             if os.environ.get(key):
                 api_key = os.environ[key]
@@ -88,6 +94,11 @@ class CogniteClient(Client):
             headers=headers,
             timeout=timeout,
             token=token,
+            token_url=token_url,
+            token_client_id=token_client_id,
+            token_client_secret=token_client_secret,
+            token_scopes=token_scopes,
+            token_custom_args=token_custom_args,
             disable_pypi_version_check=disable_pypi_version_check,
             debug=debug,
             **kwargs,
