@@ -22,14 +22,8 @@ def mock_int_response(rsps):
                 "createdTime": 1565965333132,
                 "lastUpdatedTime": 1565965333132,
                 "dataSetId": 1,
-                "owner": {
-                    "name": "test name",
-                    "email": "aaa@cognite.com"
-                },
-                "metadata": {
-                    "step": "22",
-                    "version": "1"
-                }
+                "owner": {"name": "test name", "email": "aaa@cognite.com"},
+                "metadata": {"step": "22", "version": "1"},
             }
         ]
     }
@@ -75,32 +69,35 @@ class TestIntegrations:
 
     def test_create_single(self, mock_int_response):
         res = TEST_API.create(
-            Integration(external_id="py test id",
-                        name="py test",
-                        description="python generated",
-                        data_set_id=1,
-                        schedule="",
-                        owner={"name": "Alex", "email": "Alex@test.no"}
-                        )
+            Integration(
+                external_id="py test id",
+                name="py test",
+                description="python generated",
+                data_set_id=1,
+                schedule="",
+                owner={"name": "Alex", "email": "Alex@test.no"},
+            )
         )
         assert isinstance(res, Integration)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_multiple(self, mock_int_response):
-        int1 = Integration(external_id="py test id",
-                           name="py test",
-                           description="python generated",
-                           data_set_id=1,
-                           schedule="",
-                           owner={"name": "Alex", "email": "Alex@test.no"}
+        int1 = Integration(
+            external_id="py test id",
+            name="py test",
+            description="python generated",
+            data_set_id=1,
+            schedule="",
+            owner={"name": "Alex", "email": "Alex@test.no"},
         )
 
-        int2 = Integration(external_id="py test id2",
-                           name="py test2",
-                           description="python generated",
-                           data_set_id=1,
-                           schedule="",
-                           owner={"name": "Alex", "email": "Alex@test.no"}
+        int2 = Integration(
+            external_id="py test id2",
+            name="py test2",
+            description="python generated",
+            data_set_id=1,
+            schedule="",
+            owner={"name": "Alex", "email": "Alex@test.no"},
         )
 
         res = TEST_API.create([int1, int2])
@@ -119,18 +116,21 @@ class TestIntegrations:
 
     def test_delete_multiple(self, mock_int_response):
         res = TEST_API.delete(external_id=["a", "b"])
-        assert {"items": [{"externalId": "a"},{"externalId": "b"}]} == jsgz_load(mock_int_response.calls[0].request.body)
+        assert {"items": [{"externalId": "a"}, {"externalId": "b"}]} == jsgz_load(
+            mock_int_response.calls[0].request.body
+        )
         assert res is None
 
     def test_update_single(self, mock_int_response):
         res = TEST_API.update(
-            Integration(external_id="py test id",
-                        name="py test",
-                        description="python generated",
-                        data_set_id=1,
-                        schedule="",
-                        owner={"name": "Alex", "email": "Alex@test.no"}
-                        )
+            Integration(
+                external_id="py test id",
+                name="py test",
+                description="python generated",
+                data_set_id=1,
+                schedule="",
+                owner={"name": "Alex", "email": "Alex@test.no"},
+            )
         )
         assert isinstance(res, Integration)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
@@ -141,6 +141,6 @@ class TestIntegrations:
         res = TEST_API.update(up)
         assert isinstance(res, Integration)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
-        assert {"items": [{"externalId": "py test id", "update": {"description": {"set": "New description"}}}]} == \
-               jsgz_load(mock_int_response.calls[0].request.body)
-
+        assert {
+            "items": [{"externalId": "py test id", "update": {"description": {"set": "New description"}}}]
+        } == jsgz_load(mock_int_response.calls[0].request.body)

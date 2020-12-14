@@ -2,6 +2,7 @@ from typing import *
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+
 from cognite.experimental.data_classes import Integration, IntegrationList, IntegrationUpdate
 
 
@@ -38,10 +39,10 @@ class IntegrationsAPI(APIClient):
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def retrieve_multiple(
-            self,
-            ids: Optional[List[int]] = None,
-            external_ids: Optional[List[str]] = None,
-            ignore_unknown_ids: bool = False,
+        self,
+        ids: Optional[List[int]] = None,
+        external_ids: Optional[List[str]] = None,
+        ignore_unknown_ids: bool = False,
     ) -> IntegrationList:
         """`Retrieve multiple integrations by ids and external ids. <>`_
 
@@ -92,10 +93,7 @@ class IntegrationsAPI(APIClient):
                 >>> integration_list = c.integrations.list(limit=5)
         """
 
-        return self._list(
-            method="GET",
-            limit=limit,
-        )
+        return self._list(method="GET", limit=limit,)
 
     def create(self, integration: Union[Integration, List[Integration]]) -> Union[Integration, IntegrationList]:
         """`Create one or more integrations. <>`_
@@ -121,11 +119,7 @@ class IntegrationsAPI(APIClient):
         utils._auxiliary.assert_type(integration, "integration", [Integration, list])
         return self._create_multiple(integration)
 
-    def delete(
-            self,
-            id: Union[int, List[int]] = None,
-            external_id: Union[str, List[str]] = None,
-    ) -> None:
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None,) -> None:
         """`Delete one or more integrations <>`_
 
             Args:
@@ -144,13 +138,12 @@ class IntegrationsAPI(APIClient):
                     >>> c.integrations.delete(id=[1,2,3], external_id="3")
             """
         self._delete_multiple(
-            ids=id,
-            external_ids=external_id,
-            wrap_ids=True,
-            extra_body_fields={},
+            ids=id, external_ids=external_id, wrap_ids=True, extra_body_fields={},
         )
 
-    def update(self, item: Union[Integration, IntegrationUpdate, List[Union[Integration, IntegrationUpdate]]]) -> Union[Integration, IntegrationList]:
+    def update(
+        self, item: Union[Integration, IntegrationUpdate, List[Union[Integration, IntegrationUpdate]]]
+    ) -> Union[Integration, IntegrationList]:
         """`Update one or more integrations <>`_
 
         Args:

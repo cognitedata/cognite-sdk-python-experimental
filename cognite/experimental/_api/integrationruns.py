@@ -2,7 +2,13 @@ from typing import *
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
-from cognite.experimental.data_classes import IntegrationRun, IntegrationWithStatuses, IntegrationRunList, IntegrationWithStatusesList
+
+from cognite.experimental.data_classes import (
+    IntegrationRun,
+    IntegrationRunList,
+    IntegrationWithStatuses,
+    IntegrationWithStatusesList,
+)
 
 
 class IntegrationsRunsAPI(APIClient):
@@ -60,4 +66,3 @@ class IntegrationsRunsAPI(APIClient):
         self._LIST_CLASS = IntegrationRunList
         utils._auxiliary.assert_type(run, "run", [IntegrationRun, list])
         return self._create_multiple(run)
-

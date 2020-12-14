@@ -23,22 +23,22 @@ class Integration(CogniteResource):
     """
 
     def __init__(
-            self,
-            id: int = None,
-            external_id: str = None,
-            name: str = None,
-            description: str = None,
-            data_set_id: int = None,
-            last_success: int = None,
-            last_failure: int = None,
-            last_seen: int = None,
-            schedule: str = None,
-            owner: Dict[str, Any] = None,
-            authors: List[Dict[str, Any]] = None,
-            metadata: Dict[str, str] = None,
-            created_time: int = None,
-            last_updated_time: int = None,
-            cognite_client=None,
+        self,
+        id: int = None,
+        external_id: str = None,
+        name: str = None,
+        description: str = None,
+        data_set_id: int = None,
+        last_success: int = None,
+        last_failure: int = None,
+        last_seen: int = None,
+        schedule: str = None,
+        owner: Dict[str, Any] = None,
+        authors: List[Dict[str, Any]] = None,
+        metadata: Dict[str, str] = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client=None,
     ):
         self.id = id
         self.external_id = external_id

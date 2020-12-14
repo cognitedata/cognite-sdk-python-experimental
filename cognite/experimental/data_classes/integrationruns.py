@@ -9,14 +9,12 @@ class IntegrationWithStatuses(CogniteResource):
         statuses (List[Dict[str, Any]]): List of Runs represented as statuses.
         cognite_client (CogniteClient): The client to associate with this object.
     """
+
     def __init__(
-            self,
-            external_id: str = None,
-            statuses: List[Dict[str, Any]] = None,
-            cognite_client=None,
+        self, external_id: str = None, statuses: List[Dict[str, Any]] = None, cognite_client=None,
     ):
         setattr(self, "external_id", external_id),
-        self.statuses = statuses,
+        self.statuses = (statuses,)
         self._cognite_client = cognite_client
 
     @classmethod
@@ -42,13 +40,8 @@ class IntegrationRun(CogniteResource):
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         cognite_client (CogniteClient): The client to associate with this object.
     """
-    def __init__(
-            self,
-            external_id: str = None,
-            status: str = None,
-            created_time: int = None,
-            cognite_client=None
-    ):
+
+    def __init__(self, external_id: str = None, status: str = None, created_time: int = None, cognite_client=None):
         setattr(self, "external_id", external_id)
         setattr(self, "status", status)
         setattr(self, "created_time", created_time)
@@ -56,14 +49,12 @@ class IntegrationRun(CogniteResource):
 
 
 class IntegrationWithStatusesUpdate(CogniteUpdate):
-
     class _PrimitiveIntegrationWithStatusesUpdate(CognitePrimitiveUpdate):
         def set(self, value: Any) -> "IntegrationWithStatusesUpdate":
             return self._set(value)
 
 
 class IntegrationRunUpdate(CogniteUpdate):
-
     class _PrimitiveIntegrationRunUpdate(CognitePrimitiveUpdate):
         def set(self, value: Any) -> "IntegrationRunUpdate":
             return self._set(value)
@@ -77,4 +68,3 @@ class IntegrationWithStatusesList(CogniteResourceList):
 class IntegrationRunList(CogniteResourceList):
     _RESOURCE = IntegrationRun
     _UPDATE = IntegrationRunUpdate
-
