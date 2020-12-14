@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.35] - 2012-12-14
+## Added
+- Added IntegrationsAPI and IntegrationRunsAPI
+
 ## [0.34] - 2012-12-08
 ## Added
 - Added relationships_label and use_existing_matches to pipelines
