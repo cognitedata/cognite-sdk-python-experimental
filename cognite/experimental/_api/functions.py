@@ -542,6 +542,9 @@ class FunctionCallsAPI(APIClient):
 
 
 class FunctionSchedulesAPI(APIClient):
+    _RESOURCE_PATH = "/functions/schedules"
+    _LIST_CLASS = FunctionSchedulesList
+
     def retrieve(self, id: int) -> FunctionSchedule:
         """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/getFunctionSchedule>`_
 

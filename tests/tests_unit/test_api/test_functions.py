@@ -450,6 +450,7 @@ def mock_function_schedules_response(rsps):
 @pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/byids"
+    rsps.assert_all_requests_are_fired = False
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
 
     yield rsps
@@ -480,12 +481,14 @@ def mock_schedule_get_data_response(rsps):
 
 
 class TestFunctionSchedulesAPI:
+
     def test_retrieve_schedules(self, mock_function_schedules_retrieve_response):
         res = FUNCTION_SCHEDULES_API.retrieve(id=SCHEDULE1["id"])
         assert isinstance(res, FunctionSchedule)
-        expected = mock_function_schedules_retrieve_response.calls[0].response.json()
+        expected = mock_function_schedules_retrieve_response.calls[0].response.json()["items"][0]
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
+
 
     def test_list_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
