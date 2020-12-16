@@ -480,14 +480,12 @@ def mock_schedule_get_data_response(rsps):
 
 
 class TestFunctionSchedulesAPI:
-
     def test_retrieve_schedules(self, mock_function_schedules_retrieve_response):
         res = FUNCTION_SCHEDULES_API.retrieve(id=SCHEDULE1["id"])
         assert isinstance(res, FunctionSchedule)
         expected = mock_function_schedules_retrieve_response.calls[0].response.json()["items"][0]
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
-
 
     def test_list_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
