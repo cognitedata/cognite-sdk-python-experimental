@@ -3,6 +3,27 @@ from cognite.client.data_classes._base import *
 
 # GenClass: annotationResponse, annotation
 class Annotation(CogniteResource):
+    """Representation of an annotation in CDF.
+
+    Args:
+        id (int, optional): [description]. Defaults to None.
+        annotated_resource_id (int, optional): [description]. Defaults to None.
+        text (str, optional): [description]. Defaults to None.
+        annotated_resource_external_id (str, optional): [description]. Defaults to None.
+        annotated_resource_type (str, optional): [description]. Defaults to None.
+        linked_resource_id (int, optional): [description]. Defaults to None.
+        linked_resource_external_id (str, optional): [description]. Defaults to None.
+        linked_resource_type (str, optional): [description]. Defaults to None.
+        annotation_type (str, optional): [description]. Defaults to None.
+        status (str, optional): [description]. Defaults to None.
+        source (str, optional): [description]. Defaults to None.
+        region ([type], optional): [description]. Defaults to None.
+        data ([type], optional): [description]. Defaults to None.
+        created_time (int, optional): Time, in milliseconds since Jan. 1, 1970, when this annotation was created in CDF
+        last_updated_time (int, optional): Time, in milliseconds since Jan. 1, 1970, when this annotation was last updated in CDF.
+        cognite_client ([type], optional): The client to associate with this object.
+    """
+
     def __init__(
         self,
         id: int = None,

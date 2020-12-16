@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
@@ -11,6 +11,8 @@ from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.functions import FunctionsAPI
+from cognite.experimental._api.integrationruns import IntegrationsRunsAPI
+from cognite.experimental._api.integrations import IntegrationsAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
@@ -57,6 +59,11 @@ class CogniteClient(Client):
         headers: Dict[str, str] = None,
         timeout: int = None,
         token: Union[str, Callable[[], str], None] = None,
+        token_url: Optional[str] = None,
+        token_client_id: Optional[str] = None,
+        token_client_secret: Optional[str] = None,
+        token_scopes: Optional[List[str]] = None,
+        token_custom_args: Optional[Dict[str, str]] = None,
         disable_pypi_version_check: Optional[bool] = None,
         debug: bool = False,
         server=None,
@@ -68,7 +75,8 @@ class CogniteClient(Client):
         if client_name is None and not os.environ.get("COGNITE_CLIENT_NAME"):
             client_name = "Cognite Experimental SDK"
 
-        if token is None and (api_key is None and not os.environ.get("COGNITE_API_KEY") and project is not None):
+        no_auth_args = token is None and token_url is None and api_key is None
+        if no_auth_args and not os.environ.get("COGNITE_API_KEY") and project is not None:
             key = project.upper().replace("-", "_") + "_API_KEY"
             if os.environ.get(key):
                 api_key = os.environ[key]
@@ -86,6 +94,11 @@ class CogniteClient(Client):
             headers=headers,
             timeout=timeout,
             token=token,
+            token_url=token_url,
+            token_client_id=token_client_id,
+            token_client_secret=token_client_secret,
+            token_scopes=token_scopes,
+            token_custom_args=token_custom_args,
             disable_pypi_version_check=disable_pypi_version_check,
             debug=debug,
             **kwargs,
@@ -108,3 +121,5 @@ class CogniteClient(Client):
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
+        self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
+        self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)

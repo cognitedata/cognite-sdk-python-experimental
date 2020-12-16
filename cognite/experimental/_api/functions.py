@@ -561,7 +561,7 @@ class FunctionSchedulesAPI(APIClient):
                 >>> res = c.functions.schedules.retrieve(id=1)
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id)
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
     def list(self) -> FunctionSchedulesList:
