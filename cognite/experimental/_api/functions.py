@@ -387,6 +387,8 @@ def _validate_function_handle(function_handle):
 
 
 class FunctionCallsAPI(APIClient):
+    _LIST_CLASS = FunctionCallList
+
     def list(
         self,
         function_id: Optional[int] = None,
@@ -466,9 +468,8 @@ class FunctionCallsAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
-        url = f"/functions/{function_id}/calls/{call_id}"
-        res = self._get(url)
-        return FunctionCall._load(res.json(), cognite_client=self._cognite_client)
+        resource_path = f"/functions/{function_id}/calls"
+        return self._retrieve_multiple(wrap_ids=True, resource_path=resource_path, ids=call_id)
 
     def get_response(self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None):
         """Retrieve the response from a function call.
