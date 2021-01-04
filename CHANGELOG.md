@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.36.0] - 2020-12-16
+## [0.36.0] - 2021-01-4
 ### Added
 - Method `retrieve` to `FunctionScheduleAPI`-class.
 
