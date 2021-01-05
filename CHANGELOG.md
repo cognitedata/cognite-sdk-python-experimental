@@ -12,16 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [Unreleased]
+## [0.36] - 2020-01-05
+### Changed
+- The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend. `/calls` -> `/calls/byids`
 ### Added
 - Method `retrieve` to `FunctionScheduleAPI`-class.
 
-## [0.35] - 2012-12-14
-## Added
+## [0.35] - 2020-12-14
+### Added
 - Added IntegrationsAPI and IntegrationRunsAPI
 
-## [0.34] - 2012-12-08
-## Added
+## [0.34] - 2020-12-08
+### Added
 - Added relationships_label and use_existing_matches to pipelines
 
 ## [0.33.0] - 2020-12-02
