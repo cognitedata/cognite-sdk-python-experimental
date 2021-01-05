@@ -437,7 +437,7 @@ class FunctionCallsAPI(APIClient):
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCall:
-        """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionSchedules>`_
+        """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
 
         Args:
             call_id (int): ID of the call.
@@ -546,7 +546,7 @@ class FunctionSchedulesAPI(APIClient):
     _LIST_CLASS = FunctionSchedulesList
 
     def retrieve(self, id: int) -> Optional[FunctionSchedule]:
-        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/getFunctionSchedule>`_
+        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionSchedules>`_
 
         Args:
             id (int): ID
