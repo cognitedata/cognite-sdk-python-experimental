@@ -439,7 +439,7 @@ class FunctionCallsAPI(APIClient):
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> Optional[FunctionCall]:
-        """`Retrieve a single function call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
+        """`Retrieve a single function call by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionCalls>`_
 
         Args:
             call_id (int): ID of the call.
