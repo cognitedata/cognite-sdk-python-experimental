@@ -157,8 +157,8 @@ def mock_functions_call_responses(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/{CALL_ID}"
-    rsps.add(rsps.GET, url, status=200, json=CALL_COMPLETED)
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/byids"
+    rsps.add(rsps.POST, url, status=200, json={"items": [CALL_COMPLETED]})
 
     yield rsps
 
@@ -361,7 +361,7 @@ class TestFunctionsAPI:
     def test_function_call(self, mock_functions_call_responses):
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_responses.calls[1].response.json() == res.dump(camel_case=True)
+        assert mock_functions_call_responses.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_function_call_by_external_id(self, mock_functions_call_by_external_id_responses):
         res = FUNCTIONS_API.call(external_id=f"func-no-{FUNCTION_ID}")
