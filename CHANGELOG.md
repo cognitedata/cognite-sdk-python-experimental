@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [Unreleased]
+### Added
+- Method `retrieve` to `FunctionScheduleAPI`-class.
+
 ## [0.35] - 2012-12-14
 ## Added
 - Added IntegrationsAPI and IntegrationRunsAPI
