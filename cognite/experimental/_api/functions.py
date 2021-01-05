@@ -181,7 +181,7 @@ class FunctionsAPI(APIClient):
         return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
-        """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name>`_
+        """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
 
         Args:
             id (int, optional): ID
@@ -543,6 +543,31 @@ class FunctionCallsAPI(APIClient):
 
 
 class FunctionSchedulesAPI(APIClient):
+    _RESOURCE_PATH = "/functions/schedules"
+    _LIST_CLASS = FunctionSchedulesList
+
+    def retrieve(self, id: int) -> Optional[FunctionSchedule]:
+        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionSchedules>`_
+
+        Args:
+            id (int): ID
+
+        Returns:
+            Optional[FunctionSchedule]: Requested function schedule.
+
+
+        Examples:
+
+            Get function schedule by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.functions.schedules.retrieve(id=1)
+
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
+        return self._retrieve_multiple(ids=id, wrap_ids=True)
+
     def list(self) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 

@@ -13,11 +13,13 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 ## [0.36] - 2020-01-05
-## Changed
-- The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend.
+### Changed
+- The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend. `/calls` -> `/calls/byids`
+### Added
+- Method `retrieve` to `FunctionScheduleAPI`-class.
 
 ## [0.35] - 2020-12-14
-## Added
+### Added
 - Added IntegrationsAPI and IntegrationRunsAPI
 
 ## [0.34] - 2020-12-08
