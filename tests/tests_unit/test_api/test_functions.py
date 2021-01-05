@@ -170,8 +170,8 @@ def mock_functions_call_by_external_id_responses(mock_functions_retrieve_respons
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/{CALL_ID}"
-    rsps.add(rsps.GET, url, status=200, json=CALL_COMPLETED)
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/byids"
+    rsps.add(rsps.POST, url, status=200, json={"items": [CALL_COMPLETED]})
 
     yield rsps
 
@@ -367,7 +367,9 @@ class TestFunctionsAPI:
         res = FUNCTIONS_API.call(external_id=f"func-no-{FUNCTION_ID}")
 
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_by_external_id_responses.calls[2].response.json() == res.dump(camel_case=True)
+        assert mock_functions_call_by_external_id_responses.calls[2].response.json()["items"][0] == res.dump(
+            camel_case=True
+        )
 
     def test_function_call_failed(self, mock_functions_call_failed_response):
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
@@ -383,8 +385,8 @@ class TestFunctionsAPI:
 @pytest.fixture
 def mock_function_calls_retrieve_response(rsps):
     response_body = CALL_COMPLETED
-    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/{CALL_ID}"
-    rsps.add(rsps.GET, url, status=200, json=response_body)
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/byids"
+    rsps.add(rsps.POST, url, status=200, json={"items": [response_body]})
 
     yield rsps
 
@@ -549,13 +551,13 @@ class TestFunctionCallsAPI:
     def test_retrieve_call_by_function_id(self, mock_function_calls_retrieve_response):
         res = FUNCTION_CALLS_API.retrieve(call_id=CALL_ID, function_id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
-        assert mock_function_calls_retrieve_response.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_function_calls_retrieve_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_retrieve_response")
     def test_retrieve_call_by_function_external_id(self, mock_function_calls_retrieve_response):
         res = FUNCTION_CALLS_API.retrieve(call_id=CALL_ID, function_external_id=f"func-no-{FUNCTION_ID}")
         assert isinstance(res, FunctionCall)
-        assert mock_function_calls_retrieve_response.calls[1].response.json() == res.dump(camel_case=True)
+        assert mock_function_calls_retrieve_response.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_function_call_logs_by_function_id(self, mock_function_call_logs_response):
         res = FUNCTION_CALLS_API.get_logs(call_id=CALL_ID, function_id=FUNCTION_ID)
