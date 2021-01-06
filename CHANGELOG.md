@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.37] - 2020-01-06
+### Changed
+- The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:
+`FunctionCallAPI.list`, `FunctionAPI.list`, and `FunctionScheduleAPI.list`.
+
 ## [0.36] - 2020-01-05
 ### Changed
 - The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend. `/calls` -> `/calls/byids`
