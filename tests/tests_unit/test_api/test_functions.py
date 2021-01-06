@@ -98,7 +98,7 @@ def mock_function_list_response_with_limits(rsps):
     limit = 1
     query_params = f"?limit={limit}"
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions" + query_params
-    rsps.add(rsps.GET, url, status=200, json=response_body)
+    rsps.add(rsps.GET, url, status=200, json=response_body, match_querystring=True)
 
     yield rsps
 
@@ -482,8 +482,7 @@ def mock_function_schedules_response_with_limits(rsps):
     limit = 1
     query_params = f"?limit={limit}"
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules" + query_params
-    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]})
-
+    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]}, match_querystring=True)
     yield rsps
 
 
