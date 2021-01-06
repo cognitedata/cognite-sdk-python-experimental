@@ -162,8 +162,11 @@ class FunctionsAPI(APIClient):
         """
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    def list(self) -> FunctionList:
+    def list(self, limit: Optional[int] = 25) -> FunctionList:
         """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
+
+        Args:
+            limit (int, optional): Maximum number of functions to list
 
         Returns:
             FunctionList: List of functions
@@ -177,7 +180,8 @@ class FunctionsAPI(APIClient):
                 >>> functions_list = c.functions.list()
         """
         url = "/functions"
-        res = self._get(url)
+        params = {"limit": limit}
+        res = self._get(url, params=params)
         return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
