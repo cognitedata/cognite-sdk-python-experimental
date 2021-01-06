@@ -93,6 +93,17 @@ def mock_functions_list_response(rsps):
 
 
 @pytest.fixture
+def mock_function_list_response_with_limits(rsps):
+    response_body = {"items": [EXAMPLE_FUNCTION]}
+    limit = 1
+    query_params = f"?limit={limit}"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions" + query_params
+    rsps.add(rsps.GET, url, status=200, json=response_body)
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_functions_retrieve_response(rsps):
     response_body = {"items": [EXAMPLE_FUNCTION]}
 
@@ -328,6 +339,12 @@ class TestFunctionsAPI:
 
         assert isinstance(res, FunctionList)
         assert mock_functions_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_list_with_limits(self, mock_function_list_response_with_limits):
+
+        res = FUNCTIONS_API.list(limit=1)
+        assert isinstance(res, FunctionList)
+        assert len(res) == 1
 
     def test_retrieve_by_id(self, mock_functions_retrieve_response):
         res = FUNCTIONS_API.retrieve(id=1)
