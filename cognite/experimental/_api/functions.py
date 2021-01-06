@@ -572,8 +572,11 @@ class FunctionSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
-    def list(self) -> FunctionSchedulesList:
+    def list(self, limit: Optional[int] = 25) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            limit (int, optional): Maximum number of schedules to list.
 
         Returns:
             FunctionSchedulesList: List of function schedules
@@ -595,7 +598,8 @@ class FunctionSchedulesAPI(APIClient):
 
         """
         url = f"/functions/schedules"
-        res = self._get(url)
+        params = {"limit": limit}
+        res = self._get(url, params=params)
         return FunctionSchedulesList._load(res.json()["items"])
 
     def create(
