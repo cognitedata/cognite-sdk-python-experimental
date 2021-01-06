@@ -467,6 +467,16 @@ def mock_function_schedules_response(rsps):
 
 
 @pytest.fixture
+def mock_function_schedules_response_with_limits(rsps):
+    limit = 1
+    query_params = f"?limit={limit}"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules" + query_params
+    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]})
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/byids"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
@@ -512,6 +522,12 @@ class TestFunctionSchedulesAPI:
         expected = mock_function_schedules_response.calls[0].response.json()["items"]
         expected[0].pop("when")
         assert expected == res.dump(camel_case=True)
+
+    def test_list_schedules_with_limit(self, mock_function_schedules_response_with_limits):
+        res = FUNCTION_SCHEDULES_API.list(limit=1)
+
+        assert isinstance(res, FunctionSchedulesList)
+        assert len(res) == 1
 
     def test_create_schedules(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.create(
