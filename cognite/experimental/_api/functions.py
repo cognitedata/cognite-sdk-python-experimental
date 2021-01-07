@@ -182,6 +182,10 @@ class FunctionsAPI(APIClient):
                 >>> functions_list = c.functions.list()
         """
         url = "/functions"
+
+        if limit in ["inf", -1]:
+            limit = None
+
         params = {"limit": limit}
         res = self._get(url, params=params)
         return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
@@ -601,6 +605,10 @@ class FunctionSchedulesAPI(APIClient):
 
         """
         url = f"/functions/schedules"
+
+        if limit in ["inf", -1]:
+            limit = None
+
         params = {"limit": limit}
         res = self._get(url, params=params)
         return FunctionSchedulesList._load(res.json()["items"])
