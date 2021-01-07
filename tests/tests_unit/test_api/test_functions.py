@@ -419,7 +419,6 @@ def mock_function_call_logs_response(rsps):
 SCHEDULE1 = {
     "createdTime": 1586944839659,
     "cronExpression": "*/5 * * * *",
-    "data": {},
     "description": "Hi",
     "functionExternalId": "user/hello-cognite/hello-cognite:latest",
     "id": 8012683333564363,
@@ -430,7 +429,6 @@ SCHEDULE1 = {
 SCHEDULE2 = {
     "createdTime": 1586944839659,
     "cronExpression": "*/5 * * * *",
-    "data": {"value": 2},
     "description": "Hi",
     "functionExternalId": "user/hello-cognite/hello-cognite:latest",
     "id": 8012683333564363,
