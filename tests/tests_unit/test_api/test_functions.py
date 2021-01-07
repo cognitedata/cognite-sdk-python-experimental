@@ -474,7 +474,7 @@ def mock_function_schedules_delete_response(rsps):
 @pytest.fixture
 def mock_schedule_get_data_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/{SCHEDULE2['id']}/input_data"
-    rsps.add(rsps.GET, url, status=200, json={"id": SCHEDULE2["id"], "data": SCHEDULE2["data"]})
+    rsps.add(rsps.GET, url, status=200, json={"id": SCHEDULE2["id"], "data": {"value": 2}})
 
     yield rsps
 
