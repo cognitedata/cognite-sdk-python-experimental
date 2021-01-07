@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+### Changed
+- Removed `data` property from `FunctionSchedule` class.
+
 ## [0.36] - 2020-01-05
 ### Changed
 - The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend. `/calls` -> `/calls/byids`
