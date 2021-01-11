@@ -8,7 +8,7 @@ from cognite.experimental._context_client import ContextAPI
 class SchemaCompletionAPI(ContextAPI):
     _RESOURCE_PATH = "/schemas"
 
-    def complete(self, external_id: str) -> ContextualizationJob:
+    def complete_type(self, external_id: str) -> ContextualizationJob:
         """Completes a schema uploaded in CDF as a type.
 
         Args:
@@ -16,4 +16,17 @@ class SchemaCompletionAPI(ContextAPI):
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
-        return self._run_job(job_path="/complete", status_path="/", external_id=external_id,)
+        return self._run_job(job_path="/completetype", status_path="/", external_id=external_id)
+
+   def complete_domain(self, external_id: str, template_name: str, asset_property: str, version: int = None ) -> ContextualizationJob:
+        """Completes a schema uploaded in CDF as a domain.
+
+        Args:
+            external_id (str), version (int): External ID of the domain to work on, with optional version.
+            template_name: Name of the template to be completed within the domain
+            asset_property: Which (constant) field in the template defines the externalId of the parent asset in each entry.
+
+        Returns:
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+        return self._run_job(job_path="/completedomain", status_path="/", external_id=external_id,template_name=template_name,asset_property=asset_property,version=version)
+
