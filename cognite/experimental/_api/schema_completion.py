@@ -19,14 +19,14 @@ class SchemaCompletionAPI(ContextAPI):
         return self._run_job(job_path="/type", status_path="/", external_id=external_id)
 
     def complete_domain(
-        self, external_id: str, template_name: str, asset_property: str, version: int = None
+        self, external_id: str, template_name: str, asset_property: str=None, version: int = None
     ) -> ContextualizationJob:
         """Completes a schema uploaded in CDF as a domain.
 
         Args:
             external_id (str), version (int): External ID of the domain to work on, with optional version.
             template_name: Name of the template to be completed within the domain
-            asset_property: Which field (with constant type) in the template defines the externalId of the parent asset in each entry.
+            asset_property: Which field (with constant type) in the template defines the externalId of the parent asset in each entry. If ommitted, it is assumed the externalId of the template instances is the same as the parent asset's externalId.
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
