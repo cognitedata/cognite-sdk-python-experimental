@@ -24,9 +24,10 @@ class SchemaCompletionAPI(ContextAPI):
         """Completes a schema uploaded in CDF as a domain.
 
         Args:
-            external_id (str), version (int): External ID of the domain to work on, with optional version.
-            template_name: Name of the template to be completed within the domain
-            asset_property: Which field (with constant type) in the template defines the externalId of the parent asset in each entry. If ommitted, it is assumed the externalId of the template instances is the same as the parent asset's externalId.
+            external_id (str): External ID of the domain to work on.
+            template_name (str): Name of the template to be completed within the domain
+            asset_property (str): Which field (with constant type) in the template defines the externalId of the parent asset in each entry. If ommitted, it is assumed the externalId of the template instances is the same as the parent asset's externalId.
+            version (int): Version of the domain, can be ommitted to use the last one.
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
