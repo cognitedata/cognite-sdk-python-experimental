@@ -19,7 +19,7 @@ class SchemaCompletionAPI(ContextAPI):
         return self._run_job(job_path="/type", status_path="/", external_id=external_id)
 
     def complete_domain(
-        self, external_id: str, template_name: str, asset_property: str=None, version: int = None
+        self, external_id: str, template_name: str, asset_property: str = None, version: int = None
     ) -> ContextualizationJob:
         """Completes a schema uploaded in CDF as a domain.
 
