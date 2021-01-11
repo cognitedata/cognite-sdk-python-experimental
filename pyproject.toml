@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cognite-sdk-experimental"
-version = "0.36.0"
+version = "0.37.0"
 description = "Experimental additions to the Python SDK"
 authors = ["Sander Land <sander.land@cognite.com>"]
 
@@ -42,7 +42,7 @@ commands =
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-cognite-sdk = "^2.9"
+cognite-sdk = "^2.10"
 responses = "^0.10.12"
 sympy = "^1.3.0"
 typing-extensions = "^3.7.4"
@@ -61,5 +61,5 @@ twine = "^3.1.1"
 name = "snakepit"
 url = "https://cognite.jfrog.io/cognite/api/pypi/snakepit/simple"
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.0"]
 build-backend = "poetry.masonry.api"

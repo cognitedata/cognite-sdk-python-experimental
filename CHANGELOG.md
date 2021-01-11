@@ -16,6 +16,12 @@ Changes are grouped as follows
 ### Changed
 - Removed `data` property from `FunctionSchedule` class.
 
+## [0.37] - 2020-01-11
+### Changed
+- The `complete` method of the schema completion api was renamed to `complete_type`
+### Added
+- Method `complete_domain` to schema completion
+
 ## [0.36] - 2020-01-05
 ### Changed
 - The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend. `/calls` -> `/calls/byids`
