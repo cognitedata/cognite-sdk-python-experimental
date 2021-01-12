@@ -12,11 +12,23 @@ SCAPI = COGNITE_CLIENT.schemas
 
 
 @pytest.fixture
-def mock_complete(rsps):
+def mock_complete_type(rsps):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/complete",
+        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/type",
+        status=200,
+        json=response_body,
+    )
+    yield rsps
+
+
+@pytest.fixture
+def mock_complete_domain(rsps):
+    response_body = {"jobId": 123, "status": "Queued"}
+    rsps.add(
+        rsps.POST,
+        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/domain",
         status=200,
         json=response_body,
     )
@@ -36,9 +48,9 @@ def mock_status_ok(rsps):
 
 
 class TestSchemaCompletion:
-    def test_complete(self, mock_complete, mock_status_ok):
+    def test_complete_type(self, mock_complete_type, mock_status_ok):
         eid = "schematocomplete"
-        job = SCAPI.complete(external_id=eid)
+        job = SCAPI.complete_type(external_id=eid)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert {"items": []} == job.result
@@ -47,10 +59,32 @@ class TestSchemaCompletion:
 
         extract_calls = 0
         n_status_calls = 0
-        for call in mock_complete.calls:
+        for call in mock_complete_type.calls:
             if call.request.method == "POST":
                 extract_calls += 1
                 assert {"externalId": eid} == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/123" in call.request.url
+        assert 1 == extract_calls
+        assert 1 == n_status_calls
+
+    def test_complete_domain(self, mock_complete_domain, mock_status_ok):
+        eid = "schematocomplete"
+        template = "templatename"
+        job = SCAPI.complete_domain(external_id=eid, template_name=template)
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert {"items": []} == job.result
+        assert "Completed" == job.status
+        assert 123 == job.job_id
+
+        extract_calls = 0
+        n_status_calls = 0
+        for call in mock_complete_domain.calls:
+            if call.request.method == "POST":
+                extract_calls += 1
+                assert {"externalId": eid, "templateName": template} == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/123" in call.request.url

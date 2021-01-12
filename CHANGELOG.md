@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.37] - 2020-01-06
+## [0.38] - 2020-01-12
 ### Changed
 - The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:
 `FunctionCallAPI.list`, `FunctionAPI.list`, and `FunctionScheduleAPI.list`.
+## [0.37] - 2020-01-11
+### Changed
+- The `complete` method of the schema completion api was renamed to `complete_type`
+### Added
+- Method `complete_domain` to schema completion
 
 ## [0.36] - 2020-01-05
 ### Changed
