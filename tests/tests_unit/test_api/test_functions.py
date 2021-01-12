@@ -240,7 +240,6 @@ def mock_function_calls_list_response(rsps):
 def mock_function_calls_list_response_with_limit(rsps):
     response_body = {"items": [CALL_COMPLETED, CALL_SCHEDULED]}
     limit = 2
-    query_parameters = f"?limit={limit}"
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/list"
     rsps.add(rsps.POST, url, status=200, json=response_body)
 
