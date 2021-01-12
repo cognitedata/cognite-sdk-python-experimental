@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+### Changed
+- Removed `data` property from `FunctionSchedule` class.
+
 ## [0.37] - 2020-01-11
 ### Changed
 - The `complete` method of the schema completion api was renamed to `complete_type`
