@@ -16,6 +16,8 @@ Changes are grouped as follows
 ### Changed
 - The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:
 `FunctionCallAPI.list`, `FunctionAPI.list`, and `FunctionScheduleAPI.list`.
+- Removed `data` property from `FunctionSchedule` class.
+
 ## [0.37] - 2020-01-11
 ### Changed
 - The `complete` method of the schema completion api was renamed to `complete_type`
