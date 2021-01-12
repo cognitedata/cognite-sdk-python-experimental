@@ -228,7 +228,7 @@ def function_handle_illegal_argument():
 
 
 @pytest.fixture
-def mock_function_calls_list_response(rsps):
+def mock_function_calls_filter_response(rsps):
     response_body = {"items": [CALL_COMPLETED, CALL_SCHEDULED]}
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/list"
     rsps.add(rsps.POST, url, status=200, json=response_body)
@@ -575,7 +575,7 @@ class TestFunctionSchedulesAPI:
 
 
 class TestFunctionCallsAPI:
-    def test_list_calls_and_filter(self, mock_function_calls_list_response, mock_functions_retrieve_response):
+    def test_list_calls_and_filter(self, mock_function_calls_filter_response, mock_functions_retrieve_response):
         filter_kwargs = {
             "status": "Completed",
             "schedule_id": 123,
@@ -585,9 +585,9 @@ class TestFunctionCallsAPI:
         res = FUNCTIONS_API.retrieve(id=FUNCTION_ID).list_calls(**filter_kwargs)
 
         assert isinstance(res, FunctionCallList)
-        assert mock_function_calls_list_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
+        assert mock_function_calls_filter_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
 
-    def test_list_calls_by_function_id(self, mock_function_calls_list_response):
+    def test_list_calls_by_function_id(self, mock_function_calls_filter_response):
         filter_kwargs = {
             "status": "Completed",
             "schedule_id": 123,
@@ -596,7 +596,7 @@ class TestFunctionCallsAPI:
         }
         res = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID, **filter_kwargs)
         assert isinstance(res, FunctionCallList)
-        assert mock_function_calls_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+        assert mock_function_calls_filter_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_list_calls_by_function_id_with_limits(self, mock_function_calls_list_response_with_limit):
         res = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID, limit=2)
@@ -604,10 +604,10 @@ class TestFunctionCallsAPI:
         assert len(res) == 2
 
     @pytest.mark.usefixtures("mock_functions_retrieve_response")
-    def test_list_calls_by_function_external_id(self, mock_function_calls_list_response):
+    def test_list_calls_by_function_external_id(self, mock_function_calls_filter_response):
         res = FUNCTION_CALLS_API.list(function_external_id=f"func-no-{FUNCTION_ID}")
         assert isinstance(res, FunctionCallList)
-        assert mock_function_calls_list_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
+        assert mock_function_calls_filter_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
 
     def test_retrieve_call_by_function_id(self, mock_function_calls_retrieve_response):
         res = FUNCTION_CALLS_API.retrieve(call_id=CALL_ID, function_id=FUNCTION_ID)
@@ -638,7 +638,7 @@ class TestFunctionCallsAPI:
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_function_calls_list_response")
+    @pytest.mark.usefixtures("mock_function_calls_filter_response")
     def test_get_logs_on_listed_call_object(self, mock_function_call_logs_response):
         calls = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID)
         call = calls[0]
