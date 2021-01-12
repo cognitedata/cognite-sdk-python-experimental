@@ -24,7 +24,7 @@ from cognite.experimental.data_classes import (
 )
 
 LIST_LIMIT_DEFAULT = 25
-
+LIST_LIMIT_CEILING = 10_000  # variable used to guarantee all items are returned when list(limit) is None, inf or -1.
 HANDLER_FILE_NAME = "handler.py"
 MAX_RETRIES = 5
 
@@ -168,7 +168,7 @@ class FunctionsAPI(APIClient):
         """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
 
         Args:
-            limit (int, optional): Maximum number of functions to list. Pass in -1, 'inf' or None to list all functions.
+            limit (int, optional): Maximum number of functions to list. Pass in -1, float('inf') or None to list all functions.
 
         Returns:
             FunctionList: List of functions
@@ -183,8 +183,8 @@ class FunctionsAPI(APIClient):
         """
         url = "/functions"
 
-        if limit in ["inf", -1]:
-            limit = None
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
 
         params = {"limit": limit}
         res = self._get(url, params=params)
@@ -412,7 +412,7 @@ class FunctionCallsAPI(APIClient):
         """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
         Args:
-            limit (int, optional): Maximum number of function calls to list. Pass in -1, 'inf' or None to list all Function Calls.
+            limit (int, optional): Maximum number of function calls to list. Pass in -1, float('inf') or None to list all Function Calls.
             function_id (int, optional): ID of the function on which the calls were made.
             function_external_id (str, optional): External ID of the function on which the calls were made.
             status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
@@ -583,7 +583,7 @@ class FunctionSchedulesAPI(APIClient):
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
         Args:
-            limit (int, optional): Maximum number of schedules to list. Pass in -1, 'inf' or None to list all schedules.
+            limit (int, optional): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all schedules.
 
         Returns:
             FunctionSchedulesList: List of function schedules
@@ -606,8 +606,8 @@ class FunctionSchedulesAPI(APIClient):
         """
         url = f"/functions/schedules"
 
-        if limit in ["inf", -1]:
-            limit = None
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
 
         params = {"limit": limit}
         res = self._get(url, params=params)
