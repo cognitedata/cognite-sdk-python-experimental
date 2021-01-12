@@ -142,7 +142,6 @@ class FunctionSchedule(CogniteResource):
         description (str): Description of the function schedule.
         cron_expression (str): Cron expression
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        data (Dict): Data to be passed to the scheduled run.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
 
@@ -154,7 +153,6 @@ class FunctionSchedule(CogniteResource):
         description: str = None,
         created_time: int = None,
         cron_expression: str = None,
-        data: Dict = None,
         cognite_client=None,
     ):
         self.id = id
@@ -163,7 +161,6 @@ class FunctionSchedule(CogniteResource):
         self.description = description
         self.cron_expression = cron_expression
         self.created_time = created_time
-        self.data = data
         self._cognite_client = cognite_client
 
     def get_input_data(self) -> dict:
