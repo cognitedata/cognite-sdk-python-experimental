@@ -12,8 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
+## [0.38] - 2020-01-12
 ### Changed
+- The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:
+`FunctionCallAPI.list`, `FunctionAPI.list`, and `FunctionScheduleAPI.list`.
 - Removed `data` property from `FunctionSchedule` class.
 
 ## [0.37] - 2020-01-11

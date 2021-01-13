@@ -23,6 +23,8 @@ from cognite.experimental.data_classes import (
     FunctionSchedulesList,
 )
 
+LIST_LIMIT_DEFAULT = 25
+LIST_LIMIT_CEILING = 10_000  # variable used to guarantee all items are returned when list(limit) is None, inf or -1.
 HANDLER_FILE_NAME = "handler.py"
 MAX_RETRIES = 5
 
@@ -162,8 +164,11 @@ class FunctionsAPI(APIClient):
         """
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    def list(self) -> FunctionList:
+    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionList:
         """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
+
+        Args:
+            limit (int, optional): Maximum number of functions to list. Pass in -1, float('inf') or None to list all functions.
 
         Returns:
             FunctionList: List of functions
@@ -177,7 +182,12 @@ class FunctionsAPI(APIClient):
                 >>> functions_list = c.functions.list()
         """
         url = "/functions"
-        res = self._get(url)
+
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
+
+        params = {"limit": limit}
+        res = self._get(url, params=params)
         return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
@@ -397,10 +407,12 @@ class FunctionCallsAPI(APIClient):
         schedule_id: Optional[int] = None,
         start_time: Optional[Dict[str, int]] = None,
         end_time: Optional[Dict[str, int]] = None,
+        limit: Optional[int] = LIST_LIMIT_DEFAULT,
     ) -> FunctionCallList:
         """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
         Args:
+            limit (int, optional): Maximum number of function calls to list. Pass in -1, float('inf') or None to list all Function Calls.
             function_id (int, optional): ID of the function on which the calls were made.
             function_external_id (str, optional): External ID of the function on which the calls were made.
             status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
@@ -430,11 +442,10 @@ class FunctionCallsAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
-        url = f"/functions/{function_id}/calls/list"
         filter = {"status": status, "scheduleId": schedule_id, "startTime": start_time, "endTime": end_time}
-        post_body = {"filter": filter}
-        res = self._post(url, json=post_body)
-        return FunctionCallList._load(res.json()["items"], cognite_client=self._cognite_client)
+        resource_path = f"/functions/{function_id}/calls"
+
+        return self._list(method="POST", resource_path=resource_path, filter=filter, limit=limit)
 
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
@@ -568,8 +579,11 @@ class FunctionSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
-    def list(self) -> FunctionSchedulesList:
+    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            limit (int, optional): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all schedules.
 
         Returns:
             FunctionSchedulesList: List of function schedules
@@ -591,7 +605,12 @@ class FunctionSchedulesAPI(APIClient):
 
         """
         url = f"/functions/schedules"
-        res = self._get(url)
+
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
+
+        params = {"limit": limit}
+        res = self._get(url, params=params)
         return FunctionSchedulesList._load(res.json()["items"])
 
     def create(
