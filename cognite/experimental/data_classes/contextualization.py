@@ -16,6 +16,8 @@ from cognite.client.exceptions import ModelFailedException
 from cognite.client.utils._auxiliary import to_camel_case
 from typing_extensions import TypedDict
 
+from cognite.experimental.data_classes.utils.pandas import dataframe_summarize_lists
+
 
 class EntityMatchingMatchRule(CogniteResource):
     def __init__(
@@ -37,6 +39,17 @@ class EntityMatchingMatchRule(CogniteResource):
         self._cognite_client = cognite_client
 
 
+
+    def _repr_html_(i):
+        extractors = _label_groups(self.extractors,self.conditions)
+        info = dataframe_summarize_lists(super().to_pandas(camel_case=True))
+
+
+        info = f"Matches = {len(self.matches or [])} Conflicts = {rule['numConflicts']}<br>Overlaps = {rule['numConflicts']}<br>Priority = {rule['priority']}"
+        table = _color_matches(extractors, rule["matches"])
+        return HTML(info + table)
+
+
 class EntityMatchingMatchRuleList(CogniteResourceList):
     _RESOURCE = EntityMatchingMatchRule
     _ASSERT_CLASSES = False
@@ -55,8 +68,6 @@ class EntityMatchingMatch(CogniteResource):
         # shows only the relevant fields, in a sensible order, rather than a dict blob
         fields = super().dump(camel_case=camel_case)
         match_fields = self._match_fields
-        if match_fields and "id" in self.source and "id" in self.target:
-            match_fields = [{"source": "id", "target": "id"}] + match_fields  # TODO: keep?
         if match_fields:
             linear_match_fields = [
                 (source_target, match_field[source_target])
@@ -68,7 +79,7 @@ class EntityMatchingMatch(CogniteResource):
                 (source_target, key_field)
                 for key_field in ["externalId", "external_id", "name", "description"]
                 for source_target in ["source", "target"]
-                if key_field in getattr(self, source_target)
+                if getattr(self, source_target, None)  # no empty strings
             ]
         if not linear_match_fields:
             linear_match_fields = [
@@ -88,6 +99,13 @@ class EntityMatchingMatch(CogniteResource):
 class EntityMatchingMatchList(CogniteResourceList):
     _RESOURCE = EntityMatchingMatch
     _ASSERT_CLASSES = False
+
+    def to_pandas(self, camel_case=False):
+        return (
+            pd.concat([match.to_pandas() for match in self], axis=1)
+            .T.sort_values("score", ascending=False)
+            .reset_index()
+        )
 
 
 class EntityMatchingPipelineRun(ContextualizationJob):
@@ -130,9 +148,9 @@ class EntityMatchingPipelineRun(ContextualizationJob):
     def _repr_html_(self):
         df = super().to_pandas()
         # TODO: optional loading?
-        df.loc["matches"] = f"{len(self.result['matches'])} items"
-        df.loc["generatedRules"] = f"{len(self.result['generatedRules'])} items"
-        return df._repr_html_()
+        df.loc["matches"] = self.result['matches']
+        df.loc["generatedRules"] = self.result['generatedRules']
+        return dataframe_summarize_lists(df)._repr_html_()
 
 
 class EntityMatchingPipelineRunList(CogniteResourceList):
@@ -217,6 +235,14 @@ class EntityMatchingPipeline(CogniteResource):
 
     def latest_run(self) -> EntityMatchingPipelineRun:
         return self._cognite_client.entity_matching.pipelines.runs.retrieve_latest(id=self.id)
+
+
+    def to_pandas(self,camel_case=False):
+        df = dataframe_summarize_lists(super().to_pandas(camel_case=camel_case))
+        # expand
+        for k,v in self.model_parameters.items():
+            df.loc[f'modelParameters[{k}]'] = v
+        return df.drop('modelParameters')
 
 
 class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
