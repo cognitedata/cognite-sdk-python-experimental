@@ -19,7 +19,14 @@ from typing_extensions import TypedDict
 
 class EntityMatchingMatchRule(CogniteResource):
     def __init__(
-        self, conditions=None, extractors=None, priority=None, matches=None, num_conflicts=None, num_overlaps=None
+        self,
+        conditions=None,
+        extractors=None,
+        priority=None,
+        matches=None,
+        num_conflicts=None,
+        num_overlaps=None,
+        cognite_client=None,
     ):
         self.conditions = conditions
         self.extractors = extractors
@@ -27,6 +34,7 @@ class EntityMatchingMatchRule(CogniteResource):
         self.matches = matches
         self.num_conflicts = num_conflicts
         self.num_overlaps = num_overlaps
+        self._cognite_client = cognite_client
 
 
 class EntityMatchingMatchRuleList(CogniteResourceList):
@@ -35,11 +43,46 @@ class EntityMatchingMatchRuleList(CogniteResourceList):
 
 
 class EntityMatchingMatch(CogniteResource):
-    def __init__(self, source=None, target=None, score=None, match_type=None):
+    def __init__(self, source=None, target=None, score=None, match_type=None, match_fields=None, cognite_client=None):
         self.source = source
         self.target = target
         self.score = score
         self.match_type = match_type
+        self._match_fields = match_fields
+        self._cognite_client = cognite_client
+
+    def to_pandas(self, camel_case=False):
+        # shows only the relevant fields, in a sensible order, rather than a dict blob
+        fields = super().dump(camel_case=camel_case)
+        match_fields = self._match_fields
+        if match_fields and "id" in self.source and "id" in self.target:
+            match_fields = [{"source": "id", "target": "id"}] + match_fields  # TODO: keep?
+        if match_fields:
+            linear_match_fields = [
+                (source_target, match_field[source_target])
+                for match_field in match_fields
+                for source_target in ["source", "target"]
+            ]
+        else:
+            linear_match_fields = [
+                (source_target, key_field)
+                for key_field in ["externalId", "external_id", "name", "description"]
+                for source_target in ["source", "target"]
+                if key_field in getattr(self, source_target)
+            ]
+        if not linear_match_fields:
+            linear_match_fields = [
+                (source_target, key_field)
+                for source_target in ["source", "target"]
+                for key_field in getattr(self, source_target)
+            ]
+
+        for source_target, field in linear_match_fields:
+            entity = getattr(self, source_target)
+            fields[f"{source_target}.{field}"] = entity.get(field)
+        del fields["source"]
+        del fields["target"]
+        return pd.DataFrame.from_dict(fields, orient="index", columns=["value"])
 
 
 class EntityMatchingMatchList(CogniteResourceList):
@@ -51,7 +94,19 @@ class EntityMatchingPipelineRun(ContextualizationJob):
     def __init__(self, pipeline_id=None, **kwargs):
         super().__init__(**kwargs)
         self.pipeline_id = pipeline_id
+        self._pipeline = None
         self._status_path = "/context/entitymatching/pipelines/run/"  # since we can list this, would like .result even if we didn't this via .run
+
+    @property
+    def pipeline(self):
+        """Retrieve the pipeline that owns this run, may call the API or use a cached value"""
+        if self._pipeline is None:
+            self._pipeline = self._cognite_client.entity_matching.pipelines.retrieve(id=self.pipeline_id)
+        return self._pipeline
+
+    @pipeline.setter  # TODO: use in .runs etc
+    def pipeline(self, value):
+        self._pipeline = value
 
     @property
     def suggested_rules(self):
@@ -61,28 +116,22 @@ class EntityMatchingPipelineRun(ContextualizationJob):
     @property
     def generated_rules(self):
         """List of suggested new match rules. Depends on .result and may block"""
-        return EntityMatchingMatchRuleList._load(self.result["generatedRules"])
+        return EntityMatchingMatchRuleList._load(self.result["generatedRules"], cognite_client=self._cognite_client)
 
     @property
     def matches(self) -> EntityMatchingMatchRuleList:
         """List of matches. Depends on .result and may block"""
-        return EntityMatchingMatchRuleList._load(self.result["matches"])
-
-    def _repr_html_no_(self):
-        table1 = super()._repr_html_()
         matches = self.result["matches"]
-        gen_rules = self.result["generatedRules"]
-        table2 = pd.DataFrame.from_dict(
-            {"matches": [f"{len(matches)} items"], "generatedRules": [f"{len(gen_rules)} items"]},
-            orient="index",
-            columns=["value"],
-        )._repr_html_()
-        return f"<div style='display: flex'>{table1}&nbsp;{table2}</div>"
+        match_fields = self.pipeline.model_parameters.get("matchFields", [{"source": "name", "target": "name"}])
+        for match in matches:
+            match["match_fields"] = match_fields  # for nice output
+        return EntityMatchingMatchList._load(matches, cognite_client=self._cognite_client)
 
     def _repr_html_(self):
         df = super().to_pandas()
-        df["matches"] = f"{len(self.result['matches'])} items"
-        df["generatedRules"] = f"{len(self.result['generatedRules'])} items"
+        # TODO: optional loading?
+        df.loc["matches"] = f"{len(self.result['matches'])} items"
+        df.loc["generatedRules"] = f"{len(self.result['generatedRules'])} items"
         return df._repr_html_()
 
 
