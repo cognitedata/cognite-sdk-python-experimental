@@ -44,7 +44,7 @@ def _label_groups(extractors: List[Dict], conditions: List[Dict]):
                 return f"\\g<{group_counter}>"
 
         extractor["restorePattern"] = (
-            "<font color='#666'>" + regex.sub("\(.*?\)", color_group, extractor["pattern"].strip("$^")) + "</font>"
+            "<font color='#666'>" + regex.sub(r"\(.*?\)", color_group, extractor["pattern"].strip("$^")) + "</font>"
         )
 
     return extractors
@@ -87,7 +87,9 @@ def _color_matches(extractors: List[Dict], matches: List[Dict]):
             regex_match = regex.match(extractor["pattern"], match[f"{source_target}KeyFields"][field])
             if not regex_match:
                 print(
-                    "Unexpected lack of match of ", extractor["pattern"], match[f"{source_target}KeyFields"][field],
+                    "Unexpected lack of match of ",
+                    extractor["pattern"],
+                    match[f"{source_target}KeyFields"][field],
                 )
                 continue
             formatted_field = regex_match.expand(extractor["restorePattern"])
