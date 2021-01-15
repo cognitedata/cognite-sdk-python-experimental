@@ -6,6 +6,7 @@ from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
+    EntityMatchingMatchList,
     EntityMatchingPipeline,
     EntityMatchingPipelineRunList,
     EntityMatchingPipelineUpdate,
@@ -47,7 +48,7 @@ class TestEntityMatchingIntegration:
         assert [run] == EMAPI.pipelines.runs.retrieve_latest(id=[new_pipeline.id])
         assert run.result == new_pipeline.latest_run().result
         assert isinstance(run.suggested_rules, list)
-        assert isinstance(run.matches, list)
+        assert isinstance(run.matches, EntityMatchingMatchList)
 
         run2 = new_pipeline.run()
         assert run2 == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
