@@ -42,7 +42,7 @@ class EntityMatchingMatchRule(CogniteResource):
     def _repr_html_(self):
         extractors = _label_groups(self.extractors, self.conditions)
         info = dataframe_summarize(super().to_pandas(camel_case=True))
-        info.colums = ["summary statistic"]
+        info.columns = ["summary statistic"]
         coloured_matches_table = _color_matches(extractors, self.matches)
         return info._repr_html_() + coloured_matches_table
 
@@ -60,8 +60,7 @@ class EntityMatchingMatchRuleList(CogniteResourceList):
         @interact(rule_number=(0, len(self) - 1))
         def show_results(rule_number=0):
             return self[rule_number]
-
-        return show_results._repr_html_()
+        return ""
 
 
 class EntityMatchingMatch(CogniteResource):
