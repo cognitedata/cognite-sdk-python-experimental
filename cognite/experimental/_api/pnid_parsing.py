@@ -54,7 +54,7 @@ class PNIDParsingAPI(ContextAPI):
             partial_match=partial_match,
             name_mapping=name_mapping,
             min_tokens=min_tokens,
-            job_cls=PNIDDetectResults
+            job_cls=PNIDDetectResults,
         )
         job.wait_for_completion()
         if job.status == "Completed":

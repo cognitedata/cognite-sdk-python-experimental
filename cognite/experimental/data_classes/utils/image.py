@@ -1,13 +1,15 @@
-
 def draw_boxes(file_bytes, items):
     try:
         import warnings
-        from PIL import Image
+
         import numpy as np
         from bounding_box import bounding_box as bb
         from pdf2image import convert_from_bytes
+        from PIL import Image
     except ImportError as e:
-        warnings.warn(f"Module {e.name} missing, 'pip install PIL numpy bounding_box pdf2image' for advanced visualization of results")
+        warnings.warn(
+            f"Module {e.name} missing, 'pip install PIL numpy bounding_box pdf2image' for advanced visualization of results"
+        )
         return ""
 
     def draw_bbox(pnid_img, result):
@@ -24,7 +26,7 @@ def draw_boxes(file_bytes, items):
                 int(bbox["xMax"] * width),
                 int(bbox["yMax"] * height),
                 label,
-                "red"
+                "red",
             )
         return Image.fromarray(img_arr_copy[:, :, ::-1])
 

@@ -87,9 +87,7 @@ def _color_matches(extractors: List[Dict], matches: List[Dict]):
             regex_match = regex.match(extractor["pattern"], match[f"{source_target}KeyFields"][field])
             if not regex_match:
                 print(
-                    "Unexpected lack of match of ",
-                    extractor["pattern"],
-                    match[f"{source_target}KeyFields"][field],
+                    "Unexpected lack of match of ", extractor["pattern"], match[f"{source_target}KeyFields"][field],
                 )
                 continue
             formatted_field = regex_match.expand(extractor["restorePattern"])
