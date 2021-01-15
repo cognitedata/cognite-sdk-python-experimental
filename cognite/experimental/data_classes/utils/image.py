@@ -10,7 +10,7 @@ def draw_boxes(file_bytes, items):
         warnings.warn(
             f"Module {e.name} missing, 'pip install PIL numpy bounding_box pdf2image' for advanced visualization of results"
         )
-        return ""
+        raise
 
     def draw_bbox(pnid_img, result):
         img_arr = np.array(pnid_img)

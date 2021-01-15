@@ -61,3 +61,6 @@ class TestEntityMatchingIntegration:
         assert pipeline.name == EMAPI.pipelines.retrieve(id=new_pipeline.id).name
 
         EMAPI.pipelines.delete(id=new_pipeline.id)
+
+        assert isinstance(pipeline._repr_html_(), str)
+        assert isinstance(run._repr_html_(), str)
