@@ -3,6 +3,7 @@ from typing import Dict, List, Union
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental._context_client import ContextAPI
+from cognite.experimental.data_classes import PNIDDetectResults
 
 
 class PNIDParsingAPI(ContextAPI):
@@ -17,7 +18,7 @@ class PNIDParsingAPI(ContextAPI):
         min_tokens: int = 1,
         file_id: int = None,
         file_external_id: str = None,
-    ) -> ContextualizationJob:
+    ) -> PNIDDetectResults:
         """Detect entities in a PNID.
         Note: All users on this CDF subscription with assets read-all and files read-all capabilities in the project,
         are able to access the data sent to this endpoint.
@@ -53,6 +54,7 @@ class PNIDParsingAPI(ContextAPI):
             partial_match=partial_match,
             name_mapping=name_mapping,
             min_tokens=min_tokens,
+            job_cls=PNIDDetectResults
         )
         job.wait_for_completion()
         if job.status == "Completed":

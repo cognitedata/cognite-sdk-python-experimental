@@ -16,6 +16,7 @@ from cognite.client.exceptions import ModelFailedException
 from cognite.client.utils._auxiliary import to_camel_case
 from typing_extensions import TypedDict
 
+from cognite.experimental.data_classes.utils.image import draw_boxes
 from cognite.experimental.data_classes.utils.pandas import dataframe_summarize
 from cognite.experimental.data_classes.utils.rules_output import _color_matches, _label_groups
 
@@ -40,11 +41,14 @@ class EntityMatchingMatchRule(CogniteResource):
         self._cognite_client = cognite_client
 
     def _repr_html_(self):
-        extractors = _label_groups(self.extractors, self.conditions)
-        info = dataframe_summarize(super().to_pandas(camel_case=True))
-        info.columns = ["summary statistic"]
+        extractors = _label_groups(copy.deepcopy(self.extractors), self.conditions)
+
+        info_df = super().to_pandas(camel_case=True).drop(["extractors", "conditions"])
+        info_df = dataframe_summarize(info_df)
+        info_df.index.name = "Stats"
+
         coloured_matches_table = _color_matches(extractors, self.matches)
-        return info._repr_html_() + coloured_matches_table
+        return info_df._repr_html_() + coloured_matches_table
 
 
 class EntityMatchingMatchRuleList(CogniteResourceList):
@@ -60,6 +64,7 @@ class EntityMatchingMatchRuleList(CogniteResourceList):
         @interact(rule_number=(0, len(self) - 1))
         def show_results(rule_number=0):
             return self[rule_number]
+
         return ""
 
 
@@ -108,12 +113,14 @@ class EntityMatchingMatchList(CogniteResourceList):
     _RESOURCE = EntityMatchingMatch
     _ASSERT_CLASSES = False
 
+    @classmethod
+    def _load(cls, resource_list: Union[List, str], cognite_client=None):
+        loaded = super()._load(resource_list, cognite_client)
+        loaded.data = sorted(loaded.data, key=lambda match: -match.score)  # sort matches from highest to lowest score
+        return loaded
+
     def to_pandas(self, camel_case=False):
-        return (
-            pd.concat([match.to_pandas() for match in self], axis=1)
-            .T.sort_values("score", ascending=False)
-            .reset_index(drop=True)
-        )
+        return pd.concat([match.to_pandas() for match in self], axis=1).T.reset_index(drop=True)
 
 
 class EntityMatchingPipelineRun(ContextualizationJob):
@@ -318,3 +325,57 @@ class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
 class EntityMatchingPipelineList(CogniteResourceList):
     _RESOURCE = EntityMatchingPipeline
     _UPDATE = EntityMatchingPipelineUpdate
+
+
+class PNIDDetection(CogniteResource):
+    def __init__(self, text=None, type=None, confidence=None, bounding_box=None, cognite_client=None):
+        self.text = text
+        self.type = type
+        self.confidence = confidence
+        self.bounding_box = bounding_box
+        self._cognite_client = cognite_client
+
+
+class PNIDDetectionList(CogniteResourceList):
+    _RESOURCE = PNIDDetection
+    _UPDATE = None
+    _ASSERT_CLASSES = False
+
+
+class PNIDDetectResults(ContextualizationJob):
+    def to_pandas(self, camel_case=False):
+        df = super().to_pandas(camel_case=camel_case)
+        df.loc["matches"] = f"{len(self.matches)} items"
+        return df
+
+    def _repr_html_(self):
+        df = self.to_pandas()
+        try:
+            from IPython.display import display
+
+            image = draw_boxes(self.file_contents, self.result["items"])
+            display(image)
+            return df._repr_html_()
+        except Exception:
+            return df._repr_html_()
+
+    @property
+    def matches(self):
+        """Returns detected items"""
+        return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client)
+
+    @property
+    def file_id(self):
+        return self.result["fileId"]
+
+    @property
+    def file_external_id(self):
+        return self.result["fileExternalId"]
+
+    @property
+    def file_contents(self):
+        if getattr(self, "_file_contents", None) is None:
+            self._file_contents = self._cognite_client.files.download_bytes(
+                id=self.file_id, external_id=self.file_external_id
+            )
+        return self._file_contents
