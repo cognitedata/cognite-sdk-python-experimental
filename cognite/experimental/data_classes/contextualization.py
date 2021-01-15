@@ -1,8 +1,10 @@
 import copy
 import math
 import time
+from collections import UserList
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
+import pandas as pd
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import (
     CognitePrimitiveUpdate,
@@ -15,6 +17,36 @@ from cognite.client.utils._auxiliary import to_camel_case
 from typing_extensions import TypedDict
 
 
+class EntityMatchingMatchRule(CogniteResource):
+    def __init__(
+        self, conditions=None, extractors=None, priority=None, matches=None, num_conflicts=None, num_overlaps=None
+    ):
+        self.conditions = conditions
+        self.extractors = extractors
+        self.priority = priority
+        self.matches = matches
+        self.num_conflicts = num_conflicts
+        self.num_overlaps = num_overlaps
+
+
+class EntityMatchingMatchRuleList(CogniteResourceList):
+    _RESOURCE = EntityMatchingMatchRule
+    _ASSERT_CLASSES = False
+
+
+class EntityMatchingMatch(CogniteResource):
+    def __init__(self, source=None, target=None, score=None, match_type=None):
+        self.source = source
+        self.target = target
+        self.score = score
+        self.match_type = match_type
+
+
+class EntityMatchingMatchList(CogniteResourceList):
+    _RESOURCE = EntityMatchingMatch
+    _ASSERT_CLASSES = False
+
+
 class EntityMatchingPipelineRun(ContextualizationJob):
     def __init__(self, pipeline_id=None, **kwargs):
         super().__init__(**kwargs)
@@ -23,13 +55,35 @@ class EntityMatchingPipelineRun(ContextualizationJob):
 
     @property
     def suggested_rules(self):
-        """List of suggested rules. Depends on .result and may block"""
+        """(deprecated) List of suggested old-style rules. Depends on .result and may block"""
         return self.result["suggestedRules"]
 
     @property
-    def matches(self):
+    def generated_rules(self):
+        """List of suggested new match rules. Depends on .result and may block"""
+        return EntityMatchingMatchRuleList._load(self.result["generatedRules"])
+
+    @property
+    def matches(self) -> EntityMatchingMatchRuleList:
         """List of matches. Depends on .result and may block"""
-        return self.result["matches"]
+        return EntityMatchingMatchRuleList._load(self.result["matches"])
+
+    def _repr_html_no_(self):
+        table1 = super()._repr_html_()
+        matches = self.result["matches"]
+        gen_rules = self.result["generatedRules"]
+        table2 = pd.DataFrame.from_dict(
+            {"matches": [f"{len(matches)} items"], "generatedRules": [f"{len(gen_rules)} items"]},
+            orient="index",
+            columns=["value"],
+        )._repr_html_()
+        return f"<div style='display: flex'>{table1}&nbsp;{table2}</div>"
+
+    def _repr_html_(self):
+        df = super().to_pandas()
+        df["matches"] = f"{len(self.result['matches'])} items"
+        df["generatedRules"] = f"{len(self.result['generatedRules'])} items"
+        return df._repr_html_()
 
 
 class EntityMatchingPipelineRunList(CogniteResourceList):
@@ -67,18 +121,19 @@ class EntityMatchingPipeline(CogniteResource):
         cognite_client=None,
     ):
         """
-        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
-        Args:
-            external_id, name, description: standard fields for a resource.
-            model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
-            sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
-            true_matches: existing matches with reasonable certainty to use in training.
-            confirmed_matches: user-confirmed certain matches which will be used to override any other results.
-            rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
-            use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
-            relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
-            rules: list of matching rules
-            schedule_interval: automatically schedule pipeline to be run every this many seconds.
+               The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
+               Args:
+                   external_id, name, description: standard fields for a resource.
+                   model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
+                   sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
+                   true_matches: existing matches with reasonable certainty to use in training.
+                   confirmed_matches: user-confirmed certain matches which will be used to override any other results.
+                   rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
+                   use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
+                   relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
+                   rules: list of matching rules (either old or new format)
+        (either old or new format)
+                   schedule_interval: automatically schedule pipeline to be run every this many seconds.
         """
 
         self.id = id
