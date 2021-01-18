@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental._context_client import ContextAPI
-from cognite.experimental.data_classes import PNIDDetectResults
+from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList, PNIDDetectResults
 
 
 class PNIDParsingAPI(ContextAPI):
@@ -32,7 +32,7 @@ class PNIDParsingAPI(ContextAPI):
             partial_match (bool): Allow for a partial match (e.g. missing prefix).
             min_tokens (int): Minimal number of tokens a match must be based on
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            PNIDDetectResults: Resulting queued job. Note that .results property of this job will block waiting for results."""
 
         if not (
             all([isinstance(entity, str) for entity in entities])
@@ -56,15 +56,14 @@ class PNIDParsingAPI(ContextAPI):
             min_tokens=min_tokens,
             job_cls=PNIDDetectResults,
         )
-        job.wait_for_completion()
+        job.wait_for_completion()  # TODO: _detect_after_hook should be handled by PNIDDetectResults
         if job.status == "Completed":
             job = self._detect_after_hook(job, entities_return, search_field)
         return job
 
     @staticmethod
     def _detect_before_hook(entities, search_field):
-        """To decide whether to use search_field or not and make sure the entities are of type List[str]
-        """
+        """To decide whether to use search_field or not and make sure the entities are of type List[str]"""
         entities_return = None
         if entities and isinstance(entities[0], dict):
             entities_return = entities.copy()
@@ -73,8 +72,7 @@ class PNIDParsingAPI(ContextAPI):
 
     @staticmethod
     def _detect_after_hook(job, entities_return, search_field):
-        """Insert the entities into the result if search_field is used
-        """
+        """Insert the entities into the result if search_field is used"""
         if entities_return:
             texts = {item.get("text") for item in job.result["items"]}
             entities_return = [entity for entity in entities_return if entity.get(search_field) in texts]
@@ -129,3 +127,21 @@ class PNIDParsingAPI(ContextAPI):
             items=items,
             grayscale=grayscale,
         )
+
+    def ocr(
+        self,
+        file_id: int,
+    ) -> PNIDDetectionPageList:
+        """Retrieve the stored raw OCR result.
+
+        Args:
+            file_id (int): ID of the file, should already be uploaded in the same tenant.
+
+        Returns:
+            PNIDDetectionPageList  (effectively List[PNIDDetectionList]): Cached OCR results, one list per page."""
+        res = self._post(f"{self._RESOURCE_PATH}/ocr", json={"fileId": file_id})
+        items = [
+            PNIDDetectionList._load(item["annotations"], cognite_client=self._cognite_client)
+            for item in res.json()["items"]
+        ]
+        return PNIDDetectionPageList(items)

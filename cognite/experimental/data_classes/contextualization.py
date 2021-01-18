@@ -1,6 +1,4 @@
 import copy
-import math
-import time
 from collections import UserList
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
@@ -12,11 +10,7 @@ from cognite.client.data_classes._base import (
     CogniteResourceList,
     CogniteUpdate,
 )
-from cognite.client.exceptions import ModelFailedException
-from cognite.client.utils._auxiliary import to_camel_case
-from typing_extensions import TypedDict
 
-from cognite.experimental.data_classes.utils.image import draw_boxes
 from cognite.experimental.data_classes.utils.pandas import dataframe_summarize
 from cognite.experimental.data_classes.utils.rules_output import _color_matches, _label_groups
 
@@ -336,46 +330,86 @@ class PNIDDetection(CogniteResource):
         self._cognite_client = cognite_client
 
 
+import warnings
+
+
 class PNIDDetectionList(CogniteResourceList):
     _RESOURCE = PNIDDetection
     _UPDATE = None
     _ASSERT_CLASSES = False
 
+    def image_with_bounding_boxes(self, file_id: int) -> "PIL.Image":
+        """returns an image with bounding boxes on top of the pdf specified by file_id"""
+        file_bytes = self._cognite_client.files.download_bytes(id=file_id)
+
+        try:
+            import numpy as np
+            from bounding_box import bounding_box as bb
+            from pdf2image import convert_from_bytes
+            from PIL import Image
+        except ImportError as e:
+            warnings.warn(
+                f"Module {e.name} missing, 'pip install Pillow numpy bounding_box pdf2image' for advanced visualization of results"
+            )
+            raise
+
+        def draw_bbox(pnid_img):
+            img_arr = np.array(pnid_img)
+            height, width = img_arr.shape[:-1]
+            img_arr_copy = img_arr[:, :, ::-1].copy()
+            for detected_item in self.data:
+                bbox = detected_item.bounding_box
+                label = detected_item.text
+                bb.add(
+                    img_arr_copy,
+                    int(bbox["xMin"] * width),
+                    int(bbox["yMin"] * height),
+                    int(bbox["xMax"] * width),
+                    int(bbox["yMax"] * height),
+                    label,
+                    "red",
+                )
+            return Image.fromarray(img_arr_copy[:, :, ::-1])
+
+        try:
+            return draw_bbox(convert_from_bytes(file_bytes)[0])
+        except Exception:
+            return None
+
+
+class PNIDDetectionPageList(UserList):
+    def _repr_html(self):
+        df = pd.DataFrame(f"{len(page)} items" for page in self.data)
+        df.index += 1
+        df.index.name = "page"
+        return df._repr_html_()
+
 
 class PNIDDetectResults(ContextualizationJob):
+    @property
+    def matches(self):
+        """Returns detected items"""
+        return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client)
+
     def to_pandas(self, camel_case=False):
         df = super().to_pandas(camel_case=camel_case)
         df.loc["matches"] = f"{len(self.matches)} items"
         return df
 
     def _repr_html_(self):
-        df = self.to_pandas()
-        try:
+        image = self.matches.image_with_bounding_boxes(
+            id=self.file_id,
+        )
+        if image is not None:
             from IPython.display import display
 
-            image = draw_boxes(self.file_contents, self.result["items"])
             display(image)
-            return df._repr_html_()
-        except Exception:
-            return df._repr_html_()
-
-    @property
-    def matches(self):
-        """Returns detected items"""
-        return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client)
+        return self.to_pandas()._repr_html_()
 
     @property
     def file_id(self):
-        return self.result["fileId"]
+        return self.result.get("fileId")
 
     @property
     def file_external_id(self):
-        return self.result["fileExternalId"]
-
-    @property
-    def file_contents(self):
-        if getattr(self, "_file_contents", None) is None:
-            self._file_contents = self._cognite_client.files.download_bytes(
-                id=self.file_id, external_id=self.file_external_id
-            )
-        return self._file_contents
+        return self.result.get("fileExternalId")

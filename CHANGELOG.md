@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+
+## [0.39] - 2020-01-20
+### Changed
+- Richer output for entity matching pipelines and PNID jobs in notebooks
+### Added
+- OCR method for PNID parsing
+
+
 ## [0.38] - 2020-01-12
 ### Changed
 - The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:

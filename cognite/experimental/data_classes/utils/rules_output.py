@@ -63,7 +63,7 @@ def _color_matches(extractors: List[Dict], matches: List[Dict]):
     }
     html = ""
     html += (
-        "<table><tr>"  # Look mum I'm a frontend designer
+        "<table><tr>"
         + "".join(
             f"<th style='text-align: center'><span style='font-size:150%'>{source_target}:{field}</span>"
             + f"<br>{patterns.get((source_target,field),'')}</th>"
