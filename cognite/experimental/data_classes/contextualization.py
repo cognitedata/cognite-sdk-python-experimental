@@ -397,7 +397,9 @@ class PNIDDetectResults(ContextualizationJob):
         return df
 
     def _repr_html_(self):
-        image = self.matches.image_with_bounding_boxes(id=self.file_id,)
+        image = self.matches.image_with_bounding_boxes(
+            file_id=self.file_id,
+        )
         if image is not None:
             from IPython.display import display
 
