@@ -16,7 +16,7 @@ Then add users that should have access to integrations to that 'generic-readwrit
 ## Create an integration
 ```python
 from cognite.experimental.data_classes import Integration	
-i1 = Integration(external_id = "py test id", name="py test", description = "python generated", data_set_id = 1, schedule = "", owner = {"name": "Alex", "email": "Alex@test.no"})
+i1 = Integration(external_id = "py test id", name="py test", description = "python generated", data_set_id = 1, schedule = "", contacts = [{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}])
 res = client.integrations.create(i1)
 ```
 
@@ -56,6 +56,7 @@ runsList = client.integration_runs.list(external_id=res1.external_id)
 ```python
 from cognite.experimental.data_classes import IntegrationRun	
 newRun = client.integration_runs.create(IntegrationRun(external_id=res1.external_id, status="success"))
+newFailureRun = client.integration_runs.create(IntegrationRun(external_id=res1.external_id, status="failure", message = "Error message"))
 ```
 
 ##Delete an integration and all its runs

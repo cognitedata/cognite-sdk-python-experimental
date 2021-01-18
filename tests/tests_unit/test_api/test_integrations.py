@@ -22,7 +22,7 @@ def mock_int_response(rsps):
                 "createdTime": 1565965333132,
                 "lastUpdatedTime": 1565965333132,
                 "dataSetId": 1,
-                "owner": {"name": "test name", "email": "aaa@cognite.com"},
+                "contacts": [{"name": "test name", "email": "aaa@cognite.com", "sendNotification": True}],
                 "metadata": {"step": "22", "version": "1"},
             }
         ]
@@ -75,7 +75,7 @@ class TestIntegrations:
                 description="python generated",
                 data_set_id=1,
                 schedule="",
-                owner={"name": "Alex", "email": "Alex@test.no"},
+                contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
             )
         )
         assert isinstance(res, Integration)
@@ -88,7 +88,7 @@ class TestIntegrations:
             description="python generated",
             data_set_id=1,
             schedule="",
-            owner={"name": "Alex", "email": "Alex@test.no"},
+            contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
         )
 
         int2 = Integration(
@@ -97,7 +97,7 @@ class TestIntegrations:
             description="python generated",
             data_set_id=1,
             schedule="",
-            owner={"name": "Alex", "email": "Alex@test.no"},
+            contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
         )
 
         res = TEST_API.create([int1, int2])
@@ -129,7 +129,7 @@ class TestIntegrations:
                 description="python generated",
                 data_set_id=1,
                 schedule="",
-                owner={"name": "Alex", "email": "Alex@test.no"},
+                contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
             )
         )
         assert isinstance(res, Integration)
