@@ -128,10 +128,7 @@ class PNIDParsingAPI(ContextAPI):
             grayscale=grayscale,
         )
 
-    def ocr(
-        self,
-        file_id: int,
-    ) -> PNIDDetectionPageList:
+    def ocr(self, file_id: int,) -> PNIDDetectionPageList:
         """Retrieve the stored raw OCR result.
 
         Args:
