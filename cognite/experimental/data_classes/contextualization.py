@@ -52,7 +52,7 @@ class EntityMatchingMatchRuleList(CogniteResourceList):
     def _repr_html_(self):
         try:
             from ipywidgets import interact  # dont want this as dependency
-        except:
+        except ImportError:
             return super()._repr_html_()
 
         @interact(rule_number=(0, len(self) - 1))
