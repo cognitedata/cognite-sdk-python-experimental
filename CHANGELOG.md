@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.39] - 2021-01-18
+### Changed
+- Integrations and IntegrationRuns data classes updated with new fields.
+
 ## [0.38] - 2020-01-12
 ### Changed
 - The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:
