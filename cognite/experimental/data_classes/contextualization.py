@@ -379,8 +379,10 @@ class PNIDDetectionList(CogniteResourceList):
 
 class PNIDDetectionPageList(UserList):
     def _repr_html_(self):
-        df = pd.DataFrame(f"{len(page)} items" for page in self.data)
-        df["page"] = df.index + 1
+        df = pd.DataFrame(
+            [[i + 1, f"{len(page)} items"] for i, page in enumerate(self.data)], columns=["page", "matches"]
+        )
+        df.index.name = "index"
         return df._repr_html_()
 
 
