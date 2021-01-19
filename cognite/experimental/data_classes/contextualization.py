@@ -378,18 +378,18 @@ class PNIDDetectionList(CogniteResourceList):
 
 
 class PNIDDetectionPageList(UserList):
-    def _repr_html(self):
+    def _repr_html_(self):
         df = pd.DataFrame(f"{len(page)} items" for page in self.data)
-        df.index += 1
-        df.index.name = "page"
+        df["page"] = df.index + 1
         return df._repr_html_()
 
 
 class PNIDConvertResults(ContextualizationJob):
-    def _repr_html(self):
-        from IPython.display import SVG
+    def _repr_html_(self):
+        from IPython.display import SVG, display
 
-        return SVG(self.result["svgUrl"])._repr_html_()
+        display(SVG(self.result["svgUrl"]))  # blocks
+        return super()._repr_html_()
 
 
 class PNIDDetectResults(ContextualizationJob):
@@ -408,10 +408,10 @@ class PNIDDetectResults(ContextualizationJob):
             file_id=self.file_id,
         )
         if image is not None:
-            image_html = image._repr_html_()
-        else:
-            image_html = ""
-        return image_html + self.to_pandas()._repr_html_()
+            from IPython.display import display
+
+            display(image)
+        return self.to_pandas()._repr_html_()
 
     @property
     def file_id(self):
@@ -428,9 +428,10 @@ class PNIDDetectResults(ContextualizationJob):
             ocr(bool): show raw OCR results, rather than detected entities.
         """
         if ocr:
-            items = self.ocr()[0]
+            items = self.ocr()[0].dump(camel_case=True)
         else:
             items = self.result["items"]
+
         return self._cognite_client.pnid_parsing.convert(items=items, file_id=self.file_id)
 
     def ocr(self) -> PNIDDetectionPageList:
