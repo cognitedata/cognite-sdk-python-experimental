@@ -64,3 +64,5 @@ class TestEntityMatchingIntegration:
 
         assert isinstance(pipeline._repr_html_(), str)
         assert isinstance(run._repr_html_(), str)
+        assert isinstance(run.generated_rules._repr_html_(), str)
+        assert isinstance(run.matches._repr_html_(), str)
