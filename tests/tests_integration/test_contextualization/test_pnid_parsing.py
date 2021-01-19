@@ -2,6 +2,7 @@ import pytest
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList
 
 COGNITE_CLIENT = CogniteClient()
 PNIDAPI = COGNITE_CLIENT.pnid_parsing
@@ -17,6 +18,9 @@ class TestPNIDParsingIntegration:
         assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
 
+        assert isinstance(job._repr_html_(), str)
+        assert isinstance(job.matches, PNIDDetectionList)
+
     def test_run_detect_entities_dict(self):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
@@ -24,6 +28,12 @@ class TestPNIDParsingIntegration:
         assert isinstance(job, ContextualizationJob)
         assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
+        ocr_result = PNIDAPI.ocr(file_id=file_id)
+        assert isinstance(ocr_result, PNIDDetectionPageList)
+        assert isinstance(ocr_result._repr_html_(), str)
+        assert 1 == len(ocr_result)
+        assert isinstance(ocr_result[0], PNIDDetectionList)
+        assert isinstance(ocr_result[0]._repr_html_(), str)
 
     def test_run_convert(self):
         items = [

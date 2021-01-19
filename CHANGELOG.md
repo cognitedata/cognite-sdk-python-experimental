@@ -12,6 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.40] - 2020-01-20
+
+### Changed
+- Richer output for entity matching pipelines and PNID jobs in notebooks
+- More specific job types returned from these endpoints, with helper methods that make processing and visualizing output easier.
+
+### Added
+- OCR method for PNID parsing
+
 ## [0.39] - 2021-01-18
 ### Changed
 - Integrations and IntegrationRuns data classes updated with new fields.
