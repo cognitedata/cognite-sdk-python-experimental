@@ -27,9 +27,7 @@ class IntegrationWithStatuses(CogniteResource):
         if len(self.statuses) > 0:
             for status in self.statuses:
                 if not (status is None):
-                    message: str = ""
-                    if "message" in status:
-                        message = status["message"]
+                    message = status.get("message", "")
                     result.append(IntegrationRun(self.external_id, status["status"], message, status["createdTime"]))
         return result
 
