@@ -3,7 +3,12 @@ from typing import Dict, List, Union
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental._context_client import ContextAPI
-from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList, PNIDDetectResults, PNIDConvertResults
+from cognite.experimental.data_classes import (
+    PNIDConvertResults,
+    PNIDDetectionList,
+    PNIDDetectionPageList,
+    PNIDDetectResults,
+)
 
 
 class PNIDParsingAPI(ContextAPI):
@@ -125,7 +130,8 @@ class PNIDParsingAPI(ContextAPI):
             file_id=file_id,
             file_external_id=file_external_id,
             items=items,
-            grayscale=grayscale,job_cls=PNIDConvertResults
+            grayscale=grayscale,
+            job_cls=PNIDConvertResults,
         )
 
     def ocr(self, file_id: int,) -> PNIDDetectionPageList:
@@ -141,4 +147,4 @@ class PNIDParsingAPI(ContextAPI):
             PNIDDetectionList._load(item["annotations"], cognite_client=self._cognite_client)
             for item in res.json()["items"]
         ]
-        return PNIDDetectionPageList(items,file_id=file_id)
+        return PNIDDetectionPageList(items, file_id=file_id)
