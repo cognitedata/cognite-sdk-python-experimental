@@ -28,9 +28,7 @@ class IntegrationWithStatuses(CogniteResource):
             for status in self.statuses:
                 if not (status is None):
                     result.append(
-                        IntegrationRun(
-                            self.external_id, status["status"], status.get("message", ""), status["createdTime"]
-                        )
+                        IntegrationRun(self.external_id, status["status"], status.get("message"), status["createdTime"])
                     )
         return result
 
