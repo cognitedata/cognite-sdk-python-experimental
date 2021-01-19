@@ -24,7 +24,7 @@ def mock_run_response(rsps):
                 "lastUpdatedTime": 1606994621658,
                 "statuses": [
                     {"status": "seen", "createdTime": 1606994793386},
-                    {"status": "failure", "createdTime": 1606994773381},
+                    {"status": "failure", "createdTime": 1606994773381, "message": "ERROR"},
                     {"status": "success", "createdTime": 1606994743201},
                     {"status": "seen", "createdTime": 1606994696151},
                 ],

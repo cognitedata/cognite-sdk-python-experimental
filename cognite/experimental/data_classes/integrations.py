@@ -10,12 +10,13 @@ class Integration(CogniteResource):
         name (str): The name of the integration.
         description (str): The description of the integration.
         data_set_id (int): The id of the dataset this integration related with.
+        raw_tables (List[Dict[str, str]): list of raw tables in list format: [{"dbName": "value", "tableName" : "value"}].
         last_success (int): Milliseconds value of last success status.
         last_failure (int): Milliseconds value of last failure status.
+        last_message (str): Message of last failure.
         last_seen (int): Milliseconds value of last seen status.
         schedule (str): undefined/triggered/streamed/cron regex.
-        owner (dict[str, Any]): owner record in dict format: {"name": "value", "email": "value"}.
-        authors (List[Dict[str, Any]]): list of responsible users [{"name": "value", "email": "value"},...]
+        contacts (List[Dict[str, Any]]): list of contacts [{"name": "value", "email": "value", "role": "value", "sendNotification": boolean},...]
         metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 128 bytes, value 10240 bytes, up to 256 key-value pairs, of total size at most 10240.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
@@ -29,12 +30,13 @@ class Integration(CogniteResource):
         name: str = None,
         description: str = None,
         data_set_id: int = None,
+        raw_tables: List[Dict[str, Any]] = None,
         last_success: int = None,
         last_failure: int = None,
+        last_message: str = None,
         last_seen: int = None,
         schedule: str = None,
-        owner: Dict[str, Any] = None,
-        authors: List[Dict[str, Any]] = None,
+        contacts: List[Dict[str, Any]] = None,
         metadata: Dict[str, str] = None,
         created_time: int = None,
         last_updated_time: int = None,
@@ -45,12 +47,13 @@ class Integration(CogniteResource):
         self.name = name
         self.description = description
         self.data_set_id = data_set_id
+        self.raw_tables = raw_tables
         self.schedule = schedule
-        self.owner = owner
-        self.authors = authors
+        self.contacts = contacts
         self.metadata = metadata
         self.last_success = last_success
         self.last_failure = last_failure
+        self.last_message = last_message
         self.last_seen = last_seen
         self.created_time = created_time
         self.last_updated_time = last_updated_time
@@ -94,6 +97,10 @@ class IntegrationUpdate(CogniteUpdate):
         return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "dataSetId")
 
     @property
+    def raw_tables(self):
+        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "rawTables")
+
+    @property
     def metadata(self):
         return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "metadata")
 
@@ -102,12 +109,8 @@ class IntegrationUpdate(CogniteUpdate):
         return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "schedule")
 
     @property
-    def owner(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "owner")
-
-    @property
-    def authors(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "authors")
+    def contacts(self):
+        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "contacts")
 
 
 class IntegrationList(CogniteResourceList):

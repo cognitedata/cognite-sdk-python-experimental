@@ -12,7 +12,6 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-
 ## [0.40] - 2020-01-20
 
 ### Changed
