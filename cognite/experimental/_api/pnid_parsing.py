@@ -141,4 +141,4 @@ class PNIDParsingAPI(ContextAPI):
             PNIDDetectionList._load(item["annotations"], cognite_client=self._cognite_client)
             for item in res.json()["items"]
         ]
-        return PNIDDetectionPageList(items)
+        return PNIDDetectionPageList(items,file_id=file_id)

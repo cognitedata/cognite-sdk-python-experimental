@@ -378,6 +378,10 @@ class PNIDDetectionList(CogniteResourceList):
 
 
 class PNIDDetectionPageList(UserList):
+    def __init__(self, data, file_id):
+        super().__init__(data)
+        self.file_id = file_id
+
     def _repr_html_(self):
         df = pd.DataFrame(
             [[i + 1, f"{len(page)} items"] for i, page in enumerate(self.data)], columns=["page", "matches"]
@@ -385,18 +389,24 @@ class PNIDDetectionPageList(UserList):
         df.index.name = "index"
         return df._repr_html_()
 
+    @property
+    def image(self) -> "PIL.Image":
+        """Returns the file as an image with bounding boxes for detected items"""
+        return self[0].image_with_bounding_boxes(file_id=self.file_id)
+
 
 class PNIDConvertResults(ContextualizationJob):
-    def _repr_html_(self):
-        from IPython.display import SVG, display
+    @property
+    def image(self):
+        """Returns the result as an SVG image for output in jupyter"""
+        from IPython.display import SVG
 
-        display(SVG(self.result["svgUrl"]))  # blocks
-        return super()._repr_html_()
+        return SVG(self.result["svgUrl"])
 
 
 class PNIDDetectResults(ContextualizationJob):
     @property
-    def matches(self):
+    def matches(self) -> PNIDDetectionList:
         """Returns detected items"""
         return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client)
 
@@ -405,15 +415,10 @@ class PNIDDetectResults(ContextualizationJob):
         df.loc["matches"] = f"{len(self.matches)} items"
         return df
 
-    def _repr_html_(self):
-        image = self.matches.image_with_bounding_boxes(
-            file_id=self.file_id,
-        )
-        if image is not None:
-            from IPython.display import display
-
-            display(image)
-        return self.to_pandas()._repr_html_()
+    @property
+    def image(self):
+        """Returns the file as an image with bounding boxes for matches"""
+        return self.matches.image_with_bounding_boxes(file_id=self.file_id)
 
     @property
     def file_id(self):
