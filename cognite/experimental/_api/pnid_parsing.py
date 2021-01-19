@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental._context_client import ContextAPI
-from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList, PNIDDetectResults
+from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList, PNIDDetectResults, PNIDConvertResults
 
 
 class PNIDParsingAPI(ContextAPI):
@@ -125,14 +125,14 @@ class PNIDParsingAPI(ContextAPI):
             file_id=file_id,
             file_external_id=file_external_id,
             items=items,
-            grayscale=grayscale,
+            grayscale=grayscale,job_cls=PNIDConvertResults
         )
 
     def ocr(self, file_id: int,) -> PNIDDetectionPageList:
-        """Retrieve the stored raw OCR result.
+        """Retrieve the cached raw OCR result. Only works when detect has already been run.
 
         Args:
-            file_id (int): ID of the file, should already be uploaded in the same tenant.
+            file_id (int): ID of the file.
 
         Returns:
             PNIDDetectionPageList  (effectively List[PNIDDetectionList]): Cached OCR results, one list per page."""

@@ -14,8 +14,11 @@ Changes are grouped as follows
 
 
 ## [0.39] - 2020-01-20
+
 ### Changed
 - Richer output for entity matching pipelines and PNID jobs in notebooks
+- More specific job types returned from these endpoints, with helper methods that make processing and visualizing output easier.
+
 ### Added
 - OCR method for PNID parsing
 

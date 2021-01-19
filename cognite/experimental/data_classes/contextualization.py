@@ -385,6 +385,13 @@ class PNIDDetectionPageList(UserList):
         return df._repr_html_()
 
 
+class PNIDConvertResults(ContextualizationJob):
+    def _repr_html(self):
+        from IPython.display import SVG
+
+        return SVG(self.result["svgUrl"])._repr_html_()
+
+
 class PNIDDetectResults(ContextualizationJob):
     @property
     def matches(self):
@@ -397,12 +404,14 @@ class PNIDDetectResults(ContextualizationJob):
         return df
 
     def _repr_html_(self):
-        image = self.matches.image_with_bounding_boxes(file_id=self.file_id,)
+        image = self.matches.image_with_bounding_boxes(
+            file_id=self.file_id,
+        )
         if image is not None:
-            from IPython.display import display
-
-            display(image)
-        return self.to_pandas()._repr_html_()
+            image_html = image._repr_html_()
+        else:
+            image_html = ""
+        return image_html + self.to_pandas()._repr_html_()
 
     @property
     def file_id(self):
@@ -411,3 +420,7 @@ class PNIDDetectResults(ContextualizationJob):
     @property
     def file_external_id(self):
         return self.result.get("fileExternalId")
+
+    def convert(self) -> PNIDConvertResults:
+        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted"""
+        return self._cognite_client.pnid_parsing.convert(items=self.result["items"], file_id=self.file_id)
