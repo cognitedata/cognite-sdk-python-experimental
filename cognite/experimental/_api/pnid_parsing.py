@@ -129,7 +129,7 @@ class PNIDParsingAPI(ContextAPI):
         )
 
     def ocr(self, file_id: int,) -> PNIDDetectionPageList:
-        """Retrieve the cached raw OCR result. Only works when detect has already been run.
+        """Retrieve the cached raw OCR result. Only works when detect (or the vision ocr service) has already been used on the file.
 
         Args:
             file_id (int): ID of the file.

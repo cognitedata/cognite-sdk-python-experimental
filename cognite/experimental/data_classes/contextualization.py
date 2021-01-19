@@ -421,6 +421,18 @@ class PNIDDetectResults(ContextualizationJob):
     def file_external_id(self):
         return self.result.get("fileExternalId")
 
-    def convert(self) -> PNIDConvertResults:
-        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted"""
-        return self._cognite_client.pnid_parsing.convert(items=self.result["items"], file_id=self.file_id)
+    def convert(self, ocr=False) -> PNIDConvertResults:
+        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted
+
+        Arguments:
+            ocr(bool): show raw OCR results, rather than detected entities.
+        """
+        if ocr:
+            items = self.ocr()[0]
+        else:
+            items = self.result["items"]
+        return self._cognite_client.pnid_parsing.convert(items=items, file_id=self.file_id)
+
+    def ocr(self) -> PNIDDetectionPageList:
+        """Retrieve raw OCR results, for example, to visualize"""
+        return self._cognite_client.pnid_parsing.ocr(file_id=self.file_id)

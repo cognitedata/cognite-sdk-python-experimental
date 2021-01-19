@@ -13,7 +13,7 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## [0.39] - 2020-01-20
+## [0.40] - 2020-01-20
 
 ### Changed
 - Richer output for entity matching pipelines and PNID jobs in notebooks
@@ -22,6 +22,9 @@ Changes are grouped as follows
 ### Added
 - OCR method for PNID parsing
 
+## [0.39] - 2021-01-18
+### Changed
+- Integrations and IntegrationRuns data classes updated with new fields.
 
 ## [0.38] - 2020-01-12
 ### Changed
