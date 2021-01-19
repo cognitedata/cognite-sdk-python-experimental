@@ -27,15 +27,12 @@ class IntegrationWithStatuses(CogniteResource):
         if len(self.statuses) > 0:
             for status in self.statuses:
                 if not (status is None):
-                    message = status.get("message", "")
-                    result.append(IntegrationRun(self.external_id, status["status"], message, status["createdTime"]))
+                    result.append(
+                        IntegrationRun(
+                            self.external_id, status["status"], status.get("message", ""), status["createdTime"]
+                        )
+                    )
         return result
-
-
-def get_status_message(status):
-    if "message" in status:
-        return status["message"]
-    return None
 
 
 class IntegrationRun(CogniteResource):
