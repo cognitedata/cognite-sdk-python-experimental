@@ -13,7 +13,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.model_hosting = `Model Hosting`_
 * client.relationships_playground: `Relationships`_
 * client.annotations: `Annotations`_
-* client.entity_matching: Extensions for entity matching `Create Entity Matching Rules`_ `Create Entity Matching Pipeline`_
+* client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.pnid_parsing: `Detect entities in a PNID`_
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
@@ -351,36 +351,9 @@ Contextualization
 These APIs will return as soon as possible, defering a blocking wait until the last moment. Nevertheless, they can block for a long time awaiting results.
 For examples of using this api, see: https://github.com/cognitedata/cognite-sdk-python-experimental/blob/master/CONTEXTUALIZATION.md
 
-Fit Entity Matching Model
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
-
-
-Re-fit Entity Matching Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.refit
-
-Retrieve Entity Matching Models
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.retrieve
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.retrieve_multiple
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.list
-
-Delete Entity Matching Models
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.delete
-
-Update Entity Matching Models
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.update
-
-Predict Using an Entity Matching Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.predict
-
-Create Entity Matching Rules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.create_rules
+Entity Matching Methods
+^^^^^^^^^^^^^^^^^^^^^^^
+Please see the main SDK documentation.
 
 Create Entity Matching Pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -419,9 +392,22 @@ Convert a P&ID to an interactive SVG where the provided annotations are highligh
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.convert
 
+Retrieve caches OCR results
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.PNIDParsingAPI.ocr
+
+Detect common objects in a PNID
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_object_detection.PNIDObjectDetectionAPI.find_objects
+
+
+
 Complete a Schema or Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.schema_completion.SchemaCompletionAPI.complete
+.. automethod:: cognite.experimental._api.schema_completion.SchemaCompletionAPI.complete_type
+
+.. automethod:: cognite.experimental._api.schema_completion.SchemaCompletionAPI.complete_domain
+
 
 Contextualization Data Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
