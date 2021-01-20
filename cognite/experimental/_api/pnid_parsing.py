@@ -132,10 +132,7 @@ class PNIDParsingAPI(ContextAPI):
             job_cls=PNIDConvertResults,
         )
 
-    def ocr(
-        self,
-        file_id: int,
-    ) -> PNIDDetectionPageList:
+    def ocr(self, file_id: int,) -> PNIDDetectionPageList:
         """Retrieve the cached raw OCR result. Only works when detect (or the vision ocr service) has already been used on the file.
 
         Args:

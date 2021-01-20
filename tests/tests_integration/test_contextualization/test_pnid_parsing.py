@@ -15,8 +15,8 @@ class TestPNIDParsingIntegration:
         file_id = PNID_FILE_ID
         job = PNIDAPI.detect(file_id=file_id, entities=entities)
         assert isinstance(job, ContextualizationJob)
-        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
+        assert "Completed" == job.status
 
         assert isinstance(job._repr_html_(), str)
         assert isinstance(job.matches, PNIDDetectionList)
@@ -26,8 +26,8 @@ class TestPNIDParsingIntegration:
         file_id = PNID_FILE_ID
         job = PNIDAPI.detect(file_id=file_id, entities=entities)
         assert isinstance(job, ContextualizationJob)
-        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
+        assert "Completed" == job.status
         ocr_result = PNIDAPI.ocr(file_id=file_id)
         assert isinstance(ocr_result, PNIDDetectionPageList)
         assert isinstance(ocr_result._repr_html_(), str)

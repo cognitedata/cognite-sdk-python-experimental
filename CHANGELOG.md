@@ -12,7 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.40] - 2020-01-20
+## [0.40.1] - 2020-01-19
+### Changed
+- PNID detect no longer blocks, entities passed as a dict are resolved in the `.matches` helper method.
+
+## [0.40] - 2020-01-19
 
 ### Changed
 - Richer output for entity matching pipelines and PNID jobs in notebooks
