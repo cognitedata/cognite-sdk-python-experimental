@@ -1,7 +1,6 @@
-from cognite.client.data_classes._base import *
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteUpdate
 
 
-# GenClass: annotationResponse, annotation
 class Annotation(CogniteResource):
     """Representation of an annotation in CDF.
 
@@ -58,10 +57,7 @@ class Annotation(CogniteResource):
         self.data = data
         self.created_time = created_time
         self.last_updated_time = last_updated_time
-        self.cognite_client = cognite_client
-
-
-# GenStop
+        self._cognite_client = cognite_client
 
 
 class AnnotationFilter(CogniteFilter):
