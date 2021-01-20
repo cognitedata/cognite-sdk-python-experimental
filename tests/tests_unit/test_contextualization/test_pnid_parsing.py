@@ -6,6 +6,7 @@ from cognite.client.data_classes import ContextualizationJob
 from cognite.client.exceptions import ModelFailedException
 
 from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectResults
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -248,7 +249,10 @@ class TestPNIDParsing:
             partial_match=False,
             min_tokens=3,
         )
-        assert isinstance(job, ContextualizationJob)
-        assert "Completed" == job.status
+        assert isinstance(job, PNIDDetectResults)
+        assert isinstance(str, job._repr_html_())
         assert "fileId" in job.result
         assert "fileExternalId" in job.result
+        assert file_external_id == job.file_external_id
+        assert isinstance(job.matches, PNIDDetectionList)
+        assert "Completed" == job.status
