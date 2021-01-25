@@ -1,12 +1,6 @@
 from cognite.client.data_classes._base import *
 
 
-class ConditionArgument(CogniteResource):
-    def __init__(self, indices: List[int], value: str):
-        self.indices = indices
-        self.value = value
-
-
 class SynonymEntry(CogniteResource):
     def __init__(self, sources: List[str], targets: List[str]):
         self.sources = sources
@@ -19,7 +13,7 @@ class MatchConditionConfig(CogniteResource):
 
 
 class MatchCondition(CogniteResource):
-    def __init__(self, condition_type: str, arguments: List[ConditionArgument], config: MatchConditionConfig):
+    def __init__(self, condition_type: str, arguments: List[List[int]], config: MatchConditionConfig):
         self.condition_type = condition_type
         self.arguments = arguments
         self.config = config
@@ -34,16 +28,9 @@ class RegexExtractor(CogniteResource):
 
 
 class MatchRule(CogniteResource):
-
-    def __init__(self, extractors: List[RegexExtractor], conditions: List[MatchCondition]):
+    def __init__(self, extractors: List[RegexExtractor], conditions: List[MatchCondition], priority):
         self.extractors = extractors
         self.conditions = conditions
-
-
-class PriorityRuleList(CogniteResource):
-
-    def __init__(self, rules: List[MatchRule], priorities: List[int]):
-        self.rules = rules
-        self.priorities = priorities
+        self.priority = priority
 
 

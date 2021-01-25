@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental._context_client import ContextAPI
-from cognite.experimental.data_classes import PriorityRuleList
+from cognite.experimental.data_classes import MatchRule
 
 
 class MatchRulesAPI(ContextAPI):
@@ -13,7 +13,7 @@ class MatchRulesAPI(ContextAPI):
         self,
         sources: List[dict],
         targets: List[dict],
-        priority_rules: Union[dict, PriorityRuleList],
+        rules: List[Union[dict, MatchRule]],
     ) -> ContextualizationJob:
         """Apply match rules with priorities to source entities with target entities.
 
@@ -29,7 +29,7 @@ class MatchRulesAPI(ContextAPI):
             status_path="/apply/",
             sources=sources,
             targets=targets,
-            priority_rules=priority_rules,
+            rules=rules,
         )
         return job
 
@@ -39,8 +39,9 @@ class MatchRulesAPI(ContextAPI):
         """Extract tags from P&ID based on pattern
 
         Args:
-            file_id (int): ID of the file, should already be uploaded in the same tenant.
-            patterns (list): List of regular expression patterns to look for in the P&ID. See API docs for details.
+            sources (List[dict]): List of dict representation of source entities to suggest rules for.
+            targets (List[dict]): List of dict representation of target entities to suggest rules for.
+            matches (list[dict]): List of matches in terms of source_id or source_external_id and similar for target.
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
@@ -48,7 +49,7 @@ class MatchRulesAPI(ContextAPI):
         return self._run_job(
             job_path="/suggest",
             status_path="/suggest/",
-            souorces=sources,
+            sources=sources,
             targets=targets,
-            patterns=matches,
+            matches=matches,
         )

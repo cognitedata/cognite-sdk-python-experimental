@@ -1,8 +1,17 @@
 import re
+import unittest
+
 
 import pytest
+from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental import CogniteClient
+from tests.utils import jsgz_load
+
+
+COGNITE_CLIENT = CogniteClient()
+RULES_API = COGNITE_CLIENT.match_rules
+
 
 @pytest.fixture
 def sources():
@@ -17,6 +26,7 @@ def sources():
         }
     ]
 
+
 @pytest.fixture
 def targets():
     return [
@@ -30,49 +40,48 @@ def targets():
         }
     ]
 
+
 @pytest.fixture
 def rules():
-    return {
-        "rules": [
-            {
-                "extractors": [
-                    {
-                        "entitySet": "sources",
-                        "extractorType": "regex",
-                        "field": "name",
-                        "pattern": "^[A-Z]+_([0-9]+)_([A-Z]+)_([0-9]+)(.*)$"
-                    },
-                    {
-                        "entitySet": "targets",
-                        "extractorType": "regex",
-                        "field": "name",
-                        "pattern": "^([0-9]+)_([A-Z]+)_([0-9]+)$"
-                    }
-                ],
-                "conditions": [
-                    {"conditionType": "equals", "arguments": [{"indices": [0, 0]}, {"indices": [1, 0]}]},
-                    {"conditionType": "equals", "arguments": [{"indices": [0, 1]}, {"indices": [1, 1]}]},
-                    {"conditionType": "equals", "arguments": [{"indices": [0, 2]}, {"indices": [1, 2]}]},
-                ]
-            }
-        ],
-        "priorities": [30]
-    }
+    return [
+        {
+            "extractors": [
+                {
+                    "entitySet": "sources",
+                    "extractorType": "regex",
+                    "field": "name",
+                    "pattern": "^[a-z]+_([0-9]+)_([A-Z]+)_([0-9]+)(.*)$"
+                },
+                {
+                    "entitySet": "targets",
+                    "extractorType": "regex",
+                    "field": "name",
+                    "pattern": "^([0-9]+)_([A-Z]+)_([0-9]+)$"
+                }
+            ],
+            "conditions": [
+                {"conditionType": "equals", "arguments": [[0, 0], [1, 0]]},
+                {"conditionType": "equals", "arguments": [[0, 1], [1, 1]]},
+                {"conditionType": "equals", "arguments": [[0, 2], [1, 2]]},
+            ],
+            "priority": 30
+        }
+    ]
+
 
 @pytest.fixture
 def reference_matches():
     return [{"sourceId": i, "targetId": i} for i in [1, 2]]
 
+
 @pytest.fixture
 def matches(sources, targets):
-    return {0: [{"sources": s, "targets": t} for s, t in zip(sources, targets)]}
+    return [{"sources": s, "targets": t} for s, t in zip(sources, targets)]
+
 
 @pytest.fixture
-def info():
-    return {0: {"numberOfMatches": 2, "conflicts": {}, "overlaps": {}}}
-
-COGNITE_CLIENT = CogniteClient()
-RULES_API = COGNITE_CLIENT.match_rules
+def result_mock(matches, rules):
+    return [{"flags": [], "numberOfMatches": 2, "conflicts": {}, "overlaps": {}, "matches": matches, "rule": rules[0]}]
 
 
 @pytest.fixture
@@ -98,13 +107,13 @@ def mock_suggest(rsps):
     )
     yield rsps
 
+
 @pytest.fixture
-def mock_status_apply_ok(rsps, matches, info):
+def mock_status_apply_ok(rsps, result_mock):
     response_body = {
         "jobId": 121110,
         "status": "Completed",
-        "matches": matches,
-        "info": info
+        "items": result_mock,
     }
     rsps.add(
         rsps.GET,
@@ -114,12 +123,13 @@ def mock_status_apply_ok(rsps, matches, info):
     )
     yield rsps
 
+
 @pytest.fixture
 def mock_status_suggest_ok(rsps, rules):
     response_body = {
         "jobId": 121110,
         "status": "Completed",
-        "rulees": rules,
+        "rules": rules,
     }
     rsps.add(
         rsps.GET,
@@ -130,9 +140,51 @@ def mock_status_suggest_ok(rsps, rules):
     yield rsps
 
 
-
-
 class TestMatchRules:
-    def test_suggest(self, sources, targets, matches):
-        
+    def test_suggest(self, sources, targets, reference_matches, mock_suggest, mock_status_suggest_ok):
+        job = RULES_API.suggest(
+            sources=sources, targets=targets, matches=reference_matches
+        )
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert "rules" in job.result
+        assert "Completed" == job.status
+        assert 101112 == job.job_id
 
+        n_suggest_calls = 0
+        n_status_calls = 0
+        for call in mock_suggest.calls:
+            if call.request.method == "POST":
+                n_suggest_calls += 1
+                assert {"sources": sources, "targets": targets, "matches": reference_matches} == jsgz_load(
+                    call.request.body
+                )
+            else:
+                n_status_calls += 1
+                assert "/101112" in call.request.url
+        assert 1 == n_suggest_calls
+        assert 1 == n_status_calls
+
+    def test_apply(self, sources, targets, rules, mock_apply, mock_status_apply_ok):
+        job = RULES_API.apply(
+            sources=sources, targets=targets, rules=rules
+        )
+        assert isinstance(job, ContextualizationJob)
+        assert "Queued" == job.status
+        assert "items" in job.result
+        assert "Completed" == job.status
+        assert 121110 == job.job_id
+
+        n_apply_calls = 0
+        n_status_calls = 0
+        for call in mock_apply.calls:
+            if call.request.method == "POST":
+                n_apply_calls += 1
+                assert {"sources": sources, "targets": targets, "rules": rules} == jsgz_load(
+                    call.request.body
+                )
+            else:
+                n_status_calls += 1
+                assert "/121110" in call.request.url
+        assert 1 == n_apply_calls
+        assert 1 == n_status_calls
