@@ -86,12 +86,12 @@ class EntityMatchingPipelinesAPI(ContextAPI):
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingPipeline]:
         """Retrieve pipeline
 
-            Args:
-                id: id of the pipeline to retrieve.
-                external_id: external id of the pipeline to retrieve.
+        Args:
+            id: id of the pipeline to retrieve.
+            external_id: external id of the pipeline to retrieve.
 
-            Returns:
-                EntityMatchingPipeline: Model requested."""
+        Returns:
+            EntityMatchingPipeline: Model requested."""
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
@@ -140,6 +140,23 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             external_id (Union[str, List[str]]): External ID or list of external ids"""
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
+    def _fix_update(self, item):
+        def fix_rules(rules):
+            rules = [rule if isinstance(rule, dict) else rule.dump(camel_case=True) for rule in rules]
+            # strip fields that are returned by pipelines but not valid input
+            rules = [
+                {k: v for k, v in rule.items() if k not in {"numConflicts", "matches", "numOverlaps"}} for rule in rules
+            ]
+            return rules
+
+        if isinstance(item, EntityMatchingPipeline):
+            item.rules = fix_rules(item.rules)
+        else:  # EntityMatchingPipelineUpdate
+            update_obj = item._update_object.get("rules", None)
+            if update_obj:
+                update_obj["set"] = fix_rules(update_obj["set"])
+        return itemS
+
     def update(
         self,
         item: Union[
@@ -153,6 +170,10 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         Args:
             items (Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate, List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]]]) : Pipeline(s) to update
         """
+        if isinstance(item, list):
+            item = [self._fix_update(update) for update in item]
+        else:
+            item = self._fix_update(item)
         return self._update_multiple(items=item)
 
 

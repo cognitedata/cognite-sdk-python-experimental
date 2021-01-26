@@ -12,6 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.41.0] - 2020-01-19
+
+### Changed
+- EntityMatchingPipeline update accepts its own suggested rules, despite extra fields.
+
+### Fixed
+- Better exception checks for missing packages in notebook output.
+- Fixed missing column error in dataframe in notebook output.
+
 ## [0.40.1] - 2020-01-19
 ### Changed
 - PNID detect no longer blocks, entities passed as a dict are resolved in the `.matches` helper method.
