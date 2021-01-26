@@ -12,12 +12,47 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.35] - 2012-12-14
-## Added
+## [0.40.1] - 2020-01-19
+### Changed
+- PNID detect no longer blocks, entities passed as a dict are resolved in the `.matches` helper method.
+
+## [0.40] - 2020-01-19
+
+### Changed
+- Richer output for entity matching pipelines and PNID jobs in notebooks
+- More specific job types returned from these endpoints, with helper methods that make processing and visualizing output easier.
+
+### Added
+- OCR method for PNID parsing
+
+## [0.39] - 2021-01-18
+### Changed
+- Integrations and IntegrationRuns data classes updated with new fields.
+
+## [0.38] - 2020-01-12
+### Changed
+- The following methods now accepts a `limit`-parameter, with default of 25, that controls how many elements the methods return:
+`FunctionCallAPI.list`, `FunctionAPI.list`, and `FunctionScheduleAPI.list`.
+- Removed `data` property from `FunctionSchedule` class.
+
+## [0.37] - 2020-01-11
+### Changed
+- The `complete` method of the schema completion api was renamed to `complete_type`
+### Added
+- Method `complete_domain` to schema completion
+
+## [0.36] - 2020-01-05
+### Changed
+- The `FunctionCallAPI.retrieve` method now utilizes `retrieve_multiple` in the backend. `/calls` -> `/calls/byids`
+### Added
+- Method `retrieve` to `FunctionScheduleAPI`-class.
+
+## [0.35] - 2020-12-14
+### Added
 - Added IntegrationsAPI and IntegrationRunsAPI
 
-## [0.34] - 2012-12-08
-## Added
+## [0.34] - 2020-12-08
+### Added
 - Added relationships_label and use_existing_matches to pipelines
 
 ## [0.33.0] - 2020-12-02

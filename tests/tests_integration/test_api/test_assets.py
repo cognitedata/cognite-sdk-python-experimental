@@ -156,6 +156,7 @@ class TestAssetsAPI:
             else:
                 assert asset.parent_id == external_id_to_id[asset.external_id[:-1]]
 
+    @pytest.mark.skip("broken by a bug in assets CDF-10303")
     def test_get_subtree(self, root_test_asset):
         assert 781 == len(COGNITE_CLIENT.assets_playground.retrieve_subtree(root_test_asset.id))
         assert 6 == len(COGNITE_CLIENT.assets_playground.retrieve_subtree(root_test_asset.id, depth=1))

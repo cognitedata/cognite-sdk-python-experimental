@@ -6,6 +6,7 @@ from cognite.client.data_classes import ContextualizationJob
 from cognite.client.exceptions import ModelFailedException
 
 from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectResults
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -53,7 +54,7 @@ def mock_status_detect_ok(rsps):
     response_body = {
         "jobId": 123,
         "status": "Completed",
-        "items": [],
+        "items": [{"text": "a", "boundingBox": {"xMin": 0, "xMax": 1, "yMin": 0, "yMax": 1}}],
         "fileId": 123432423,
         "fileExternalId": "123432423",
     }
@@ -133,9 +134,9 @@ class TestPNIDParsing:
             file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
         )
         assert isinstance(job, ContextualizationJob)
-        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert "items" in job.result
         assert 789 == job.job_id
+        assert "Completed" == job.status
 
         n_detect_calls = 0
         n_status_calls = 0
@@ -162,9 +163,13 @@ class TestPNIDParsing:
             file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
         )
         assert isinstance(job, ContextualizationJob)
-        assert "Completed" == job.status  # the job is completed in the PNIDParsingAPI
         assert "items" in job.result
         assert 789 == job.job_id
+        assert "Completed" == job.status
+
+        assert 1 == len(job.matches)
+        assert [{"name": "a"}] == job.matches[0].entities
+        assert "a" == job.matches[0].text
 
         n_detect_calls = 0
         n_status_calls = 0
@@ -248,7 +253,10 @@ class TestPNIDParsing:
             partial_match=False,
             min_tokens=3,
         )
-        assert isinstance(job, ContextualizationJob)
-        assert "Completed" == job.status
+        assert isinstance(job, PNIDDetectResults)
+        assert isinstance(job._repr_html_(), str)
         assert "fileId" in job.result
         assert "fileExternalId" in job.result
+        assert file_external_id == job.file_external_id
+        assert isinstance(job.matches, PNIDDetectionList)
+        assert "Completed" == job.status
