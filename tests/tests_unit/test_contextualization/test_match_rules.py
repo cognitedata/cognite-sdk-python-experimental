@@ -1,13 +1,11 @@
 import re
 import unittest
 
-
 import pytest
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
-
 
 COGNITE_CLIENT = CogniteClient()
 RULES_API = COGNITE_CLIENT.match_rules
@@ -15,30 +13,12 @@ RULES_API = COGNITE_CLIENT.match_rules
 
 @pytest.fixture
 def sources():
-    return [
-        {
-            "id": 1,
-            "name": "prefix_12_AB_0001/suffix",
-        },
-        {
-            "id": 2,
-            "name": "prefix_12_AB_0002/suffix",
-        }
-    ]
+    return [{"id": 1, "name": "prefix_12_AB_0001/suffix",}, {"id": 2, "name": "prefix_12_AB_0002/suffix",}]
 
 
 @pytest.fixture
 def targets():
-    return [
-        {
-            "id": 1,
-            "name": "12_AB_0001",
-        },
-        {
-            "id": 2,
-            "name": "12_AB_0002",
-        }
-    ]
+    return [{"id": 1, "name": "12_AB_0001",}, {"id": 2, "name": "12_AB_0002",}]
 
 
 @pytest.fixture
@@ -50,21 +30,21 @@ def rules():
                     "entitySet": "sources",
                     "extractorType": "regex",
                     "field": "name",
-                    "pattern": "^[a-z]+_([0-9]+)_([A-Z]+)_([0-9]+)(.*)$"
+                    "pattern": "^[a-z]+_([0-9]+)_([A-Z]+)_([0-9]+)(.*)$",
                 },
                 {
                     "entitySet": "targets",
                     "extractorType": "regex",
                     "field": "name",
-                    "pattern": "^([0-9]+)_([A-Z]+)_([0-9]+)$"
-                }
+                    "pattern": "^([0-9]+)_([A-Z]+)_([0-9]+)$",
+                },
             ],
             "conditions": [
                 {"conditionType": "equals", "arguments": [[0, 0], [1, 0]]},
                 {"conditionType": "equals", "arguments": [[0, 1], [1, 1]]},
                 {"conditionType": "equals", "arguments": [[0, 2], [1, 2]]},
             ],
-            "priority": 30
+            "priority": 30,
         }
     ]
 
@@ -142,9 +122,7 @@ def mock_status_suggest_ok(rsps, rules):
 
 class TestMatchRules:
     def test_suggest(self, sources, targets, reference_matches, mock_suggest, mock_status_suggest_ok):
-        job = RULES_API.suggest(
-            sources=sources, targets=targets, matches=reference_matches
-        )
+        job = RULES_API.suggest(sources=sources, targets=targets, matches=reference_matches)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert "rules" in job.result
@@ -166,9 +144,7 @@ class TestMatchRules:
         assert 1 == n_status_calls
 
     def test_apply(self, sources, targets, rules, mock_apply, mock_status_apply_ok):
-        job = RULES_API.apply(
-            sources=sources, targets=targets, rules=rules
-        )
+        job = RULES_API.apply(sources=sources, targets=targets, rules=rules)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert "items" in job.result
@@ -180,9 +156,7 @@ class TestMatchRules:
         for call in mock_apply.calls:
             if call.request.method == "POST":
                 n_apply_calls += 1
-                assert {"sources": sources, "targets": targets, "rules": rules} == jsgz_load(
-                    call.request.body
-                )
+                assert {"sources": sources, "targets": targets, "rules": rules} == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/121110" in call.request.url
