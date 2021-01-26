@@ -10,10 +10,7 @@ class MatchRulesAPI(ContextAPI):
     _RESOURCE_PATH = "/context/matchrules"
 
     def apply(
-        self,
-        sources: List[dict],
-        targets: List[dict],
-        rules: List[Union[dict, MatchRule]],
+        self, sources: List[dict], targets: List[dict], rules: List[Union[dict, MatchRule]],
     ) -> ContextualizationJob:
         """Apply match rules with priorities to source entities with target entities.
 
@@ -24,18 +21,10 @@ class MatchRulesAPI(ContextAPI):
         Returns:
             ContextualizationJob: Resulting completed job. Note that this function waits for completion."""
 
-        job = self._run_job(
-            job_path="/apply",
-            status_path="/apply/",
-            sources=sources,
-            targets=targets,
-            rules=rules,
-        )
+        job = self._run_job(job_path="/apply", status_path="/apply/", sources=sources, targets=targets, rules=rules,)
         return job
 
-    def suggest(
-        self, sources: List[dict], targets: List[dict], matches: List[dict],
-    ) -> ContextualizationJob:
+    def suggest(self, sources: List[dict], targets: List[dict], matches: List[dict],) -> ContextualizationJob:
         """Extract tags from P&ID based on pattern
 
         Args:
@@ -47,9 +36,5 @@ class MatchRulesAPI(ContextAPI):
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
 
         return self._run_job(
-            job_path="/suggest",
-            status_path="/suggest/",
-            sources=sources,
-            targets=targets,
-            matches=matches,
+            job_path="/suggest", status_path="/suggest/", sources=sources, targets=targets, matches=matches,
         )

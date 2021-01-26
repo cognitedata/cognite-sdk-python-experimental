@@ -32,5 +32,3 @@ class MatchRule(CogniteResource):
         self.extractors = extractors
         self.conditions = conditions
         self.priority = priority
-
-
