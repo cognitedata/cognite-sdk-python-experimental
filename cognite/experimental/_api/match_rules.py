@@ -1,7 +1,5 @@
 from typing import Dict, List, Union
 
-from cognite.client.data_classes import ContextualizationJob
-
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import EntityMatchingMatchRuleList, MatchRulesApplyJob, MatchRulesSuggestJob
 
@@ -17,9 +15,10 @@ class MatchRulesAPI(ContextAPI):
         Args:
             sources (List[dict]): List of source entities in json format.
             targets (List[dict]): List of target entities in json format.
-            priority_rules (Union[dict, PriorityRuleList]): List of match rules with priorities to apply to the entities
+            rules (Union[List[dict], EntityMatchingMatchruleList]): List of match rules with priorities to apply to the
+                entities
         Returns:
-            ContextualizationJob: Resulting completed job. Note that this function waits for completion."""
+            MatchRulesApplyJob: Job, calling .rules waits for completion."""
 
         if isinstance(rules, EntityMatchingMatchRuleList):
             rules = [
@@ -44,7 +43,9 @@ class MatchRulesAPI(ContextAPI):
             matches (list[dict]): List of matches in terms of source_id or source_external_id and similar for target.
 
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            MatchRulesSuggestJob: Resulting queued job. Note that .rules property of this job will block waiting for
+            results.
+        """
 
         return self._run_job(
             job_path="/suggest",
