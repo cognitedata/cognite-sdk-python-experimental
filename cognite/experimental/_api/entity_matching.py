@@ -155,7 +155,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             update_obj = item._update_object.get("rules", None)
             if update_obj:
                 update_obj["set"] = fix_rules(update_obj["set"])
-        return itemS
+        return item
 
     def update(
         self,

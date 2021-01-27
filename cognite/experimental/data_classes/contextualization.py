@@ -1,7 +1,7 @@
 import copy
 from collections import UserList
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
-from cognite.client.utils._auxiliary import to_camel_case
+
 import pandas as pd
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import (
@@ -10,6 +10,7 @@ from cognite.client.data_classes._base import (
     CogniteResourceList,
     CogniteUpdate,
 )
+from cognite.client.utils._auxiliary import to_camel_case
 
 from cognite.experimental.data_classes.utils.pandas import dataframe_summarize
 from cognite.experimental.data_classes.utils.rules_output import _color_matches, _label_groups
@@ -50,6 +51,8 @@ class EntityMatchingMatchRuleList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
     def _repr_html_(self):
+        if not self.data:
+            return super()._repr_html_()
         try:
             from ipywidgets import interact  # dont want this as dependency
         except (ImportError, ModuleNotFoundError):
