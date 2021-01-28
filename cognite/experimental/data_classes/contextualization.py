@@ -23,6 +23,10 @@ class EntityMatchingMatchRule(CogniteResource):
         extractors=None,
         priority=None,
         matches=None,
+        flags=None,
+        conflicts=None,
+        overlaps=None,
+        number_of_matches=None,
         num_conflicts=None,
         num_overlaps=None,
         cognite_client=None,
@@ -31,6 +35,10 @@ class EntityMatchingMatchRule(CogniteResource):
         self.extractors = extractors
         self.priority = priority
         self.matches = matches
+        self.flags = flags
+        self.conflicts = conflicts
+        self.overlaps = overlaps
+        self.number_of_matches = number_of_matches
         self.num_conflicts = num_conflicts
         self.num_overlaps = num_overlaps
         self._cognite_client = cognite_client
@@ -149,7 +157,7 @@ class EntityMatchingPipelineRun(ContextualizationJob):
         return EntityMatchingMatchRuleList._load(self.result["generatedRules"], cognite_client=self._cognite_client)
 
     @property
-    def matches(self) -> EntityMatchingMatchRuleList:
+    def matches(self) -> EntityMatchingMatchList:
         """List of matches. Depends on .result and may block"""
         matches = self.result["matches"]
         match_fields = (self.pipeline.model_parameters or {}).get("matchFields", [{"source": "name", "target": "name"}])
@@ -331,6 +339,43 @@ class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
 class EntityMatchingPipelineList(CogniteResourceList):
     _RESOURCE = EntityMatchingPipeline
     _UPDATE = EntityMatchingPipelineUpdate
+
+
+class MatchRulesSuggestJob(ContextualizationJob):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._status_path = "/context/matchrules/suggest/"
+
+    @property
+    def rules(self) -> EntityMatchingMatchRuleList:
+        """Depends on .result and may block"""
+        return EntityMatchingMatchRuleList._load(self.result["rules"])
+
+    def _repr_html_(self):
+        df = super().to_pandas()
+        # TODO: optional loading?
+        df.loc["rules"] = [self.result["rules"]]
+        return dataframe_summarize(df)._repr_html_()
+
+
+class MatchRulesApplyJob(ContextualizationJob):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._status_path = "/context/matchrules/suggest/"
+
+    @property
+    def rules(self) -> EntityMatchingMatchRuleList:
+        """Depends on .result and may block"""
+        reformated_rules = [{**item["rule"], **item} for item in self.result["items"]]
+        for rule in reformated_rules:
+            rule.pop("rule")
+        return EntityMatchingMatchRuleList._load(reformated_rules)
+
+    def _repr_html_(self):
+        df = super().to_pandas()
+        # TODO: optional loading?
+        df.loc["items"] = [self.result["items"]]
+        return dataframe_summarize(df)._repr_html_()
 
 
 class PNIDDetection(CogniteResource):
