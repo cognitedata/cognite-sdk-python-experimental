@@ -12,7 +12,7 @@ class MatchRulesAPI(ContextAPI):
     def apply(
         self, sources: List[dict], targets: List[dict], rules: Union[List[dict], EntityMatchingMatchRuleList]
     ) -> MatchRulesApplyJob:
-        """Apply match rules with priorities to source entities with target entities.
+        """Apply match rules with priorities to match source entities with target entities.
 
         Args:
             sources (List[dict]): List of source entities in json format.
