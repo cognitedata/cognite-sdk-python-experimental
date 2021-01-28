@@ -46,12 +46,13 @@ class EntityMatchingMatchRule(CogniteResource):
     def _repr_html_(self):
         extractors = _label_groups(copy.deepcopy(self.extractors), self.conditions)
 
-        info_df = super().to_pandas(camel_case=True).drop(["extractors", "conditions"])
+        info_df = super().to_pandas(camel_case=True)
         info_df = dataframe_summarize(info_df)
         info_df.index.name = "Stats"
-
-        coloured_matches_table = _color_matches(extractors, self.matches)
-        return info_df._repr_html_() + coloured_matches_table
+        html = info_df._repr_html_()
+        if self.matches is not None:
+            html += _color_matches(extractors, self.matches)
+        return html
 
 
 class EntityMatchingMatchRuleList(CogniteResourceList):
@@ -352,10 +353,10 @@ class MatchRulesSuggestJob(ContextualizationJob):
         return EntityMatchingMatchRuleList._load(self.result["rules"])
 
     def _repr_html_(self):
+        rules = self.rules  # TODO: optional loading? before super() for status
         df = super().to_pandas()
-        # TODO: optional loading?
-        df.loc["rules"] = [self.result["rules"]]
-        return dataframe_summarize(df)._repr_html_()
+        df.loc["rules"] = [f"{len(rules)} items"]
+        return df._repr_html_()
 
 
 class MatchRulesApplyJob(ContextualizationJob):
@@ -372,10 +373,10 @@ class MatchRulesApplyJob(ContextualizationJob):
         return EntityMatchingMatchRuleList._load(reformated_rules)
 
     def _repr_html_(self):
+        rules = self.rules  # TODO: optional loading? before super() for status
         df = super().to_pandas()
-        # TODO: optional loading?
-        df.loc["items"] = [self.result["items"]]
-        return dataframe_summarize(df)._repr_html_()
+        df.loc["rules"] = [f"{len(rules)} items"]
+        return df._repr_html_()
 
 
 class PNIDDetection(CogniteResource):

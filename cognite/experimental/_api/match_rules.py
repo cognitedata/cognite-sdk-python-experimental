@@ -1,5 +1,7 @@
 from typing import Dict, List, Union
 
+from cognite.client import utils
+
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import EntityMatchingMatchRuleList, MatchRulesApplyJob, MatchRulesSuggestJob
 
@@ -8,7 +10,7 @@ class MatchRulesAPI(ContextAPI):
     _RESOURCE_PATH = "/context/matchrules"
 
     def apply(
-        self, sources: List[dict], targets: List[dict], rules: Union[List[dict], EntityMatchingMatchRuleList],
+        self, sources: List[dict], targets: List[dict], rules: Union[List[dict], EntityMatchingMatchRuleList]
     ) -> MatchRulesApplyJob:
         """Apply match rules with priorities to source entities with target entities.
 
@@ -22,7 +24,8 @@ class MatchRulesAPI(ContextAPI):
 
         if isinstance(rules, EntityMatchingMatchRuleList):
             rules = [
-                {k: r.dump()[k] for k in ["extractors", "conditions", "priority"] if r.dump().get(k)} for r in rules
+                {k: r.dump()[k] for k in ["extractors", "conditions", "priority"] if r.dump().get(k)}
+                for r in rules.data
             ]
 
         return self._run_job(
@@ -34,8 +37,8 @@ class MatchRulesAPI(ContextAPI):
             job_cls=MatchRulesApplyJob,
         )
 
-    def suggest(self, sources: List[dict], targets: List[dict], matches: List[dict],) -> MatchRulesSuggestJob:
-        """Extract tags from P&ID based on pattern
+    def suggest(self, sources: List[dict], targets: List[dict], matches: List[dict]) -> MatchRulesSuggestJob:
+        """Suggest match rules with priorities based on existing matches between source and target entities.
 
         Args:
             sources (List[dict]): List of dict representation of source entities to suggest rules for.
@@ -46,7 +49,7 @@ class MatchRulesAPI(ContextAPI):
             MatchRulesSuggestJob: Resulting queued job. Note that .rules property of this job will block waiting for
             results.
         """
-
+        matches = [{utils._auxiliary.to_camel_case(k): v for k, v in match.items()} for match in matches]
         return self._run_job(
             job_path="/suggest",
             status_path="/suggest/",
