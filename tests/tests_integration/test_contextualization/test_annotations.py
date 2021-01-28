@@ -13,7 +13,7 @@ def new_annotation():
     annot = Annotation(
         annotation_type="abc",
         annotated_resource_external_id="foo",
-        annotated_resource_type="bar",
+        annotated_resource_type="event",
         source="sdk-integration-tests",
     )
 
@@ -31,7 +31,7 @@ def new_annotations():
     annot = Annotation(
         annotation_type="abc",
         annotated_resource_external_id="foo",
-        annotated_resource_type="bar",
+        annotated_resource_type="sequence",
         source="sdk-integration-tests",
     )
     annots = [annot] * 10
