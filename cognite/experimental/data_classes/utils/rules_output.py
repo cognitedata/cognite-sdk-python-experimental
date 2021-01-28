@@ -51,11 +51,7 @@ def _label_groups(extractors: List[Dict], conditions: List[Dict]):
 
 
 def _color_matches(extractors: List[Dict], matches: List[Dict]):
-    columns = [
-        (source_target, field)
-        for source_target in ["source", "target"]
-        for field in sorted(list(matches[0][f"{source_target}KeyFields"].keys()))
-    ]
+    columns = sorted(list({(extractor["entitySet"][:-1], extractor["field"]) for extractor in extractors}))  # order?
     patterns = {
         (extractor["entitySet"][:-1], extractor["field"]): extractor["pattern"].strip("^$")
         for extractor in extractors
@@ -75,8 +71,8 @@ def _color_matches(extractors: List[Dict], matches: List[Dict]):
 
     for match in matches:
         formatted = {
-            "source": copy.copy(match["sourceKeyFields"]),
-            "target": copy.copy(match["targetKeyFields"]),
+            "source": copy.copy(match.get("source")),
+            "target": copy.copy(match.get("target")),
         }
 
         for extractor in extractors:
@@ -84,10 +80,10 @@ def _color_matches(extractors: List[Dict], matches: List[Dict]):
                 continue
             source_target = extractor["entitySet"][:-1]  # singular
             field = extractor["field"]
-            regex_match = regex.match(extractor["pattern"], match[f"{source_target}KeyFields"][field])
+            regex_match = regex.match(extractor["pattern"], match.get(source_target, {}).get(field, ""))
             if not regex_match:
                 print(
-                    "Unexpected lack of match of ", extractor["pattern"], match[f"{source_target}KeyFields"][field],
+                    "Unexpected lack of match of ", extractor["pattern"], match.get(source_target), field,
                 )
                 continue
             formatted_field = regex_match.expand(extractor["restorePattern"])

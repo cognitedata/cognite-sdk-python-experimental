@@ -14,6 +14,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.relationships_playground: `Relationships`_
 * client.annotations: `Annotations`_
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
+* client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
@@ -379,6 +380,13 @@ Retrieve Entity Matching Pipelines Run
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.retrieve_latest
 .. automethod:: cognite.experimental._api.entity_matching.EntityMatchingPipelineRunsAPI.list
 
+Suggest match rules
+^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.match_rules.MatchRulesAPI.suggest
+
+Apply match rules
+^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.match_rules.MatchRulesAPI.apply
 
 Detect entities in a PNID
 ^^^^^^^^^^^^^^^^^^^^^^^^^

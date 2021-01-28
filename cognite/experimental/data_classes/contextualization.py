@@ -10,6 +10,7 @@ from cognite.client.data_classes._base import (
     CogniteResourceList,
     CogniteUpdate,
 )
+from cognite.client.utils._auxiliary import to_camel_case
 
 from cognite.experimental.data_classes.utils.pandas import dataframe_summarize
 from cognite.experimental.data_classes.utils.rules_output import _color_matches, _label_groups
@@ -22,6 +23,10 @@ class EntityMatchingMatchRule(CogniteResource):
         extractors=None,
         priority=None,
         matches=None,
+        flags=None,
+        conflicts=None,
+        overlaps=None,
+        number_of_matches=None,
         num_conflicts=None,
         num_overlaps=None,
         cognite_client=None,
@@ -30,6 +35,10 @@ class EntityMatchingMatchRule(CogniteResource):
         self.extractors = extractors
         self.priority = priority
         self.matches = matches
+        self.flags = flags
+        self.conflicts = conflicts
+        self.overlaps = overlaps
+        self.number_of_matches = number_of_matches
         self.num_conflicts = num_conflicts
         self.num_overlaps = num_overlaps
         self._cognite_client = cognite_client
@@ -37,12 +46,13 @@ class EntityMatchingMatchRule(CogniteResource):
     def _repr_html_(self):
         extractors = _label_groups(copy.deepcopy(self.extractors), self.conditions)
 
-        info_df = super().to_pandas(camel_case=True).drop(["extractors", "conditions"])
+        info_df = super().to_pandas(camel_case=True)
         info_df = dataframe_summarize(info_df)
         info_df.index.name = "Stats"
-
-        coloured_matches_table = _color_matches(extractors, self.matches)
-        return info_df._repr_html_() + coloured_matches_table
+        html = info_df._repr_html_()
+        if self.matches is not None:
+            html += _color_matches(extractors, self.matches)
+        return html
 
 
 class EntityMatchingMatchRuleList(CogniteResourceList):
@@ -50,9 +60,11 @@ class EntityMatchingMatchRuleList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
     def _repr_html_(self):
+        if not self.data:
+            return super()._repr_html_()
         try:
             from ipywidgets import interact  # dont want this as dependency
-        except ImportError:
+        except (ImportError, ModuleNotFoundError):
             return super()._repr_html_()
 
         @interact(rule_number=(0, len(self) - 1))
@@ -146,19 +158,19 @@ class EntityMatchingPipelineRun(ContextualizationJob):
         return EntityMatchingMatchRuleList._load(self.result["generatedRules"], cognite_client=self._cognite_client)
 
     @property
-    def matches(self) -> EntityMatchingMatchRuleList:
+    def matches(self) -> EntityMatchingMatchList:
         """List of matches. Depends on .result and may block"""
         matches = self.result["matches"]
-        match_fields = self.pipeline.model_parameters.get("matchFields", [{"source": "name", "target": "name"}])
+        match_fields = (self.pipeline.model_parameters or {}).get("matchFields", [{"source": "name", "target": "name"}])
         for match in matches:
             match["match_fields"] = match_fields  # for nice output
         return EntityMatchingMatchList._load(matches, cognite_client=self._cognite_client)
 
     def _repr_html_(self):
+        result = self.result  # TODO: optional loading? do this first for now for consistent status
         df = super().to_pandas()
-        # TODO: optional loading?
-        df.loc["matches"] = [self.result["matches"]]
-        df.loc["generatedRules"] = [self.result["generatedRules"]]
+        df.loc["matches"] = [result["matches"]]
+        df.loc["generatedRules"] = [result["generatedRules"]]
         return dataframe_summarize(df)._repr_html_()
 
 
@@ -185,6 +197,7 @@ class EntityMatchingPipeline(CogniteResource):
         rejected_matches: List = None,
         confirmed_matches: List = None,
         use_existing_matches: bool = None,
+        replacements: List[Dict] = None,
         relationships_label: str = None,
         score_threshold: float = None,
         schedule_interval: int = None,
@@ -197,19 +210,19 @@ class EntityMatchingPipeline(CogniteResource):
         cognite_client=None,
     ):
         """
-               The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
-               Args:
-                   external_id, name, description: standard fields for a resource.
-                   model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
-                   sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
-                   true_matches: existing matches with reasonable certainty to use in training.
-                   confirmed_matches: user-confirmed certain matches which will be used to override any other results.
-                   rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
-                   use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
-                   relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
-                   rules: list of matching rules (either old or new format)
-        (either old or new format)
-                   schedule_interval: automatically schedule pipeline to be run every this many seconds.
+        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
+        Args:
+            external_id, name, description: standard fields for a resource.
+            model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
+            sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
+            true_matches: existing matches with reasonable certainty to use in training.
+            confirmed_matches: user-confirmed certain matches which will be used to override any other results.
+            rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
+            use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
+            replacements: Expects a list of {'field':.., 'string':.. ,'replacement': ..} which will be used to replace substrings in a field with a synonym, such as "Pressure Transmitter" -> "PT", or "Æ" -> AE. Field can be '*' for all.
+            relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
+            rules: list of matching rules (either old or new format)
+            schedule_interval: automatically schedule pipeline to be run every this many seconds.
         """
 
         self.id = id
@@ -223,6 +236,7 @@ class EntityMatchingPipeline(CogniteResource):
         self.confirmed_matches = confirmed_matches
         self.rejected_matches = rejected_matches
         self.use_existing_matches = use_existing_matches
+        self.replacements = replacements
         self.relationships_label = relationships_label
         self.score_threshold = score_threshold
         self.rules = rules
@@ -249,13 +263,16 @@ class EntityMatchingPipeline(CogniteResource):
         df = dataframe_summarize(super().to_pandas(camel_case=camel_case))
         # expand
         for f in ["sources", "targets", "model_parameters"]:
-            for k, v in (getattr(self, f) or {}).items():
+            for k, v in (getattr(self, f, {}) or {}).items():
                 if isinstance(v, list):
                     for i, vi in enumerate(v):
                         df.loc[f"{f}.{k}[{i}]"] = [vi]
                 else:
                     df.loc[f"{f}.{k}"] = [v]
-            df = df.drop(f)
+            if camel_case:
+                f = to_camel_case(f)
+            if f in df.index:
+                df = df.drop(f)
         return df
 
 
@@ -308,6 +325,10 @@ class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
         return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "rules")
 
     @property
+    def replacements(self):
+        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "replacements")
+
+    @property
     def score_threshold(self):
         return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "scoreThreshold")
 
@@ -319,6 +340,43 @@ class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
 class EntityMatchingPipelineList(CogniteResourceList):
     _RESOURCE = EntityMatchingPipeline
     _UPDATE = EntityMatchingPipelineUpdate
+
+
+class MatchRulesSuggestJob(ContextualizationJob):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._status_path = "/context/matchrules/suggest/"
+
+    @property
+    def rules(self) -> EntityMatchingMatchRuleList:
+        """Depends on .result and may block"""
+        return EntityMatchingMatchRuleList._load(self.result["rules"])
+
+    def _repr_html_(self):
+        rules = self.rules  # TODO: optional loading? before super() for status
+        df = super().to_pandas()
+        df.loc["rules"] = [f"{len(rules)} items"]
+        return df._repr_html_()
+
+
+class MatchRulesApplyJob(ContextualizationJob):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._status_path = "/context/matchrules/suggest/"
+
+    @property
+    def rules(self) -> EntityMatchingMatchRuleList:
+        """Depends on .result and may block"""
+        reformated_rules = [{**item["rule"], **item} for item in self.result["items"]]
+        for rule in reformated_rules:
+            rule.pop("rule")
+        return EntityMatchingMatchRuleList._load(reformated_rules)
+
+    def _repr_html_(self):
+        rules = self.rules  # TODO: optional loading? before super() for status
+        df = super().to_pandas()
+        df.loc["rules"] = [f"{len(rules)} items"]
+        return df._repr_html_()
 
 
 class PNIDDetection(CogniteResource):
@@ -348,7 +406,7 @@ class PNIDDetectionList(CogniteResourceList):
             from bounding_box import bounding_box as bb
             from pdf2image import convert_from_bytes
             from PIL import Image
-        except ImportError as e:
+        except (ImportError, ModuleNotFoundError) as e:
             warnings.warn(
                 f"Module {e.name} missing, 'pip install Pillow numpy bounding_box pdf2image' for advanced visualization of results"
             )
