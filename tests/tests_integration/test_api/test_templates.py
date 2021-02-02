@@ -1,7 +1,16 @@
 import uuid
 
 import pytest
-from cognite.client.data_classes import TemplateGroup, TemplateGroupList, TemplateGroupVersion, TemplateInstance
+from cognite.client.data_classes import (
+    ConstantResolver,
+    TemplateGroup,
+    TemplateGroupList,
+    TemplateGroupVersion,
+    TemplateGroupVersionList,
+    TemplateInstance,
+    TemplateInstanceList,
+    TimeSeriesResolver,
+)
 from cognite.client.exceptions import CogniteNotFoundError
 
 from cognite.experimental import CogniteClient
@@ -9,6 +18,7 @@ from cognite.experimental import CogniteClient
 API = CogniteClient()
 API_GROUPS = API.templates.groups
 API_VERSION = API.templates.versions
+API_INSTANCES = API.templates.instances
 
 
 @pytest.fixture
@@ -43,8 +53,26 @@ def new_template_group_version(new_template_group):
     version = TemplateGroupVersion(schema)
     new_version = API_VERSION.upsert(ext_id, version=version)
     yield new_group, ext_id, new_version
-    API_GROUPS.delete(external_ids=ext_id)
-    assert API_GROUPS.retrieve_multiple(external_ids=ext_id) is None
+    print(ext_id, new_version.version)
+    API_VERSION.delete(ext_id, new_version.version)
+
+
+@pytest.fixture
+def new_template_instance(new_template_group_version):
+    new_group, ext_id, new_version = new_template_group_version
+    template_instance_1 = TemplateInstance(
+        external_id="norway",
+        template_name="Country",
+        field_resolvers={
+            "name": ConstantResolver("Norway"),
+            "demographics": ConstantResolver(value="norway_demographics"),
+            "deaths": TimeSeriesResolver("Norway_deaths"),
+            "confirmed": TimeSeriesResolver("Norway_confirmed"),
+        },
+    )
+    instance = API_INSTANCES.create(ext_id, new_version.version, template_instance_1)
+    yield new_group, ext_id, new_version, instance
+    API_INSTANCES.delete(ext_id, new_version.version, instance.external_id)
 
 
 class TestTemplatesAPI:
@@ -71,7 +99,48 @@ class TestTemplatesAPI:
         assert isinstance(res, TemplateGroup)
 
     def test_versions_list(self, new_template_group_version):
-        new_group, ext_id, new_version = new_template_group
+        new_group, ext_id, new_version = new_template_group_version
         res = API_VERSION.list(ext_id)
         assert len(res) == 1
-        assert isinstance(res, TemplateGroupVersion)
+        assert isinstance(res, TemplateGroupVersionList)
+
+    def test_instances_get_single(self, new_template_instance):
+        new_group, ext_id, new_version, new_instance = new_template_instance
+        res = API_INSTANCES.retrieve_multiple(ext_id, new_version.version, new_instance.external_id)
+        assert isinstance(res, TemplateInstance)
+        assert res.external_id == new_instance.external_id
+
+    def test_instances_list(self, new_template_instance):
+        new_group, ext_id, new_version, new_instance = new_template_instance
+        res = API_INSTANCES.list(ext_id, new_version.version, template_names=["Country"])
+        assert isinstance(res, TemplateInstanceList)
+        assert len(res) == 1
+
+    def test_instances_upsert(self, new_template_instance):
+        new_group, ext_id, new_version, new_instance = new_template_instance
+        upserted_instance = TemplateInstance(
+            external_id="norway",
+            template_name="Demographics",
+            field_resolvers={"populationSize": ConstantResolver(5328000), "growthRate": ConstantResolver(value=0.02)},
+        )
+        res = API_INSTANCES.upsert(ext_id, new_version.version, upserted_instance)
+        assert res.external_id == new_instance.external_id
+
+    # def test_query(self, new_template_instance):
+    #     new_group, ext_id, new_version, new_instance = new_template_instance
+    #     query = """{
+    #                     countryList {
+    #                        name,
+    #                        demographics {
+    #                            populationSize,
+    #                            growthRate
+    #                        },
+    #                        deaths {
+    #                            datapoints(limit: 100) {
+    #                                timestamp,
+    #                                value
+    #                            }
+    #                        }
+    #                     }
+    #                 }"""
+    #     res = API.templates.query.graphql_query(ext_id, new_version.version, query)

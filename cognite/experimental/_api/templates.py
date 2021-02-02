@@ -375,7 +375,11 @@ class TemplateInstancesApi(APIClient):
                                         )
              >>> c.templates.instances.upsert("sdk-test-group", 1, [template_instance_1, template_instance_2])
          """
-        resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id, version)
+        if isinstance(instances, TemplateInstance):
+            instances = [instances]
+        resource_path = (
+            utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id, version) + "/upsert"
+        )
         updated = self._post(
             resource_path, {"items": [instance.dump(camel_case=True) for instance in instances]},
         ).json()["items"]
