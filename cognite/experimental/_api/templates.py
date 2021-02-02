@@ -188,7 +188,7 @@ class TemplateGroupVersionsApi(APIClient):
                 >>> template_group_version = TemplateGroupVersion(schema)
                 >>> c.templates.versions.upsert(template_group.external_id, template_group_version)
         """
-        resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id)
+        resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id) + "/upsert"
         version = self._post(resource_path, version.dump(camel_case=True),).json()
         return TemplateGroupVersion._load(version)
 

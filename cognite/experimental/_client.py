@@ -18,7 +18,6 @@ from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
-from cognite.experimental._api.relationships import RelationshipsAPI
 from cognite.experimental._api.schema_completion import SchemaCompletionAPI
 from cognite.experimental._api.templates import TemplatesAPI
 from cognite.experimental._api.types import TypesAPI
@@ -37,7 +36,7 @@ APIClient.RETRYABLE_POST_ENDPOINTS |= {
 }
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
-    for api in ["types", "labels", "relationships", "functions"]
+    for api in ["types", "labels", "relationships", "functions", "templates"]
     for endpoint in ["list", "byids", "search"]
 }
 
