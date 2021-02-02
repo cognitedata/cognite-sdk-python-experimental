@@ -1,7 +1,10 @@
 import uuid
 
 import pytest
-from cognite.client.data_classes import (
+from cognite.client.exceptions import CogniteNotFoundError
+
+from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes import (
     ConstantResolver,
     TemplateGroup,
     TemplateGroupList,
@@ -11,9 +14,6 @@ from cognite.client.data_classes import (
     TemplateInstanceList,
     TimeSeriesResolver,
 )
-from cognite.client.exceptions import CogniteNotFoundError
-
-from cognite.experimental import CogniteClient
 
 API = CogniteClient()
 API_GROUPS = API.templates.groups
