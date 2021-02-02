@@ -1,5 +1,6 @@
 from cognite.client._api_client import APIClient
-from cognite.client.data_classes.templates import *
+
+from cognite.experimental.data_classes.templates import *
 
 
 class TemplatesAPI(APIClient):
