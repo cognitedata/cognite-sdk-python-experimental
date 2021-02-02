@@ -15,8 +15,7 @@ Changes are grouped as follows
 ## [0.42.0] - 21-02-01
 
 ### Added 
-- Alpha CogniteClient.
-- Template functionality (in alpha client)
+- Template functionality.
 
 ### Removed
 - Playground relationships.

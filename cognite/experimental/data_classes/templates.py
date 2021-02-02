@@ -9,7 +9,7 @@ class TemplateGroup(CogniteResource):
     Template groups are versioned, so there can be multiple template groups with the same external ID.
     The versioning is happening automatically whenever a template groups is changed.
 
-    GraphQL SDL is used as the language to describe the structure of the templates and data types.
+    GraphQL schema definition language is used as the language to describe the structure of the templates and data types.
 
     Args:
         external_id (str): The external ID provided by the client. Must be unique for the resource type.
