@@ -32,8 +32,8 @@ class TemplateGroupsAPI(APIClient):
         Examples:
             create a new template group:
 
-                >>> from cognite.client.alpha import CogniteClient
-                >>> from cognite.client.data_classes import TemplateGroup
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes import TemplateGroup
                 >>> c = CogniteClient()
                 >>> template_group_1 = TemplateGroup("sdk-test-group", "This is a test group")
                 >>> template_group_2 = TemplateGroup("sdk-test-group-2", "This is another test group")
@@ -56,8 +56,8 @@ class TemplateGroupsAPI(APIClient):
         Examples:
             create a new template group:
 
-                >>> from cognite.client.alpha import CogniteClient
-                >>> from cognite.client.data_classes import TemplateGroup
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes import TemplateGroup
                 >>> c = CogniteClient()
                 >>> template_group_1 = TemplateGroup("sdk-test-group", "This is a test group")
                 >>> template_group_2 = TemplateGroup("sdk-test-group-2", "This is another test group")
@@ -86,7 +86,7 @@ class TemplateGroupsAPI(APIClient):
         Examples:
             Get template groups by external id:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.templates.groups.retrieve_multiple(external_ids=["abc", "def"])
         """
@@ -107,7 +107,7 @@ class TemplateGroupsAPI(APIClient):
         Examples:
             List template groups:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> template_group_list = c.templates.groups.list(limit=5)
         """
@@ -131,7 +131,7 @@ class TemplateGroupsAPI(APIClient):
         Examples:
             Delete template groups by external id:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> c.templates.groups.delete(external_id=["a", "b"])
         """
@@ -166,8 +166,8 @@ class TemplateGroupVersionsAPI(APIClient):
         Examples:
             create a new template group version modeling Covid-19:
 
-                >>> from cognite.client.alpha import CogniteClient
-                >>> from cognite.client.data_classes import TemplateGroup
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes import TemplateGroup
                 >>> c = CogniteClient()
                 >>> template_group = TemplateGroup("sdk-test-group", "This template group models Covid-19 spread")
                 >>> c.templates.groups.create(template_group)
@@ -211,7 +211,7 @@ class TemplateGroupVersionsAPI(APIClient):
         Examples:
             List template group versions:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> template_group_list = c.templates.versions.list("template-group-ext-id", limit=5)
         """
@@ -236,7 +236,7 @@ class TemplateGroupVersionsAPI(APIClient):
         Examples:
             Delete template groups by external id:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> c.templates.versions.delete("sdk-test-group", 1)
         """
@@ -259,7 +259,7 @@ class TemplateGroupVersionsAPI(APIClient):
         Examples:
             Run a GraphQL query:
 
-               >>> from cognite.client.alpha import CogniteClient
+               >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> query = '''
                     {
@@ -305,8 +305,8 @@ class TemplateInstancesAPI(APIClient):
          Examples:
              create new template instances for Covid-19 spread:
 
-                 >>> from cognite.client.alpha import CogniteClient
-                 >>> from cognite.client.data_classes import TemplateInstance
+                 >>> from cognite.experimental import CogniteClient
+                 >>> from cognite.experimental.data_classes import TemplateInstance
                  >>> c = CogniteClient()
                  >>> template_instance_1 = TemplateInstance(
                                                 external_id="norway",
@@ -348,8 +348,8 @@ class TemplateInstancesAPI(APIClient):
         Examples:
          create new template instances for Covid-19 spread:
 
-             >>> from cognite.client.alpha import CogniteClient
-             >>> from cognite.client.data_classes import TemplateInstance
+             >>> from cognite.experimental import CogniteClient
+             >>> from cognite.experimental.data_classes import TemplateInstance
              >>> c = CogniteClient()
              >>> template_instance_1 = TemplateInstance(
                                             external_id="norway",
@@ -401,7 +401,7 @@ class TemplateInstancesAPI(APIClient):
         Examples:
             Get template instances by external id:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.templates.instances.retrieve_multiple(external_id="sdk-test-group", version=1, external_ids=["abc", "def"])
         """
@@ -435,7 +435,7 @@ class TemplateInstancesAPI(APIClient):
         Examples:
             List template instances:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> template_instances_list = c.templates.instances.list("template-group-ext-id", 1, limit=5)
         """
@@ -462,7 +462,7 @@ class TemplateInstancesAPI(APIClient):
         Examples:
             Delete template groups by external id:
 
-                >>> from cognite.client.alpha import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> c.templates.instances.delete("sdk-test-group", 1, external_id=["a", "b"])
         """
