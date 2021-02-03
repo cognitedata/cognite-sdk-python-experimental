@@ -39,7 +39,7 @@ class TestEntityMatchingIntegration:
         )
         new_pipeline = EMAPI.pipelines.create(pipeline)
         run = new_pipeline.run()
-        assert {"suggestedRules", "matches", "generatedRules"} == run.result.keys()
+        assert {"suggestedRules", "matches", "generatedRules", "errors"} == run.result.keys()
         list_runs = new_pipeline.runs()
         assert isinstance(list_runs, EntityMatchingPipelineRunList)
         assert [run] == list_runs

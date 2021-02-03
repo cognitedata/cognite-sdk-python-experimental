@@ -153,6 +153,11 @@ class EntityMatchingPipelineRun(ContextualizationJob):
         return self.result["suggestedRules"]
 
     @property
+    def errors(self):
+        """Returns list of error messages encountered while running. Depends on .result and may block"""
+        return self.result.get("errors")
+
+    @property
     def generated_rules(self):
         """List of suggested new match rules. Depends on .result and may block"""
         return EntityMatchingMatchRuleList._load(self.result["generatedRules"], cognite_client=self._cognite_client)
