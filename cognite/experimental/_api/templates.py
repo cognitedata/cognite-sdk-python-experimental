@@ -9,7 +9,6 @@ class TemplatesAPI(APIClient):
         self.groups = TemplateGroupsApi(*args, **kwargs)
         self.versions = TemplateGroupVersionsApi(*args, **kwargs)
         self.instances = TemplateInstancesApi(*args, **kwargs)
-        self.query = TemplatesQuery(*args, **kwargs)
 
 
 class TemplateGroupsApi(APIClient):
@@ -244,10 +243,6 @@ class TemplateGroupVersionsApi(APIClient):
         resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id)
         self._post(resource_path + "/delete", {"version": version})
 
-
-class TemplatesQuery(APIClient):
-    _PATH = "/templategroups/{}/versions/{}/graphql"
-
     def graphql_query(self, external_id: str, version: int, query: str) -> GraphQlResponse:
         """
         `Run a GraphQL Query.`
@@ -285,9 +280,13 @@ class TemplatesQuery(APIClient):
                     '''
                 >>> result = c.templates.query.graphql_query("template-group-ext-id", 1, query)
         """
-        path = utils._auxiliary.interpolate_and_url_encode(self._PATH, external_id, version)
+        path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id, version) + "/graphql"
         response = self._post(path, {"query": query})
         return GraphQlResponse._load(response.json())
+
+
+class TemplatesQuery(APIClient):
+    _PATH = "/templategroups/{}/versions/{}/graphql"
 
 
 class TemplateInstancesApi(APIClient):
