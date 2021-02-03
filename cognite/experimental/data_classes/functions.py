@@ -2,8 +2,9 @@ import time
 from numbers import Number
 from typing import Dict, List, Optional, Union
 
-from cognite.client._api.functions import LIST_LIMIT_DEFAULT
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+
+from cognite.experimental._api.functions import LIST_LIMIT_DEFAULT
 
 
 class Function(CogniteResource):
