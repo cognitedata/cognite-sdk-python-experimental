@@ -99,19 +99,6 @@ class RawResolver(CogniteResource):
         self._cognite_client = cognite_client
 
 
-class TimeSeriesResolver(CogniteResource):
-    """Resolves a field of type 'TimeSeries' to a specific Time Series.
-
-    Args:
-        time_series_id (str): The time series External ID.
-    """
-
-    def __init__(self, time_series_id: str = None, cognite_client=None):
-        self.type = "timeSeries"
-        self.time_series_id = time_series_id
-        self._cognite_client = cognite_client
-
-
 class SyntheticTimeSeriesResolver(CogniteResource):
     """Resolves a field of type 'SyntheticTimeSeries' to a Synthetic Time Series.
 
@@ -147,14 +134,13 @@ class SyntheticTimeSeriesResolver(CogniteResource):
         self._cognite_client = cognite_client
 
 
-FieldResolvers = Union[ConstantResolver, RawResolver, TimeSeriesResolver, SyntheticTimeSeriesResolver]
+FieldResolvers = Union[ConstantResolver, RawResolver, SyntheticTimeSeriesResolver, str]
 
 
 class TemplateInstance(CogniteResource):
     field_resolver_mapper = {
         "constant": ConstantResolver,
         "syntheticTimeSeries": SyntheticTimeSeriesResolver,
-        "timeSeries": TimeSeriesResolver,
         "raw": RawResolver,
     }
 

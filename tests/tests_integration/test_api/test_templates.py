@@ -12,7 +12,6 @@ from cognite.experimental.data_classes import (
     TemplateGroupVersionList,
     TemplateInstance,
     TemplateInstanceList,
-    TimeSeriesResolver,
 )
 
 API = CogniteClient()
@@ -65,9 +64,9 @@ def new_template_instance(new_template_group_version):
         template_name="Country",
         field_resolvers={
             "name": ConstantResolver("Norway"),
-            "demographics": ConstantResolver(value="norway_demographics"),
-            "deaths": TimeSeriesResolver("Norway_deaths"),
-            "confirmed": TimeSeriesResolver("Norway_confirmed"),
+            "demographics": ConstantResolver("norway_demographics"),
+            "deaths": ConstantResolver("Norway_deaths"),
+            "confirmed": ConstantResolver("Norway_confirmed"),
         },
     )
     instance = API_INSTANCES.create(ext_id, new_version.version, template_instance_1)
