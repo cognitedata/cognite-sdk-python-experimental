@@ -14,6 +14,9 @@ Changes are grouped as follows
 
 ## [0.41.0] - 2020-01-19
 
+### Added
+- New entity match rules endpoints are available in `client.match_rules`
+
 ### Changed
 - EntityMatchingPipeline update accepts its own suggested rules, despite extra fields.
 
