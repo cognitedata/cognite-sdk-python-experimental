@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+
+### Added
+
+- Optional argument `env_vars` for the `FunctionsAPI.create()` method.
+
 ## [0.41.0] - 2020-01-19
 
 ### Added
