@@ -10,6 +10,48 @@ class TemplatesAPI(APIClient):
         self.versions = TemplateGroupVersionsAPI(*args, **kwargs)
         self.instances = TemplateInstancesAPI(*args, **kwargs)
 
+    def graphql_query(self, external_id: str, version: int, query: str) -> GraphQlResponse:
+        """
+        `Run a GraphQL Query.`
+        To learn more, see https://graphql.org/learn/
+
+        Args:
+            external_id (str): The external id of the template group.
+            version (int): The version of the template group to run the query on.
+            query (str): The GraphQL query to run.
+
+        Returns:
+            GraphQlResponse: the result of the query.
+
+        Examples:
+            Run a GraphQL query:
+
+               >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> query = '''
+                    {
+                        countryList {
+                           name,
+                           demographics {
+                               populationSize,
+                               growthRate
+                           },
+                           deaths {
+                               datapoints(limit: 100) {
+                                   timestamp,
+                                   value
+                               }
+                           }
+                        }
+                    }
+                    '''
+                >>> result = c.templates.query.graphql_query("template-group-ext-id", 1, query)
+        """
+        path = "/templategroups/{}/versions/{}/graphql"
+        path = utils._auxiliary.interpolate_and_url_encode(path, external_id, version)
+        response = self._post(path, {"query": query})
+        return GraphQlResponse._load(response.json())
+
 
 class TemplateGroupsAPI(APIClient):
     _RESOURCE_PATH = "/templategroups"
@@ -241,47 +283,6 @@ class TemplateGroupVersionsAPI(APIClient):
         """
         resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id)
         self._post(resource_path + "/delete", {"version": version})
-
-    def graphql_query(self, external_id: str, version: int, query: str) -> GraphQlResponse:
-        """
-        `Run a GraphQL Query.`
-        To learn more, see https://graphql.org/learn/
-
-        Args:
-            external_id (str): The external id of the template group.
-            version (int): The version of the template group to run the query on.
-            query (str): The GraphQL query to run.
-
-        Returns:
-            GraphQlResponse: the result of the query.
-
-        Examples:
-            Run a GraphQL query:
-
-               >>> from cognite.experimental import CogniteClient
-                >>> c = CogniteClient()
-                >>> query = '''
-                    {
-                        countryList {
-                           name,
-                           demographics {
-                               populationSize,
-                               growthRate
-                           },
-                           deaths {
-                               datapoints(limit: 100) {
-                                   timestamp,
-                                   value
-                               }
-                           }
-                        }
-                    }
-                    '''
-                >>> result = c.templates.query.graphql_query("template-group-ext-id", 1, query)
-        """
-        path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id, version) + "/graphql"
-        response = self._post(path, {"query": query})
-        return GraphQlResponse._load(response.json())
 
 
 class TemplateInstancesAPI(APIClient):

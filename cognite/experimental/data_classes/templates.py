@@ -143,7 +143,6 @@ class TemplateInstance(CogniteResource):
         "syntheticTimeSeries": SyntheticTimeSeriesResolver,
         "raw": RawResolver,
     }
-
     """A template instance that implements a template by specificing a resolver per field.
 
     Args:

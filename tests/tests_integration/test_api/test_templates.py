@@ -124,3 +124,28 @@ class TestTemplatesAPI:
         )
         res = API_INSTANCES.upsert(ext_id, new_version.version, upserted_instance)
         assert res.external_id == new_instance.external_id
+
+    def test_query(self, new_template_instance):
+        new_group, ext_id, new_version, new_instance = new_template_instance
+        query = """
+        { 
+        countryList 
+            { 
+                name, 
+                deaths { 
+                    externalId, 
+                    datapoints(limit: 2) { 
+                        timestamp, value 
+                    } 
+                }, 
+                confirmed { 
+                    externalId, 
+                    datapoints(limit: 2) { 
+                        timestamp, value 
+                    } 
+                } 
+            } 
+        }
+        """
+        res = API.templates.graphql_query(ext_id, 1, query)
+        assert res.data is not None
