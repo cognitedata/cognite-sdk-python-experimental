@@ -155,7 +155,7 @@ class EntityMatchingPipelineRun(ContextualizationJob):
     @property
     def errors(self):
         """Returns list of error messages encountered while running. Depends on .result and may block"""
-        return self.get("errors")
+        return self.result.get("errors")
 
     @property
     def generated_rules(self):
