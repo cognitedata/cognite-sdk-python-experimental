@@ -36,7 +36,7 @@ APIClient.RETRYABLE_POST_ENDPOINTS |= {
 }
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
-    for api in ["types", "labels", "relationships", "functions", "templates"]
+    for api in ["types", "labels", "functions", "templates"]
     for endpoint in ["list", "byids", "search"]
 }
 

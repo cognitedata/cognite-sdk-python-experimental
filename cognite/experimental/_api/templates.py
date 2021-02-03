@@ -6,12 +6,12 @@ from cognite.experimental.data_classes.templates import *
 class TemplatesAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.groups = TemplateGroupsApi(*args, **kwargs)
-        self.versions = TemplateGroupVersionsApi(*args, **kwargs)
-        self.instances = TemplateInstancesApi(*args, **kwargs)
+        self.groups = TemplateGroupsAPI(*args, **kwargs)
+        self.versions = TemplateGroupVersionsAPI(*args, **kwargs)
+        self.instances = TemplateInstancesAPI(*args, **kwargs)
 
 
-class TemplateGroupsApi(APIClient):
+class TemplateGroupsAPI(APIClient):
     _RESOURCE_PATH = "/templategroups"
     _LIST_CLASS = TemplateGroupList
 
@@ -140,7 +140,7 @@ class TemplateGroupsApi(APIClient):
         )
 
 
-class TemplateGroupVersionsApi(APIClient):
+class TemplateGroupVersionsAPI(APIClient):
     _RESOURCE_PATH = "/templategroups/{}/versions"
     _LIST_CLASS = TemplateGroupVersionList
 
@@ -285,11 +285,7 @@ class TemplateGroupVersionsApi(APIClient):
         return GraphQlResponse._load(response.json())
 
 
-class TemplatesQuery(APIClient):
-    _PATH = "/templategroups/{}/versions/{}/graphql"
-
-
-class TemplateInstancesApi(APIClient):
+class TemplateInstancesAPI(APIClient):
     _RESOURCE_PATH = "/templategroups/{}/versions/{}/instances"
     _LIST_CLASS = TemplateInstanceList
 
