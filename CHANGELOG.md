@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Added
 
-- Optional argument `env_vars` for the `FunctionsAPI.create()` method.
+- Optional argument `env_vars` to the `FunctionsAPI.create()` method.
 
 ## [0.41.0] - 2020-01-19
 
