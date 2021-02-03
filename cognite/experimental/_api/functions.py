@@ -412,13 +412,13 @@ class FunctionCallsAPI(APIClient):
         """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
         Args:
-            limit (int, optional): Maximum number of function calls to list. Pass in -1, float('inf') or None to list all Function Calls.
             function_id (int, optional): ID of the function on which the calls were made.
             function_external_id (str, optional): External ID of the function on which the calls were made.
             status (str, optional): Status of the call. Possible values ["Running", "Failed", "Completed", "Timeout"].
             schedule_id (int, optional): Schedule id from which the call belongs (if any).
             start_time (Dict[str, int], optional): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
             end_time (Dict[str, int], optional): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            limit (int, optional): Maximum number of function calls to list. Pass in -1, float('inf') or None to list all Function Calls.
 
         Returns:
             FunctionCallList: List of function calls
