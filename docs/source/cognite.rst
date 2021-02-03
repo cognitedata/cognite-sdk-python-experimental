@@ -496,15 +496,15 @@ Upsert a Template group version
 
 List Temple Group versions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionAPI.list
+.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.list
 
 Delete a Temple Group version
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionAPI.delete
+.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.delete
 
 Run a GraphQL query
 ^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionAPI.graphql_query
+.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.graphql_query
 
 Create Template instances
 ^^^^^^^^^^^^^^^^^^^^^^^^^

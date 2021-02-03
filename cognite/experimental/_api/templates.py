@@ -178,7 +178,6 @@ class TemplateGroupVersionsAPI(APIClient):
                             "The population growth rate"
                             growthRate: Float,
                         }
-
                         type Country @template {
                             name: String,
                             demographics: Demographics,
@@ -318,7 +317,7 @@ class TemplateInstancesAPI(APIClient):
                                                     "confirmed": TimeSeriesResolver("Norway_confirmed"),
                                                     }
                                                 )
-                >>> template_instance_2 = TemplateInstance(
+                 >>> template_instance_2 = TemplateInstance(
                                                 external_id="norway_demographics",
                                                 template_name="Demographics",
                                                 field_resolvers={
@@ -326,7 +325,7 @@ class TemplateInstancesAPI(APIClient):
                                                     "growthRate": ConstantResolver(value=0.02)
                                                     }
                                                 )
-                 >>> c.templates.instances.create("sdk-test-group", 1, [template_instance_1, template_instance_2])
+                >>> c.templates.instances.create("sdk-test-group", 1, [template_instance_1, template_instance_2])
          """
         resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id, version)
         return self._create_multiple(resource_path=resource_path, items=instances)
@@ -351,25 +350,23 @@ class TemplateInstancesAPI(APIClient):
              >>> from cognite.experimental import CogniteClient
              >>> from cognite.experimental.data_classes import TemplateInstance
              >>> c = CogniteClient()
-             >>> template_instance_1 = TemplateInstance(
-                                            external_id="norway",
-                                            template_name="Country",
-                                            field_resolvers={
-                                                "name": ConstantResolver("Norway"),
-                                                "demographics": ConstantResolver(value="norway_demographics"),
-                                                "deaths": TimeSeriesResolver("Norway_deaths"),
-                                                "confirmed": TimeSeriesResolver("Norway_confirmed"),
-                                                }
-                                        )
-            >>> template_instance_2 = TemplateInstance(
-                                            external_id="norway_demographics",
-                                            template_name="Demographics",
-                                            field_resolvers={
-                                                "populationSize": ConstantResolver(5328000),
-                                                "growthRate": ConstantResolver(value=0.02)
-                                                }
-                                        )
-             >>> c.templates.instances.upsert("sdk-test-group", 1, [template_instance_1, template_instance_2])
+             >>> template_instance_1 = TemplateInstance(external_id="norway",
+                    template_name="Country",
+                    field_resolvers={
+                        "name": ConstantResolver("Norway"),
+                        "demographics": ConstantResolver(value="norway_demographics"),
+                        "deaths": TimeSeriesResolver("Norway_deaths"),
+                        "confirmed": TimeSeriesResolver("Norway_confirmed"),
+                        }
+                )
+             >>> template_instance_2 = TemplateInstance(external_id="norway_demographics",
+                    template_name="Demographics",
+                    field_resolvers={
+                        "populationSize": ConstantResolver(5328000),
+                        "growthRate": ConstantResolver(value=0.02)
+                        }
+                )
+            >>> c.templates.instances.upsert("sdk-test-group", 1, [template_instance_1, template_instance_2])
          """
         if isinstance(instances, TemplateInstance):
             instances = [instances]
