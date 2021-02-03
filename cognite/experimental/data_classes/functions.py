@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
-from cognite.experimental._api.functions import LIST_LIMIT_DEFAULT
+from cognite.experimental._constants import LIST_LIMIT_DEFAULT
 
 
 class Function(CogniteResource):
