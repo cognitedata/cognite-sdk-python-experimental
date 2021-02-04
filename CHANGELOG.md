@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
+## [0.43.0]
 
 ### Added
 - Possibility to add environment variables to functions via the new argument `env_vars` of the `FunctionsAPI.create()` method.
