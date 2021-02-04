@@ -15,6 +15,7 @@ Changes are grouped as follows
 ## Unreleased
 
 ### Added
+- Possibility to add environment variables to functions via the new argument `env_vars` of the `FunctionsAPI.create()` method.
 - Optional argument `limit` to `Function.list_calls()`
 
 ## [0.42.0] - 21-02-01

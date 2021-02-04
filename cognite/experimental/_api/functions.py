@@ -46,6 +46,7 @@ class FunctionsAPI(APIClient):
         owner: Optional[str] = "",
         api_key: Optional[str] = None,
         secrets: Optional[Dict] = None,
+        env_vars: Optional[Dict] = None,
         cpu: Number = 0.25,
         memory: Number = 1.0,
     ) -> Function:
@@ -72,6 +73,7 @@ class FunctionsAPI(APIClient):
             owner (str, optional):                  Owner of this function. Typically used to know who created it.
             api_key (str, optional):                API key that can be used inside the function to access data in CDF.
             secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
+            env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 20 environment variables.
             cpu (Number):                           Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
             memory (Number):                        Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
 
@@ -129,6 +131,7 @@ class FunctionsAPI(APIClient):
             "functionPath": function_path,
             "cpu": float(cpu),
             "memory": float(memory),
+            "envVars": env_vars,
         }
         if external_id:
             function.update({"externalId": external_id})

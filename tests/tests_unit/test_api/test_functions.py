@@ -38,6 +38,7 @@ EXAMPLE_FUNCTION = {
     "createdTime": 1585662507939,
     "apiKey": "***",
     "secrets": {"key1": "***", "key2": "***"},
+    "envVars": {"env1": "foo", "env2": "bar"},
     "cpu": 0.25,
     "memory": 1,
 }
