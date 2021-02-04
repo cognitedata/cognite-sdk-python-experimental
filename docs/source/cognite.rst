@@ -504,7 +504,7 @@ Delete a Temple Group version
 
 Run a GraphQL query
 ^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.graphql_query
+.. automethod:: cognite.experimental._api.templates.TemplatesAPI.graphql_query
 
 Create Template instances
 ^^^^^^^^^^^^^^^^^^^^^^^^^
