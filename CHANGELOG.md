@@ -15,8 +15,16 @@ Changes are grouped as follows
 ## Unreleased
 
 ### Added
-
 - Optional argument `env_vars` to the `FunctionsAPI.create()` method.
+- Optional argument `limit` to `Function.list_calls()`
+
+## [0.42.0] - 21-02-01
+
+### Added 
+- Template functionality.
+
+### Removed
+- Playground relationships.
 
 ## [0.41.0] - 2020-01-19
 

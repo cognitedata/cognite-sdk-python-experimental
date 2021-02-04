@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from cognite.experimental._api import assets, relationships, types
+from cognite.experimental._api import assets, types
 
 
 class TestListAndIterSignatures:
@@ -22,7 +22,6 @@ class TestListAndIterSignatures:
                     "partitions",
                 ],
             ),
-            (relationships.RelationshipsAPI, relationships.RelationshipFilter, ["data_sets", "relationship_types"]),
             (types.TypesAPI, types.TypeFilter, []),
         ],
     )
