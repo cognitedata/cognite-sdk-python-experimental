@@ -4,6 +4,8 @@ from typing import Dict, List, Optional, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
+from cognite.experimental._constants import LIST_LIMIT_DEFAULT
+
 
 class Function(CogniteResource):
     """A representation of a Cognite Function.
@@ -78,6 +80,7 @@ class Function(CogniteResource):
         schedule_id: Optional[int] = None,
         start_time: Optional[Dict[str, int]] = None,
         end_time: Optional[Dict[str, int]] = None,
+        limit: Optional[int] = LIST_LIMIT_DEFAULT,
     ) -> "FunctionCallList":
         """List all calls to this function.
 
@@ -86,12 +89,18 @@ class Function(CogniteResource):
             schedule_id (int, optional): Schedule id from which the call belongs (if any).
             start_time ([Dict[str, int], optional): Start time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
             end_time (Dict[str, int], optional): End time of the call. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            limit (int, optional): Maximum number of function calls to list. Pass in -1, float('inf') or None to list all Function Calls.
 
         Returns:
             FunctionCallList: List of function calls
         """
         return self._cognite_client.functions.calls.list(
-            function_id=self.id, status=status, schedule_id=schedule_id, start_time=start_time, end_time=end_time
+            function_id=self.id,
+            status=status,
+            schedule_id=schedule_id,
+            start_time=start_time,
+            end_time=end_time,
+            limit=limit,
         )
 
     def list_schedules(self) -> "FunctionSchedulesList":

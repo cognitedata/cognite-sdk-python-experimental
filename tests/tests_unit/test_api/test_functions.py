@@ -580,7 +580,7 @@ class TestFunctionCallsAPI:
             "start_time": {"min": 1585925306822, "max": 1585925306823},
             "end_time": {"min": 1585925310822, "max": 1585925310823},
         }
-        res = FUNCTIONS_API.retrieve(id=FUNCTION_ID).list_calls(**filter_kwargs)
+        res = FUNCTIONS_API.retrieve(id=FUNCTION_ID).list_calls(**filter_kwargs, limit=-1)
 
         assert isinstance(res, FunctionCallList)
         assert mock_function_calls_filter_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
@@ -592,7 +592,7 @@ class TestFunctionCallsAPI:
             "start_time": {"min": 1585925306822, "max": 1585925306823},
             "end_time": {"min": 1585925310822, "max": 1585925310823},
         }
-        res = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID, **filter_kwargs)
+        res = FUNCTION_CALLS_API.list(function_id=FUNCTION_ID, **filter_kwargs, limit=-1)
         assert isinstance(res, FunctionCallList)
         assert mock_function_calls_filter_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 

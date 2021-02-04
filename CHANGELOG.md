@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+
+### Added
+- Optional argument `limit` to `Function.list_calls()`
+
 ## [0.42.0] - 21-02-01
 
 ### Added 
