@@ -18,8 +18,8 @@ from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
-from cognite.experimental._api.relationships import RelationshipsAPI
 from cognite.experimental._api.schema_completion import SchemaCompletionAPI
+from cognite.experimental._api.templates import TemplatesAPI
 from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.unstructured import GrepAPI
 
@@ -36,7 +36,7 @@ APIClient.RETRYABLE_POST_ENDPOINTS |= {
 }
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
-    for api in ["types", "labels", "relationships", "functions"]
+    for api in ["types", "labels", "functions", "templates"]
     for endpoint in ["list", "byids", "search"]
 }
 
@@ -104,8 +104,6 @@ class CogniteClient(Client):
             debug=debug,
             **kwargs,
         )
-        # OLD relationships - planned to be removed soon
-        self.relationships_playground = RelationshipsAPI(self._config, api_version="playground", cognite_client=self)
         # NEW assets features - e.g. types
         self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
 
@@ -125,3 +123,4 @@ class CogniteClient(Client):
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
         self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
+        self.templates = TemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
