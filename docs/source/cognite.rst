@@ -522,7 +522,9 @@ List Template instances
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.templates.TemplateInstancesAPI.list
 
-
+Get suggestions for missing entries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.templates.TemplateCompletionAPI.complete
 
 Data classes
 ^^^^^^^^^^^^

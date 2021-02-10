@@ -12,6 +12,9 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.44.0]
+- Domains/schemas/universes/domains are now consistently called templates in the SDK, and the completion functions are moved to `client.templates.completion`
+
 ## [0.43.0]
 
 ### Added
