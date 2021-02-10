@@ -7,7 +7,7 @@ from cognite.client.exceptions import ModelFailedException
 from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 SCAPI = COGNITE_CLIENT.templates.completion
 
 
