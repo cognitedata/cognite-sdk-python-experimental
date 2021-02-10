@@ -378,14 +378,6 @@ Detect common objects in a PNID
 .. automethod:: cognite.experimental._api.pnid_object_detection.PNIDObjectDetectionAPI.find_objects
 
 
-
-Complete a Schema or Template
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.schema_completion.SchemaCompletionAPI.complete_type
-
-.. automethod:: cognite.experimental._api.schema_completion.SchemaCompletionAPI.complete_domain
-
-
 Contextualization Data Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: cognite.experimental.data_classes.contextualization
