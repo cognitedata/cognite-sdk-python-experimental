@@ -1,7 +1,6 @@
 import os
 from typing import Callable, Dict, List, Optional, Union
 
-from cognite.client._api.datapoints import DatapointsAPI
 from cognite.client._api.files import FilesAPI
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
@@ -18,7 +17,6 @@ from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
-from cognite.experimental._api.schema_completion import SchemaCompletionAPI
 from cognite.experimental._api.templates import TemplatesAPI
 from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.unstructured import GrepAPI
