@@ -4,7 +4,7 @@ from cognite.client.exceptions import CogniteAPIError
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, ContextualizationJob
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 ANNOTATIONSAPI = COGNITE_CLIENT.annotations
 
 
@@ -28,10 +28,12 @@ def new_annotation():
 
 @pytest.fixture
 def new_annotations():
+    asset = [a for a in COGNITE_CLIENT.assets.list(limit=100) if a.external_id][0]
     annot = Annotation(
         annotation_type="abc",
-        annotated_resource_external_id="foo",
-        annotated_resource_type="sequence",
+        annotated_resource_external_id=asset.external_id,
+        annotated_resource_id=asset.id,
+        annotated_resource_type="asset",
         source="sdk-integration-tests",
     )
     annots = [annot] * 10
@@ -54,55 +56,49 @@ class TestAnnotationsIntegration:
     def test_create_annotations(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)
 
-    def test_list_annotation_type(self, new_annotations):
+    def test_list(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)
 
-        fil = AnnotationFilter(annotation_type="abc")
+        fil = AnnotationFilter(annotation_type="abc", annotated_resource_type="asset")
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, AnnotationList)
         assert all([l.annotation_type == "abc" for l in l_annots])
 
-    def test_list_annotation_type_dict_filter(self, new_annotations):
-        assert isinstance(new_annotations, AnnotationList)
-
-        fil = {"annotation_type": "abc"}
+        fil = {"annotation_type": "abc", "annotatedResourceType": "asset"}
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, AnnotationList)
         assert all([l.annotation_type == "abc" for l in l_annots])
 
-    def test_list_annotation_type_no_filter(self, new_annotations):
-        assert isinstance(new_annotations, AnnotationList)
-        l_annots = ANNOTATIONSAPI.list()
-        assert isinstance(l_annots, AnnotationList)
-
-    def test_list_annotated_resource_external_id(self, new_annotations):
-        assert isinstance(new_annotations, AnnotationList)
-
-        fil = AnnotationFilter(annotated_resource_ids=[{"external_id": "foo"}])
+        fil = AnnotationFilter(
+            annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_external_id}],
+            annotated_resource_type="asset",
+        )
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, AnnotationList)
-        assert all([l.annotated_resource_external_id == "foo" for l in l_annots])
+        assert all(
+            [l.annotated_resource_external_id == new_annotations[0].annotated_resource_external_id for l in l_annots]
+        )
 
-    def test_list_limit_with_annotated_resource_external_id(self, new_annotations):
-        assert isinstance(new_annotations, AnnotationList)
-
-        fil = AnnotationFilter(annotated_resource_ids=[{"external_id": "foo"}])
+        fil = AnnotationFilter(
+            annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_external_id}],
+            annotated_resource_type="asset",
+        )
         l_annots = ANNOTATIONSAPI.list(limit=5, filter=fil)
         assert isinstance(l_annots, AnnotationList)
         assert len(l_annots) == 5
-        assert all([l.annotated_resource_external_id == "foo" for l in l_annots])
+        assert all(
+            [l.annotated_resource_external_id == new_annotations[0].annotated_resource_external_id for l in l_annots]
+        )
 
     def test_retrieve_multiple(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)
+
+        r_annot = ANNOTATIONSAPI.retrieve(new_annotations[0].id)
+        assert isinstance(r_annot, Annotation)
+        assert r_annot.id == new_annotations[0].id
 
         c_ids = [c.id for c in new_annotations]
         r_annots = ANNOTATIONSAPI.retrieve_multiple(c_ids)
         assert isinstance(r_annots, AnnotationList)
         assert len(r_annots) == 10
         assert all([r.id in c_ids for r in r_annots])
-
-    def test_retrieve(self, new_annotation):
-        assert isinstance(new_annotation, Annotation)
-        r_annot = ANNOTATIONSAPI.retrieve(new_annotation.id)
-        assert isinstance(r_annot, Annotation)
-        assert r_annot.id == new_annotation.id
