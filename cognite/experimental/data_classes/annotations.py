@@ -1,5 +1,7 @@
+from typing import Dict, List
+
 from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteUpdate
-from typing import List, Dict
+
 
 class Annotation(CogniteResource):
     """Representation of an annotation in CDF.
