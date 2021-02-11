@@ -18,9 +18,6 @@ Changes are grouped as follows
 - Possibility to detect entities with multiple names, as this is now a feature in the API.
 - Same functionality in document detect.
 
-### Removed
-- SDK code for handling entities that are dictionaries, since this is now handled in the API.
-
 ## [0.44.0]
 
 ### Changed
