@@ -441,11 +441,8 @@ class PNIDDetectionList(CogniteResourceList):
             return None
 
     @classmethod
-    def _load(cls, resource_list: Union[List, str], entities_field_to_objects=None, cognite_client=None):
+    def _load(cls, resource_list: Union[List, str], cognite_client=None):
         loaded = super()._load(resource_list, cognite_client)
-        if entities_field_to_objects:
-            for item in loaded:
-                item.entities = entities_field_to_objects[item.text]
         return loaded
 
 
@@ -479,19 +476,11 @@ class PNIDConvertResults(ContextualizationJob):
 class PNIDDetectResults(ContextualizationJob):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._entities_field_to_objects = None
-
-    def _set_entities_field_to_objects(self, entities_field_to_objects):
-        self._entities_field_to_objects = entities_field_to_objects
 
     @property
     def matches(self) -> PNIDDetectionList:
         """Returns detected items"""
-        return PNIDDetectionList._load(
-            self.result["items"],
-            entities_field_to_objects=self._entities_field_to_objects,
-            cognite_client=self._cognite_client,
-        )
+        return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client,)
 
     def to_pandas(self, camel_case=False):
         df = super().to_pandas(camel_case=camel_case)
