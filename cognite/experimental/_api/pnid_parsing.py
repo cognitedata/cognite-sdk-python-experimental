@@ -27,6 +27,7 @@ class PNIDParsingAPI(ContextAPI):
         file_external_id: str = None,
     ) -> PNIDDetectResults:
         """Detect entities in a PNID.
+        The results are not written to CDF.
         Note: All users on this CDF subscription with assets read-all and files read-all capabilities in the project,
         are able to access the data sent to this endpoint.
 
@@ -65,7 +66,7 @@ class PNIDParsingAPI(ContextAPI):
     def extract_pattern(
         self, patterns: List[str], file_id: int = None, file_external_id: str = None
     ) -> PNIDDetectResults:
-        """Extract tags from P&ID based on pattern
+        """Extract tags from P&ID based on pattern. The results are not written to CDF.
 
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
@@ -89,11 +90,13 @@ class PNIDParsingAPI(ContextAPI):
     def convert(
         self, items: List[Dict], grayscale: bool = None, file_id: int = None, file_external_id: str = None
     ) -> ContextualizationJob:
-        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted
+        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted.
+        The resulting SVG is not uploaded to CDF.
 
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
             items (List[Dict]): List of entity annotations for entities detected in the P&ID.
+                For instance the resulting items from calling the detect or extract_pattern-method.
             grayscale (bool, optional): Return the SVG version in grayscale colors only (reduces the file size). Defaults to None.
 
         Returns:
