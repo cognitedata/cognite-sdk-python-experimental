@@ -8,7 +8,7 @@ from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
-SCAPI = COGNITE_CLIENT.schemas
+SCAPI = COGNITE_CLIENT.templates.completion
 
 
 @pytest.fixture
@@ -24,11 +24,11 @@ def mock_complete_type(rsps):
 
 
 @pytest.fixture
-def mock_complete_domain(rsps):
+def mock_complete_template(rsps):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/domain",
+        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/template",
         status=200,
         json=response_body,
     )
@@ -69,10 +69,10 @@ class TestSchemaCompletion:
         assert 1 == extract_calls
         assert 1 == n_status_calls
 
-    def test_complete_domain(self, mock_complete_domain, mock_status_ok):
+    def test_complete_template(self, mock_complete_template, mock_status_ok):
         eid = "schematocomplete"
         template = "templatename"
-        job = SCAPI.complete_domain(external_id=eid, template_name=template)
+        job = SCAPI.complete(external_id=eid, template_name=template)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert {"items": []} == job.result
@@ -81,7 +81,7 @@ class TestSchemaCompletion:
 
         extract_calls = 0
         n_status_calls = 0
-        for call in mock_complete_domain.calls:
+        for call in mock_complete_template.calls:
             if call.request.method == "POST":
                 extract_calls += 1
                 assert {"externalId": eid, "templateName": template} == jsgz_load(call.request.body)

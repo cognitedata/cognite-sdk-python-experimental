@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteUpdate
 
 
@@ -61,9 +63,25 @@ class Annotation(CogniteResource):
 
 
 class AnnotationFilter(CogniteFilter):
-    def __init__(self, annotation_type: str = None, annotated_resource_ids: list = None):
-        self.annotation_type = annotation_type
+    def __init__(
+        self,
+        annotated_resource_type: str,
+        annotated_resource_ids: List[Dict] = None,
+        linked_resource_type: str = None,
+        linked_resource_ids: List[Dict] = None,
+        annotation_type: str = None,
+        text: str = None,
+        status: str = None,
+        source: str = None,
+    ):
+        self.annotated_resource_type = annotated_resource_type
         self.annotated_resource_ids = annotated_resource_ids
+        self.linked_resource_type = linked_resource_type
+        self.linked_resource_ids = linked_resource_ids
+        self.annotation_type = annotation_type
+        self.text = text
+        self.status = status
+        self.source = source
 
 
 class AnnotationUpdate(CogniteUpdate):

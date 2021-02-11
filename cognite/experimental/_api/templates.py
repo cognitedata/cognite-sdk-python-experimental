@@ -1,5 +1,10 @@
-from cognite.client._api_client import APIClient
+from typing import Dict, List, Union
 
+from cognite.client import utils
+from cognite.client._api_client import APIClient
+from cognite.client.data_classes import ContextualizationJob
+
+from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes.templates import *
 
 
@@ -9,6 +14,8 @@ class TemplatesAPI(APIClient):
         self.groups = TemplateGroupsAPI(*args, **kwargs)
         self.versions = TemplateGroupVersionsAPI(*args, **kwargs)
         self.instances = TemplateInstancesAPI(*args, **kwargs)
+        ctx_kwargs = {**kwargs, "api_version": "playground"}
+        self.completion = TemplateCompletionAPI(*args, **ctx_kwargs)
 
     def graphql_query(self, external_id: str, version: int, query: str) -> GraphQlResponse:
         """
@@ -26,31 +33,76 @@ class TemplatesAPI(APIClient):
         Examples:
             Run a GraphQL query:
 
-               >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> query = '''
-                    {
-                        countryList {
-                           name,
-                           demographics {
-                               populationSize,
-                               growthRate
-                           },
-                           deaths {
-                               datapoints(limit: 100) {
-                                   timestamp,
-                                   value
-                               }
-                           }
-                        }
-                    }
-                    '''
+                >>>    {
+                >>>        countryList {
+                >>>           name,
+                >>>           demographics {
+                >>>               populationSize,
+                >>>               growthRate
+                >>>           },
+                >>>           deaths {
+                >>>               datapoints(limit: 100) {
+                >>>                   timestamp,
+                >>>                   value
+                >>>               }
+                >>>           }
+                >>>        }
+                >>>    }
+                >>>    '''
                 >>> result = c.templates.query.graphql_query("template-group-ext-id", 1, query)
         """
         path = "/templategroups/{}/versions/{}/graphql"
         path = utils._auxiliary.interpolate_and_url_encode(path, external_id, version)
         response = self._post(path, {"query": query})
         return GraphQlResponse._load(response.json())
+
+
+class TemplateCompletionAPI(ContextAPI):
+
+    _RESOURCE_PATH = "/context/schemas"
+
+    def complete_type(self, external_id: str) -> ContextualizationJob:
+        """(DEPRECATED) Completes a schema uploaded in CDF as a type.
+
+        Args:
+            external_id (str): External ID of the type to be completed
+
+        Returns:
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+        return self._run_job(job_path="/type", status_path="/", external_id=external_id)
+
+    def complete(
+        self, external_id: str, template_name: str, asset_property: str = None, version: int = None
+    ) -> ContextualizationJob:
+        """Completes a schema uploaded in CDF as a domain.
+
+        Args:
+            external_id (str): External ID of the template group to work on.
+            template_name (str): Name of the template to be completed within the template group
+            asset_property (str): Which field (with constant type) in the template defines the externalId of the parent asset in each entry. If ommitted, it is assumed the externalId of the template instances is the same as the parent asset's externalId.
+            version (int): Version of the domain, can be ommitted to use the last one.
+
+        Returns:
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
+
+        Examples:
+            Get template groups by external id:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.templates.completion.complete(external_id="abc",template_name="covid")
+        """
+        return self._run_job(
+            job_path="/template",
+            status_path="/",
+            external_id=external_id,
+            template_name=template_name,
+            asset_property=asset_property,
+            version=version,
+        )
 
 
 class TemplateGroupsAPI(APIClient):
@@ -214,18 +266,18 @@ class TemplateGroupVersionsAPI(APIClient):
                 >>> template_group = TemplateGroup("sdk-test-group", "This template group models Covid-19 spread")
                 >>> c.templates.groups.create(template_group)
                 >>> schema = '''
-                        type Demographics @template {
-                            "The amount of people"
-                            populationSize: Int,
-                            "The population growth rate"
-                            growthRate: Float,
-                        }
-                        type Country @template {
-                            name: String,
-                            demographics: Demographics,
-                            deaths: TimeSeries,
-                            confirmed: TimeSeries,
-                        }'''
+                >>>     type Demographics @template {
+                >>>         "The amount of people"
+                >>>         populationSize: Int,
+                >>>         "The population growth rate"
+                >>>         growthRate: Float,
+                >>>     }
+                >>>     type Country @template {
+                >>>         name: String,
+                >>>         demographics: Demographics,
+                >>>         deaths: TimeSeries,
+                >>>         confirmed: TimeSeries,
+                >>>     }'''
                 >>> template_group_version = TemplateGroupVersion(schema)
                 >>> c.templates.versions.upsert(template_group.external_id, template_group_version)
         """
@@ -294,40 +346,40 @@ class TemplateInstancesAPI(APIClient):
     ) -> Union[TemplateInstance, TemplateInstanceList]:
         """`Create one or more template instances.`
 
-         Args:
-             external_id (str): The external id of the template group.
-             version (int): The version of the template group to create instances for.
-             instances (Union[TemplateInstance, List[TemplateInstance]]): The instances to create.
+        Args:
+            external_id (str): The external id of the template group.
+            version (int): The version of the template group to create instances for.
+            instances (Union[TemplateInstance, List[TemplateInstance]]): The instances to create.
 
-         Returns:
-             Union[TemplateInstance, TemplateInstanceList]: Created template instance(s).
+        Returns:
+            Union[TemplateInstance, TemplateInstanceList]: Created template instance(s).
 
-         Examples:
-             create new template instances for Covid-19 spread:
+        Examples:
+            create new template instances for Covid-19 spread:
 
-                 >>> from cognite.experimental import CogniteClient
-                 >>> from cognite.experimental.data_classes import TemplateInstance
-                 >>> c = CogniteClient()
-                 >>> template_instance_1 = TemplateInstance(
-                                                external_id="norway",
-                                                template_name="Country",
-                                                field_resolvers={
-                                                    "name": ConstantResolver("Norway"),
-                                                    "demographics": ConstantResolver("norway_demographics"),
-                                                    "deaths": ConstantResolver("Norway_deaths"),
-                                                    "confirmed": ConstantResolver("Norway_confirmed"),
-                                                    }
-                                                )
-                 >>> template_instance_2 = TemplateInstance(
-                                                external_id="norway_demographics",
-                                                template_name="Demographics",
-                                                field_resolvers={
-                                                    "populationSize": ConstantResolver(5328000),
-                                                    "growthRate": ConstantResolver(value=0.02)
-                                                    }
-                                                )
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes import TemplateInstance
+                >>> c = CogniteClient()
+                >>> template_instance_1 = TemplateInstance(
+                >>>                               external_id="norway",
+                >>>                               template_name="Country",
+                >>>                               field_resolvers={
+                >>>                                   "name": ConstantResolver("Norway"),
+                >>>                                   "demographics": ConstantResolver("norway_demographics"),
+                >>>                                   "deaths": ConstantResolver("Norway_deaths"),
+                >>>                                   "confirmed": ConstantResolver("Norway_confirmed"),
+                >>>                                   }
+                >>>                               )
+                >>> template_instance_2 = TemplateInstance(
+                >>>                               external_id="norway_demographics",
+                >>>                               template_name="Demographics",
+                >>>                               field_resolvers={
+                >>>                                   "populationSize": ConstantResolver(5328000),
+                >>>                                   "growthRate": ConstantResolver(value=0.02)
+                >>>                                   }
+                >>>                               )
                 >>> c.templates.instances.create("sdk-test-group", 1, [template_instance_1, template_instance_2])
-         """
+        """
         resource_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH, external_id, version)
         return self._create_multiple(resource_path=resource_path, items=instances)
 
@@ -352,24 +404,24 @@ class TemplateInstancesAPI(APIClient):
              >>> from cognite.experimental.data_classes import TemplateInstance
              >>> c = CogniteClient()
              >>> template_instance_1 = TemplateInstance(
-                     external_id="norway",
-                     template_name="Country",
-                     field_resolvers={
-                         "name": ConstantResolver("Norway"),
-                         "demographics": ConstantResolver("norway_demographics"),
-                         "deaths": ConstantResolver("Norway_deaths"),
-                         "confirmed": ConstantResolver("Norway_confirmed"),
-                     }
-                 )
+             >>>        external_id="norway",
+             >>>        template_name="Country",
+             >>>        field_resolvers={
+             >>>            "name": ConstantResolver("Norway"),
+             >>>            "demographics": ConstantResolver("norway_demographics"),
+             >>>            "deaths": ConstantResolver("Norway_deaths"),
+             >>>            "confirmed": ConstantResolver("Norway_confirmed"),
+             >>>        }
+             >>>    )
              >>> template_instance_2 = TemplateInstance(external_id="norway_demographics",
-                    template_name="Demographics",
-                    field_resolvers={
-                        "populationSize": ConstantResolver(5328000),
-                        "growthRate": ConstantResolver(0.02)
-                        }
-                )
-            >>> c.templates.instances.upsert("sdk-test-group", 1, [template_instance_1, template_instance_2])
-         """
+             >>>       template_name="Demographics",
+             >>>       field_resolvers={
+             >>>           "populationSize": ConstantResolver(5328000),
+             >>>           "growthRate": ConstantResolver(0.02)
+             >>>           }
+             >>>   )
+             >>> c.templates.instances.upsert("sdk-test-group", 1, [template_instance_1, template_instance_2])
+        """
         if isinstance(instances, TemplateInstance):
             instances = [instances]
         resource_path = (

@@ -54,7 +54,9 @@ def mock_status_detect_ok(rsps):
     response_body = {
         "jobId": 123,
         "status": "Completed",
-        "items": [{"text": "a", "boundingBox": {"xMin": 0, "xMax": 1, "yMin": 0, "yMax": 1}}],
+        "items": [
+            {"text": "a", "boundingBox": {"xMin": 0, "xMax": 1, "yMin": 0, "yMax": 1}, "entities": [{"name": "a"}]}
+        ],
         "fileId": 123432423,
         "fileExternalId": "123432423",
     }
@@ -117,16 +119,6 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_detect_entities_type_check(self):
-        entities = ["a", {"name": "b"}]
-        file_id = 123432423
-
-        with pytest.raises(ValueError) as exc_info:
-            PNIDAPI.detect(
-                file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
-            )
-        assert "all the elements in entities must have same type (either str or dict)" == str(exc_info.value)
-
     def test_detect_entities_str(self, mock_detect, mock_status_detect_ok):
         entities = ["a", "b"]
         file_id = 123432423
@@ -149,6 +141,7 @@ class TestPNIDParsing:
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
                     "minTokens": 3,
+                    "searchField": "name",
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
@@ -177,11 +170,12 @@ class TestPNIDParsing:
             if "detect" in call.request.url and call.request.method == "POST":
                 n_detect_calls += 1
                 assert {
-                    "entities": ["a", "b"],
+                    "entities": [{"name": "a"}, {"name": "b"}],
                     "fileId": file_id,
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
                     "minTokens": 3,
+                    "searchField": "name",
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1

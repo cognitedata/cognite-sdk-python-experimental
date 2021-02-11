@@ -39,7 +39,7 @@ class TestEntityMatchingIntegration:
         )
         new_pipeline = EMAPI.pipelines.create(pipeline)
         run = new_pipeline.run()
-        assert {"suggestedRules", "matches", "generatedRules", "errors"} == run.result.keys()
+        assert {"matches", "generatedRules", "errors"} == run.result.keys()
         list_runs = new_pipeline.runs()
         assert isinstance(list_runs, EntityMatchingPipelineRunList)
         assert [run] == list_runs
@@ -47,7 +47,6 @@ class TestEntityMatchingIntegration:
         assert run == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
         assert [run] == EMAPI.pipelines.runs.retrieve_latest(id=[new_pipeline.id])
         assert run.result == new_pipeline.latest_run().result
-        assert isinstance(run.suggested_rules, list)
         assert isinstance(run.matches, EntityMatchingMatchList)
 
         run2 = new_pipeline.run()

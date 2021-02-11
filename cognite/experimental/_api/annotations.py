@@ -25,12 +25,12 @@ class AnnotationsAPI(APIClient):
         assert_type(annotations, "annotation", [Annotation, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
 
-    def list(self, limit: int = 100, filter: Union[AnnotationFilter, Dict] = {}) -> AnnotationList:
-        """List annotations
+    def list(self, filter: Union[AnnotationFilter, Dict], limit: int = 100) -> AnnotationList:
+        """List annotations.
 
         Args:
             limit (int): Maximum number of annotations to return. Defaults to 100.
-            filter (AnnotationFilter, optional): If not None, return annotations with parameter values that matches what is specified. Defaults to None.
+            filter (AnnotationFilter, optional): Return annotations with parameter values that matches what is specified. Note that annotated_resource_type is always required.
 
         Returns:
             AnnotationList: list of annotations

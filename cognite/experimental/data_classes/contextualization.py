@@ -148,11 +148,6 @@ class EntityMatchingPipelineRun(ContextualizationJob):
         self._pipeline = value
 
     @property
-    def suggested_rules(self):
-        """(deprecated) List of suggested old-style rules. Depends on .result and may block"""
-        return self.result["suggestedRules"]
-
-    @property
     def errors(self):
         """Returns list of error messages encountered while running. Depends on .result and may block"""
         return self.result.get("errors")

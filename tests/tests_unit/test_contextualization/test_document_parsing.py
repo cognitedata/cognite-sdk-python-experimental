@@ -69,6 +69,7 @@ class TestPNIDParsing:
                     "nameMapping": {"a": "c"},
                     "partialMatch": False,
                     "minTokens": 1,
+                    "searchField": "name",
                 } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1

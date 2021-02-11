@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.44.0]
+## [0.45.0]
 
 ### Added
 - Possibility to detect entities with multiple names, as this is now a feature in the API.
@@ -20,6 +20,12 @@ Changes are grouped as follows
 
 ### Removed
 - SDK code for handling entities that are dictionaries, since this is now handled in the API.
+
+## [0.44.0]
+
+### Changed
+- Domains/schemas/universes/domains are now consistently called templates in the SDK, and the completion functions are moved to `client.templates.completion`
+- Annotations filter updated with additional fields, and to reflect annotated resource type being mandatory.
 
 ## [0.43.0]
 

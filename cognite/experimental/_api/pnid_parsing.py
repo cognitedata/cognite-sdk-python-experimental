@@ -41,13 +41,6 @@ class PNIDParsingAPI(ContextAPI):
         Returns:
             PNIDDetectResults: Resulting queued job. Note that .results property of this job will block waiting for results."""
 
-        if not (
-            all([isinstance(entity, str) for entity in entities])
-            or all([isinstance(entity, dict) for entity in entities])
-            or all([isinstance(entity, CogniteResource) for entity in entities])
-        ):
-            raise ValueError("all the elements in entities must have same type (either str or dict)")
-
         if file_id is None and file_external_id is None:
             raise ValueError("File id and file external id cannot both be none")
 
