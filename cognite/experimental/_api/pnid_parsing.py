@@ -86,7 +86,7 @@ class PNIDParsingAPI(ContextAPI):
     def extract_pattern(
         self, patterns: List[str], file_id: int = None, file_external_id: str = None
     ) -> PNIDDetectResults:
-        """Extract tags from P&ID based on pattern. The resulting annotations are not written to CDF.
+        """Extract tags from P&ID based on pattern. The results are not written to CDF.
 
         Args:
             file_id (int): ID of the file, should already be uploaded in the same tenant.
