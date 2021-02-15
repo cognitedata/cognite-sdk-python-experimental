@@ -167,7 +167,7 @@ class FunctionsAPI(APIClient):
         """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
 
         Args:
-            limit (int, optional): Maximum number of functions to list. Pass in -1, float('inf') or None to list all functions.
+            limit (int, optional): Maximum number of functions to list. Pass in -1, 0, float('inf') or None to list all functions.
 
         Returns:
             FunctionList: List of functions
