@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.45.1]
+
+### Fixed
+
+- Added 0 as a valid limit parameter to `functions.list`, `functions.calls.list` and `functions.schedules.list`. A limit of 0 yields all items
+in return, akin to limit equal to 0, None and float("inf")
+
 ## [0.45.0]
 
 ### Added
