@@ -444,10 +444,6 @@ class FunctionCallsAPI(APIClient):
         filter = {"status": status, "scheduleId": schedule_id, "startTime": start_time, "endTime": end_time}
         resource_path = f"/functions/{function_id}/calls"
 
-        # We must set this here, because the self._list-method does not handle `0` as a limit.
-        if limit == 0:
-            limit = None
-
         return self._list(method="POST", resource_path=resource_path, filter=filter, limit=limit)
 
     def retrieve(
