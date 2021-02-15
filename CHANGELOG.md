@@ -17,7 +17,7 @@ Changes are grouped as follows
 ### Fixed
 
 - Added 0 as a valid limit parameter to `functions.list`, `functions.calls.list` and `functions.schedules.list`. A limit of 0 yields all items
-in return, akin to limit equal to 0, None and float("inf")
+in return, akin to limit equal to -1, None and float("inf")
 
 ## [0.45.0]
 
