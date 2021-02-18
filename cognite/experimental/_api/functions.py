@@ -62,6 +62,8 @@ class FunctionsAPI(APIClient):
         - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
         - Data about the function call can be accessed via the argument `function_call_info`, which is a dictionary with keys `function_id` and, if the call is scheduled, `schedule_id` and `scheduled_time`.\n
 
+        The Python runtime version is 3.8.3.
+
         Args:
             name (str):                             The name of the function.
             folder (str, optional):                 Path to the folder where the function source code is located.
