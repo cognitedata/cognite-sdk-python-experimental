@@ -200,6 +200,7 @@ class EntityMatchingPipeline(CogniteResource):
         rules: list of matching rules (either old or new format)
         schedule_interval: automatically schedule pipeline to be run every this many seconds.
     """
+
     def __init__(
         self,
         id: int = None,
@@ -225,7 +226,6 @@ class EntityMatchingPipeline(CogniteResource):
         status_time=None,
         cognite_client=None,
     ):
-
 
         self.id = id
         self.external_id = external_id
