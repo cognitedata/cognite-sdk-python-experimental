@@ -181,12 +181,9 @@ class EntityMatchingPipelineRunList(CogniteResourceList):
 
 
 class EntityMatchingPipeline(CogniteResource):
-    _RESOURCE_PATH = "/context/entitymatching/pipelines"
-    _STATUS_PATH = _RESOURCE_PATH + "/"
-
-    """Entity matching pipeline, used to continuously iterate and improve an entity matching model. 
+    """Entity matching pipeline, used to continuously iterate and improve an entity matching model.
        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
-    
+
     Args:
         external_id, name, description: standard fields for a resource.
         model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
@@ -200,6 +197,9 @@ class EntityMatchingPipeline(CogniteResource):
         rules: list of matching rules (either old or new format)
         schedule_interval: automatically schedule pipeline to be run every this many seconds.
     """
+
+    _RESOURCE_PATH = "/context/entitymatching/pipelines"
+    _STATUS_PATH = _RESOURCE_PATH + "/"
 
     def __init__(
         self,
