@@ -184,6 +184,22 @@ class EntityMatchingPipeline(CogniteResource):
     _RESOURCE_PATH = "/context/entitymatching/pipelines"
     _STATUS_PATH = _RESOURCE_PATH + "/"
 
+    """Entity matching pipeline, used to continuously iterate and improve an entity matching model. 
+       The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
+    
+    Args:
+        external_id, name, description: standard fields for a resource.
+        model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
+        sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
+        true_matches: existing matches with reasonable certainty to use in training.
+        confirmed_matches: user-confirmed certain matches which will be used to override any other results.
+        rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
+        use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
+        replacements: Expects a list of {'field':.., 'string':.. ,'replacement': ..} which will be used to replace substrings in a field with a synonym, such as "Pressure Transmitter" -> "PT", or "Æ" -> AE. Field can be '*' for all.
+        relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
+        rules: list of matching rules (either old or new format)
+        schedule_interval: automatically schedule pipeline to be run every this many seconds.
+    """
     def __init__(
         self,
         id: int = None,
@@ -209,21 +225,7 @@ class EntityMatchingPipeline(CogniteResource):
         status_time=None,
         cognite_client=None,
     ):
-        """
-        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
-        Args:
-            external_id, name, description: standard fields for a resource.
-            model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
-            sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
-            true_matches: existing matches with reasonable certainty to use in training.
-            confirmed_matches: user-confirmed certain matches which will be used to override any other results.
-            rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
-            use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
-            replacements: Expects a list of {'field':.., 'string':.. ,'replacement': ..} which will be used to replace substrings in a field with a synonym, such as "Pressure Transmitter" -> "PT", or "Æ" -> AE. Field can be '*' for all.
-            relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
-            rules: list of matching rules (either old or new format)
-            schedule_interval: automatically schedule pipeline to be run every this many seconds.
-        """
+
 
         self.id = id
         self.external_id = external_id
@@ -251,12 +253,15 @@ class EntityMatchingPipeline(CogniteResource):
         self._cognite_client = cognite_client
 
     def run(self) -> EntityMatchingPipelineRun:
+        """Runs the pipeline and returns a run job"""
         return self._cognite_client.entity_matching.pipelines.run(id=self.id)
 
     def runs(self) -> EntityMatchingPipelineRunList:
+        """Retrieve the list of runs"""
         return self._cognite_client.entity_matching.pipelines.runs.list(id=self.id)
 
     def latest_run(self) -> EntityMatchingPipelineRun:
+        """Retrieve the latest run"""
         return self._cognite_client.entity_matching.pipelines.runs.retrieve_latest(id=self.id)
 
     def to_pandas(self, camel_case=False):
