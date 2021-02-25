@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.45.2]
+
+### Fixed
+
+- The `Function.list_schedules()`-method now correctly returns all schedules tied to the function.
+
 ## [0.45.0]
 
 ### Added
