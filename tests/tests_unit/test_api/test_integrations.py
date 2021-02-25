@@ -144,3 +144,15 @@ class TestIntegrations:
         assert {
             "items": [{"externalId": "py test id", "update": {"description": {"set": "New description"}}}]
         } == jsgz_load(mock_int_response.calls[0].request.body)
+
+    def test_update_raw_tables_with_update_class(self, mock_int_response):
+        up = IntegrationUpdate(external_id="py test id")
+        up.raw_tables.add([{"dbName": "db", "tableName": "table"}])
+        res = TEST_API.update(up)
+        assert isinstance(res, Integration)
+        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+        assert {
+            "items": [
+                {"externalId": "py test id", "update": {"rawTables": {"add": [{"dbName": "db", "tableName": "table"}]}}}
+            ]
+        } == jsgz_load(mock_int_response.calls[0].request.body)

@@ -3,12 +3,7 @@ import re
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import (
-    IntegrationRun,
-    IntegrationRunList,
-    IntegrationWithStatuses,
-    IntegrationWithStatusesList,
-)
+from cognite.experimental.data_classes import IntegrationRun, IntegrationRunList
 
 COGNITE_CLIENT = CogniteClient()
 TEST_API = COGNITE_CLIENT.integration_runs
@@ -18,17 +13,10 @@ TEST_API = COGNITE_CLIENT.integration_runs
 def mock_run_response(rsps):
     response_body = {
         "items": [
-            {
-                "externalId": "test",
-                "createdTime": 1606994621658,
-                "lastUpdatedTime": 1606994621658,
-                "statuses": [
-                    {"status": "seen", "createdTime": 1606994793386},
-                    {"status": "failure", "createdTime": 1606994773381, "message": "ERROR"},
-                    {"status": "success", "createdTime": 1606994743201},
-                    {"status": "seen", "createdTime": 1606994696151},
-                ],
-            }
+            {"status": "seen", "createdTime": 1606994793386},
+            {"status": "failure", "createdTime": 1606994773381, "message": "ERROR"},
+            {"status": "success", "createdTime": 1606994743201},
+            {"status": "seen", "createdTime": 1606994696151},
         ]
     }
     url_pattern = re.compile(

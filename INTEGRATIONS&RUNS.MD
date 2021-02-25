@@ -34,6 +34,8 @@ res = client.integrations.update(res)
 from cognite.experimental.data_classes import IntegrationUpdate	
 up = IntegrationUpdate(id=res.id)
 up.description.set("Another new integration")
+up.raw_tables.add([{"dbName": "name", "tableName": "name"}])
+up.raw_tables.remove([{"dbName": "old_name", "tableName": "old_name"}])
 res = client.integrations.update(up)
 ```
 
