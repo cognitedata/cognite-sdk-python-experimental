@@ -112,7 +112,7 @@ class Function(CogniteResource):
         Returns:
             FunctionSchedulesList: List of function schedules
         """
-        all_schedules = self._cognite_client.functions.schedules.list()
+        all_schedules = self._cognite_client.functions.schedules.list(limit=None)
         function_schedules = filter(lambda f: f.function_external_id == self.external_id, all_schedules)
         return list(function_schedules)
 
