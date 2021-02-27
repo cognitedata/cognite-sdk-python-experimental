@@ -2,7 +2,8 @@ import time
 from numbers import Number
 from typing import Dict, List, Optional, Union
 
-from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+from cognite.client.data_classes.shared import TimestampRange
 
 from cognite.experimental._constants import LIST_LIMIT_DEFAULT
 
@@ -142,6 +143,30 @@ class Function(CogniteResource):
                 continue
             latest_value = getattr(latest, attribute)
             setattr(self, attribute, latest_value)
+
+
+class FunctionFilter(CogniteFilter):
+    def __init__(
+        self,
+        name: str = None,
+        owner: str = None,
+        file_id: int = None,
+        external_id_prefix: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+    ):
+        self.name = name
+        self.owner = owner
+        self.file_id = file_id
+        self.external_id_prefix = external_id_prefix
+        self.created_time = created_time
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(FunctionFilter, cls)._load(resource, cognite_client)
+        if isinstance(resource, dict):
+            if instance.created_time is not None:
+                instance.created_time = TimestampRange(**instance.created_time)
+        return instance
 
 
 class FunctionSchedule(CogniteResource):
