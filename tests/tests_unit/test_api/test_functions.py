@@ -93,17 +93,6 @@ def mock_functions_list_response(rsps):
 
 
 @pytest.fixture
-def mock_function_list_response_with_limits(rsps):
-    response_body = {"items": [EXAMPLE_FUNCTION]}
-    limit = 1
-    query_params = f"?limit={limit}"
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions" + query_params
-    rsps.add(rsps.GET, url, status=200, json=response_body, match_querystring=True)
-
-    yield rsps
-
-
-@pytest.fixture
 def mock_functions_retrieve_response(rsps):
     response_body = {"items": [EXAMPLE_FUNCTION]}
 
@@ -349,7 +338,7 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionList)
         assert mock_functions_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
-    def test_list_with_limits(self, mock_function_list_response_with_limits):
+    def test_list_with_limits(self, mock_functions_list_response):
 
         res = FUNCTIONS_API.list(limit=1)
         assert isinstance(res, FunctionList)
@@ -464,21 +453,20 @@ SCHEDULE2 = {
 
 
 @pytest.fixture
-def mock_function_schedules_response(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
-    rsps.assert_all_requests_are_fired = False
-    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]})
+def mock_function_schedules_list_response(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/list"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
 
     yield rsps
 
 
 @pytest.fixture
-def mock_function_schedules_response_with_limits(rsps):
-    limit = 1
-    query_params = f"?limit={limit}"
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules" + query_params
-    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]}, match_querystring=True)
+def mock_function_schedules_response(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
+    rsps.assert_all_requests_are_fired = False
+    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]})
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+
     yield rsps
 
 
@@ -522,14 +510,14 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules(self, mock_function_schedules_response):
+    def test_list_schedules(self, mock_function_schedules_list_response):
         res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
         expected = mock_function_schedules_response.calls[0].response.json()["items"]
         expected[0].pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules_with_limit(self, mock_function_schedules_response_with_limits):
+    def test_list_schedules_with_limit(self, mock_function_schedules_list_response):
         res = FUNCTION_SCHEDULES_API.list(limit=1)
 
         assert isinstance(res, FunctionSchedulesList)
