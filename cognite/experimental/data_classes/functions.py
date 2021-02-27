@@ -107,15 +107,16 @@ class Function(CogniteResource):
             limit=limit,
         )
 
-    def list_schedules(self) -> "FunctionSchedulesList":
+    def list_schedules(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> "FunctionSchedulesList":
         """`List all schedules associated with this function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            limit (int): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all.
 
         Returns:
             FunctionSchedulesList: List of function schedules
         """
-        all_schedules = self._cognite_client.functions.schedules.list(limit=None)
-        function_schedules = filter(lambda f: f.function_external_id == self.external_id, all_schedules)
-        return list(function_schedules)
+        return self._cognite_client.functions.schedules.list(function_external_id=self.external_id, limit=limit)
 
     def retrieve_call(self, id: int) -> "FunctionCall":
         """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
@@ -209,6 +210,28 @@ class FunctionSchedule(CogniteResource):
             deserialized into the function through the data argument.
         """
         return self._cognite_client.functions.schedules.get_input_data(id=self.id)
+
+
+class FunctionSchedulesFilter(CogniteFilter):
+    def __init__(
+        self,
+        name: str = None,
+        function_external_id: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+        cron_expression: str = None,
+    ):
+        self.name = name
+        self.function_external_id = function_external_id
+        self.created_time = created_time
+        self.cron_expression = cron_expression
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(FunctionSchedulesFilter, cls)._load(resource, cognite_client)
+        if isinstance(resource, dict):
+            if instance.created_time is not None:
+                instance.created_time = TimestampRange(**instance.created_time)
+        return instance
 
 
 class FunctionSchedulesList(CogniteResourceList):
