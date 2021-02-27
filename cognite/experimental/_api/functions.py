@@ -23,6 +23,7 @@ from cognite.experimental.data_classes import (
     FunctionFilter,
     FunctionList,
     FunctionSchedule,
+    FunctionSchedulesFilter,
     FunctionSchedulesList,
 )
 
@@ -601,11 +602,22 @@ class FunctionSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
-    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionSchedulesList:
-        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+    def list(
+        self,
+        name: str = None,
+        function_external_id: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+        cron_expression: str = None,
+        limit: Optional[int] = LIST_LIMIT_DEFAULT,
+    ) -> FunctionSchedulesList:
+        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/listFunctionSchedules>`_
 
         Args:
-            limit (int, optional): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all schedules.
+            name (str): Name of the function schedule.
+            function_external_id (str): External ID of the function the schedules are linked to.
+            created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            cron_expression (str): Cron expression.
+            limit (int): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all.
 
         Returns:
             FunctionSchedulesList: List of function schedules
@@ -623,17 +635,26 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> func = c.functions.retrieve(id=1)
-                >>> schedules = func.list_schedules()
+                >>> schedules = func.list_schedules(limit=None)
 
         """
-        url = f"/functions/schedules"
-
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
 
-        params = {"limit": limit}
-        res = self._get(url, params=params)
-        return FunctionSchedulesList._load(res.json()["items"])
+        if created_time is not None and not isinstance(created_time, (dict, TimestampRange)):
+            # TODO: The API does not return a nice error message yet
+            raise TypeError(
+                f"Expected 'created_time' to be of type {dict} or {TimestampRange}, not {type(created_time)}"
+            )
+        filter = FunctionSchedulesFilter(
+            name=name,
+            function_external_id=function_external_id,
+            created_time=created_time,
+            cron_expression=cron_expression,
+        ).dump(camel_case=True)
+        res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
+
+        return self._LIST_CLASS._load(res.json()["items"])
 
     def create(
         self,
@@ -668,7 +689,7 @@ class FunctionSchedulesAPI(APIClient):
                     description="This schedule does magic stuff.")
 
         """
-        json = {
+        body = {
             "items": [
                 {
                     "name": name,
@@ -679,10 +700,10 @@ class FunctionSchedulesAPI(APIClient):
             ]
         }
         if data:
-            json["items"][0]["data"] = data
+            body["items"][0]["data"] = data
 
-        url = f"/functions/schedules"
-        res = self._post(url, json=json)
+        url = "/functions/schedules"
+        res = self._post(url, json=body)
         return FunctionSchedule._load(res.json()["items"][0])
 
     def delete(self, id: int) -> None:
@@ -703,9 +724,9 @@ class FunctionSchedulesAPI(APIClient):
                 >>> c.functions.schedules.delete(id = 123)
 
         """
-        json = {"items": [{"id": id,}]}
-        url = f"/functions/schedules/delete"
-        self._post(url, json=json)
+        body = {"items": [{"id": id}]}
+        url = "/functions/schedules/delete"
+        self._post(url, json=body)
 
     def get_input_data(self, id: int) -> Dict:
         """
