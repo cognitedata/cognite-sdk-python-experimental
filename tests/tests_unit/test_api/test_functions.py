@@ -513,7 +513,7 @@ class TestFunctionSchedulesAPI:
     def test_list_schedules(self, mock_function_schedules_list_response):
         res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
-        expected = mock_function_schedules_response.calls[0].response.json()["items"]
+        expected = mock_function_schedules_list_response.calls[0].response.json()["items"]
         expected[0].pop("when")
         assert expected == res.dump(camel_case=True)
 
