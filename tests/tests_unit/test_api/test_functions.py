@@ -1,6 +1,5 @@
-import json
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -87,8 +86,8 @@ CALL_SCHEDULED = {
 def mock_functions_list_response(rsps):
     response_body = {"items": [EXAMPLE_FUNCTION]}
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions"
-    rsps.add(rsps.GET, url, status=200, json=response_body)
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/list"
+    rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
 
@@ -331,15 +330,15 @@ class TestFunctionsAPI:
             FUNCTIONS_API.create(name="myfunction", file_id=1234, memory="0.5")
 
     def test_delete_single_id(self, mock_functions_delete_response):
-        res = FUNCTIONS_API.delete(id=1)
+        _ = FUNCTIONS_API.delete(id=1)
         assert {"items": [{"id": 1}]} == jsgz_load(mock_functions_delete_response.calls[0].request.body)
 
     def test_delete_single_external_id(self, mock_functions_delete_response):
-        res = FUNCTIONS_API.delete(external_id="func1")
+        _ = FUNCTIONS_API.delete(external_id="func1")
         assert {"items": [{"externalId": "func1"}]} == jsgz_load(mock_functions_delete_response.calls[0].request.body)
 
     def test_delete_multiple_id_and_multiple_external_id(self, mock_functions_delete_response):
-        res = FUNCTIONS_API.delete(id=[1, 2, 3], external_id=["func1", "func2"])
+        _ = FUNCTIONS_API.delete(id=[1, 2, 3], external_id=["func1", "func2"])
         assert {
             "items": [{"id": 1}, {"id": 2}, {"id": 3}, {"externalId": "func1"}, {"externalId": "func2"}]
         } == jsgz_load(mock_functions_delete_response.calls[0].request.body)
@@ -485,7 +484,7 @@ def mock_function_schedules_response_with_limits(rsps):
 
 @pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/byids"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/byids"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
 
     yield rsps
@@ -563,7 +562,7 @@ class TestFunctionSchedulesAPI:
 
     def test_delete_schedules(self, mock_function_schedules_delete_response):
         res = FUNCTION_SCHEDULES_API.delete(id=8012683333564363)
-        assert None == res
+        assert res is None
 
     def test_schedule_get_data(self, mock_schedule_get_data_response):
         res = FUNCTION_SCHEDULES_API.get_input_data(id=8012683333564363)
