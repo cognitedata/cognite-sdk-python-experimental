@@ -12,6 +12,7 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes import TimestampRange
 
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
@@ -19,6 +20,7 @@ from cognite.experimental.data_classes import (
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
+    FunctionFilter,
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
@@ -165,11 +167,24 @@ class FunctionsAPI(APIClient):
         """
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionList:
-        """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
+    def list(
+        self,
+        name: str = None,
+        owner: str = None,
+        file_id: int = None,
+        external_id_prefix: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+        limit: Optional[int] = LIST_LIMIT_DEFAULT,
+    ) -> FunctionList:
+        """`List all functions. <https://docs.cognite.com/api/playground/#operation/listFunctions>`_
 
         Args:
-            limit (int, optional): Maximum number of functions to list. Pass in -1, float('inf') or None to list all functions.
+            name (str): The name of the function.
+            owner (str): Owner of the function.
+            file_id (int): The file ID of the zip-file used to create the function.
+            external_id_prefix (str): External ID prefix to filter on.
+            created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            limit (int): Maximum number of functions to return. Pass in -1, float('inf') or None to list all.
 
         Returns:
             FunctionList: List of functions
@@ -182,14 +197,20 @@ class FunctionsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> functions_list = c.functions.list()
         """
-        url = "/functions"
-
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
 
-        params = {"limit": limit}
-        res = self._get(url, params=params)
-        return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
+        if created_time is not None and not isinstance(created_time, (dict, TimestampRange)):
+            # TODO: The API does not return a nice error message yet
+            raise TypeError(
+                f"Expected 'created_time' to be of type {dict} or {TimestampRange}, not {type(created_time)}"
+            )
+        filter = FunctionFilter(
+            name=name, owner=owner, file_id=file_id, external_id_prefix=external_id_prefix, created_time=created_time,
+        ).dump(camel_case=True)
+        res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
+
+        return self._LIST_CLASS._load(res.json()["items"])
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
         """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
