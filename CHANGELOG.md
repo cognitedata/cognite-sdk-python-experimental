@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+
+## [0.46.0]
+
+### Added
+- Add functionality to add/remove elements in integration list fields. 
+
 ## [0.45.2]
 
 ### Fixed
