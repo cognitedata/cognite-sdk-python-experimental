@@ -14,7 +14,7 @@ from cognite.client import utils
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
 
-from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
+from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -173,6 +173,7 @@ class FunctionsAPI(APIClient):
         name: str = None,
         owner: str = None,
         file_id: int = None,
+        status: str = None,
         external_id_prefix: str = None,
         created_time: Union[Dict[str, int], TimestampRange] = None,
         limit: Optional[int] = LIST_LIMIT_DEFAULT,
@@ -183,6 +184,7 @@ class FunctionsAPI(APIClient):
             name (str): The name of the function.
             owner (str): Owner of the function.
             file_id (int): The file ID of the zip-file used to create the function.
+            status (str): Status of the function. Possible values: ["Queued", "Deploying", "Ready", "Failed"].
             external_id_prefix (str): External ID prefix to filter on.
             created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
             limit (int): Maximum number of functions to return. Pass in -1, float('inf') or None to list all.
@@ -198,16 +200,16 @@ class FunctionsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> functions_list = c.functions.list()
         """
-        if limit in [float("inf"), -1, None]:
-            limit = LIST_LIMIT_CEILING
+        if limit in [float("inf"), -1]:
+            limit = None
 
-        if created_time is not None and not isinstance(created_time, (dict, TimestampRange)):
-            # TODO: The API does not return a nice error message yet
-            raise TypeError(
-                f"Expected 'created_time' to be of type {dict} or {TimestampRange}, not {type(created_time)}"
-            )
         filter = FunctionFilter(
-            name=name, owner=owner, file_id=file_id, external_id_prefix=external_id_prefix, created_time=created_time,
+            name=name,
+            owner=owner,
+            file_id=file_id,
+            status=status,
+            external_id_prefix=external_id_prefix,
+            created_time=created_time,
         ).dump(camel_case=True)
         res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
 
@@ -638,14 +640,9 @@ class FunctionSchedulesAPI(APIClient):
                 >>> schedules = func.list_schedules(limit=None)
 
         """
-        if limit in [float("inf"), -1, None]:
-            limit = LIST_LIMIT_CEILING
+        if limit in [float("inf"), -1]:
+            limit = None
 
-        if created_time is not None and not isinstance(created_time, (dict, TimestampRange)):
-            # TODO: The API does not return a nice error message yet
-            raise TypeError(
-                f"Expected 'created_time' to be of type {dict} or {TimestampRange}, not {type(created_time)}"
-            )
         filter = FunctionSchedulesFilter(
             name=name,
             function_external_id=function_external_id,

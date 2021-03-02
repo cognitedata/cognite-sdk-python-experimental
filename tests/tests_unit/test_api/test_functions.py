@@ -83,7 +83,7 @@ CALL_SCHEDULED = {
 
 
 @pytest.fixture
-def mock_functions_list_response(rsps):
+def mock_functions_filter_response(rsps):
     response_body = {"items": [EXAMPLE_FUNCTION]}
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/list"
@@ -332,13 +332,13 @@ class TestFunctionsAPI:
             "items": [{"id": 1}, {"id": 2}, {"id": 3}, {"externalId": "func1"}, {"externalId": "func2"}]
         } == jsgz_load(mock_functions_delete_response.calls[0].request.body)
 
-    def test_list(self, mock_functions_list_response):
+    def test_list(self, mock_functions_filter_response):
         res = FUNCTIONS_API.list()
 
         assert isinstance(res, FunctionList)
-        assert mock_functions_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+        assert mock_functions_filter_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
-    def test_list_with_limits(self, mock_functions_list_response):
+    def test_list_with_limits(self, mock_functions_filter_response):
 
         res = FUNCTIONS_API.list(limit=1)
         assert isinstance(res, FunctionList)
@@ -453,7 +453,7 @@ SCHEDULE2 = {
 
 
 @pytest.fixture
-def mock_function_schedules_list_response(rsps):
+def mock_filter_function_schedules_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/list"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
 
@@ -510,14 +510,14 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules(self, mock_function_schedules_list_response):
+    def test_list_schedules(self, mock_filter_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
-        expected = mock_function_schedules_list_response.calls[0].response.json()["items"]
+        expected = mock_filter_function_schedules_response.calls[0].response.json()["items"]
         expected[0].pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules_with_limit(self, mock_function_schedules_list_response):
+    def test_list_schedules_with_limit(self, mock_filter_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list(limit=1)
 
         assert isinstance(res, FunctionSchedulesList)

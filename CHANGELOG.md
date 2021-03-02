@@ -16,14 +16,14 @@ Changes are grouped as follows
 
 ### Changed
 
-- The `FunctionsAPI.list()`-method now accepts additional filters: `name`, `owner`, `file_id`, `external_id_prefix` and `created_time`.
+- The `FunctionsAPI.list()`-method now accepts additional filters: `name`, `owner`, `file_id`, `status`, `external_id_prefix` and `created_time`.
 - The `FunctionSchedulesAPI.list()`-method now accepts additional filters: `name`, `function_external_id`, `created_time` and `cron_expression`.
 - The `Function.list_schedules()`-method now accepts `limit` argument.
 
 ## [0.46.0]
 
 ### Added
-- Add functionality to add/remove elements in integration list fields. 
+- Add functionality to add/remove elements in integration list fields.
 
 ## [0.45.2]
 

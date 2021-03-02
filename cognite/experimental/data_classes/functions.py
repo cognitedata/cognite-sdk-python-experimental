@@ -152,22 +152,16 @@ class FunctionFilter(CogniteFilter):
         name: str = None,
         owner: str = None,
         file_id: int = None,
+        status: str = None,
         external_id_prefix: str = None,
         created_time: Union[Dict[str, int], TimestampRange] = None,
     ):
         self.name = name
         self.owner = owner
         self.file_id = file_id
+        self.status = status
         self.external_id_prefix = external_id_prefix
         self.created_time = created_time
-
-    @classmethod
-    def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(FunctionFilter, cls)._load(resource, cognite_client)
-        if isinstance(resource, dict):
-            if instance.created_time is not None:
-                instance.created_time = TimestampRange(**instance.created_time)
-        return instance
 
 
 class FunctionSchedule(CogniteResource):
@@ -224,14 +218,6 @@ class FunctionSchedulesFilter(CogniteFilter):
         self.function_external_id = function_external_id
         self.created_time = created_time
         self.cron_expression = cron_expression
-
-    @classmethod
-    def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(FunctionSchedulesFilter, cls)._load(resource, cognite_client)
-        if isinstance(resource, dict):
-            if instance.created_time is not None:
-                instance.created_time = TimestampRange(**instance.created_time)
-        return instance
 
 
 class FunctionSchedulesList(CogniteResourceList):
