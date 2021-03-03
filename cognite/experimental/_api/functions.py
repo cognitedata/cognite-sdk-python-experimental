@@ -12,15 +12,18 @@ from zipfile import ZipFile
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes import TimestampRange
 
-from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
+from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
     FunctionCallList,
     FunctionCallLog,
+    FunctionFilter,
     FunctionList,
     FunctionSchedule,
+    FunctionSchedulesFilter,
     FunctionSchedulesList,
 )
 
@@ -165,11 +168,26 @@ class FunctionsAPI(APIClient):
         """
         self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionList:
-        """`List all functions. <https://docs.cognite.com/api/playground/#operation/get-function>`_
+    def list(
+        self,
+        name: str = None,
+        owner: str = None,
+        file_id: int = None,
+        status: str = None,
+        external_id_prefix: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+        limit: Optional[int] = LIST_LIMIT_DEFAULT,
+    ) -> FunctionList:
+        """`List all functions. <https://docs.cognite.com/api/playground/#operation/listFunctions>`_
 
         Args:
-            limit (int, optional): Maximum number of functions to list. Pass in -1, float('inf') or None to list all functions.
+            name (str): The name of the function.
+            owner (str): Owner of the function.
+            file_id (int): The file ID of the zip-file used to create the function.
+            status (str): Status of the function. Possible values: ["Queued", "Deploying", "Ready", "Failed"].
+            external_id_prefix (str): External ID prefix to filter on.
+            created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            limit (int): Maximum number of functions to return. Pass in -1, float('inf') or None to list all.
 
         Returns:
             FunctionList: List of functions
@@ -182,14 +200,20 @@ class FunctionsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> functions_list = c.functions.list()
         """
-        url = "/functions"
+        if limit in [float("inf"), -1]:
+            limit = None
 
-        if limit in [float("inf"), -1, None]:
-            limit = LIST_LIMIT_CEILING
+        filter = FunctionFilter(
+            name=name,
+            owner=owner,
+            file_id=file_id,
+            status=status,
+            external_id_prefix=external_id_prefix,
+            created_time=created_time,
+        ).dump(camel_case=True)
+        res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
 
-        params = {"limit": limit}
-        res = self._get(url, params=params)
-        return FunctionList._load(res.json()["items"], cognite_client=self._cognite_client)
+        return self._LIST_CLASS._load(res.json()["items"])
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
         """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
@@ -580,11 +604,22 @@ class FunctionSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
-    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionSchedulesList:
-        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+    def list(
+        self,
+        name: str = None,
+        function_external_id: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+        cron_expression: str = None,
+        limit: Optional[int] = LIST_LIMIT_DEFAULT,
+    ) -> FunctionSchedulesList:
+        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/listFunctionSchedules>`_
 
         Args:
-            limit (int, optional): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all schedules.
+            name (str): Name of the function schedule.
+            function_external_id (str): External ID of the function the schedules are linked to.
+            created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            cron_expression (str): Cron expression.
+            limit (int): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all.
 
         Returns:
             FunctionSchedulesList: List of function schedules
@@ -602,17 +637,21 @@ class FunctionSchedulesAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> func = c.functions.retrieve(id=1)
-                >>> schedules = func.list_schedules()
+                >>> schedules = func.list_schedules(limit=None)
 
         """
-        url = f"/functions/schedules"
+        if limit in [float("inf"), -1]:
+            limit = None
 
-        if limit in [float("inf"), -1, None]:
-            limit = LIST_LIMIT_CEILING
+        filter = FunctionSchedulesFilter(
+            name=name,
+            function_external_id=function_external_id,
+            created_time=created_time,
+            cron_expression=cron_expression,
+        ).dump(camel_case=True)
+        res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
 
-        params = {"limit": limit}
-        res = self._get(url, params=params)
-        return FunctionSchedulesList._load(res.json()["items"])
+        return self._LIST_CLASS._load(res.json()["items"])
 
     def create(
         self,
@@ -647,7 +686,7 @@ class FunctionSchedulesAPI(APIClient):
                     description="This schedule does magic stuff.")
 
         """
-        json = {
+        body = {
             "items": [
                 {
                     "name": name,
@@ -658,10 +697,10 @@ class FunctionSchedulesAPI(APIClient):
             ]
         }
         if data:
-            json["items"][0]["data"] = data
+            body["items"][0]["data"] = data
 
-        url = f"/functions/schedules"
-        res = self._post(url, json=json)
+        url = "/functions/schedules"
+        res = self._post(url, json=body)
         return FunctionSchedule._load(res.json()["items"][0])
 
     def delete(self, id: int) -> None:
@@ -682,9 +721,9 @@ class FunctionSchedulesAPI(APIClient):
                 >>> c.functions.schedules.delete(id = 123)
 
         """
-        json = {"items": [{"id": id,}]}
-        url = f"/functions/schedules/delete"
-        self._post(url, json=json)
+        body = {"items": [{"id": id}]}
+        url = "/functions/schedules/delete"
+        self._post(url, json=body)
 
     def get_input_data(self, id: int) -> Dict:
         """

@@ -12,11 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.47.0]
+
+### Changed
+
+- The `FunctionsAPI.list()`-method now accepts additional filters: `name`, `owner`, `file_id`, `status`, `external_id_prefix` and `created_time`.
+- The `FunctionSchedulesAPI.list()`-method now accepts additional filters: `name`, `function_external_id`, `created_time` and `cron_expression`.
+- The `Function.list_schedules()`-method now accepts `limit` argument.
 
 ## [0.46.0]
 
 ### Added
-- Add functionality to add/remove elements in integration list fields. 
+- Add functionality to add/remove elements in integration list fields.
 
 ## [0.45.2]
 
@@ -44,7 +51,7 @@ Changes are grouped as follows
 
 ## [0.42.0] - 21-02-01
 
-### Added 
+### Added
 - Template functionality.
 
 ### Removed
@@ -107,7 +114,7 @@ Changes are grouped as follows
 
 ## [0.33.0] - 2020-12-02
 ### Added
-- Method `get_input_data` on the `FunctionSchedule`-class. 
+- Method `get_input_data` on the `FunctionSchedule`-class.
 - Method `get_input_data` on the `FunctionScheduleAPI`-class.
 
 ## [0.32.0] - 2020-12-03
@@ -234,8 +241,8 @@ Changes are grouped as follows
 - Change list-method to list all models instead of jobs.
 - Changed endpoints used for list and list_jobs to comply with updates to the API.
 ### Added
-- Add list_jobs-method that behaves as old list-method, that is returns all jobs. 
-- Option to filter returned models on based on all input parameters. 
+- Add list_jobs-method that behaves as old list-method, that is returns all jobs.
+- Option to filter returned models on based on all input parameters.
 
 ## [0.15.4] - 2020-08-13
 ### Added
@@ -277,7 +284,7 @@ Changes are grouped as follows
 
 ## [0.14.1] - 2020-08-03
 ### Added
-- Added retry to functions POST endpoints. 
+- Added retry to functions POST endpoints.
 
 ## [0.14.0] - 2020-08-03
 ### Changed
@@ -404,8 +411,8 @@ Changes are grouped as follows
 ## [0.5.2] - 2020-04-16
 
 ### Added
-- A `FunctionSchedule` class and corresponding api attached to the `Functions` api to interact with function schedules. 
-Function schedules can now also be listed using the `Function` object through the `list_schedules` method. 
+- A `FunctionSchedule` class and corresponding api attached to the `Functions` api to interact with function schedules.
+Function schedules can now also be listed using the `Function` object through the `list_schedules` method.
 
 ## [0.5.1] - 2020-04-15
 

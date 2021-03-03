@@ -2,7 +2,8 @@ import time
 from numbers import Number
 from typing import Dict, List, Optional, Union
 
-from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+from cognite.client.data_classes.shared import TimestampRange
 
 from cognite.experimental._constants import LIST_LIMIT_DEFAULT
 
@@ -106,15 +107,16 @@ class Function(CogniteResource):
             limit=limit,
         )
 
-    def list_schedules(self) -> "FunctionSchedulesList":
+    def list_schedules(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> "FunctionSchedulesList":
         """`List all schedules associated with this function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            limit (int): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all.
 
         Returns:
             FunctionSchedulesList: List of function schedules
         """
-        all_schedules = self._cognite_client.functions.schedules.list(limit=None)
-        function_schedules = filter(lambda f: f.function_external_id == self.external_id, all_schedules)
-        return list(function_schedules)
+        return self._cognite_client.functions.schedules.list(function_external_id=self.external_id, limit=limit)
 
     def retrieve_call(self, id: int) -> "FunctionCall":
         """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
@@ -142,6 +144,24 @@ class Function(CogniteResource):
                 continue
             latest_value = getattr(latest, attribute)
             setattr(self, attribute, latest_value)
+
+
+class FunctionFilter(CogniteFilter):
+    def __init__(
+        self,
+        name: str = None,
+        owner: str = None,
+        file_id: int = None,
+        status: str = None,
+        external_id_prefix: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+    ):
+        self.name = name
+        self.owner = owner
+        self.file_id = file_id
+        self.status = status
+        self.external_id_prefix = external_id_prefix
+        self.created_time = created_time
 
 
 class FunctionSchedule(CogniteResource):
@@ -184,6 +204,20 @@ class FunctionSchedule(CogniteResource):
             deserialized into the function through the data argument.
         """
         return self._cognite_client.functions.schedules.get_input_data(id=self.id)
+
+
+class FunctionSchedulesFilter(CogniteFilter):
+    def __init__(
+        self,
+        name: str = None,
+        function_external_id: str = None,
+        created_time: Union[Dict[str, int], TimestampRange] = None,
+        cron_expression: str = None,
+    ):
+        self.name = name
+        self.function_external_id = function_external_id
+        self.created_time = created_time
+        self.cron_expression = cron_expression
 
 
 class FunctionSchedulesList(CogniteResourceList):
