@@ -323,7 +323,16 @@ For examples of using this api, see: https://github.com/cognitedata/cognite-sdk-
 
 Entity Matching Methods
 ^^^^^^^^^^^^^^^^^^^^^^^
-Please see the main SDK documentation.
+See the main SDK documentation for most other methods.
+
+Fit Entity Matching Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.fit
+
+
+Suggest Match Fields
+^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.entity_matching.EntityMatchingAPI.suggest_fields
 
 Create Entity Matching Pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

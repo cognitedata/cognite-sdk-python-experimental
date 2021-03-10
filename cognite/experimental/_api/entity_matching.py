@@ -259,7 +259,8 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
         """Get suggestions for match fields in entity matching
 
         Args:
-            sources, targets: a sample of typical sources and targets, best used on existing matches.
+            sources: a sample of typical sources, best used on existing matches. No more than 10,000.
+            targets: a sample of typical targets, best used on existing matches. No more than 10,000.
             score_threshold: only return suggestions above this threshold.
 
         Returns:
