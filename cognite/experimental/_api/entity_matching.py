@@ -8,6 +8,7 @@ from cognite.client.data_classes import (
     EntityMatchingModelList,
     EntityMatchingModelUpdate,
 )
+from cognite.client.data_classes._base import CogniteResource
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
@@ -17,6 +18,7 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineRunList,
     EntityMatchingPipelineUpdate,
 )
+from cognite.client.utils._auxiliary import convert_true_match
 
 
 class EntityMatchingPipelineRunsAPI(ContextAPI):
@@ -182,6 +184,62 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
         super().__init__(*args, **kwargs)
         self.pipelines = EntityMatchingPipelinesAPI(*args, **kwargs)
 
+    def fit(
+        self,
+        sources: List[Union[Dict, CogniteResource]],
+        targets: List[Union[Dict, CogniteResource]],
+        true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]] = None,
+        match_fields: Union[Dict, List[Tuple[str, str]]] = None,
+        feature_type: str = None,
+        classifier: str = None,
+        ignore_missing_fields: bool = False,
+        name: str = None,
+        description: str = None,
+        external_id: str = None,
+        replacements: List[Dict] = None,
+    ) -> EntityMatchingModel:
+        """Fit entity matching model.
+        Note: All users on this CDF subscription with assets read-all and entitymatching read-all and write-all
+        capabilities in the project, are able to access the data sent to this endpoint.
+
+        Args:
+            sources: entities to match from, should have an 'id' field. Tolerant to passing more than is needed or used (e.g. json dump of time series list). Metadata fields are automatically flattened to "metadata.key" entries, such that they can be used in match_fields.
+            targets: entities to match to, should have an 'id' field.  Tolerant to passing more than is needed or used.
+            true_matches: Known valid matches given as a list of dicts with keys 'sourceId', 'sourceExternalId', 'sourceId', 'sourceExternalId'). If omitted, uses an unsupervised model.
+             A tuple can be used instead of the dictionary for convenience, interpreted as id/externalId based on type.
+            match_fields: List of (from,to) keys to use in matching. Default in the API is [('name','name')]. Also accepts {"source": .., "target": ..}.
+            feature_type (str): feature type that defines the combination of features used, see API docs for details.
+            classifier (str): classifier used in training.
+            ignore_missing_fields (bool): whether missing data in match_fields should return error or be filled in with an empty string.
+            name (str): Optional user-defined name of model.
+            description (str): Optional user-defined description of model.
+            external_id (str): Optional external id. Must be unique within the project.
+            replacements (dict): Optional list of strings to replace in fields. Each entry has the format {"field": field, "string": from, "replacement": to}, where field can be "*" for all fields.
+        Returns:
+            EntityMatchingModel: Resulting queued model."""
+
+        if match_fields:
+            match_fields = [ft if isinstance(ft, dict) else {"source": ft[0], "target": ft[1]} for ft in match_fields]
+        if true_matches:
+            true_matches = [convert_true_match(true_match) for true_match in true_matches]
+        response = self._post(
+            self._RESOURCE_PATH + "/",
+            json={
+                "name": name,
+                "description": description,
+                "externalId": external_id,
+                "sources": EntityMatchingModel._dump_entities(sources),
+                "targets": EntityMatchingModel._dump_entities(targets),
+                "trueMatches": true_matches,
+                "matchFields": match_fields,
+                "featureType": feature_type,
+                "classifier": classifier,
+                "ignoreMissingFields": ignore_missing_fields,
+                "replacements": replacements,
+            },
+        )
+        return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
+
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
 
@@ -191,3 +249,26 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
         return self._run_job(job_path="/rules", json={"items": matches})
+
+    def suggest_fields(
+        self,
+        sources: List[Union[Dict, CogniteResource]],
+        targets: List[Union[Dict, CogniteResource]],
+        score_threshold: float = 0.5,
+    ) -> List[Dict]:
+        """Get suggestions for match fields in entity matching
+
+        Args:
+            sources, targets: a sample of typical sources and targets, best used on existing matches.
+            score_threshold: only return suggestions above this threshold.
+
+        Returns:
+            List[Dict]: results sorted by score, each entry having 'source' and 'target' field along with a score and exampleTokens which match"""
+        return self._post(
+            self._RESOURCE_PATH + "/suggestfields",
+            json={
+                "sources": EntityMatchingModel._dump_entities(sources),
+                "targets": EntityMatchingModel._dump_entities(targets),
+                "scoreThreshold": score_threshold,
+            },
+        ).json()['items']
