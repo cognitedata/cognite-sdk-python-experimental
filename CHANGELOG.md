@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.48.0]
+
+### Added
+- replacements parameter in entity matching fit
+- suggest fields endpoint in entity matching
+
 ## [0.47.0]
 
 ### Changed
