@@ -272,4 +272,4 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
                 "targets": EntityMatchingModel._dump_entities(targets),
                 "scoreThreshold": score_threshold,
             },
-        ).json()['items']
+        ).json()["items"]
