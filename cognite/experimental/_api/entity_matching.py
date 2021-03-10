@@ -9,6 +9,7 @@ from cognite.client.data_classes import (
     EntityMatchingModelUpdate,
 )
 from cognite.client.data_classes._base import CogniteResource
+from cognite.client.utils._auxiliary import convert_true_match
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
@@ -18,7 +19,6 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineRunList,
     EntityMatchingPipelineUpdate,
 )
-from cognite.client.utils._auxiliary import convert_true_match
 
 
 class EntityMatchingPipelineRunsAPI(ContextAPI):
