@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.48.1]
+
+### Fixed
+- Image parameter for plot data extraction
+
 ## [0.48.0]
 
 ### Added

@@ -32,7 +32,7 @@ class PlotDataExtractionAPI(ContextAPI):
 
             except Exception as e:
                 raise ValueError(f"Image parameter was not a string and failed to import PIL: {e}")
-            if not isinstance(image, Image):
+            if not isinstance(image, Image.Image):
                 raise ValueError(f"Image parameter was not a string or a PIL Image")
             image = image_to_base64_str(image)
 
