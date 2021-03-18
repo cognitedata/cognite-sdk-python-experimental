@@ -1,5 +1,4 @@
 import importlib.util
-import json
 import os
 import sys
 import time
@@ -7,7 +6,7 @@ from inspect import getsource
 from numbers import Number
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
 from cognite.client import utils
@@ -213,7 +212,7 @@ class FunctionsAPI(APIClient):
         ).dump(camel_case=True)
         res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
 
-        return self._LIST_CLASS._load(res.json()["items"])
+        return self._LIST_CLASS._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
         """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
@@ -651,7 +650,7 @@ class FunctionSchedulesAPI(APIClient):
         ).dump(camel_case=True)
         res = self._post(url_path=f"{self._RESOURCE_PATH}/list", json={"filter": filter, "limit": limit})
 
-        return self._LIST_CLASS._load(res.json()["items"])
+        return self._LIST_CLASS._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def create(
         self,
