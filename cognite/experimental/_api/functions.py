@@ -10,8 +10,10 @@ from tempfile import TemporaryDirectory
 from typing import Any, Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
-from cognite.client import utils
+import requests
+from cognite.client import utils, CogniteClient
 from cognite.client._api_client import APIClient
+from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
@@ -25,6 +27,42 @@ from cognite.experimental.data_classes import (
 )
 
 
+def exchange_token_for_nonce(project, token):
+    url = f'https://greenfield.cognitedata.com/api/playground/projects/{project}/sessions'
+    headers = {"Authorization": f"Bearer {token}"}
+    payload = {
+        "items": [
+            {
+                "tokenExchange": True
+            }
+        ]
+    }
+    res = requests.post(url, data=payload, headers=headers)
+    print(res.reason, res.json())
+    if res.status_code == 200 and res.json()["nonce"]:
+        return res.json()["nonce"]
+
+
+def get_nonce_from_client_credentials(project, client_id, client_secret, scope, token):
+    url = f'https://greenfield.cognitedata.com/api/playground/projects/{project}/sessions'
+    payload = {
+        "items": [
+            {
+                "clientId": f"{client_id}",
+                "clientSecret": f"{client_secret}",
+                "scope": f"{scope}"
+            }
+        ]
+    }
+    headers = {"Authorization": f"Bearer {token}"}
+    res = requests.post(url, data=payload, headers=headers)
+    print(res.reason, res.json())
+    if res.status_code == 200 and res.json()["nonce"]:
+        return res.json()["nonce"]
+    elif res.status_code == 401:
+        print(res.reason, res.json())
+        # raise AuthError
+
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
     _LIST_CLASS = FunctionList
@@ -35,20 +73,20 @@ class FunctionsAPI(APIClient):
         self.schedules = FunctionSchedulesAPI(*args, **kwargs)
 
     def create(
-        self,
-        name: str,
-        folder: Optional[str] = None,
-        file_id: Optional[int] = None,
-        function_path: Optional[str] = HANDLER_FILE_NAME,
-        function_handle: Optional[Callable] = None,
-        external_id: Optional[str] = None,
-        description: Optional[str] = "",
-        owner: Optional[str] = "",
-        api_key: Optional[str] = None,
-        secrets: Optional[Dict] = None,
-        env_vars: Optional[Dict] = None,
-        cpu: Number = 0.25,
-        memory: Number = 1.0,
+            self,
+            name: str,
+            folder: Optional[str] = None,
+            file_id: Optional[int] = None,
+            function_path: Optional[str] = HANDLER_FILE_NAME,
+            function_handle: Optional[Callable] = None,
+            external_id: Optional[str] = None,
+            description: Optional[str] = "",
+            owner: Optional[str] = "",
+            api_key: Optional[str] = None,
+            secrets: Optional[Dict] = None,
+            env_vars: Optional[Dict] = None,
+            cpu: Number = 0.25,
+            memory: Number = 1.0,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -219,7 +257,7 @@ class FunctionsAPI(APIClient):
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def retrieve_multiple(
-        self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
+            self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
     ) -> FunctionList:
         """`Retrieve multiple functions by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
 
@@ -249,11 +287,11 @@ class FunctionsAPI(APIClient):
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
     def call(
-        self,
-        id: Optional[int] = None,
-        external_id: Optional[str] = None,
-        data: Optional[Dict] = None,
-        wait: bool = True,
+            self,
+            id: Optional[int] = None,
+            external_id: Optional[str] = None,
+            data: Optional[Dict] = None,
+            wait: bool = True,
     ) -> FunctionCall:
         """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
 
@@ -287,8 +325,53 @@ class FunctionsAPI(APIClient):
 
         url = f"/functions/{id}/call"
         body = {}
+
+        # Exchanging the token for a nonce.
+        # Case 1: Token generated from client credentials. Token exchange is not an option when using AAD.
+        # Case 2: Token on behalf of the user. We use token exchange.
+        # It is not clear how exactly to distinguish between these two cases.
+
+        nonce = None
+        self._cognite_client: CogniteClient
+        if self.client_credential_flow():
+            print("Using Client Credential flow")
+            session_url = f"/api/playground/projects/{self._cognite_client.config.project}/sessions"
+            payload = {
+                "items": [
+                    {
+                        "clientId": f"{self._cognite_client.config.token_client_id}",
+                        "clientSecret": f"{self._cognite_client.config.token_client_secret}",
+                        "scope": f"{self._cognite_client.config.token_scopes}"
+                    }
+                ]
+            }
+            try:
+                res = self._cognite_client.post(session_url, json=payload)
+                nonce = res.json()["items"][0]["nonce"]
+                print("Received nonce:", nonce)
+            except CogniteAPIError as e:
+                print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
+
+        elif self._cognite_client.config.token is not None:
+            print("Using Token Exchange flow")
+
+            session_url = f"/api/playground/projects/{self._cognite_client.config.project}/sessions"
+            payload = {
+                "items": [
+                    {
+                        "tokenExchange": True
+                    }
+                ]
+            }
+            try:
+                res = self._cognite_client.post(url=session_url, json=payload)
+                nonce = res.json()["items"][0]["nonce"]
+                print("Recieved nonce: ", nonce)
+            except CogniteAPIError as e:
+                print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
+
         if data:
-            body = {"data": data}
+            body = {"data": data, "nonce": nonce}
         res = self._post(url, json=body)
 
         function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
@@ -353,6 +436,16 @@ class FunctionsAPI(APIClient):
                 + " were given."
             )
 
+    def client_credential_flow(self):
+        """
+        Determine whether the Cognite client is configured for client-credential flow.
+        """
+        client_config = self._cognite_client.config
+        if client_config.token_client_secret and client_config.token_client_id and client_config.token_url and client_config.token_scopes:
+            return True
+        else:
+            return False
+
 
 def convert_file_path_to_module_path(file_path: str):
     return ".".join(Path(file_path).with_suffix("").parts)
@@ -390,7 +483,7 @@ def _validate_function_handle(function_handle):
     if not function_handle.__code__.co_name == "handle":
         raise TypeError("Function referenced by function_handle must be named handle.")
     if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
-        set(["data", "client", "secrets", "function_call_info"])
+            set(["data", "client", "secrets", "function_call_info"])
     ):
         raise TypeError(
             "Arguments to function referenced by function_handle must be a subset of (data, client, secrets, function_call_info)"
@@ -401,14 +494,14 @@ class FunctionCallsAPI(APIClient):
     _LIST_CLASS = FunctionCallList
 
     def list(
-        self,
-        function_id: Optional[int] = None,
-        function_external_id: Optional[str] = None,
-        status: Optional[str] = None,
-        schedule_id: Optional[int] = None,
-        start_time: Optional[Dict[str, int]] = None,
-        end_time: Optional[Dict[str, int]] = None,
-        limit: Optional[int] = LIST_LIMIT_DEFAULT,
+            self,
+            function_id: Optional[int] = None,
+            function_external_id: Optional[str] = None,
+            status: Optional[str] = None,
+            schedule_id: Optional[int] = None,
+            start_time: Optional[Dict[str, int]] = None,
+            end_time: Optional[Dict[str, int]] = None,
+            limit: Optional[int] = LIST_LIMIT_DEFAULT,
     ) -> FunctionCallList:
         """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
 
@@ -449,7 +542,7 @@ class FunctionCallsAPI(APIClient):
         return self._list(method="POST", resource_path=resource_path, filter=filter, limit=limit)
 
     def retrieve(
-        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
+            self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> Optional[FunctionCall]:
         """`Retrieve a single function call by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionCalls>`_
 
@@ -518,7 +611,7 @@ class FunctionCallsAPI(APIClient):
         return res.json().get("response")
 
     def get_logs(
-        self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
+            self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCallLog:
         """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
 
@@ -615,12 +708,12 @@ class FunctionSchedulesAPI(APIClient):
         return FunctionSchedulesList._load(res.json()["items"])
 
     def create(
-        self,
-        name: str,
-        function_external_id: str,
-        cron_expression: str,
-        description: str = "",
-        data: Optional[Dict] = None,
+            self,
+            name: str,
+            function_external_id: str,
+            cron_expression: str,
+            description: str = "",
+            data: Optional[Dict] = None,
     ) -> FunctionSchedule:
         """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
 
@@ -682,7 +775,7 @@ class FunctionSchedulesAPI(APIClient):
                 >>> c.functions.schedules.delete(id = 123)
 
         """
-        json = {"items": [{"id": id,}]}
+        json = {"items": [{"id": id, }]}
         url = f"/functions/schedules/delete"
         self._post(url, json=json)
 
