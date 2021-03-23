@@ -94,6 +94,10 @@ Create an annotation
 ^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.create
 
+Update annotations
+^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.update
+
 Delete annotations
 ^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.delete
