@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.48.2]
+
+### Fixed
+- `FunctionsAPI.list()` and `FunctionSchedulesAPI.list()` were missing `cognite_client` from a bug introduced in version [0.47.0].
+
 ## [0.48.1]
 
 ### Fixed
