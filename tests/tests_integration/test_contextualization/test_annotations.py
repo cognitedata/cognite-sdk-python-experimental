@@ -67,9 +67,20 @@ class TestAnnotationsIntegration:
         updated = ANNOTATIONSAPI.update(new_annotation)
         assert isinstance(updated, Annotation)
         assert new_annotation.text == updated.text
-        updated_patch = ANNOTATIONSAPI.update([AnnotationUpdate(id=new_annotation.id).data.set({"foo": "bar"})])
+        updated_patch = ANNOTATIONSAPI.update(
+            [
+                AnnotationUpdate(id=new_annotation.id)
+                .data.set({"foo": "bar"})
+                .text.set("text")
+                .status.set("status")
+                .region.set({"re": "gion"})
+            ]
+        )
         assert isinstance(updated_patch, AnnotationList)
         assert {"foo": "bar"} == updated_patch[0].data
+        assert "text" == updated_patch[0].text
+        assert "status" == updated_patch[0].status
+        assert {"re": "gion"} == updated_patch[0].region
 
     def test_list(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)
