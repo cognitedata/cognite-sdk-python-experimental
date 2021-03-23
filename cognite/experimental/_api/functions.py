@@ -292,6 +292,7 @@ class FunctionsAPI(APIClient):
             external_id: Optional[str] = None,
             data: Optional[Dict] = None,
             wait: bool = True,
+            client_credentials: Optional[Dict] = None
     ) -> FunctionCall:
         """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
 
@@ -327,48 +328,15 @@ class FunctionsAPI(APIClient):
         body = {}
 
         # Exchanging the token for a nonce.
-        # Case 1: Token generated from client credentials. Token exchange is not an option when using AAD.
+        # Case 1: Client credentials, either passed in explicitly, or inferred from the instantiated client.
+        #   Token exchange is not an option when using AAD.
         # Case 2: Token on behalf of the user. We use token exchange.
-        # It is not clear how exactly to distinguish between these two cases.
-
         nonce = None
-        self._cognite_client: CogniteClient
-        if self.client_credential_flow():
-            print("Using Client Credential flow")
-            session_url = f"/api/playground/projects/{self._cognite_client.config.project}/sessions"
-            payload = {
-                "items": [
-                    {
-                        "clientId": f"{self._cognite_client.config.token_client_id}",
-                        "clientSecret": f"{self._cognite_client.config.token_client_secret}",
-                        "scope": f"{self._cognite_client.config.token_scopes}"
-                    }
-                ]
-            }
-            try:
-                res = self._cognite_client.post(session_url, json=payload)
-                nonce = res.json()["items"][0]["nonce"]
-                print("Received nonce:", nonce)
-            except CogniteAPIError as e:
-                print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
+        if client_credentials or client_credential_flow(self._cognite_client):
+            nonce = use_client_credentials(self._cognite_client, client_credentials)
 
         elif self._cognite_client.config.token is not None:
-            print("Using Token Exchange flow")
-
-            session_url = f"/api/playground/projects/{self._cognite_client.config.project}/sessions"
-            payload = {
-                "items": [
-                    {
-                        "tokenExchange": True
-                    }
-                ]
-            }
-            try:
-                res = self._cognite_client.post(url=session_url, json=payload)
-                nonce = res.json()["items"][0]["nonce"]
-                print("Recieved nonce: ", nonce)
-            except CogniteAPIError as e:
-                print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
+            nonce = use_token_exchange(self._cognite_client)
 
         if data:
             body = {"data": data, "nonce": nonce}
@@ -436,15 +404,77 @@ class FunctionsAPI(APIClient):
                 + " were given."
             )
 
-    def client_credential_flow(self):
-        """
-        Determine whether the Cognite client is configured for client-credential flow.
-        """
-        client_config = self._cognite_client.config
-        if client_config.token_client_secret and client_config.token_client_id and client_config.token_url and client_config.token_scopes:
-            return True
-        else:
-            return False
+
+def use_client_credentials(cognite_client, client_credentials: Optional[Dict] = None):
+    """
+    If client_credentials is passed, will use those, otherwise will implicitly use those the client was instantiated
+    with
+    Args:
+        client_credentials: a dictionary containing:
+            client_id
+            client_secret
+            scopes
+
+    Returns:
+
+    """
+    print("Using Client Credential flow")
+    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+
+    if client_credentials:
+        client_id = client_credentials["client_id"]
+        client_secret = client_credentials["client_secret"]
+        scopes = client_credentials["scope"]
+    else:
+        client_id = cognite_client.config.token_client_id
+        client_secret = cognite_client.config.token_client_secret
+        scopes = cognite_client.config.token_scopes
+    payload = {
+        "items": [
+            {
+                "clientId": f"{client_id}",
+                "clientSecret": f"{client_secret}",
+                "scope": f"{scopes}"
+            }
+        ]
+    }
+    try:
+        res = cognite_client.post(session_url, json=payload)
+        nonce = res.json()["items"][0]["nonce"]
+        print("Received nonce:", nonce)
+        return nonce
+    except CogniteAPIError as e:
+        print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
+
+
+def use_token_exchange(cognite_client):
+    print("Using Token Exchange flow")
+    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    payload = {
+        "items": [
+            {
+                "tokenExchange": True
+            }
+        ]
+    }
+    try:
+        res = cognite_client.post(url=session_url, json=payload)
+        nonce = res.json()["items"][0]["nonce"]
+        print("Recieved nonce: ", nonce)
+        return nonce
+    except CogniteAPIError as e:
+        print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
+
+
+def client_credential_flow(cognite_client):
+    """
+    Determine whether the Cognite client is configured for client-credential flow.
+    """
+    client_config = cognite_client.config
+    if client_config.token_client_secret and client_config.token_client_id and client_config.token_url and client_config.token_scopes:
+        return True
+    else:
+        return False
 
 
 def convert_file_path_to_module_path(file_path: str):
@@ -714,6 +744,7 @@ class FunctionSchedulesAPI(APIClient):
             cron_expression: str,
             description: str = "",
             data: Optional[Dict] = None,
+            client_credentials: Optional[Dict] = None
     ) -> FunctionSchedule:
         """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
 
@@ -723,6 +754,10 @@ class FunctionSchedulesAPI(APIClient):
             description (str): Description of the schedule.
             cron_expression (str): Cron expression.
             data (optional, Dict): Data to be passed to the scheduled run.
+            client_credentials: (optional, Dict): Dictionary containing
+                client_id
+                client_secret
+                scopes
 
         Returns:
             FunctionSchedule: Created function schedule.
@@ -750,8 +785,17 @@ class FunctionSchedulesAPI(APIClient):
                 }
             ]
         }
+
         if data:
             json["items"][0]["data"] = data
+
+        nonce = None
+        if client_credentials or client_credential_flow(self._cognite_client):
+            nonce = use_client_credentials(self._cognite_client, client_credentials)
+
+        elif self._cognite_client.config.token is not None:
+            nonce = use_token_exchange(self._cognite_client)
+
 
         url = f"/functions/schedules"
         res = self._post(url, json=json)
