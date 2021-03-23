@@ -775,6 +775,13 @@ class FunctionSchedulesAPI(APIClient):
                     description="This schedule does magic stuff.")
 
         """
+        nonce = None
+        if client_credentials or client_credential_flow(self._cognite_client):
+            nonce = use_client_credentials(self._cognite_client, client_credentials)
+
+        elif self._cognite_client.config.token is not None:
+            nonce = use_token_exchange(self._cognite_client)
+
         json = {
             "items": [
                 {
@@ -782,6 +789,7 @@ class FunctionSchedulesAPI(APIClient):
                     "description": description,
                     "functionExternalId": function_external_id,
                     "cronExpression": cron_expression,
+                    "nonce": nonce
                 }
             ]
         }
@@ -789,12 +797,6 @@ class FunctionSchedulesAPI(APIClient):
         if data:
             json["items"][0]["data"] = data
 
-        nonce = None
-        if client_credentials or client_credential_flow(self._cognite_client):
-            nonce = use_client_credentials(self._cognite_client, client_credentials)
-
-        elif self._cognite_client.config.token is not None:
-            nonce = use_token_exchange(self._cognite_client)
 
 
         url = f"/functions/schedules"
