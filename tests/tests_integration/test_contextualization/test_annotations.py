@@ -2,7 +2,13 @@ import pytest
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, ContextualizationJob
+from cognite.experimental.data_classes import (
+    Annotation,
+    AnnotationFilter,
+    AnnotationList,
+    AnnotationUpdate,
+    ContextualizationJob,
+)
 
 COGNITE_CLIENT = CogniteClient()
 ANNOTATIONSAPI = COGNITE_CLIENT.annotations
@@ -55,6 +61,26 @@ class TestAnnotationsIntegration:
 
     def test_create_annotations(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)
+
+    def test_update_annotations(self, new_annotation):
+        new_annotation.text = "new_text"
+        updated = ANNOTATIONSAPI.update(new_annotation)
+        assert isinstance(updated, Annotation)
+        assert new_annotation.text == updated.text
+        updated_patch = ANNOTATIONSAPI.update(
+            [
+                AnnotationUpdate(id=new_annotation.id)
+                .data.set({"foo": "bar"})
+                .text.set("text")
+                .status.set("status")
+                .region.set({"re": "gion"})
+            ]
+        )
+        assert isinstance(updated_patch, AnnotationList)
+        assert {"foo": "bar"} == updated_patch[0].data
+        assert "text" == updated_patch[0].text
+        assert "status" == updated_patch[0].status
+        assert {"re": "gion"} == updated_patch[0].region
 
     def test_list(self, new_annotations):
         assert isinstance(new_annotations, AnnotationList)

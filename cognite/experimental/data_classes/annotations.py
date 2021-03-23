@@ -1,6 +1,12 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
-from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteUpdate
+from cognite.client.data_classes._base import (
+    CogniteFilter,
+    CognitePrimitiveUpdate,
+    CogniteResource,
+    CogniteResourceList,
+    CogniteUpdate,
+)
 
 
 class Annotation(CogniteResource):
@@ -85,7 +91,34 @@ class AnnotationFilter(CogniteFilter):
 
 
 class AnnotationUpdate(CogniteUpdate):
-    pass
+    """Changes applied to annotation
+
+    Args:
+        id (int): A server-generated ID for the object.
+    """
+
+    def __init__(self, id: int):
+        super().__init__(id=id)
+
+    class _PrimitiveAnnotationUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "AnnotationUpdate":
+            return self._set(value)
+
+    @property
+    def text(self):
+        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "text")
+
+    @property
+    def status(self):
+        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "status")
+
+    @property
+    def region(self):
+        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "region")
+
+    @property
+    def data(self):
+        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "data")
 
 
 class AnnotationList(CogniteResourceList):

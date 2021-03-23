@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.49.0]
+### Added
+- update method for the annotations api
+
 ## [0.48.2]
 
 ### Fixed
