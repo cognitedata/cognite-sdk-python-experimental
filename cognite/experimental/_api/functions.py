@@ -296,7 +296,7 @@ class FunctionsAPI(APIClient):
         #   Token exchange is not an option when using AAD.
         # Case 2: Token on behalf of the user. We use token exchange.
         nonce = None
-        if client_credentials or client_credential_flow(self._cognite_client):
+        if client_credentials or using_client_credential_flow(self._cognite_client):
             nonce = use_client_credentials(self._cognite_client, client_credentials)
 
         elif self._cognite_client.config.token is not None:
@@ -412,7 +412,7 @@ def use_token_exchange(cognite_client):
         print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
 
 
-def client_credential_flow(cognite_client):
+def using_client_credential_flow(cognite_client):
     """
     Determine whether the Cognite client is configured for client-credential flow.
     """
@@ -727,7 +727,7 @@ class FunctionSchedulesAPI(APIClient):
 
         """
         nonce = None
-        if client_credentials or client_credential_flow(self._cognite_client):
+        if client_credentials or using_client_credential_flow(self._cognite_client):
             nonce = use_client_credentials(self._cognite_client, client_credentials)
 
         elif self._cognite_client.config.token is not None:
