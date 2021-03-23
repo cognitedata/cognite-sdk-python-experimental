@@ -296,11 +296,11 @@ class FunctionsAPI(APIClient):
         #   Token exchange is not an option when using AAD.
         # Case 2: Token on behalf of the user. We use token exchange.
         nonce = None
-        if client_credentials or using_client_credential_flow(self._cognite_client):
-            nonce = use_client_credentials(self._cognite_client, client_credentials)
+        if client_credentials or _using_client_credential_flow(self._cognite_client):
+            nonce = _use_client_credentials(self._cognite_client, client_credentials)
 
         elif self._cognite_client.config.token is not None:
-            nonce = use_token_exchange(self._cognite_client)
+            nonce = _use_token_exchange(self._cognite_client)
 
         if data:
             body = {"data": data, "nonce": nonce}
@@ -369,7 +369,7 @@ class FunctionsAPI(APIClient):
             )
 
 
-def use_client_credentials(cognite_client, client_credentials: Optional[Dict] = None):
+def _use_client_credentials(cognite_client, client_credentials: Optional[Dict] = None):
     """
     If client_credentials is passed, will use those, otherwise will implicitly use those the client was instantiated
     with
@@ -401,7 +401,7 @@ def use_client_credentials(cognite_client, client_credentials: Optional[Dict] = 
         print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
 
 
-def use_token_exchange(cognite_client):
+def _use_token_exchange(cognite_client):
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"tokenExchange": True}]}
     try:
@@ -412,7 +412,7 @@ def use_token_exchange(cognite_client):
         print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
 
 
-def using_client_credential_flow(cognite_client):
+def _using_client_credential_flow(cognite_client):
     """
     Determine whether the Cognite client is configured for client-credential flow.
     """
@@ -727,11 +727,11 @@ class FunctionSchedulesAPI(APIClient):
 
         """
         nonce = None
-        if client_credentials or using_client_credential_flow(self._cognite_client):
-            nonce = use_client_credentials(self._cognite_client, client_credentials)
+        if client_credentials or _using_client_credential_flow(self._cognite_client):
+            nonce = _use_client_credentials(self._cognite_client, client_credentials)
 
         elif self._cognite_client.config.token is not None:
-            nonce = use_token_exchange(self._cognite_client)
+            nonce = _use_token_exchange(self._cognite_client)
 
         json = {
             "items": [
