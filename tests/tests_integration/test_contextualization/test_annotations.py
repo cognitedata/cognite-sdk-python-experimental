@@ -10,7 +10,7 @@ from cognite.experimental.data_classes import (
     ContextualizationJob,
 )
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 ANNOTATIONSAPI = COGNITE_CLIENT.annotations
 
 
