@@ -27,42 +27,6 @@ from cognite.experimental.data_classes import (
 )
 
 
-def exchange_token_for_nonce(project, token):
-    url = f'https://greenfield.cognitedata.com/api/playground/projects/{project}/sessions'
-    headers = {"Authorization": f"Bearer {token}"}
-    payload = {
-        "items": [
-            {
-                "tokenExchange": True
-            }
-        ]
-    }
-    res = requests.post(url, data=payload, headers=headers)
-    print(res.reason, res.json())
-    if res.status_code == 200 and res.json()["nonce"]:
-        return res.json()["nonce"]
-
-
-def get_nonce_from_client_credentials(project, client_id, client_secret, scope, token):
-    url = f'https://greenfield.cognitedata.com/api/playground/projects/{project}/sessions'
-    payload = {
-        "items": [
-            {
-                "clientId": f"{client_id}",
-                "clientSecret": f"{client_secret}",
-                "scope": f"{scope}"
-            }
-        ]
-    }
-    headers = {"Authorization": f"Bearer {token}"}
-    res = requests.post(url, data=payload, headers=headers)
-    print(res.reason, res.json())
-    if res.status_code == 200 and res.json()["nonce"]:
-        return res.json()["nonce"]
-    elif res.status_code == 401:
-        print(res.reason, res.json())
-        # raise AuthError
-
 class FunctionsAPI(APIClient):
     _RESOURCE_PATH = "/functions"
     _LIST_CLASS = FunctionList
