@@ -41,7 +41,7 @@ class PNIDParsingAPI(ContextAPI):
             partial_match (bool): Allow for a partial match (e.g. missing prefix).
             min_tokens (int): Minimal number of tokens a match must be based on
         Returns:
-            PNIDDetectResults: Resulting queued job. Note that 7s property of this job will block waiting for results."""
+            PNIDDetectResults: Resulting queued job. Note that .results property of this job will block waiting for results."""
 
         if file_id is None and file_external_id is None:
             raise ValueError("File id and file external id cannot both be none")
