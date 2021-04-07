@@ -16,7 +16,7 @@ from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
-from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
+from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
 from cognite.experimental._api.templates import TemplatesAPI
 from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.unstructured import GrepAPI
