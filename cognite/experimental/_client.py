@@ -113,6 +113,7 @@ class CogniteClient(Client):
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
+        self.diagrams = DiagramsAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)

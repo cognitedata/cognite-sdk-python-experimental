@@ -516,3 +516,9 @@ class PNIDDetectResults(ContextualizationJob):
     def ocr(self) -> PNIDDetectionPageList:
         """Retrieve raw OCR results, for example, to visualize"""
         return self._cognite_client.pnid_parsing.ocr(file_id=self.file_id)
+
+class DiagramDetectResults(ContextualizationJob):
+    pass
+
+class DiagramConvertResults(ContextualizationJob):
+    pass
