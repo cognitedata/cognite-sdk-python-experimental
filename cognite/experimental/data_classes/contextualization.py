@@ -517,8 +517,13 @@ class PNIDDetectResults(ContextualizationJob):
         """Retrieve raw OCR results, for example, to visualize"""
         return self._cognite_client.pnid_parsing.ocr(file_id=self.file_id)
 
-class DiagramDetectResults(ContextualizationJob):
-    pass
-
 class DiagramConvertResults(ContextualizationJob):
     pass
+
+
+
+class DiagramDetectResults(ContextualizationJob):
+    def convert(self) -> DiagramConvertResults:
+        """Convert a P&ID to an interactive SVG where the provided annotations are highlighted"""
+        return self._cognite_client.diagrams.convert(detect_job=self)
+
