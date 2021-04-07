@@ -7,10 +7,12 @@ from cognite.client.data_classes._base import CogniteResource
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
+    DiagramConvertResults,
+    DiagramDetectResults,
     PNIDConvertResults,
     PNIDDetectionList,
     PNIDDetectionPageList,
-    PNIDDetectResults, DiagramDetectResults, DiagramConvertResults,
+    PNIDDetectResults,
 )
 
 
@@ -41,7 +43,7 @@ class PNIDParsingAPI(ContextAPI):
             partial_match (bool): Allow for a partial match (e.g. missing prefix).
             min_tokens (int): Minimal number of tokens a match must be based on
         Returns:
-            PNIDDetectResults: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            PNIDDetectResults: Resulting queued job. Note that .result property of this job will block waiting for results."""
 
         if file_id is None and file_external_id is None:
             raise ValueError("File id and file external id cannot both be none")
@@ -74,7 +76,7 @@ class PNIDParsingAPI(ContextAPI):
             patterns (list): List of regular expression patterns to look for in the P&ID. See API docs for details.
 
         Returns:
-            PNIDDetectResults: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            PNIDDetectResults: Resulting queued job. Note that .result property of this job will block waiting for results."""
 
         if file_id is None and file_external_id is None:
             raise ValueError("File id and file external id cannot both be none")
@@ -101,7 +103,7 @@ class PNIDParsingAPI(ContextAPI):
             grayscale (bool, optional): Return the SVG version in grayscale colors only (reduces the file size). Defaults to None.
 
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
+            ContextualizationJob: Resulting queued job. Note that .result property of this job will block waiting for results.
         """
         if file_id is None and file_external_id is None:
             raise ValueError("File id and file external id cannot both be none")
@@ -136,9 +138,7 @@ class DiagramsAPI(ContextAPI):
     _RESOURCE_PATH = "/context/diagram"
 
     @staticmethod
-    def _process_file_ids(
-        ids: Union[List[int], int, None], external_ids: Union[List[str], str, None]
-    ) -> List:
+    def _process_file_ids(ids: Union[List[int], int, None], external_ids: Union[List[str], str, None]) -> List:
         if external_ids is None and ids is None:
             raise ValueError("No ids specified")
 
@@ -162,13 +162,13 @@ class DiagramsAPI(ContextAPI):
         return all_ids
 
     def detect(
-            self,
-            entities: List[Union[dict, CogniteResource]],
-            search_field: str = "name",
-            partial_match: bool = False,
-            min_tokens: int = 1,
-            file_ids: List[int] = None,
-            file_external_ids: List[str] = None,
+        self,
+        entities: List[Union[dict, CogniteResource]],
+        search_field: str = "name",
+        partial_match: bool = False,
+        min_tokens: int = 1,
+        file_ids: List[int] = None,
+        file_external_ids: List[str] = None,
     ) -> DiagramDetectResults:
         """Detect entities in a PNID.
         The results are not written to CDF.
@@ -183,7 +183,7 @@ class DiagramsAPI(ContextAPI):
             file_ids (int): ID of the files, should already be uploaded in the same tenant.
             file_external_ids: File external ids
         Returns:
-            DiagramDetectResults: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            DiagramDetectResults: Resulting queued job. Note that .result property of this job will block waiting for results."""
 
         entities = [
             entity.dump(camel_case=True) if isinstance(entity, CogniteResource) else entity for entity in entities
@@ -192,7 +192,7 @@ class DiagramsAPI(ContextAPI):
         return self._run_job(
             job_path="/detect",
             status_path="/detect/",
-            items=self._process_file_ids(file_ids,file_external_ids),
+            items=self._process_file_ids(file_ids, file_external_ids),
             entities=entities,
             partial_match=partial_match,
             search_field=search_field,
@@ -200,20 +200,13 @@ class DiagramsAPI(ContextAPI):
             job_cls=DiagramDetectResults,
         )
 
-
-    def convert(
-            self, detect_job: DiagramDetectResults
-    ) -> DiagramConvertResults:
+    def convert(self, detect_job: DiagramDetectResults) -> DiagramConvertResults:
         """Convert a P&ID to interactive SVGs where the provided annotations are highlighted.
 
         Args:
             detect_job(DiagramConvertResults): detect job
 
         Returns:
-            DiagramConvertResults: Resulting queued job. Note that .results property of this job will block waiting for results.
+            DiagramConvertResults: Resulting queued job. Note that .result property of this job will block waiting for results.
         """
-        return self._run_job(
-            job_path="/convert",
-            status_path="/convert/",
-            items =DiagramConvertResults.results['items']
-        )
+        return self._run_job(job_path="/convert", status_path="/convert/", items=DiagramConvertResults.result["items"])
