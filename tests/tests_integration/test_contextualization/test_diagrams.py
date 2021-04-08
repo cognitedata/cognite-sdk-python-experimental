@@ -4,7 +4,7 @@ from cognite.client.data_classes import ContextualizationJob
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList
 
-COGNITE_CLIENT = CogniteClient()
+COGNITE_CLIENT = CogniteClient(debug=True)
 DIAGRAMSAPI = COGNITE_CLIENT.diagrams
 PNID_FILE_ID = 3261066797848581
 

@@ -482,7 +482,7 @@ class PNIDDetectResults(ContextualizationJob):
         """Returns detected items"""
         return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client,)
 
-    def to_pandas(self, camel_case=False):
+    def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)
         df.loc["matches"] = f"{len(self.matches)} items"
         return df
@@ -517,13 +517,73 @@ class PNIDDetectResults(ContextualizationJob):
         """Retrieve raw OCR results, for example, to visualize"""
         return self._cognite_client.pnid_parsing.ocr(file_id=self.file_id)
 
+
 class DiagramConvertResults(ContextualizationJob):
     pass
 
 
+class DiagramAnnotation(CogniteResource):
+    def __init__(self, confidence=None, region=None, entities=None, text=None):
+        self.confidence = confidence
+        self.region = region
+        self.entities = entities
+        self.text = text
+
+
+class DiagramAnnotationPage(CogniteResource):
+    def __init__(self, page=None, annotations=None):
+        self.page = page
+        self.annotations = annotations
+
+
+class DiagramDetectItem(CogniteResource):
+    def __init__(self, file_id=None, file_external_id=None, results=None, error_message=None):
+        self.file_id = file_id
+        self.file_external_id = file_external_id
+        self.results = results
+        self.error_message = error_message
+
+    def __getitem__(self, page):
+        """retrieve a page of results, zero-based indexing"""
+        return self.results[page]
+
+    def __len__(self):
+        return len(self.results)
+
+    def __iter__(self):
+        for item in self.results:
+            yield item
+
+    def to_pandas(self, camel_case: bool = False):
+        df = super().to_pandas(camel_case=camel_case)
+        df.loc["results"] = f"{len(df['results'])} pages"
+        return df
+
 
 class DiagramDetectResults(ContextualizationJob):
+    def __getitem__(self, find_id) -> DiagramDetectItem:
+        """retrieves the results for the file with (external) id"""
+        found = [
+            item
+            for item in self.result["items"]
+            if item.get("fileId") == find_id or item.get("fileExternalId") == find_id
+        ]
+        if not found:
+            raise IndexError(f"File with (external) id {find_id} not found in results")
+        if len(found) != 1:
+            raise IndexError(f"Found multiple results for file with (external) id {find_id}, use .items instead")
+        return found[0]
+
+    @property
+    def items(self) -> List[DiagramDetectItem]:
+        """returns a list of all results by file"""
+        return [DiagramDetectItem._load(item) for item in self.result["items"]]
+
+    @property
+    def errors(self) -> List[str]:
+        """returns a list of all error messages across files"""
+        return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]
+
     def convert(self) -> DiagramConvertResults:
         """Convert a P&ID to an interactive SVG where the provided annotations are highlighted"""
         return self._cognite_client.diagrams.convert(detect_job=self)
-
