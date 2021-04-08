@@ -1,7 +1,6 @@
 import os
 from typing import Callable, Dict, List, Optional, Union
 
-from cognite.client._api.files import FilesAPI
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 
