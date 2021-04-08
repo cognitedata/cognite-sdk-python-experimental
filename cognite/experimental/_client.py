@@ -19,14 +19,6 @@ from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionA
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
 from cognite.experimental._api.templates import TemplatesAPI
 from cognite.experimental._api.types import TypesAPI
-from cognite.experimental._api.unstructured import GrepAPI
-
-
-class ExperimentalFilesApi(FilesAPI):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.unstructured = GrepAPI(self._config, api_version="playground", cognite_client=self)
-
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     "/files/unstructured/search",
@@ -105,7 +97,6 @@ class CogniteClient(Client):
         # NEW assets features - e.g. types
         self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
 
-        self.files = ExperimentalFilesApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
 
