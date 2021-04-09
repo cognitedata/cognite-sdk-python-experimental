@@ -24,5 +24,7 @@ class TestPNIDParsingIntegration:
 
         assert isinstance(convert_job, ContextualizationJob)
         assert {"items"} == set(convert_job.result.keys())
-        assert {"pngUrl", "svgUrl", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
+        print(convert_job.result)
+        assert {"results", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
+        assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
         assert "Completed" == job.status
