@@ -46,5 +46,5 @@ class TestPNIDParsingIntegration:
 
         for res_page in convert_job[PNID_FILE_ID].pages:
             assert 1 == res_page.page
-            assert res_page.svg_url.endswith(".svg")
-            assert res_page.png_url.endswith(".png")
+            assert ".svg" in res_page.svg_url
+            assert ".png" in res_page.png_url
