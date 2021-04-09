@@ -4,7 +4,7 @@ from cognite.client.data_classes import ContextualizationJob
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList
 
-COGNITE_CLIENT = CogniteClient(debug=True)
+COGNITE_CLIENT = CogniteClient()
 DIAGRAMSAPI = COGNITE_CLIENT.diagrams
 PNID_FILE_ID = 3261066797848581
 
@@ -24,7 +24,6 @@ class TestPNIDParsingIntegration:
 
         assert isinstance(convert_job, ContextualizationJob)
         assert {"items"} == set(convert_job.result.keys())
-        print(convert_job.result)
         assert {"results", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
         assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
         assert "Completed" == job.status
