@@ -16,6 +16,7 @@ from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
+from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 from cognite.experimental._api.types import TypesAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
@@ -111,3 +112,5 @@ class CogniteClient(Client):
         self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
 
         self.diagrams = DiagramsAPI(self._config, api_version="beta", cognite_client=self)
+        # template completion only
+        self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)

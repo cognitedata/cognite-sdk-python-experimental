@@ -42,7 +42,7 @@ commands =
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-cognite-sdk = "^2.10"
+cognite-sdk = "^2.17"
 responses = "^0.10.12"
 sympy = "^1.3.0"
 typing-extensions = "^3.7.4"
