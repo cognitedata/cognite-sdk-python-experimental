@@ -19,7 +19,7 @@ Changes are grouped as follows
 
 ### Removed
 - Unstructured API (due to lack of maintenance)
-- Templates API (now available in the main SDK)
+- Templates API (now available in the main SDK). Note that template completion is still available.
 
 ## [0.49.0]
 ### Added

@@ -111,6 +111,6 @@ class CogniteClient(Client):
         self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
         self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
 
-        self.diagrams = DiagramsAPI(self._config, api_version="beta", cognite_client=self)
+        self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         # template completion only
         self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
