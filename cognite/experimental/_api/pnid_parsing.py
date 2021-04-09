@@ -209,4 +209,9 @@ class DiagramsAPI(ContextAPI):
         Returns:
             DiagramConvertResults: Resulting queued job. Note that .result property of this job will block waiting for results.
         """
-        return self._run_job(job_path="/convert", status_path="/convert/", items=detect_job.result["items"])
+        return self._run_job(
+            job_path="/convert",
+            status_path="/convert/",
+            items=detect_job.result["items"],
+            job_cls=DiagramConvertResults,
+        )

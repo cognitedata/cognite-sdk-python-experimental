@@ -518,41 +518,97 @@ class PNIDDetectResults(ContextualizationJob):
         return self._cognite_client.pnid_parsing.ocr(file_id=self.file_id)
 
 
-class DiagramConvertResults(ContextualizationJob):
-    pass
-
-
-class DiagramAnnotation(CogniteResource):
-    def __init__(self, confidence=None, region=None, entities=None, text=None):
-        self.confidence = confidence
-        self.region = region
-        self.entities = entities
-        self.text = text
-
-
-class DiagramAnnotationPage(CogniteResource):
-    def __init__(self, page=None, annotations=None):
+class DiagramConvertPage(CogniteResource):
+    def __init__(self, page=None, png_url=None, svg_url=None, cognite_client=None):
         self.page = page
-        self.annotations = annotations
+        self.png_url = png_url
+        self.svg_url = svg_url
+        self._cognite_client = cognite_client
 
 
-class DiagramDetectItem(CogniteResource):
-    def __init__(self, file_id=None, file_external_id=None, results=None, error_message=None):
+class DiagramConvertItem(CogniteResource):
+    def __init__(self, file_id=None, file_external_id=None, results=None, cognite_client=None):
         self.file_id = file_id
         self.file_external_id = file_external_id
         self.results = results
-        self.error_message = error_message
+        self._cognite_client = cognite_client
 
     def __getitem__(self, page):
         """retrieve a page of results, zero-based indexing"""
-        return self.results[page]
+        return DiagramConvertPage._load(self.results[page], cognite_client=self._cognite_client)
 
     def __len__(self):
         return len(self.results)
 
     def __iter__(self):
         for item in self.results:
-            yield item
+            yield DiagramConvertPage._load(item, cognite_client=self._cognite_client)
+
+    def to_pandas(self, camel_case: bool = False):
+        df = super().to_pandas(camel_case=camel_case)
+        df.loc["results"] = f"{len(df['results'])} pages"
+        return df
+
+
+class DiagramConvertResults(ContextualizationJob):
+    def __getitem__(self, find_id) -> DiagramConvertItem:
+        """retrieves the results for the file with (external) id"""
+        found = [
+            item
+            for item in self.result["items"]
+            if item.get("fileId") == find_id or item.get("fileExternalId") == find_id
+        ]
+        if not found:
+            raise IndexError(f"File with (external) id {find_id} not found in results")
+        if len(found) != 1:
+            raise IndexError(f"Found multiple results for file with (external) id {find_id}, use .items instead")
+        return DiagramConvertItem._load(found[0], cognite_client=self._cognite_client)
+
+    @property
+    def items(self) -> List[DiagramConvertItem]:
+        """returns a list of all results by file"""
+        return [DiagramConvertItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]]
+
+
+class DiagramAnnotation(CogniteResource):
+    def __init__(self, confidence=None, region=None, entities=None, text=None, cognite_client=None):
+        self.confidence = confidence
+        self.region = region
+        self.entities = entities
+        self.text = text
+        self._cognite_client = cognite_client
+
+
+class DiagramAnnotationList(CogniteResourceList):
+    _RESOURCE = DiagramAnnotation
+    _ASSERT_CLASSES = False
+
+
+class DiagramAnnotationPage(CogniteResource):
+    def __init__(self, page=None, annotations=None, cognite_client=None):
+        self._cognite_client = cognite_client
+        self.page = page
+        self.annotations = DiagramAnnotationList._load(annotations, cognite_client=self._cognite_client)
+
+
+class DiagramDetectItem(CogniteResource):
+    def __init__(self, file_id=None, file_external_id=None, results=None, error_message=None, cognite_client=None):
+        self.file_id = file_id
+        self.file_external_id = file_external_id
+        self.results = results
+        self.error_message = error_message
+        self._cognite_client = cognite_client
+
+    def __getitem__(self, page):
+        """retrieve a page of results, zero-based indexing"""
+        return DiagramAnnotationPage._load(self.results[page], cognite_client=self._cognite_client)
+
+    def __len__(self):
+        return len(self.results)
+
+    def __iter__(self):
+        for item in self.results:
+            yield DiagramAnnotationPage._load(item, cognite_client=self._cognite_client)
 
     def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)
@@ -572,12 +628,12 @@ class DiagramDetectResults(ContextualizationJob):
             raise IndexError(f"File with (external) id {find_id} not found in results")
         if len(found) != 1:
             raise IndexError(f"Found multiple results for file with (external) id {find_id}, use .items instead")
-        return found[0]
+        return DiagramDetectItem._load(found[0], cognite_client=self._cognite_client)
 
     @property
     def items(self) -> List[DiagramDetectItem]:
         """returns a list of all results by file"""
-        return [DiagramDetectItem._load(item) for item in self.result["items"]]
+        return [DiagramDetectItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]]
 
     @property
     def errors(self) -> List[str]:

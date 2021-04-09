@@ -2,7 +2,15 @@ import pytest
 from cognite.client.data_classes import ContextualizationJob
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList
+from cognite.experimental.data_classes import (
+    DiagramAnnotation,
+    DiagramAnnotationList,
+    DiagramConvertResults,
+    DiagramDetectItem,
+    DiagramDetectResults,
+    PNIDDetectionList,
+    PNIDDetectionPageList,
+)
 
 COGNITE_CLIENT = CogniteClient()
 DIAGRAMSAPI = COGNITE_CLIENT.diagrams
@@ -14,15 +22,24 @@ class TestPNIDParsingIntegration:
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
         job = DIAGRAMSAPI.detect(file_ids=[file_id], entities=entities)
-        assert isinstance(job, ContextualizationJob)
-        print(job.result)
+        assert isinstance(job, DiagramDetectResults)
         assert {"items", "partialMatch", "minTokens", "searchField"} == set(job.result.keys())
         assert {"fileId", "results"} == job.result["items"][0].keys()
         assert "Completed" == job.status
+        assert [] == job.errors
+        assert 1 == len(job.items[0])
+        assert isinstance(job.items[0], DiagramDetectItem)
+        assert isinstance(job[PNID_FILE_ID], DiagramDetectItem)
+
+        assert 1 == len(job[PNID_FILE_ID])
+        for page in job[PNID_FILE_ID]:
+            assert 1 == page.page
+            assert isinstance(page.annotations, DiagramAnnotationList)
+            assert isinstance(page.annotations[0], DiagramAnnotation)
 
         convert_job = job.convert()
 
-        assert isinstance(convert_job, ContextualizationJob)
+        assert isinstance(convert_job, DiagramConvertResults)
         assert {"items"} == set(convert_job.result.keys())
         assert {"results", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
         assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
