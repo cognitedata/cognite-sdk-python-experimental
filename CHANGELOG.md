@@ -13,11 +13,13 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 ## [0.50.0]
+
 ### Added
 - Diagrams API
-### Removed
-- Unstructured API
 
+### Removed
+- Unstructured API (due to lack of maintenance)
+- Templates API (now available in the main SDK)
 
 ## [0.49.0]
 ### Added

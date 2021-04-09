@@ -16,7 +16,6 @@ from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
-from cognite.experimental._api.templates import TemplatesAPI
 from cognite.experimental._api.types import TypesAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
@@ -103,7 +102,6 @@ class CogniteClient(Client):
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
-        self.diagrams = DiagramsAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
@@ -111,4 +109,5 @@ class CogniteClient(Client):
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
         self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
-        self.templates = TemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
+
+        self.diagrams = DiagramsAPI(self._config, api_version="beta", cognite_client=self)
