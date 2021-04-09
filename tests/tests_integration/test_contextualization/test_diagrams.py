@@ -27,15 +27,14 @@ class TestPNIDParsingIntegration:
         assert {"fileId", "results"} == job.result["items"][0].keys()
         assert "Completed" == job.status
         assert [] == job.errors
-        assert 1 == len(job.items[0])
         assert isinstance(job.items[0], DiagramDetectItem)
         assert isinstance(job[PNID_FILE_ID], DiagramDetectItem)
 
-        assert 1 == len(job[PNID_FILE_ID])
-        for page in job[PNID_FILE_ID]:
-            assert 1 == page.page
-            assert isinstance(page.annotations, DiagramAnnotationList)
-            assert isinstance(page.annotations[0], DiagramAnnotation)
+        assert 1 == len(job[PNID_FILE_ID].pages)
+        for ann_page in job[PNID_FILE_ID].pages:
+            assert 1 == ann_page.page
+            assert isinstance(ann_page.annotations, DiagramAnnotationList)
+            assert isinstance(ann_page.annotations[0], DiagramAnnotation)
 
         convert_job = job.convert()
 
@@ -43,4 +42,9 @@ class TestPNIDParsingIntegration:
         assert {"items"} == set(convert_job.result.keys())
         assert {"results", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
         assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
-        assert "Completed" == job.status
+        assert "Completed" == convert_job.status
+
+        for res_page in convert_job[PNID_FILE_ID].pages:
+            assert 1 == res_page.page
+            assert res_page.svg_url.endswith(".svg")
+            assert res_page.png_url.endswith(".png")

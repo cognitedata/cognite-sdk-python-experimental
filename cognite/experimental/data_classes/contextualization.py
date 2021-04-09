@@ -526,6 +526,11 @@ class DiagramConvertPage(CogniteResource):
         self._cognite_client = cognite_client
 
 
+class DiagramConvertPageList(CogniteResourceList):
+    _RESOURCE = DiagramConvertPage
+    _ASSERT_CLASSES = False
+
+
 class DiagramConvertItem(CogniteResource):
     def __init__(self, file_id=None, file_external_id=None, results=None, cognite_client=None):
         self.file_id = file_id
@@ -533,16 +538,12 @@ class DiagramConvertItem(CogniteResource):
         self.results = results
         self._cognite_client = cognite_client
 
-    def __getitem__(self, page):
-        """retrieve a page of results, zero-based indexing"""
-        return DiagramConvertPage._load(self.results[page], cognite_client=self._cognite_client)
-
     def __len__(self):
         return len(self.results)
 
-    def __iter__(self):
-        for item in self.results:
-            yield DiagramConvertPage._load(item, cognite_client=self._cognite_client)
+    @property
+    def pages(self):
+        return DiagramConvertPageList._load(self.results, cognite_client=self._cognite_client)
 
     def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)
@@ -590,6 +591,17 @@ class DiagramAnnotationPage(CogniteResource):
         self.page = page
         self.annotations = DiagramAnnotationList._load(annotations, cognite_client=self._cognite_client)
 
+    @classmethod
+    def _load(cls, resource_list: Union[List, str], cognite_client=None):
+        loaded = super()._load(resource_list, cognite_client)
+        loaded.annotations = DiagramAnnotationList._load(loaded.annotations, cognite_client=cognite_client)
+        return loaded
+
+
+class DiagramAnnotationPageList(CogniteResourceList):
+    _RESOURCE = DiagramAnnotationPage
+    _ASSERT_CLASSES = False
+
 
 class DiagramDetectItem(CogniteResource):
     def __init__(self, file_id=None, file_external_id=None, results=None, error_message=None, cognite_client=None):
@@ -599,16 +611,9 @@ class DiagramDetectItem(CogniteResource):
         self.error_message = error_message
         self._cognite_client = cognite_client
 
-    def __getitem__(self, page):
-        """retrieve a page of results, zero-based indexing"""
-        return DiagramAnnotationPage._load(self.results[page], cognite_client=self._cognite_client)
-
-    def __len__(self):
-        return len(self.results)
-
-    def __iter__(self):
-        for item in self.results:
-            yield DiagramAnnotationPage._load(item, cognite_client=self._cognite_client)
+    @property
+    def pages(self):
+        return DiagramAnnotationPageList._load(self.results, cognite_client=self._cognite_client)
 
     def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)
