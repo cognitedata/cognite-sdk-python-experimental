@@ -571,53 +571,17 @@ class DiagramConvertResults(ContextualizationJob):
         return [DiagramConvertItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]]
 
 
-class DiagramAnnotation(CogniteResource):
-    def __init__(self, confidence=None, region=None, entities=None, text=None, cognite_client=None):
-        self.confidence = confidence
-        self.region = region
-        self.entities = entities
-        self.text = text
-        self._cognite_client = cognite_client
-
-
-class DiagramAnnotationList(CogniteResourceList):
-    _RESOURCE = DiagramAnnotation
-    _ASSERT_CLASSES = False
-
-
-class DiagramAnnotationPage(CogniteResource):
-    def __init__(self, page=None, annotations=None, cognite_client=None):
-        self._cognite_client = cognite_client
-        self.page = page
-        self.annotations = DiagramAnnotationList._load(annotations, cognite_client=self._cognite_client)
-
-    @classmethod
-    def _load(cls, resource_list: Union[List, str], cognite_client=None):
-        loaded = super()._load(resource_list, cognite_client)
-        loaded.annotations = DiagramAnnotationList._load(loaded.annotations, cognite_client=cognite_client)
-        return loaded
-
-
-class DiagramAnnotationPageList(CogniteResourceList):
-    _RESOURCE = DiagramAnnotationPage
-    _ASSERT_CLASSES = False
-
-
 class DiagramDetectItem(CogniteResource):
-    def __init__(self, file_id=None, file_external_id=None, results=None, error_message=None, cognite_client=None):
+    def __init__(self, file_id=None, file_external_id=None, annotations=None, error_message=None, cognite_client=None):
         self.file_id = file_id
         self.file_external_id = file_external_id
-        self.results = results
+        self.annotations = annotations
         self.error_message = error_message
         self._cognite_client = cognite_client
 
-    @property
-    def pages(self):
-        return DiagramAnnotationPageList._load(self.results, cognite_client=self._cognite_client)
-
     def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)
-        df.loc["results"] = f"{len(df['results'])} pages"
+        df.loc["annotations"] = f"{len(df['annotations'])} annotations"
         return df
 
 
