@@ -1,5 +1,4 @@
 import numbers
-from collections import defaultdict
 from typing import Dict, List, Union
 
 from cognite.client.data_classes import ContextualizationJob

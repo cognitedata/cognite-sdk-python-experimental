@@ -1,16 +1,5 @@
-import pytest
-from cognite.client.data_classes import ContextualizationJob
-
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import (
-    DiagramAnnotation,
-    DiagramAnnotationList,
-    DiagramConvertResults,
-    DiagramDetectItem,
-    DiagramDetectResults,
-    PNIDDetectionList,
-    PNIDDetectionPageList,
-)
+from cognite.experimental.data_classes import DiagramConvertResults, DiagramDetectItem, DiagramDetectResults
 
 COGNITE_CLIENT = CogniteClient()
 DIAGRAMSAPI = COGNITE_CLIENT.diagrams
