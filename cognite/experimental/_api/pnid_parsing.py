@@ -165,7 +165,7 @@ class DiagramsAPI(ContextAPI):
         entities: List[Union[dict, CogniteResource]],
         search_field: str = "name",
         partial_match: bool = False,
-        min_tokens: int = 1,
+        min_tokens: int = 2,
         file_ids: List[int] = None,
         file_external_ids: List[str] = None,
     ) -> DiagramDetectResults:
