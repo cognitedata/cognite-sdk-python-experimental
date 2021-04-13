@@ -12,9 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.50.0]
+
+### Added
+- Diagrams API
+
+### Removed
+- Unstructured API (due to lack of maintenance)
+- Templates API (now available in the main SDK). Note that template completion is still available.
+
 ## [0.49.0]
 ### Added
-- update method for the annotations api
+- Update method for the annotations API
 
 ## [0.48.2]
 

@@ -15,10 +15,10 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
+* client.diagrams: `Detect entities in Engineering Diagrams`_
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
-* client.files: includes extensions described in `Unstructured Search`_
-* client.templates: `Templates`_
+* client.templates: `Extensions for Templates`_
 
 CogniteClient
 -------------
@@ -140,18 +140,6 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.types
     :members:
     :show-inheritance:
-
-Unstructured Search
--------------------
-
-Search File Contents
-^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.unstructured.GrepAPI.search
-
-Download OCR Results
-^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.unstructured.GrepAPI.download
-
 
 Model Hosting
 -------------
@@ -391,6 +379,16 @@ Detect common objects in a PNID
 .. automethod:: cognite.experimental._api.pnid_object_detection.PNIDObjectDetectionAPI.find_objects
 
 
+Detect entities in Engineering Diagrams
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.DiagramsAPI.detect
+
+Convert to an interactive SVG where the provided annotations are highlighted
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.pnid_parsing.DiagramsAPI.convert
+
+
+
 Contextualization Data Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: cognite.experimental.data_classes.contextualization
@@ -473,67 +471,11 @@ Data classes
     :show-inheritance:
 
 
-Templates
----------
-Create Template groups
-^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupsAPI.create
-
-Upsert Template groups
-^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupsAPI.upsert
-
-Retrieve Template groups
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupsAPI.retrieve_multiple
-
-List Template groups
-^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupsAPI.list
-
-Delete Template groups
-^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupsAPI.delete
-
-Upsert a Template group version
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.upsert
-
-List Temple Group versions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.list
-
-Delete a Temple Group version
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateGroupVersionsAPI.delete
-
-Run a GraphQL query
-^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplatesAPI.graphql_query
-
-Create Template instances
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateInstancesAPI.create
-
-Upsert Template instances
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateInstancesAPI.upsert
-
-Retrieve Template instances
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateInstancesAPI.retrieve_multiple
-
-List Template instances
-^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateInstancesAPI.list
+Extensions for Templates
+------------------------
+The main templates SDK is available through the main sdk.
 
 Get suggestions for missing entries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.templates.TemplateCompletionAPI.complete
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.templates
-    :members:
-    :show-inheritance:
 
