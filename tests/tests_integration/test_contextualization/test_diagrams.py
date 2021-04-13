@@ -19,9 +19,9 @@ class TestPNIDParsingIntegration:
         assert isinstance(job.items[0], DiagramDetectItem)
         assert isinstance(job[PNID_FILE_ID], DiagramDetectItem)
 
-        assert 1 == len(job[PNID_FILE_ID].annotations)
+        assert 2 == len(job[PNID_FILE_ID].annotations)
         for annotation in job[PNID_FILE_ID].annotations:
-            assert 1 == annotation["page"]
+            assert 1 == annotation["region"]["page"]
 
         convert_job = job.convert()
 
