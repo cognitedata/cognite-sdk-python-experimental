@@ -9,6 +9,7 @@ from cognite.experimental._context_client import ContextAPI
 
 class ExperimentalTemplatesAPI(TemplatesAPI):
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         ctx_kwargs = {**kwargs, "api_version": "playground"}
         self.completion = TemplateCompletionAPI(*args, **ctx_kwargs)
 
