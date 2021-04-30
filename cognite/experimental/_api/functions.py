@@ -9,11 +9,10 @@ from tempfile import TemporaryDirectory
 from typing import Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
-import requests
 from cognite.client import CogniteClient, utils
 from cognite.client._api_client import APIClient
-from cognite.client.exceptions import CogniteAPIError
 from cognite.client.data_classes import TimestampRange
+from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
