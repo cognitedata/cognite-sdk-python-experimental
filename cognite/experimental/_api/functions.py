@@ -430,7 +430,7 @@ def _using_client_credential_flow(cognite_client: CogniteClient):
         return False
 
 
-def convert_file_pathx_to_module_path(file_path: str):
+def convert_file_path_to_module_path(file_path: str):
     return ".".join(Path(file_path).with_suffix("").parts)
 
 
