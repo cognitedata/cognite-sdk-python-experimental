@@ -286,7 +286,6 @@ class FunctionsAPI(APIClient):
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
             wait (bool): Wait until the function call is finished. Defaults to True.
-            the credentials used to instantiate the client.
 
         Returns:
             FunctionCall: A function call object.
