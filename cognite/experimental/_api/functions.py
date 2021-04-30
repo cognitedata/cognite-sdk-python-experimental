@@ -369,7 +369,7 @@ class FunctionsAPI(APIClient):
             )
 
 
-def _use_client_credentials(cognite_client, client_credentials: Optional[Dict] = None):
+def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None):
     """
     If client_credentials is passed, will use those, otherwise will implicitly use those the client was instantiated
     with
@@ -382,7 +382,6 @@ def _use_client_credentials(cognite_client, client_credentials: Optional[Dict] =
     Returns:
 
     """
-    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
 
     if client_credentials:
         client_id = client_credentials["client_id"]
@@ -392,6 +391,8 @@ def _use_client_credentials(cognite_client, client_credentials: Optional[Dict] =
         client_id = cognite_client.config.token_client_id
         client_secret = cognite_client.config.token_client_secret
         scopes = cognite_client.config.token_scopes
+
+    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"clientId": f"{client_id}", "clientSecret": f"{client_secret}", "scope": f"{scopes}"}]}
     try:
         res = cognite_client.post(session_url, json=payload)
@@ -401,7 +402,7 @@ def _use_client_credentials(cognite_client, client_credentials: Optional[Dict] =
         print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
 
 
-def _use_token_exchange(cognite_client):
+def _use_token_exchange(cognite_client: CogniteClient):
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"tokenExchange": True}]}
     try:
@@ -412,7 +413,7 @@ def _use_token_exchange(cognite_client):
         print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
 
 
-def _using_client_credential_flow(cognite_client):
+def _using_client_credential_flow(cognite_client: CogniteClient):
     """
     Determine whether the Cognite client is configured for client-credential flow.
     """
