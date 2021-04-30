@@ -1,6 +1,5 @@
-import json
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -84,22 +83,11 @@ CALL_SCHEDULED = {
 
 
 @pytest.fixture
-def mock_functions_list_response(rsps):
+def mock_functions_filter_response(rsps):
     response_body = {"items": [EXAMPLE_FUNCTION]}
 
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions"
-    rsps.add(rsps.GET, url, status=200, json=response_body)
-
-    yield rsps
-
-
-@pytest.fixture
-def mock_function_list_response_with_limits(rsps):
-    response_body = {"items": [EXAMPLE_FUNCTION]}
-    limit = 1
-    query_params = f"?limit={limit}"
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions" + query_params
-    rsps.add(rsps.GET, url, status=200, json=response_body, match_querystring=True)
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/list"
+    rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
 
@@ -331,26 +319,26 @@ class TestFunctionsAPI:
             FUNCTIONS_API.create(name="myfunction", file_id=1234, memory="0.5")
 
     def test_delete_single_id(self, mock_functions_delete_response):
-        res = FUNCTIONS_API.delete(id=1)
+        _ = FUNCTIONS_API.delete(id=1)
         assert {"items": [{"id": 1}]} == jsgz_load(mock_functions_delete_response.calls[0].request.body)
 
     def test_delete_single_external_id(self, mock_functions_delete_response):
-        res = FUNCTIONS_API.delete(external_id="func1")
+        _ = FUNCTIONS_API.delete(external_id="func1")
         assert {"items": [{"externalId": "func1"}]} == jsgz_load(mock_functions_delete_response.calls[0].request.body)
 
     def test_delete_multiple_id_and_multiple_external_id(self, mock_functions_delete_response):
-        res = FUNCTIONS_API.delete(id=[1, 2, 3], external_id=["func1", "func2"])
+        _ = FUNCTIONS_API.delete(id=[1, 2, 3], external_id=["func1", "func2"])
         assert {
             "items": [{"id": 1}, {"id": 2}, {"id": 3}, {"externalId": "func1"}, {"externalId": "func2"}]
         } == jsgz_load(mock_functions_delete_response.calls[0].request.body)
 
-    def test_list(self, mock_functions_list_response):
+    def test_list(self, mock_functions_filter_response):
         res = FUNCTIONS_API.list()
 
         assert isinstance(res, FunctionList)
-        assert mock_functions_list_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
+        assert mock_functions_filter_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
-    def test_list_with_limits(self, mock_function_list_response_with_limits):
+    def test_list_with_limits(self, mock_functions_filter_response):
 
         res = FUNCTIONS_API.list(limit=1)
         assert isinstance(res, FunctionList)
@@ -465,6 +453,14 @@ SCHEDULE2 = {
 
 
 @pytest.fixture
+def mock_filter_function_schedules_response(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/list"
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_function_schedules_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
     rsps.assert_all_requests_are_fired = False
@@ -475,17 +471,8 @@ def mock_function_schedules_response(rsps):
 
 
 @pytest.fixture
-def mock_function_schedules_response_with_limits(rsps):
-    limit = 1
-    query_params = f"?limit={limit}"
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules" + query_params
-    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]}, match_querystring=True)
-    yield rsps
-
-
-@pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/byids"
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/byids"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
 
     yield rsps
@@ -523,14 +510,14 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules(self, mock_function_schedules_response):
+    def test_list_schedules(self, mock_filter_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
-        expected = mock_function_schedules_response.calls[0].response.json()["items"]
+        expected = mock_filter_function_schedules_response.calls[0].response.json()["items"]
         expected[0].pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules_with_limit(self, mock_function_schedules_response_with_limits):
+    def test_list_schedules_with_limit(self, mock_filter_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.list(limit=1)
 
         assert isinstance(res, FunctionSchedulesList)
@@ -563,7 +550,7 @@ class TestFunctionSchedulesAPI:
 
     def test_delete_schedules(self, mock_function_schedules_delete_response):
         res = FUNCTION_SCHEDULES_API.delete(id=8012683333564363)
-        assert None == res
+        assert res is None
 
     def test_schedule_get_data(self, mock_schedule_get_data_response):
         res = FUNCTION_SCHEDULES_API.get_input_data(id=8012683333564363)

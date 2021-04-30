@@ -1,7 +1,6 @@
 import os
 from typing import Callable, Dict, List, Optional, Union
 
-from cognite.client._api.files import FilesAPI
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 
@@ -16,17 +15,9 @@ from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
-from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
-from cognite.experimental._api.templates import TemplatesAPI
+from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
+from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 from cognite.experimental._api.types import TypesAPI
-from cognite.experimental._api.unstructured import GrepAPI
-
-
-class ExperimentalFilesApi(FilesAPI):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.unstructured = GrepAPI(self._config, api_version="playground", cognite_client=self)
-
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     "/files/unstructured/search",
@@ -105,7 +96,6 @@ class CogniteClient(Client):
         # NEW assets features - e.g. types
         self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
 
-        self.files = ExperimentalFilesApi(self._config, api_version="v1", cognite_client=self)
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
 
@@ -120,4 +110,7 @@ class CogniteClient(Client):
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.integrations = IntegrationsAPI(self._config, api_version="playground", cognite_client=self)
         self.integration_runs = IntegrationsRunsAPI(self._config, api_version="playground", cognite_client=self)
-        self.templates = TemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
+
+        self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
+        # template completion only
+        self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)

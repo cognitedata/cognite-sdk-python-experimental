@@ -80,6 +80,26 @@ class IntegrationUpdate(CogniteUpdate):
         def set(self, value: Any) -> "IntegrationUpdate":
             return self._set(value)
 
+    class _ObjectIntegrationUpdate(CogniteObjectUpdate):
+        def set(self, value: Dict) -> "IntegrationUpdate":
+            return self._set(value)
+
+        def add(self, value: Dict) -> "IntegrationUpdate":
+            return self._add(value)
+
+        def remove(self, value: List) -> "IntegrationUpdate":
+            return self._remove(value)
+
+    class _ListIntegrationUpdate(CogniteListUpdate):
+        def set(self, value: List) -> "IntegrationUpdate":
+            return self._set(value)
+
+        def add(self, value: List) -> "IntegrationUpdate":
+            return self._add(value)
+
+        def remove(self, value: List) -> "IntegrationUpdate":
+            return self._remove(value)
+
     @property
     def external_id(self):
         return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "externalId")
@@ -98,11 +118,11 @@ class IntegrationUpdate(CogniteUpdate):
 
     @property
     def raw_tables(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "rawTables")
+        return IntegrationUpdate._ListIntegrationUpdate(self, "rawTables")
 
     @property
     def metadata(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "metadata")
+        return IntegrationUpdate._ObjectIntegrationUpdate(self, "metadata")
 
     @property
     def schedule(self):
@@ -110,7 +130,7 @@ class IntegrationUpdate(CogniteUpdate):
 
     @property
     def contacts(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "contacts")
+        return IntegrationUpdate._ListIntegrationUpdate(self, "contacts")
 
 
 class IntegrationList(CogniteResourceList):

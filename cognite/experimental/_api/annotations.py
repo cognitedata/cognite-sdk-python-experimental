@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
 
-from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList
+from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, AnnotationUpdate
 
 
 class AnnotationsAPI(APIClient):
@@ -51,6 +51,16 @@ class AnnotationsAPI(APIClient):
 
         response = self._post(self._RESOURCE_PATH + "/list", json={"limit": limit, "filter": filter})
         return AnnotationList._load(response.json()["items"])
+
+    def update(
+        self, item: Union[Annotation, AnnotationUpdate, List[Union[Annotation, AnnotationUpdate]]]
+    ) -> Union[Annotation, AnnotationList]:
+        """Update annotations
+
+        Args:
+            id (Union[int, List[int]]): ID or list of IDs to be deleted
+        """
+        return self._update_multiple(items=item)
 
     def delete(self, id: Union[int, List[int]]) -> None:
         """Delete annotations
