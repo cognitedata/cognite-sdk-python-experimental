@@ -313,8 +313,7 @@ class FunctionsAPI(APIClient):
         body = {}
 
         # Exchanging the token for a nonce.
-        # Case 1: Client credentials, either passed in explicitly, or inferred from the instantiated client.
-        #   Token exchange is not an option when using AAD.
+        # Case 1: Client credentials inferred from the instantiated client.
         # Case 2: Token on behalf of the user. We use token exchange.
         nonce = None
         if _using_client_credential_flow(self._cognite_client):
