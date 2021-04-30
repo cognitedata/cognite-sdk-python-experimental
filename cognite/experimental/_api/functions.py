@@ -399,7 +399,6 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         client_credentials: a dictionary containing:
             client_id
             client_secret
-            scopes
 
     Returns:
 
@@ -408,14 +407,12 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
     if client_credentials:
         client_id = client_credentials["client_id"]
         client_secret = client_credentials["client_secret"]
-        scopes = client_credentials["scope"]
     else:
         client_id = cognite_client.config.token_client_id
         client_secret = cognite_client.config.token_client_secret
-        scopes = cognite_client.config.token_scopes
 
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
-    payload = {"items": [{"clientId": f"{client_id}", "clientSecret": f"{client_secret}", "scope": f"{scopes}"}]}
+    payload = {"items": [{"clientId": f"{client_id}", "clientSecret": f"{client_secret}"}]}
     try:
         res = cognite_client.post(session_url, json=payload)
         nonce = res.json()["items"][0]["nonce"]
@@ -745,7 +742,6 @@ class FunctionSchedulesAPI(APIClient):
             client_credentials: (Dict): Dictionary containing client credentials:
                 client_id
                 client_secret
-                scopes
             data (optional, Dict): Data to be passed to the scheduled run.
 
         Returns:
@@ -761,7 +757,7 @@ class FunctionSchedulesAPI(APIClient):
                     name= "My schedule",
                     function_external_id="my-external-id",
                     cron_expression="*/5 * * * *",
-                    client_credentials={"client_id": "...", "client_secret": "...", "scopes": "..."},
+                    client_credentials={"client_id": "...", "client_secret": "..."},
                     description="This schedule does magic stuff.")
 
         """
