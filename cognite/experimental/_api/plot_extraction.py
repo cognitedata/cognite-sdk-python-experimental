@@ -16,7 +16,7 @@ class PlotDataExtractionAPI(ContextAPI):
         Args:
             image: base64 encoded image, or a PIL Image.
             plot_axes: axis limits, given as {"xMin": .., "xMax": ..., "yMin": ..., "yMax": ...}
-            num_curves: number of curves to extract. If ommitted, will try to detect automatically.
+            num_curves: number of curves to extract. If ommitted, the API will assume 1.
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
@@ -32,7 +32,7 @@ class PlotDataExtractionAPI(ContextAPI):
 
             except Exception as e:
                 raise ValueError(f"Image parameter was not a string and failed to import PIL: {e}")
-            if not isinstance(image, Image):
+            if not isinstance(image, Image.Image):
                 raise ValueError(f"Image parameter was not a string or a PIL Image")
             image = image_to_base64_str(image)
 
