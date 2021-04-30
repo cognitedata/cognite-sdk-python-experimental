@@ -265,6 +265,7 @@ class FunctionsAPI(APIClient):
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
             wait (bool): Wait until the function call is finished. Defaults to True.
+            client_credentials (dict, optional): Optional client credentials with "client_secret", "client_id", and "scope"
 
         Returns:
             FunctionCall: A function call object.
@@ -429,7 +430,7 @@ def _using_client_credential_flow(cognite_client: CogniteClient):
         return False
 
 
-def convert_file_path_to_module_path(file_path: str):
+def convert_file_pathx_to_module_path(file_path: str):
     return ".".join(Path(file_path).with_suffix("").parts)
 
 
@@ -655,6 +656,65 @@ class FunctionSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
+    def create(
+        self,
+        name: str,
+        function_external_id: str,
+        cron_expression: str,
+        client_credentials: Dict = None,
+        description: str = "",
+        data: Optional[Dict] = None,
+    ) -> FunctionSchedule:
+        """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            name (str): Name of the schedule.
+            function_external_id (str): External id of the function.
+            description (str): Description of the schedule.
+            cron_expression (str): Cron expression.
+            client_credentials: (Dict): Dictionary containing
+                client_id
+                client_secret
+                scopes
+            data (optional, Dict): Data to be passed to the scheduled run.
+
+        Returns:
+            FunctionSchedule: Created function schedule.
+
+        Examples:
+
+            Create function schedule::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> schedule = c.functions.schedules.create(
+                    name= "My schedule",
+                    function_external_id="my-external-id",
+                    cron_expression="*/5 * * * *",
+                    description="This schedule does magic stuff.")
+
+        """
+        nonce = _use_client_credentials(self._cognite_client, client_credentials)
+
+        json = {
+            "items": [
+                {
+                    "name": name,
+                    "description": description,
+                    "functionExternalId": function_external_id,
+                    "cronExpression": cron_expression,
+                    "nonce": nonce,
+                }
+            ]
+        }
+
+        if data:
+            json["items"][0]["data"] = data
+
+        url = f"/functions/schedules"
+        res = self._post(url, json=json)
+        return FunctionSchedule._load(res.json()["items"][0])
+
     def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionSchedulesList:
         """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
 
@@ -688,70 +748,6 @@ class FunctionSchedulesAPI(APIClient):
         params = {"limit": limit}
         res = self._get(url, params=params)
         return FunctionSchedulesList._load(res.json()["items"])
-
-    def create(
-        self,
-        name: str,
-        function_external_id: str,
-        cron_expression: str,
-        description: str = "",
-        data: Optional[Dict] = None,
-        client_credentials: Optional[Dict] = None,
-    ) -> FunctionSchedule:
-        """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
-
-        Args:
-            name (str): Name of the schedule.
-            function_external_id (str): External id of the function.
-            description (str): Description of the schedule.
-            cron_expression (str): Cron expression.
-            data (optional, Dict): Data to be passed to the scheduled run.
-            client_credentials: (optional, Dict): Dictionary containing
-                client_id
-                client_secret
-                scopes
-
-        Returns:
-            FunctionSchedule: Created function schedule.
-
-        Examples:
-
-            Create function schedule::
-
-                >>> from cognite.experimental import CogniteClient
-                >>> c = CogniteClient()
-                >>> schedule = c.functions.schedules.create(
-                    name= "My schedule",
-                    function_external_id="my-external-id",
-                    cron_expression="*/5 * * * *",
-                    description="This schedule does magic stuff.")
-
-        """
-        nonce = None
-        if client_credentials or _using_client_credential_flow(self._cognite_client):
-            nonce = _use_client_credentials(self._cognite_client, client_credentials)
-
-        elif self._cognite_client.config.token is not None:
-            nonce = _use_token_exchange(self._cognite_client)
-
-        json = {
-            "items": [
-                {
-                    "name": name,
-                    "description": description,
-                    "functionExternalId": function_external_id,
-                    "cronExpression": cron_expression,
-                    "nonce": nonce,
-                }
-            ]
-        }
-
-        if data:
-            json["items"][0]["data"] = data
-
-        url = f"/functions/schedules"
-        res = self._post(url, json=json)
-        return FunctionSchedule._load(res.json()["items"][0])
 
     def delete(self, id: int) -> None:
         """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules-delete>`_
