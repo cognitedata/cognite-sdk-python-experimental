@@ -157,7 +157,7 @@ class FunctionsAPI(APIClient):
 
         Returns:
             None
-f
+
         Example:
 
             Delete functions by id or external id::
