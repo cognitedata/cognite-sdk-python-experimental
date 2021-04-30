@@ -265,7 +265,8 @@ class FunctionsAPI(APIClient):
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
             wait (bool): Wait until the function call is finished. Defaults to True.
-            client_credentials (dict, optional): Optional client credentials with "client_secret", "client_id", and "scope"
+            client_credentials (dict, optional): Optional client credentials with "client_secret", "client_id", and "scope". These will override
+            the credentials used to instantiate the client.
 
         Returns:
             FunctionCall: A function call object.
@@ -706,7 +707,7 @@ class FunctionSchedulesAPI(APIClient):
             function_external_id (str): External id of the function.
             description (str): Description of the schedule.
             cron_expression (str): Cron expression.
-            client_credentials: (Dict): Dictionary containing
+            client_credentials: (Dict): Dictionary containing client credentials:
                 client_id
                 client_secret
                 scopes
@@ -725,6 +726,7 @@ class FunctionSchedulesAPI(APIClient):
                     name= "My schedule",
                     function_external_id="my-external-id",
                     cron_expression="*/5 * * * *",
+                    client_credentials={"client_id": "...", "client_secret": "...", "scopes": "..."},
                     description="This schedule does magic stuff.")
 
         """
