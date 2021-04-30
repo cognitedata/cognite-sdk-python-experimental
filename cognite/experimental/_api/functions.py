@@ -696,7 +696,7 @@ class FunctionSchedulesAPI(APIClient):
         name: str,
         function_external_id: str,
         cron_expression: str,
-        client_credentials: Dict = None,
+        client_credentials: Dict,
         description: str = "",
         data: Optional[Dict] = None,
     ) -> FunctionSchedule:
