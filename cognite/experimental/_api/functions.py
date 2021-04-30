@@ -761,10 +761,10 @@ class FunctionSchedulesAPI(APIClient):
                     description="This schedule does magic stuff.")
 
         """
+        nonce = None
         if client_credentials:
             nonce = _use_client_credentials(self._cognite_client, client_credentials)
-        else:
-            nonce = None
+
         body = {
             "items": [
                 {
