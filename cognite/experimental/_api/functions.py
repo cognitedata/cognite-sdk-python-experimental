@@ -157,7 +157,7 @@ class FunctionsAPI(APIClient):
 
         Returns:
             None
-
+f
         Example:
 
             Delete functions by id or external id::
@@ -418,6 +418,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         return nonce
     except CogniteAPIError as e:
         print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
+        return None
 
 
 def _use_token_exchange(cognite_client: CogniteClient):
@@ -727,7 +728,7 @@ class FunctionSchedulesAPI(APIClient):
         name: str,
         function_external_id: str,
         cron_expression: str,
-        client_credentials: Dict,
+        client_credentials: Dict = None,
         description: str = "",
         data: Optional[Dict] = None,
     ) -> FunctionSchedule:
@@ -738,7 +739,7 @@ class FunctionSchedulesAPI(APIClient):
             function_external_id (str): External id of the function.
             description (str): Description of the schedule.
             cron_expression (str): Cron expression.
-            client_credentials: (Dict): Dictionary containing client credentials:
+            client_credentials: (optional, Dict): Dictionary containing client credentials:
                 client_id
                 client_secret
             data (optional, Dict): Data to be passed to the scheduled run.
@@ -760,7 +761,10 @@ class FunctionSchedulesAPI(APIClient):
                     description="This schedule does magic stuff.")
 
         """
-        nonce = _use_client_credentials(self._cognite_client, client_credentials)
+        if client_credentials:
+            nonce = _use_client_credentials(self._cognite_client, client_credentials)
+        else:
+            nonce = None
         body = {
             "items": [
                 {
