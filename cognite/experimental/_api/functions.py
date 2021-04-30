@@ -278,7 +278,6 @@ class FunctionsAPI(APIClient):
         external_id: Optional[str] = None,
         data: Optional[Dict] = None,
         wait: bool = True,
-        client_credentials: Optional[Dict] = None,
     ) -> FunctionCall:
         """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
 
@@ -287,7 +286,6 @@ class FunctionsAPI(APIClient):
             external_id (str, optional): External ID
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
             wait (bool): Wait until the function call is finished. Defaults to True.
-            client_credentials (dict, optional): Optional client credentials with "client_secret", "client_id", and "scope". These will override
             the credentials used to instantiate the client.
 
         Returns:
@@ -320,8 +318,8 @@ class FunctionsAPI(APIClient):
         #   Token exchange is not an option when using AAD.
         # Case 2: Token on behalf of the user. We use token exchange.
         nonce = None
-        if client_credentials or _using_client_credential_flow(self._cognite_client):
-            nonce = _use_client_credentials(self._cognite_client, client_credentials)
+        if _using_client_credential_flow(self._cognite_client):
+            nonce = _use_client_credentials(self._cognite_client, client_credentials=None)
 
         elif self._cognite_client.config.token is not None:
             nonce = _use_token_exchange(self._cognite_client)
