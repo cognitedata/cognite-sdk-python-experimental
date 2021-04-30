@@ -26,7 +26,7 @@ class TestPNIDParsingIntegration:
         convert_job = job.convert()
 
         assert isinstance(convert_job, DiagramConvertResults)
-        assert {"items"} == set(convert_job.result.keys())
+        assert {"items", "grayscale"} == set(convert_job.result.keys())
         assert {"results", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
         assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
         assert "Completed" == convert_job.status
