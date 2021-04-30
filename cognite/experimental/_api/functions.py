@@ -656,6 +656,40 @@ class FunctionSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id=id, external_id=None)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
 
+    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionSchedulesList:
+        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+
+        Args:
+            limit (int, optional): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all schedules.
+
+        Returns:
+            FunctionSchedulesList: List of function schedules
+
+        Examples:
+
+            List function schedules::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> schedules = c.functions.schedules.list()
+
+            List schedules directly on a function object to get only schedules associated with this particular function:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> func = c.functions.retrieve(id=1)
+                >>> schedules = func.list_schedules()
+
+        """
+        url = f"/functions/schedules"
+
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
+
+        params = {"limit": limit}
+        res = self._get(url, params=params)
+        return FunctionSchedulesList._load(res.json()["items"])
+
     def create(
         self,
         name: str,
@@ -714,40 +748,6 @@ class FunctionSchedulesAPI(APIClient):
         url = f"/functions/schedules"
         res = self._post(url, json=json)
         return FunctionSchedule._load(res.json()["items"][0])
-
-    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> FunctionSchedulesList:
-        """`List all schedules associated with a specific project. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
-
-        Args:
-            limit (int, optional): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all schedules.
-
-        Returns:
-            FunctionSchedulesList: List of function schedules
-
-        Examples:
-
-            List function schedules::
-
-                >>> from cognite.experimental import CogniteClient
-                >>> c = CogniteClient()
-                >>> schedules = c.functions.schedules.list()
-
-            List schedules directly on a function object to get only schedules associated with this particular function:
-
-                >>> from cognite.experimental import CogniteClient
-                >>> c = CogniteClient()
-                >>> func = c.functions.retrieve(id=1)
-                >>> schedules = func.list_schedules()
-
-        """
-        url = f"/functions/schedules"
-
-        if limit in [float("inf"), -1, None]:
-            limit = LIST_LIMIT_CEILING
-
-        params = {"limit": limit}
-        res = self._get(url, params=params)
-        return FunctionSchedulesList._load(res.json()["items"])
 
     def delete(self, id: int) -> None:
         """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules-delete>`_
