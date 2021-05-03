@@ -20,6 +20,9 @@ Changes are grouped as follows
 
 ## [0.51.0]
 
+### Fixed
+- Fixed Templates API
+
 ## [0.50.0]
 
 ### Added
