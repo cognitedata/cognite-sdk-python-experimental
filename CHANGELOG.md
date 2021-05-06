@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.52.0]
+### Fixed
+- `FunctionsAPI.list()` and `FunctionSchedulesAPI.list()` with argument `limit` equal to `None`, `float(inf)` or `-1` now returns all resources. Previously, the default limit of the API was used (100). 
+
 ## [0.50.0]
 
 ### Added
