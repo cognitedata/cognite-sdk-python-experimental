@@ -54,6 +54,12 @@ intList = client.integrations.retrieve_multiple(ids=[23,24,25, 120], external_id
 runsList = client.integration_runs.list(external_id=res1.external_id)
 ```
 
+
+##Filter integration runs 
+```python
+runsList = client.integration_runs.filter(external_id=res1.external_id, status='success')
+```
+
 ##Create a new integration run with status
 ```python
 from cognite.experimental.data_classes import IntegrationRun	

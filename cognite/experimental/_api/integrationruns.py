@@ -2,8 +2,9 @@ from typing import *
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes.shared import TimestampRange
 
-from cognite.experimental.data_classes import IntegrationRun, IntegrationRunList
+from cognite.experimental.data_classes import *
 
 
 class IntegrationsRunsAPI(APIClient):
@@ -31,6 +32,44 @@ class IntegrationsRunsAPI(APIClient):
         """
 
         return self._list(method="GET", limit=limit, filter={"externalId": external_id})
+
+    def filter(
+        self,
+        external_id: str,
+        status: str = None,
+        message_substring: str = None,
+        created_time: Union[Dict[str, Any], TimestampRange] = None,
+        limit: int = 25,
+    ) -> IntegrationRunList:
+        """`List of runs for integration with given external_id <>`_
+
+        Args:
+            external_id (str): Integration external Id.
+            status (str): success/failure/seen.
+            message_substring (str): failure message part.
+            created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+            limit (int, optional): Maximum number of integrations to return. Defaults to 25. Set to -1, float("inf") or None
+                to return all items.
+
+        Returns:
+            IntegrationRunList: List of requested integration runs
+
+        Examples:
+
+            Filter integrationRuns::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> runsList = c.integration_runs.filter(external_id="test ext id", status="seen", statuslimit=5)
+        """
+
+        filter = IntegrationRunFilter(
+            external_id=external_id,
+            status=status,
+            message=StringFilter(substring=message_substring),
+            created_time=created_time,
+        ).dump(camel_case=True)
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def create(self, run: Union[IntegrationRun, List[IntegrationRun]]) -> Union[IntegrationRun, IntegrationRunList]:
         """`Create one or more integrationRuns. <>`_
