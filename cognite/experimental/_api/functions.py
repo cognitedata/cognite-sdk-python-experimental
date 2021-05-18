@@ -14,7 +14,7 @@ from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
 from cognite.client.exceptions import CogniteAPIError
 
-from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_DEFAULT, MAX_RETRIES
+from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -200,8 +200,8 @@ class FunctionsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> functions_list = c.functions.list()
         """
-        if limit in [float("inf"), -1]:
-            limit = None
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
 
         filter = FunctionFilter(
             name=name,
@@ -709,8 +709,8 @@ class FunctionSchedulesAPI(APIClient):
                 >>> schedules = func.list_schedules(limit=None)
 
         """
-        if limit in [float("inf"), -1]:
-            limit = None
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
 
         filter = FunctionSchedulesFilter(
             name=name,

@@ -12,7 +12,9 @@ class TestPNIDParsingIntegration:
         file_id = PNID_FILE_ID
         job = DIAGRAMSAPI.detect(file_ids=[file_id], entities=entities)
         assert isinstance(job, DiagramDetectResults)
-        assert {"items", "partialMatch", "minTokens", "searchField"} == set(job.result.keys())
+        assert {"statusCount", "numFiles", "items", "partialMatch", "minTokens", "searchField"} == set(
+            job.result.keys()
+        )
         assert {"fileId", "annotations"} == job.result["items"][0].keys()
         assert "Completed" == job.status
         assert [] == job.errors
@@ -26,8 +28,8 @@ class TestPNIDParsingIntegration:
         convert_job = job.convert()
 
         assert isinstance(convert_job, DiagramConvertResults)
-        assert {"items", "grayscale"} == set(convert_job.result.keys())
-        assert {"results", "fileId", "fileExternalId"} == set(convert_job.result["items"][0].keys())
+        assert {"items", "grayscale", "statusCount", "numFiles"} == set(convert_job.result.keys())
+        assert {"results", "fileId"} == set(convert_job.result["items"][0].keys())
         assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
         assert "Completed" == convert_job.status
 
