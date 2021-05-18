@@ -471,6 +471,18 @@ def mock_function_schedules_response(rsps):
 
 
 @pytest.fixture
+def mock_function_schedules_response_oidc_client_credentials(rsps):
+
+    session_url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(rsps.POST, session_url, status=200, json={"items": [{"nonce": "aaabbb"}]})
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/byids"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
@@ -532,6 +544,20 @@ class TestFunctionSchedulesAPI:
         )
         assert isinstance(res, FunctionSchedule)
         expected = mock_function_schedules_response.calls[0].response.json()["items"][0]
+        expected.pop("when")
+        assert expected == res.dump(camel_case=True)
+
+    def test_create_schedules_oidc(self, mock_function_schedules_response_oidc_client_credentials):
+        res = FUNCTION_SCHEDULES_API.create(
+            name="my-schedule",
+            function_external_id="user/hello-cognite/hello-cognite:latest",
+            cron_expression="*/5 * * * *",
+            description="Hi",
+            client_credentials={"client_id": "aabbccdd", "client_secret": "xxyyzz"},
+        )
+
+        assert isinstance(res, FunctionSchedule)
+        expected = mock_function_schedules_response_oidc_client_credentials.calls[1].response.json()["items"][0]
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
