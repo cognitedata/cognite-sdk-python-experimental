@@ -11,29 +11,7 @@ class IntegrationsRunsAPI(APIClient):
     _RESOURCE_PATH = "/integrations/runs"
     _LIST_CLASS = IntegrationRunList
 
-    def list(self, external_id: str, limit: int = 25) -> IntegrationRunList:
-        """`List of runs for integration with given external_id <>`_
-
-        Args:
-            external_id (str): Integration external Id.
-            limit (int, optional): Maximum number of integrations to return. Defaults to 25. Set to -1, float("inf") or None
-                to return all items.
-
-        Returns:
-            IntegrationRunList: List of requested integration runs
-
-        Examples:
-
-            List integrationRuns::
-
-                >>> from cognite.experimental import CogniteClient
-                >>> c = CogniteClient()
-                >>> runsList = c.integration_runs.list(external_id="test ext id", limit=5)
-        """
-
-        return self._list(method="GET", limit=limit, filter={"externalId": external_id})
-
-    def filter(
+    def list(
         self,
         external_id: str,
         status: str = None,
@@ -56,20 +34,29 @@ class IntegrationsRunsAPI(APIClient):
 
         Examples:
 
+            List integrationRuns::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> runsList = c.integration_runs.list(external_id="test ext id", limit=5)
+
             Filter integrationRuns::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> runsList = c.integration_runs.filter(external_id="test ext id", status="seen", statuslimit=5)
+                >>> runsList = c.integration_runs.list(external_id="test ext id", status="seen", statuslimit=5)
         """
 
-        filter = IntegrationRunFilter(
-            external_id=external_id,
-            status=status,
-            message=StringFilter(substring=message_substring),
-            created_time=created_time,
-        ).dump(camel_case=True)
-        return self._list(method="POST", limit=limit, filter=filter)
+        if status is not None or message_substring is not None or created_time is not None:
+            filter = IntegrationRunFilter(
+                external_id=external_id,
+                status=status,
+                message=StringFilter(substring=message_substring),
+                created_time=created_time,
+            ).dump(camel_case=True)
+            return self._list(method="POST", limit=limit, filter=filter)
+
+        return self._list(method="GET", limit=limit, filter={"externalId": external_id})
 
     def create(self, run: Union[IntegrationRun, List[IntegrationRun]]) -> Union[IntegrationRun, IntegrationRunList]:
         """`Create one or more integrationRuns. <>`_

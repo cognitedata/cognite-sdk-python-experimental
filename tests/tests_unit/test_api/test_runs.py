@@ -21,7 +21,7 @@ def mock_run_response(rsps):
     }
     url_pattern = re.compile(
         re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations/runs(?:/?.+|/update|/filter|/list|/search|$|\?.+)"
+        + r"/integrations/runs(?:/?.+|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -35,7 +35,7 @@ def mock_create_run_response(rsps):
     response_body = {"items": [{"status": "success", "createdTime": 1607336889530, "externalId": "test"}]}
     url_pattern = re.compile(
         re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations/runs(?:/?.+|/update|/filter|/list|/search|$|\?.+)"
+        + r"/integrations/runs(?:/?.+|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -48,7 +48,7 @@ def mock_run_empty(rsps):
     response_body = {"items": []}
     url_pattern = re.compile(
         re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations/runs(?:/?.+|/update|/filter|/list|/search|$|\?.+)"
+        + r"/integrations/runs(?:/?.+|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -68,7 +68,7 @@ class TestIntegrations:
         assert 4 == len(res)
 
     def test_filter(self, mock_run_response):
-        res = TEST_API.filter(external_id="test", status="success")
+        res = TEST_API.list(external_id="test", status="success")
         assert isinstance(res[0], IntegrationRun)
         assert 4 == len(res)
 

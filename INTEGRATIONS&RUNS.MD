@@ -57,7 +57,7 @@ runsList = client.integration_runs.list(external_id=res1.external_id)
 
 ##Filter integration runs 
 ```python
-runsList = client.integration_runs.filter(external_id=res1.external_id, status='success')
+runsList = client.integration_runs.list(external_id=res1.external_id, status='success')
 ```
 
 ##Create a new integration run with status
