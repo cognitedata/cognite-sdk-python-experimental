@@ -391,7 +391,7 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_failed_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_function_call_timout(self, mock_functions_call_timeout_response):
+    def test_function_call_timeout(self, mock_functions_call_timeout_response):
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
