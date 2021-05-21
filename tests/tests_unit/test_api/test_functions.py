@@ -1,7 +1,10 @@
+import gzip
+import json
 import os
 from unittest.mock import patch
 
 import pytest
+import responses
 
 from cognite.experimental import CogniteClient
 from cognite.experimental._api.functions import _using_client_credential_flow, validate_function_folder
@@ -15,6 +18,23 @@ from cognite.experimental.data_classes import (
     FunctionSchedulesList,
 )
 from tests.utils import jsgz_load
+
+
+def post_body_matcher(params):
+    def match(request_body):
+
+        if request_body is None:
+            return params is None
+        else:
+            decompressed_body = json.loads(gzip.decompress(request_body))
+            sorted_params = sorted(params.items())
+            sorted_body = sorted(decompressed_body.items())
+
+            res = sorted_params == sorted_body
+            return res
+
+    return match
+
 
 COGNITE_CLIENT = CogniteClient()
 FUNCTIONS_API = COGNITE_CLIENT.functions
@@ -238,8 +258,6 @@ def mock_function_calls_filter_response(rsps):
 @pytest.fixture
 def cognite_client_with_client_credentials():
     client = CogniteClient(
-        base_url=COGNITE_CLIENT.config.base_url,
-        project=COGNITE_CLIENT.config.project,
         token_client_id="test-client-id",
         token_client_secret="test-client-secret",
         token_url="https://param-test.com/token",
@@ -252,12 +270,7 @@ def cognite_client_with_client_credentials():
 
 @pytest.fixture
 def cognite_client_with_token():
-    client = CogniteClient(
-        base_url=COGNITE_CLIENT.config.base_url,
-        project=COGNITE_CLIENT.config.project,
-        token="aabbccddeeffgg",
-        disable_pypi_version_check=True,
-    )
+    client = CogniteClient(token="aabbccddeeffgg", disable_pypi_version_check=True,)
 
     return client
 
@@ -527,11 +540,16 @@ def mock_function_schedules_response(rsps):
 @pytest.fixture
 def mock_function_schedules_response_oidc_client_credentials(rsps):
     session_url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
-    rsps.add(rsps.POST, session_url, status=200, json={"items": [{"nonce": "aaabbb"}]})
+    rsps.add(
+        rsps.POST,
+        session_url,
+        status=200,
+        json={"items": [{"nonce": "aaabbb"}]},
+        match=[post_body_matcher({"items": [{"clientId": "aabbccdd", "clientSecret": "xxyyzz"}]})],
+    )
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
-
     yield rsps
 
 
