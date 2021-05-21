@@ -22,7 +22,6 @@ from tests.utils import jsgz_load
 
 def post_body_matcher(params):
     def match(request_body):
-
         if request_body is None:
             return params is None
         else:
@@ -184,11 +183,33 @@ def mock_functions_call_responses(rsps):
 
 
 @pytest.fixture
-def mock_functions_call_response_oidc(mock_functions_call_responses):
+def mock_functions_call_response_oidc_token(mock_functions_call_responses):
     rsps = mock_functions_call_responses
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
-    rsps.add(rsps.POST, url=url, status=200, json={"items": [{"nonce": "aabbccdd"}]})
+    rsps.add(
+        rsps.POST,
+        url=url,
+        status=200,
+        json={"items": [{"nonce": "aabbccdd"}]},
+        match=[post_body_matcher({"items": [{"tokenExchange": True}]})],
+    )
+
+    yield rsps
+
+
+@pytest.fixture
+def mock_functions_call_response_oidc_client_credentials(mock_functions_call_responses):
+    rsps = mock_functions_call_responses
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(
+        rsps.POST,
+        url=url,
+        status=200,
+        json={"items": [{"nonce": "aabbccdd"}]},
+        match=[post_body_matcher({"items": [{"clientId": "test-client-id", "clientSecret": "test-client-secret"}]})],
+    )
 
     yield rsps
 
@@ -446,22 +467,26 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_function_call_oidc_token_exchange(self, mock_functions_call_response_oidc, cognite_client_with_token):
+    def test_function_call_oidc_token_exchange(
+        self, mock_functions_call_response_oidc_token, cognite_client_with_token
+    ):
 
         assert not _using_client_credential_flow(cognite_client_with_token)
         res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
 
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_response_oidc.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_call_response_oidc_token.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_function_call_oidc_client_credentials(
-        self, mock_functions_call_response_oidc, cognite_client_with_client_credentials
+        self, mock_functions_call_response_oidc_client_credentials, cognite_client_with_client_credentials
     ):
         assert _using_client_credential_flow(cognite_client_with_client_credentials)
         res = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
 
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_response_oidc.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+        assert mock_functions_call_response_oidc_client_credentials.calls[2].response.json()["items"][0] == res.dump(
+            camel_case=True
+        )
 
 
 @pytest.fixture
