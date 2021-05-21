@@ -4,7 +4,6 @@ import os
 from unittest.mock import patch
 
 import pytest
-import responses
 
 from cognite.experimental import CogniteClient
 from cognite.experimental._api.functions import _using_client_credential_flow, validate_function_folder
@@ -21,6 +20,10 @@ from tests.utils import jsgz_load
 
 
 def post_body_matcher(params):
+    """
+    Used for verifying post-bodies to mocked endpoints. See the `match`-argument in `rsps.add()`.
+    """
+
     def match(request_body):
         if request_body is None:
             return params is None
