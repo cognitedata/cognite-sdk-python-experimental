@@ -477,5 +477,5 @@ The main templates SDK is available through the main sdk.
 
 Get suggestions for missing entries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.templates.TemplateCompletionAPI.complete
+.. automethod:: cognite.experimental._api.templatecompletion.TemplateCompletionAPI.complete
 
