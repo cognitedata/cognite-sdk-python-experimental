@@ -389,7 +389,7 @@ class FunctionsAPI(APIClient):
             )
 
 
-def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None):
+def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None) -> Optional[str]:
     """
     If client_credentials is passed, will use those, otherwise will implicitly use those the client was instantiated
     with
@@ -399,6 +399,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
             client_secret
 
     Returns:
+        nonce (optional, str): a nonce if able to obtain, otherwise returns None
 
     """
 
