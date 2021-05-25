@@ -18,7 +18,7 @@ Changes are grouped as follows
 
 ## [0.52.0]
 
-### Changed
+### FIXED
 - `FunctionsAPI.list()` and `FunctionSchedulesAPI.list()` with argument `limit` equal to `None`, `float(inf)` or `-1` now returns all resources. Previously, the default limit of the API was used (100).
 
 ## [0.51.0]
