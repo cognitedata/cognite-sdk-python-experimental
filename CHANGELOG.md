@@ -15,7 +15,7 @@ Changes are grouped as follows
 ## [0.52.0]
 
 ### Changed
-- `FunctionsAPI.call` now uses OICD tokens if the client was instantiated with a token or client credentials.
+- `FunctionsAPI.call` now uses OIDC tokens if the client was instantiated with a token or client credentials.
 - `FunctionSchedulesAPI.create` now supports OICD tokens through the use of client-credentials, explicitly passed in as an argument.
 
 ## [0.51.0]
