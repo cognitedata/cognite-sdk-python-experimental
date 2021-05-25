@@ -67,7 +67,7 @@ class Function(CogniteResource):
         self._cognite_client = cognite_client
 
     def call(self, data=None, wait: bool = True) -> "FunctionCall":
-        """`Call this particlar function. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_
+        """`Call this particular function. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_
 
         Args:
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.

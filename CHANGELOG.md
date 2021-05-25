@@ -12,9 +12,21 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.53.0]
+
+### Changed
+- `FunctionsAPI.call` now uses OIDC tokens if the client was instantiated with a token or client credentials.
+- `FunctionSchedulesAPI.create` now supports OIDC tokens through the use of client-credentials, explicitly passed in as an argument.
+
 ## [0.52.0]
+
 ### Fixed
-- `FunctionsAPI.list()` and `FunctionSchedulesAPI.list()` with argument `limit` equal to `None`, `float(inf)` or `-1` now returns all resources. Previously, the default limit of the API was used (100). 
+- `FunctionsAPI.list()` and `FunctionSchedulesAPI.list()` with argument `limit` equal to `None`, `float(inf)` or `-1` now returns all resources. Previously, the default limit of the API was used (100).
+
+## [0.51.0]
+
+### Fixed
+- Fixed Templates API
 
 ## [0.50.0]
 

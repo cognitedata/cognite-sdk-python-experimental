@@ -1,10 +1,12 @@
+import gzip
+import json
 import os
 from unittest.mock import patch
 
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental._api.functions import validate_function_folder
+from cognite.experimental._api.functions import _using_client_credential_flow, validate_function_folder
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -15,6 +17,26 @@ from cognite.experimental.data_classes import (
     FunctionSchedulesList,
 )
 from tests.utils import jsgz_load
+
+
+def post_body_matcher(params):
+    """
+    Used for verifying post-bodies to mocked endpoints. See the `match`-argument in `rsps.add()`.
+    """
+
+    def match(request_body):
+        if request_body is None:
+            return params is None
+        else:
+            decompressed_body = json.loads(gzip.decompress(request_body))
+            sorted_params = sorted(params.items())
+            sorted_body = sorted(decompressed_body.items())
+
+            res = sorted_params == sorted_body
+            return res
+
+    return match
+
 
 COGNITE_CLIENT = CogniteClient()
 FUNCTIONS_API = COGNITE_CLIENT.functions
@@ -164,6 +186,38 @@ def mock_functions_call_responses(rsps):
 
 
 @pytest.fixture
+def mock_functions_call_response_oidc_token(mock_functions_call_responses):
+    rsps = mock_functions_call_responses
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(
+        rsps.POST,
+        url=url,
+        status=200,
+        json={"items": [{"nonce": "aabbccdd"}]},
+        match=[post_body_matcher({"items": [{"tokenExchange": True}]})],
+    )
+
+    yield rsps
+
+
+@pytest.fixture
+def mock_functions_call_response_oidc_client_credentials(mock_functions_call_responses):
+    rsps = mock_functions_call_responses
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(
+        rsps.POST,
+        url=url,
+        status=200,
+        json={"items": [{"nonce": "aabbccdd"}]},
+        match=[post_body_matcher({"items": [{"clientId": "test-client-id", "clientSecret": "test-client-secret"}]})],
+    )
+
+    yield rsps
+
+
+@pytest.fixture
 def mock_functions_call_by_external_id_responses(mock_functions_retrieve_response):
     rsps = mock_functions_retrieve_response
 
@@ -223,6 +277,26 @@ def mock_function_calls_filter_response(rsps):
     rsps.add(rsps.POST, url, status=200, json=response_body)
 
     yield rsps
+
+
+@pytest.fixture
+def cognite_client_with_client_credentials():
+    client = CogniteClient(
+        token_client_id="test-client-id",
+        token_client_secret="test-client-secret",
+        token_url="https://param-test.com/token",
+        token_scopes=["test-scope", "second-test-scope"],
+        disable_pypi_version_check=True,
+    )
+
+    return client
+
+
+@pytest.fixture
+def cognite_client_with_token():
+    client = CogniteClient(token="aabbccddeeffgg", disable_pypi_version_check=True,)
+
+    return client
 
 
 @pytest.fixture
@@ -391,10 +465,31 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_failed_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_function_call_timout(self, mock_functions_call_timeout_response):
+    def test_function_call_timeout(self, mock_functions_call_timeout_response):
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
+
+    def test_function_call_oidc_token_exchange(
+        self, mock_functions_call_response_oidc_token, cognite_client_with_token
+    ):
+
+        assert not _using_client_credential_flow(cognite_client_with_token)
+        res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
+
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_response_oidc_token.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_function_call_oidc_client_credentials(
+        self, mock_functions_call_response_oidc_client_credentials, cognite_client_with_client_credentials
+    ):
+        assert _using_client_credential_flow(cognite_client_with_client_credentials)
+        res = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
+
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_response_oidc_client_credentials.calls[2].response.json()["items"][0] == res.dump(
+            camel_case=True
+        )
 
 
 @pytest.fixture
@@ -471,6 +566,22 @@ def mock_function_schedules_response(rsps):
 
 
 @pytest.fixture
+def mock_function_schedules_response_oidc_client_credentials(rsps):
+    session_url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(
+        rsps.POST,
+        session_url,
+        status=200,
+        json={"items": [{"nonce": "aaabbb"}]},
+        match=[post_body_matcher({"items": [{"clientId": "aabbccdd", "clientSecret": "xxyyzz"}]})],
+    )
+
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+    yield rsps
+
+
+@pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/byids"
     rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
@@ -532,6 +643,20 @@ class TestFunctionSchedulesAPI:
         )
         assert isinstance(res, FunctionSchedule)
         expected = mock_function_schedules_response.calls[0].response.json()["items"][0]
+        expected.pop("when")
+        assert expected == res.dump(camel_case=True)
+
+    def test_create_schedules_oidc(self, mock_function_schedules_response_oidc_client_credentials):
+        res = FUNCTION_SCHEDULES_API.create(
+            name="my-schedule",
+            function_external_id="user/hello-cognite/hello-cognite:latest",
+            cron_expression="*/5 * * * *",
+            description="Hi",
+            client_credentials={"client_id": "aabbccdd", "client_secret": "xxyyzz"},
+        )
+
+        assert isinstance(res, FunctionSchedule)
+        expected = mock_function_schedules_response_oidc_client_credentials.calls[1].response.json()["items"][0]
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
