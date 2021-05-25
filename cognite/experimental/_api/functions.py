@@ -312,7 +312,6 @@ class FunctionsAPI(APIClient):
         url = f"/functions/{id}/call"
         body = {}
 
-        # Exchanging the token for a nonce.
         # Case 1: Client credentials inferred from the instantiated client.
         # Case 2: Token on behalf of the user. We use token exchange.
         nonce = None
