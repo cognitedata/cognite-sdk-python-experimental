@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.53.1]
+
+### Fixed
+- `FunctionsAPI.call` previously didn't pass the session `nonce` if `data` was set to `None`. This is now fixed.
+
 ## [0.53.0]
 
 ### Changed

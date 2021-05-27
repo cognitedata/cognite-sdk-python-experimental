@@ -1,3 +1,5 @@
+import pytest
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import DiagramConvertResults, DiagramDetectItem, DiagramDetectResults
 
@@ -7,6 +9,7 @@ PNID_FILE_ID = 3261066797848581
 
 
 class TestPNIDParsingIntegration:
+    @pytest.mark.skip(reason="This test fails approx 4 out of 5 times")
     def test_run_detect_entities_dict(self):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
