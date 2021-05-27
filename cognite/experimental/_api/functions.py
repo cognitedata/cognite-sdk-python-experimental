@@ -321,8 +321,9 @@ class FunctionsAPI(APIClient):
         elif self._cognite_client.config.token is not None:
             nonce = _use_token_exchange(self._cognite_client)
 
-        if data:
-            body = {"data": data, "nonce": nonce}
+        if data is None:
+            data = {}
+        body = {"data": data, "nonce": nonce}
         res = self._post(url, json=body)
 
         function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
