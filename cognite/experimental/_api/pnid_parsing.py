@@ -199,6 +199,21 @@ class DiagramsAPI(ContextAPI):
             job_cls=DiagramDetectResults,
         )
 
+    @staticmethod
+    def _process_detect_job(detect_job: DiagramDetectResults) -> list:
+        """process the result from detect job so it complies with diagram convert schema
+
+        Args:
+            detect_job (DiagramDetectResults): detect job
+
+        Returns:
+            items: the format complies with diagram convert schema
+        """
+        items = [
+            {k: v for k, v in item.items() if k in {"annotations", "fileId"}} for item in detect_job.result["items"]
+        ]  # diagram detect always return file id.
+        return items
+
     def convert(self, detect_job: DiagramDetectResults) -> DiagramConvertResults:
         """Convert a P&ID to interactive SVGs where the provided annotations are highlighted.
 
@@ -211,6 +226,6 @@ class DiagramsAPI(ContextAPI):
         return self._run_job(
             job_path="/convert",
             status_path="/convert/",
-            items=detect_job.result["items"],
+            items=self._process_detect_job(detect_job),
             job_cls=DiagramConvertResults,
         )
