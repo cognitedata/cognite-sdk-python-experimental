@@ -9,16 +9,13 @@ PNID_FILE_ID = 3261066797848581
 
 
 class TestPNIDParsingIntegration:
-    @pytest.mark.skip(reason="This test fails approx 4 out of 5 times")
-    def test_run_detect_entities_dict(self):
+    def test_run_diagram_detect(self):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
         job = DIAGRAMSAPI.detect(file_ids=[file_id], entities=entities)
         assert isinstance(job, DiagramDetectResults)
-        assert {"statusCount", "numFiles", "items", "partialMatch", "minTokens", "searchField"} == set(
-            job.result.keys()
-        )
-        assert {"fileId", "annotations"} == job.result["items"][0].keys()
+        assert {"statusCount", "numFiles", "items", "partialMatch", "minTokens", "searchField"}.issubset(job.result)
+        assert {"fileId", "annotations"}.issubset(job.result["items"][0])
         assert "Completed" == job.status
         assert [] == job.errors
         assert isinstance(job.items[0], DiagramDetectItem)
@@ -31,9 +28,9 @@ class TestPNIDParsingIntegration:
         convert_job = job.convert()
 
         assert isinstance(convert_job, DiagramConvertResults)
-        assert {"items", "grayscale", "statusCount", "numFiles"} == set(convert_job.result.keys())
-        assert {"results", "fileId"} == set(convert_job.result["items"][0].keys())
-        assert {"pngUrl", "svgUrl", "page"} == set(convert_job.result["items"][0]["results"][0].keys())
+        assert {"items", "grayscale", "statusCount", "numFiles"}.issubset(convert_job.result)
+        assert {"results", "fileId"}.issubset(convert_job.result["items"][0])
+        assert {"pngUrl", "svgUrl", "page"}.issubset(convert_job.result["items"][0]["results"][0])
         assert "Completed" == convert_job.status
 
         for res_page in convert_job[PNID_FILE_ID].pages:
