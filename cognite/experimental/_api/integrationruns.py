@@ -14,7 +14,7 @@ class IntegrationsRunsAPI(APIClient):
     def list(
         self,
         external_id: str,
-        status: str = None,
+        statuses: List[str] = None,
         message_substring: str = None,
         created_time: Union[Dict[str, Any], TimestampRange] = None,
         limit: int = 25,
@@ -23,7 +23,7 @@ class IntegrationsRunsAPI(APIClient):
 
         Args:
             external_id (str): Integration external Id.
-            status (str): success/failure/seen.
+            statuses (List[str]): success/failure/seen.
             message_substring (str): failure message part.
             created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
             limit (int, optional): Maximum number of integrations to return. Defaults to 25. Set to -1, float("inf") or None
@@ -44,13 +44,13 @@ class IntegrationsRunsAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> runsList = c.integration_runs.list(external_id="test ext id", status="seen", statuslimit=5)
+                >>> runsList = c.integration_runs.list(external_id="test ext id", statuses=["seen"], statuslimit=5)
         """
 
-        if status is not None or message_substring is not None or created_time is not None:
+        if statuses is not None or message_substring is not None or created_time is not None:
             filter = IntegrationRunFilter(
                 external_id=external_id,
-                status=status,
+                statuses=statuses,
                 message=StringFilter(substring=message_substring),
                 created_time=created_time,
             ).dump(camel_case=True)

@@ -68,7 +68,7 @@ class TestIntegrations:
         assert 4 == len(res)
 
     def test_filter(self, mock_run_response):
-        res = TEST_API.list(external_id="test", status="success")
+        res = TEST_API.list(external_id="test", statuses=["success"])
         assert isinstance(res[0], IntegrationRun)
         assert 4 == len(res)
 

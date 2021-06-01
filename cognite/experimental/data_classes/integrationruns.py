@@ -63,7 +63,7 @@ class IntegrationRunFilter(CogniteFilter):
 
     Args:
         external_id (str): The external ID of related integration provided by the client. Must be unique for the resource type.
-        status (str): success/failure/seen.
+        statuses (List[str]): success/failure/seen.
         message (str): failure message filter.
         created_time (int): (Union[Dict[str, Any], TimestampRange]): Range between two timestamps.
         cognite_client (CogniteClient): The client to associate with this object.
@@ -72,13 +72,13 @@ class IntegrationRunFilter(CogniteFilter):
     def __init__(
         self,
         external_id: str = None,
-        status: str = None,
+        statuses: List[str] = None,
         message: StringFilter = None,
         created_time: Union[Dict[str, Any], TimestampRange] = None,
         cognite_client=None,
     ):
         setattr(self, "external_id", external_id)
-        setattr(self, "status", status)
+        setattr(self, "statuses", statuses)
         setattr(self, "message", message)
         setattr(self, "created_time", created_time)
         self._cognite_client = cognite_client
