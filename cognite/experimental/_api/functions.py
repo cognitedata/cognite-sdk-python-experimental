@@ -3,7 +3,7 @@ import os
 import sys
 import time
 from inspect import getsource
-from numbers import Number
+from numbers import Integral, Number
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Dict, List, Optional, Union
@@ -491,6 +491,17 @@ def _validate_function_handle(function_handle):
         )
 
 
+def _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id):
+    utils._auxiliary.assert_type(function_id, "function_id", [Integral], allow_none=True)
+    utils._auxiliary.assert_type(function_external_id, "function_external_id", [str], allow_none=True)
+    has_function_id = function_id is not None
+    has_function_external_id = function_external_id is not None
+
+    assert (has_function_id or function_external_id) and not (
+        has_function_id and function_external_id
+    ), "Exactly one of function_id and function_external_id must be specified"
+
+
 class FunctionCallsAPI(APIClient):
     _LIST_CLASS = FunctionCallList
 
@@ -534,7 +545,7 @@ class FunctionCallsAPI(APIClient):
                 >>> calls = func.list_calls()
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         filter = {"status": status, "scheduleId": schedule_id, "startTime": start_time, "endTime": end_time}
@@ -571,7 +582,7 @@ class FunctionCallsAPI(APIClient):
                 >>> call = func.retrieve_call(id=2)
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         resource_path = f"/functions/{function_id}/calls"
@@ -604,7 +615,7 @@ class FunctionCallsAPI(APIClient):
                 >>> response = call.get_response()
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/response"
@@ -640,7 +651,7 @@ class FunctionCallsAPI(APIClient):
                 >>> logs = call.get_logs()
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/logs"
