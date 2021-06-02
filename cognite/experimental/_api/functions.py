@@ -497,8 +497,8 @@ def _assert_exactly_one_of_function_id_and_function_external_id(function_id, fun
     has_function_id = function_id is not None
     has_function_external_id = function_external_id is not None
 
-    assert (has_function_id or function_external_id) and not (
-        has_function_id and function_external_id
+    assert (has_function_id or has_function_external_id) and not (
+        has_function_id and has_function_external_id
     ), "Exactly one of function_id and function_external_id must be specified"
 
 
