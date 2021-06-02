@@ -634,7 +634,7 @@ class TestFunctionSchedulesAPI:
         assert isinstance(res, FunctionSchedulesList)
         assert len(res) == 1
 
-    def test_create_schedules(self, mock_function_schedules_response):
+    def test_create_schedules_with_function_external_id(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.create(
             name="my-schedule",
             function_external_id="user/hello-cognite/hello-cognite:latest",
@@ -646,10 +646,10 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_create_schedules_oidc(self, mock_function_schedules_response_oidc_client_credentials):
+    def test_create_schedules_oidc_with_function_id(self, mock_function_schedules_response_oidc_client_credentials):
         res = FUNCTION_SCHEDULES_API.create(
             name="my-schedule",
-            function_external_id="user/hello-cognite/hello-cognite:latest",
+            function_id=123,
             cron_expression="*/5 * * * *",
             description="Hi",
             client_credentials={"client_id": "aabbccdd", "client_secret": "xxyyzz"},
@@ -659,6 +659,29 @@ class TestFunctionSchedulesAPI:
         expected = mock_function_schedules_response_oidc_client_credentials.calls[1].response.json()["items"][0]
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
+
+    def test_create_schedules_oidc_with_function_external_id_raises(self):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_SCHEDULES_API.create(
+                name="my-schedule",
+                function_external_id="user/hello-cognite/hello-cognite:latest",
+                cron_expression="*/5 * * * *",
+                description="Hi",
+                client_credentials={"client_id": "aabbccdd", "client_secret": "xxyyzz"},
+            )
+        assert "function_id must be set when creating a schedule with client_credentials." in str(excinfo.value)
+
+    def test_create_schedules_with_function_id_and_function_external_id_raises(self):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_SCHEDULES_API.create(
+                name="my-schedule",
+                function_id=123,
+                function_external_id="user/hello-cognite/hello-cognite:latest",
+                cron_expression="*/5 * * * *",
+                description="Hi",
+                client_credentials={"client_id": "aabbccdd", "client_secret": "xxyyzz"},
+            )
+        assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
 
     def test_create_schedules_with_data(self, mock_function_schedules_response_with_data):
         res = FUNCTION_SCHEDULES_API.create(
