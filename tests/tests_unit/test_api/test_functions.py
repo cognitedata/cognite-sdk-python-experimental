@@ -720,6 +720,11 @@ class TestFunctionCallsAPI:
         assert isinstance(res, FunctionCallList)
         assert mock_function_calls_filter_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
 
+    def test_list_calls_with_function_id_and_function_external_id_raises(self):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_CALLS_API.list(function_id=123, function_external_id="my-function")
+        assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
+
     def test_retrieve_call_by_function_id(self, mock_function_calls_retrieve_response):
         res = FUNCTION_CALLS_API.retrieve(call_id=CALL_ID, function_id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
@@ -731,6 +736,13 @@ class TestFunctionCallsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_function_calls_retrieve_response.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
 
+    def test_retrieve_call_with_function_id_and_function_external_id_raises(self):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_CALLS_API.retrieve(
+                call_id=CALL_ID, function_id=FUNCTION_ID, function_external_id=f"func-no-{FUNCTION_ID}"
+            )
+        assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
+
     def test_function_call_logs_by_function_id(self, mock_function_call_logs_response):
         res = FUNCTION_CALLS_API.get_logs(call_id=CALL_ID, function_id=FUNCTION_ID)
         assert isinstance(res, FunctionCallLog)
@@ -741,6 +753,13 @@ class TestFunctionCallsAPI:
         res = FUNCTION_CALLS_API.get_logs(call_id=CALL_ID, function_external_id=f"func-no-{FUNCTION_ID}")
         assert isinstance(res, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_function_call_logs_by_function_id_and_function_external_id_raises(self, mock_function_call_logs_response):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_CALLS_API.get_logs(
+                call_id=CALL_ID, function_id=FUNCTION_ID, function_external_id=f"func-no-{FUNCTION_ID}"
+            )
+        assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
 
     @pytest.mark.usefixtures("mock_function_calls_retrieve_response")
     def test_get_logs_on_retrieved_call_object(self, mock_function_call_logs_response):
@@ -774,6 +793,13 @@ class TestFunctionCallsAPI:
         res = FUNCTION_CALLS_API.get_response(call_id=CALL_ID, function_id=FUNCTION_ID)
         assert isinstance(res, dict)
         assert mock_function_call_response_response.calls[0].response.json()["response"] == res
+
+    def test_function_call_response_by_function_id_and_function_external_id_raises(self):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_CALLS_API.get_response(
+                call_id=CALL_ID, function_id=FUNCTION_ID, function_external_id=f"func-no-{FUNCTION_ID}"
+            )
+        assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
 
     @pytest.mark.usefixtures("mock_function_calls_retrieve_response")
     def test_get_response_on_retrieved_call_object(self, mock_function_call_response_response):

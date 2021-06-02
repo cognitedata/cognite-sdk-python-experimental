@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## Unreleased
+
+### Fixed
+- Correct error message when specifying both `function_id` and `function_external_id` on methods `FunctionCallsAPI.list()`, `FunctionCallsAPI.retrieve()`, `FunctionCallsAPI.get_response()` and `FunctionCallsAPI.get_logs()`.
+
 ## [0.53.1]
 
 ### Fixed
