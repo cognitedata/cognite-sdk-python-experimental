@@ -737,8 +737,9 @@ class FunctionSchedulesAPI(APIClient):
     def create(
         self,
         name: str,
-        function_external_id: str,
         cron_expression: str,
+        function_id: Optional[int] = None,
+        function_external_id: Optional[str] = None,
         client_credentials: Optional[Dict] = None,
         description: str = "",
         data: Optional[Dict] = None,
@@ -747,7 +748,8 @@ class FunctionSchedulesAPI(APIClient):
 
         Args:
             name (str): Name of the schedule.
-            function_external_id (str): External id of the function.
+            function_id (optional, int): Id of the function. This is required if the schedule is created with client_credentials.
+            function_external_id (optional, str): External id of the function. This is deprecated and cannot be used together with client_credentials.
             description (str): Description of the schedule.
             cron_expression (str): Cron expression.
             client_credentials: (optional, Dict): Dictionary containing client credentials:
@@ -766,14 +768,17 @@ class FunctionSchedulesAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> schedule = c.functions.schedules.create(
                     name= "My schedule",
-                    function_external_id="my-external-id",
+                    function_id=123,
                     cron_expression="*/5 * * * *",
                     client_credentials={"client_id": "...", "client_secret": "..."},
                     description="This schedule does magic stuff.")
 
         """
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
+
         nonce = None
         if client_credentials:
+            assert function_id is not None, "function_id must be set when creating a schedule with client_credentials."
             nonce = _use_client_credentials(self._cognite_client, client_credentials)
 
         body = {
