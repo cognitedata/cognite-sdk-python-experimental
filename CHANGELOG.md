@@ -12,7 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## Unreleased
+## [0.54.0]
+
+### Changed
+- `FunctionSchedulesAPI.create` now requires `function_id` to be used when creating a schedule with OIDC through `client_credentials`.
+- `FunctionSchedulesAPI.create`: The arguments `function_id` and `function_external_id` are both optional and mutually exclusive.
+- `FunctionSchedulesAPI.create`: The argument `function_external_id` has changed position, necessitated by the fact that it is now optional.
 
 ### Fixed
 - Correct error message when specifying both `function_id` and `function_external_id` on methods `FunctionCallsAPI.list()`, `FunctionCallsAPI.retrieve()`, `FunctionCallsAPI.get_response()` and `FunctionCallsAPI.get_logs()`.
