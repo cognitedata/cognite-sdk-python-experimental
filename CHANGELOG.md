@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.55.0]
+
+### Added
+- Add functionality to filter integration runs. Some new fields added to integration entity.
+
 ## [0.54.0]
 
 ### Changed

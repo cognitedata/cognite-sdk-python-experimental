@@ -26,6 +26,7 @@ def mock_run_response(rsps):
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
+    rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
     yield rsps
 
 
@@ -63,6 +64,11 @@ class TestIntegrations:
 
     def test_list(self, mock_run_response):
         res = TEST_API.list(external_id="test")
+        assert isinstance(res[0], IntegrationRun)
+        assert 4 == len(res)
+
+    def test_filter(self, mock_run_response):
+        res = TEST_API.list(external_id="test", statuses=["success"])
         assert isinstance(res[0], IntegrationRun)
         assert 4 == len(res)
 
