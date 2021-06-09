@@ -3,15 +3,16 @@ import os
 import sys
 import time
 from inspect import getsource
-from numbers import Number
+from numbers import Integral, Number
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
-from cognite.client import utils
+from cognite.client import CogniteClient, utils
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
+from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
@@ -310,8 +311,19 @@ class FunctionsAPI(APIClient):
 
         url = f"/functions/{id}/call"
         body = {}
-        if data:
-            body = {"data": data}
+
+        # Case 1: Client credentials inferred from the instantiated client.
+        # Case 2: Token on behalf of the user. We use token exchange.
+        nonce = None
+        if _using_client_credential_flow(self._cognite_client):
+            nonce = _use_client_credentials(self._cognite_client, client_credentials=None)
+
+        elif self._cognite_client.config.token is not None:
+            nonce = _use_token_exchange(self._cognite_client)
+
+        if data is None:
+            data = {}
+        body = {"data": data, "nonce": nonce}
         res = self._post(url, json=body)
 
         function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
@@ -377,6 +389,65 @@ class FunctionsAPI(APIClient):
             )
 
 
+def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None) -> Optional[str]:
+    """
+    If client_credentials is passed, will use those, otherwise will implicitly use those the client was instantiated
+    with
+    Args:
+        client_credentials: a dictionary containing:
+            client_id
+            client_secret
+
+    Returns:
+        nonce (optional, str): a nonce if able to obtain, otherwise returns None
+
+    """
+
+    if client_credentials:
+        client_id = client_credentials["client_id"]
+        client_secret = client_credentials["client_secret"]
+    else:
+        client_id = cognite_client.config.token_client_id
+        client_secret = cognite_client.config.token_client_secret
+
+    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    payload = {"items": [{"clientId": f"{client_id}", "clientSecret": f"{client_secret}"}]}
+    try:
+        res = cognite_client.post(session_url, json=payload)
+        nonce = res.json()["items"][0]["nonce"]
+        return nonce
+    except CogniteAPIError as e:
+        print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
+        return None
+
+
+def _use_token_exchange(cognite_client: CogniteClient):
+    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    payload = {"items": [{"tokenExchange": True}]}
+    try:
+        res = cognite_client.post(url=session_url, json=payload)
+        nonce = res.json()["items"][0]["nonce"]
+        return nonce
+    except CogniteAPIError as e:
+        print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
+
+
+def _using_client_credential_flow(cognite_client: CogniteClient):
+    """
+    Determine whether the Cognite client is configured for client-credential flow.
+    """
+    client_config = cognite_client.config
+    if (
+        client_config.token_client_secret
+        and client_config.token_client_id
+        and client_config.token_url
+        and client_config.token_scopes
+    ):
+        return True
+    else:
+        return False
+
+
 def convert_file_path_to_module_path(file_path: str):
     return ".".join(Path(file_path).with_suffix("").parts)
 
@@ -418,6 +489,17 @@ def _validate_function_handle(function_handle):
         raise TypeError(
             "Arguments to function referenced by function_handle must be a subset of (data, client, secrets, function_call_info)"
         )
+
+
+def _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id):
+    utils._auxiliary.assert_type(function_id, "function_id", [Integral], allow_none=True)
+    utils._auxiliary.assert_type(function_external_id, "function_external_id", [str], allow_none=True)
+    has_function_id = function_id is not None
+    has_function_external_id = function_external_id is not None
+
+    assert (has_function_id or has_function_external_id) and not (
+        has_function_id and has_function_external_id
+    ), "Exactly one of function_id and function_external_id must be specified"
 
 
 class FunctionCallsAPI(APIClient):
@@ -463,7 +545,7 @@ class FunctionCallsAPI(APIClient):
                 >>> calls = func.list_calls()
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         filter = {"status": status, "scheduleId": schedule_id, "startTime": start_time, "endTime": end_time}
@@ -500,7 +582,7 @@ class FunctionCallsAPI(APIClient):
                 >>> call = func.retrieve_call(id=2)
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         resource_path = f"/functions/{function_id}/calls"
@@ -533,7 +615,7 @@ class FunctionCallsAPI(APIClient):
                 >>> response = call.get_response()
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/response"
@@ -569,7 +651,7 @@ class FunctionCallsAPI(APIClient):
                 >>> logs = call.get_logs()
 
         """
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(function_id, function_external_id)
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
         if function_external_id:
             function_id = self._cognite_client.functions.retrieve(external_id=function_external_id).id
         url = f"/functions/{function_id}/calls/{call_id}/logs"
@@ -655,8 +737,10 @@ class FunctionSchedulesAPI(APIClient):
     def create(
         self,
         name: str,
-        function_external_id: str,
         cron_expression: str,
+        function_id: Optional[int] = None,
+        function_external_id: Optional[str] = None,
+        client_credentials: Optional[Dict] = None,
         description: str = "",
         data: Optional[Dict] = None,
     ) -> FunctionSchedule:
@@ -664,9 +748,13 @@ class FunctionSchedulesAPI(APIClient):
 
         Args:
             name (str): Name of the schedule.
-            function_external_id (str): External id of the function.
+            function_id (optional, int): Id of the function. This is required if the schedule is created with client_credentials.
+            function_external_id (optional, str): External id of the function. This is deprecated and cannot be used together with client_credentials.
             description (str): Description of the schedule.
             cron_expression (str): Cron expression.
+            client_credentials: (optional, Dict): Dictionary containing client credentials:
+                client_id
+                client_secret
             data (optional, Dict): Data to be passed to the scheduled run.
 
         Returns:
@@ -680,11 +768,19 @@ class FunctionSchedulesAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> schedule = c.functions.schedules.create(
                     name= "My schedule",
-                    function_external_id="my-external-id",
+                    function_id=123,
                     cron_expression="*/5 * * * *",
+                    client_credentials={"client_id": "...", "client_secret": "..."},
                     description="This schedule does magic stuff.")
 
         """
+        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
+
+        nonce = None
+        if client_credentials:
+            assert function_id is not None, "function_id must be set when creating a schedule with client_credentials."
+            nonce = _use_client_credentials(self._cognite_client, client_credentials)
+
         body = {
             "items": [
                 {
@@ -692,9 +788,11 @@ class FunctionSchedulesAPI(APIClient):
                     "description": description,
                     "functionExternalId": function_external_id,
                     "cronExpression": cron_expression,
+                    "nonce": nonce,
                 }
             ]
         }
+
         if data:
             body["items"][0]["data"] = data
 
