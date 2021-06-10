@@ -1,15 +1,15 @@
 from cognite.client.data_classes._base import *
 
 
-class Integration(CogniteResource):
-    """A representation of an integration.
+class ExtractionPipeline(CogniteResource):
+    """A representation of an ExtractionPipeline.
 
     Args:
         id (int): A server-generated ID for the object.
         external_id (str): The external ID provided by the client. Must be unique for the resource type.
-        name (str): The name of the integration.
-        description (str): The description of the integration.
-        data_set_id (int): The id of the dataset this integration related with.
+        name (str): The name of the ExtractionPipeline.
+        description (str): The description of the ExtractionPipeline.
+        data_set_id (int): The id of the dataset this ExtractionPipeline related with.
         raw_tables (List[Dict[str, str]): list of raw tables in list format: [{"dbName": "value", "tableName" : "value"}].
         last_success (int): Milliseconds value of last success status.
         last_failure (int): Milliseconds value of last failure status.
@@ -18,11 +18,11 @@ class Integration(CogniteResource):
         schedule (str): undefined/triggered/streamed/cron regex.
         contacts (List[Dict[str, Any]]): list of contacts [{"name": "value", "email": "value", "role": "value", "sendNotification": boolean},...]
         metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 128 bytes, value 10240 bytes, up to 256 key-value pairs, of total size at most 10240.
-        source (str): Source text value for integration.
-        documentation (str): Documentation text value for integration.
+        source (str): Source text value for ExtractionPipeline.
+        documentation (str): Documentation text value for ExtractionPipeline.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-        created_by (str): Integration creator, usually email.
+        created_by (str): ExtractionPipeline creator, usually email.
         skip_notifications_in_minutes (int): Number value for system to skip sending email notification in minutes after last sending.
         cognite_client (CogniteClient): The client to associate with this object.
     """
@@ -73,90 +73,90 @@ class Integration(CogniteResource):
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(Integration, cls)._load(resource, cognite_client)
+        instance = super(ExtractionPipeline, cls)._load(resource, cognite_client)
         return instance
 
     def __hash__(self):
         return hash(self.external_id)
 
 
-class IntegrationUpdate(CogniteUpdate):
-    """Changes applied to integration
+class ExtractionPipelineUpdate(CogniteUpdate):
+    """Changes applied to ExtractionPipeline
 
     Args:
         id (int): A server-generated ID for the object.
         external_id (str): The external ID provided by the client. Must be unique for the resource type.
     """
 
-    class _PrimitiveIntegrationUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "IntegrationUpdate":
+    class _PrimitiveExtractionPipelineUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "ExtractionPipelineUpdate":
             return self._set(value)
 
-    class _ObjectIntegrationUpdate(CogniteObjectUpdate):
-        def set(self, value: Dict) -> "IntegrationUpdate":
+    class _ObjectExtractionPipelineUpdate(CogniteObjectUpdate):
+        def set(self, value: Dict) -> "ExtractionPipelineUpdate":
             return self._set(value)
 
-        def add(self, value: Dict) -> "IntegrationUpdate":
+        def add(self, value: Dict) -> "ExtractionPipelineUpdate":
             return self._add(value)
 
-        def remove(self, value: List) -> "IntegrationUpdate":
+        def remove(self, value: List) -> "ExtractionPipelineUpdate":
             return self._remove(value)
 
-    class _ListIntegrationUpdate(CogniteListUpdate):
-        def set(self, value: List) -> "IntegrationUpdate":
+    class _ListExtractionPipelineUpdate(CogniteListUpdate):
+        def set(self, value: List) -> "ExtractionPipelineUpdate":
             return self._set(value)
 
-        def add(self, value: List) -> "IntegrationUpdate":
+        def add(self, value: List) -> "ExtractionPipelineUpdate":
             return self._add(value)
 
-        def remove(self, value: List) -> "IntegrationUpdate":
+        def remove(self, value: List) -> "ExtractionPipelineUpdate":
             return self._remove(value)
 
     @property
     def external_id(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "externalId")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "externalId")
 
     @property
     def name(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "name")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "name")
 
     @property
     def description(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "description")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "description")
 
     @property
     def data_set_id(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "dataSetId")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "dataSetId")
 
     @property
     def raw_tables(self):
-        return IntegrationUpdate._ListIntegrationUpdate(self, "rawTables")
+        return ExtractionPipelineUpdate._ListExtractionPipelineUpdate(self, "rawTables")
 
     @property
     def metadata(self):
-        return IntegrationUpdate._ObjectIntegrationUpdate(self, "metadata")
+        return ExtractionPipelineUpdate._ObjectExtractionPipelineUpdate(self, "metadata")
 
     @property
     def source(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "source")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "source")
 
     @property
     def documentation(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "documentation")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "documentation")
 
     @property
     def schedule(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "schedule")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "schedule")
 
     @property
     def contacts(self):
-        return IntegrationUpdate._ListIntegrationUpdate(self, "contacts")
+        return ExtractionPipelineUpdate._ListExtractionPipelineUpdate(self, "contacts")
 
     @property
     def skip_notifications_in_minutes(self):
-        return IntegrationUpdate._PrimitiveIntegrationUpdate(self, "skipNotificationsInMinutes")
+        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "skipNotificationsInMinutes")
 
 
-class IntegrationList(CogniteResourceList):
-    _RESOURCE = Integration
-    _UPDATE = IntegrationUpdate
+class ExtractionPipelineList(CogniteResourceList):
+    _RESOURCE = ExtractionPipeline
+    _UPDATE = ExtractionPipelineUpdate

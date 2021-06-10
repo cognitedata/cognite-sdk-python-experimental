@@ -3,11 +3,11 @@ import re
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Integration, IntegrationList, IntegrationUpdate
+from cognite.experimental.data_classes import ExtractionPipeline, ExtractionPipelineList, ExtractionPipelineUpdate
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
-TEST_API = COGNITE_CLIENT.integrations
+TEST_API = COGNITE_CLIENT.extraction_pipelines
 
 
 @pytest.fixture
@@ -28,8 +28,7 @@ def mock_int_response(rsps):
         ]
     }
     url_pattern = re.compile(
-        re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations(?:/byids|/update|/delete|/list|/search|$|\?.+)"
+        re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes(?:/byids|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -42,8 +41,7 @@ def mock_int_response(rsps):
 def mock_int_empty(rsps):
     response_body = {"items": []}
     url_pattern = re.compile(
-        re.escape(TEST_API._get_base_url_with_base_path())
-        + r"/integrations(?:/byids|/update|/delete|/list|/search|$|\?.+)"
+        re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes(?:/byids|/update|/delete|/list|/search|$|\?.+)"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -52,15 +50,15 @@ def mock_int_empty(rsps):
     yield rsps
 
 
-class TestIntegrations:
+class TestExtractionPipelines:
     def test_retrieve_single(self, mock_int_response):
         res = TEST_API.retrieve(id=1)
-        assert isinstance(res, Integration)
+        assert isinstance(res, ExtractionPipeline)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_retrieve_multiple(self, mock_int_response):
         res = TEST_API.retrieve_multiple(ids=[1])
-        assert isinstance(res, IntegrationList)
+        assert isinstance(res, ExtractionPipelineList)
         assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_list(self, mock_int_response):
@@ -69,7 +67,7 @@ class TestIntegrations:
 
     def test_create_single(self, mock_int_response):
         res = TEST_API.create(
-            Integration(
+            ExtractionPipeline(
                 external_id="py test id",
                 name="py test",
                 description="python generated",
@@ -78,11 +76,11 @@ class TestIntegrations:
                 contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
             )
         )
-        assert isinstance(res, Integration)
+        assert isinstance(res, ExtractionPipeline)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_create_multiple(self, mock_int_response):
-        int1 = Integration(
+        ep1 = ExtractionPipeline(
             external_id="py test id",
             name="py test",
             description="python generated",
@@ -91,7 +89,7 @@ class TestIntegrations:
             contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
         )
 
-        int2 = Integration(
+        ep2 = ExtractionPipeline(
             external_id="py test id2",
             name="py test2",
             description="python generated",
@@ -100,8 +98,8 @@ class TestIntegrations:
             contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
         )
 
-        res = TEST_API.create([int1, int2])
-        assert isinstance(res, IntegrationList)
+        res = TEST_API.create([ep1, ep2])
+        assert isinstance(res, ExtractionPipelineList)
         assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_delete_single(self, mock_int_response):
@@ -123,7 +121,7 @@ class TestIntegrations:
 
     def test_update_single(self, mock_int_response):
         res = TEST_API.update(
-            Integration(
+            ExtractionPipeline(
                 external_id="py test id",
                 name="py test",
                 description="python generated",
@@ -132,24 +130,24 @@ class TestIntegrations:
                 contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
             )
         )
-        assert isinstance(res, Integration)
+        assert isinstance(res, ExtractionPipeline)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
 
     def test_update_single_with_update_class(self, mock_int_response):
-        up = IntegrationUpdate(external_id="py test id")
+        up = ExtractionPipelineUpdate(external_id="py test id")
         up.description.set("New description")
         res = TEST_API.update(up)
-        assert isinstance(res, Integration)
+        assert isinstance(res, ExtractionPipeline)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
         assert {
             "items": [{"externalId": "py test id", "update": {"description": {"set": "New description"}}}]
         } == jsgz_load(mock_int_response.calls[0].request.body)
 
     def test_update_raw_tables_with_update_class(self, mock_int_response):
-        up = IntegrationUpdate(external_id="py test id")
+        up = ExtractionPipelineUpdate(external_id="py test id")
         up.raw_tables.add([{"dbName": "db", "tableName": "table"}])
         res = TEST_API.update(up)
-        assert isinstance(res, Integration)
+        assert isinstance(res, ExtractionPipeline)
         assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
         assert {
             "items": [
