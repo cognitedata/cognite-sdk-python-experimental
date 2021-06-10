@@ -54,11 +54,17 @@ intList = client.integrations.retrieve_multiple(ids=[23,24,25, 120], external_id
 runsList = client.integration_runs.list(external_id=res1.external_id)
 ```
 
+
+##Filter integration runs 
+```python
+runsList = client.integration_runs.list(external_id=res1.external_id, statuses=['success'])
+```
+
 ##Create a new integration run with status
 ```python
 from cognite.experimental.data_classes import IntegrationRun	
 newRun = client.integration_runs.create(IntegrationRun(external_id=res1.external_id, status="success"))
-newFailureRun = client.integration_runs.create(IntegrationRun(external_id=res1.external_id, status="failure", message = "Error message"))
+newFailureRun = client.integration_runs.create(IntegrationRun(external_id=res1.external_id, status="failure", message="Error message"))
 ```
 
 ##Delete an integration and all its runs
