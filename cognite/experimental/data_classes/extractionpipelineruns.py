@@ -2,11 +2,11 @@ from cognite.client.data_classes._base import *
 from cognite.client.data_classes.shared import TimestampRange
 
 
-class IntegrationRun(CogniteResource):
-    """A representation of a IntegrationRun.
+class ExtractionPipelineRun(CogniteResource):
+    """A representation of a ExtractionPipelineRun.
 
     Args:
-        external_id (str): The external ID of related integration provided by the client. Must be unique for the resource type.
+        external_id (str): The external ID of related ExtractionPipeline provided by the client. Must be unique for the resource type.
         status (str): success/failure/seen.
         message (str): failure message.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
@@ -28,21 +28,15 @@ class IntegrationRun(CogniteResource):
         self._cognite_client = cognite_client
 
 
-class IntegrationWithStatusesUpdate(CogniteUpdate):
-    class _PrimitiveIntegrationWithStatusesUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "IntegrationWithStatusesUpdate":
+class ExtractionPipelineRunUpdate(CogniteUpdate):
+    class _PrimitiveExtractionPipelineRunUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "ExtractionPipelineRunUpdate":
             return self._set(value)
 
 
-class IntegrationRunUpdate(CogniteUpdate):
-    class _PrimitiveIntegrationRunUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "IntegrationRunUpdate":
-            return self._set(value)
-
-
-class IntegrationRunList(CogniteResourceList):
-    _RESOURCE = IntegrationRun
-    _UPDATE = IntegrationRunUpdate
+class ExtractionPipelineRunList(CogniteResourceList):
+    _RESOURCE = ExtractionPipelineRun
+    _UPDATE = ExtractionPipelineRunUpdate
 
 
 class StringFilter(CogniteFilter):
@@ -58,11 +52,11 @@ class StringFilter(CogniteFilter):
         self.substring = substring
 
 
-class IntegrationRunFilter(CogniteFilter):
+class ExtractionPipelineRunFilter(CogniteFilter):
     """No description.
 
     Args:
-        external_id (str): The external ID of related integration provided by the client. Must be unique for the resource type.
+        external_id (str): The external ID of related ExtractionPipeline provided by the client. Must be unique for the resource type.
         statuses (List[str]): success/failure/seen.
         message (StringFilter): failure message filter.
         created_time (Union[Dict[str, Any], TimestampRange]): Range between two timestamps.
@@ -85,7 +79,7 @@ class IntegrationRunFilter(CogniteFilter):
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(IntegrationRunFilter, cls)._load(resource, cognite_client)
+        instance = super(ExtractionPipelineRunFilter, cls)._load(resource, cognite_client)
         if isinstance(resource, Dict):
             if instance.created_time is not None:
                 instance.created_time = TimestampRange(**instance.created_time)

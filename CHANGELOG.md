@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.56.0]
+
+### Changed
+- Rename Integrations to Extraction Pipelines.
+
 ## [0.55.0]
 
 ### Added
