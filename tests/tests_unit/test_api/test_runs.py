@@ -72,6 +72,11 @@ class TestExtractionPipelines:
         assert isinstance(res[0], ExtractionPipelineRun)
         assert 4 == len(res)
 
+    def test_filter(self, mock_run_response):
+        res = TEST_API.list(external_id="test", statuses=["success"])
+        assert isinstance(res[0], IntegrationRun)
+        assert 4 == len(res)
+
     def test_create_single(self, mock_create_run_response):
         res = TEST_API.create(ExtractionPipelineRun(external_id="py test id", status="success"))
         assert isinstance(res, ExtractionPipelineRun)
