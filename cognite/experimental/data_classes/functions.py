@@ -116,7 +116,11 @@ class Function(CogniteResource):
         Returns:
             FunctionSchedulesList: List of function schedules
         """
-        return self._cognite_client.functions.schedules.list(function_external_id=self.external_id, limit=limit)
+        schedules_by_external_id = self._cognite_client.functions.schedules.list(
+            function_external_id=self.external_id, limit=limit
+        )
+        schedules_by_id = self._cognite_client.functions.schedules.list(function_id=self.id, limit=limit)
+        return schedules_by_external_id + schedules_by_id
 
     def retrieve_call(self, id: int) -> "FunctionCall":
         """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
@@ -170,6 +174,7 @@ class FunctionSchedule(CogniteResource):
     Args:
         id (int): Id of the schedule.
         name (str): Name of the function schedule.
+        function_id (int): Id of the function.
         function_external_id (str): External id of the function.
         description (str): Description of the function schedule.
         cron_expression (str): Cron expression
@@ -181,6 +186,7 @@ class FunctionSchedule(CogniteResource):
         self,
         id: int = None,
         name: str = None,
+        function_id: str = None,
         function_external_id: str = None,
         description: str = None,
         created_time: int = None,
@@ -189,6 +195,7 @@ class FunctionSchedule(CogniteResource):
     ):
         self.id = id
         self.name = name
+        self.function_id = function_id
         self.function_external_id = function_external_id
         self.description = description
         self.cron_expression = cron_expression
@@ -210,11 +217,13 @@ class FunctionSchedulesFilter(CogniteFilter):
     def __init__(
         self,
         name: str = None,
+        function_id: int = None,
         function_external_id: str = None,
         created_time: Union[Dict[str, int], TimestampRange] = None,
         cron_expression: str = None,
     ):
         self.name = name
+        self.function_id = function_id
         self.function_external_id = function_external_id
         self.created_time = created_time
         self.cron_expression = cron_expression
