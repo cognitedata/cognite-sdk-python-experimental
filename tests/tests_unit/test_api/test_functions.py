@@ -540,7 +540,7 @@ SCHEDULE2 = {
     "createdTime": 456,
     "cronExpression": "*/5 * * * *",
     "description": "Hi",
-    "functionExternalId": "my-func",
+    "functionId": FUNCTION_ID,
     "id": 8012683333564363,
     "name": "my-schedule",
     "when": "Every 5 minutes",
@@ -621,27 +621,15 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_list_schedules_by_function_external_id(self, mock_filter_function_schedules_response):
-        res = FUNCTION_SCHEDULES_API.list(function_external_id="my-func")
+    def test_list_schedules(self, mock_filter_function_schedules_response):
+        res = FUNCTION_SCHEDULES_API.list()
         assert isinstance(res, FunctionSchedulesList)
         expected = mock_filter_function_schedules_response.calls[0].response.json()["items"]
         expected[0].pop("when")
         assert expected == res.dump(camel_case=True)
-
-    def test_list_schedules_by_function_id(self, mock_filter_function_schedules_response):
-        res = FUNCTION_SCHEDULES_API.list(function_id=123)
-        assert isinstance(res, FunctionSchedulesList)
-        expected = mock_filter_function_schedules_response.calls[0].response.json()["items"]
-        expected[0].pop("when")
-        assert expected == res.dump(camel_case=True)
-
-    def test_list_schedules_by_function_id_and_function_external_id_raises(self):
-        with pytest.raises(AssertionError) as excinfo:
-            res = FUNCTION_SCHEDULES_API.list(function_id=123, function_external_id="my-func")
-            assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
 
     def test_list_schedules_with_limit(self, mock_filter_function_schedules_response):
-        res = FUNCTION_SCHEDULES_API.list(function_external_id="my-func", limit=1)
+        res = FUNCTION_SCHEDULES_API.list(limit=1)
 
         assert isinstance(res, FunctionSchedulesList)
         assert len(res) == 1
