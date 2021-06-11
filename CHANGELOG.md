@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.57.0]
+
+### Changed
+- `FunctionSchedulesAPI.list()` now accepts the argument `function_id`. The arguments `function_external_id` and `function_id` are mutually exclusive.
+- `Function.list_schedules()` lists schedules attached to functions with both `function_id` and `function_external_id`.
+
 ## [0.56.1]
 
 ### Fixed
