@@ -723,7 +723,6 @@ class FunctionSchedulesAPI(APIClient):
                 >>> schedules = func.list_schedules(limit=None)
 
         """
-        _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id)
 
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
