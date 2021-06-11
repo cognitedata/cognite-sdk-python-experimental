@@ -19,6 +19,8 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
+* client.extractionpipelines: `Extraction Pipelines`_
+* client.extractionpipelineruns: `Extraction Pipeline Runs`_
 
 CogniteClient
 -------------
@@ -479,3 +481,52 @@ Get suggestions for missing entries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.templatecompletion.TemplateCompletionAPI.complete
 
+Extraction Pipelines
+---------
+
+Create extraction pipeline
+^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelines.ExtractionPipelinesAPI.create
+
+Delete extraction pipeline
+^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelines.ExtractionPipelinesAPI.delete
+
+List extraction pipelines
+^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelines.ExtractionPipelinesAPI.list
+
+Retrieve extraction pipeline
+^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelines.ExtractionPipelinesAPI.retrieve
+
+Retrieve multiple extraction pipelines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelines.ExtractionPipelinesAPI.retrieve_multiple
+
+Update extraction pipeline
+^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelines.ExtractionPipelinesAPI.update
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.extractionpipelines
+    :members:
+    :show-inheritance:
+
+Extraction Pipeline Runs
+---------
+
+Create extraction pipeline run
+^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelineruns.ExtractionPipelinesRunsAPI.create
+
+List extraction pipeline runs
+^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.extractionpipelineruns.ExtractionPipelinesRunsAPI.list
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.extractionpipelineruns
+    :members:
+    :show-inheritance:
