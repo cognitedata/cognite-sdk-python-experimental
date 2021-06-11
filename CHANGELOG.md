@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.56.1]
+
+### Fixed
+
+- Bug: `FunctionSchedulesAPI.create` did not pass `function_id` to request body. 
+
 ## [0.56.0]
 
 ### Changed

@@ -786,6 +786,7 @@ class FunctionSchedulesAPI(APIClient):
                 {
                     "name": name,
                     "description": description,
+                    "functionId": function_id,
                     "functionExternalId": function_external_id,
                     "cronExpression": cron_expression,
                     "nonce": nonce,
