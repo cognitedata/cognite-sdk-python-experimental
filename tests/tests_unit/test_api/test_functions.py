@@ -634,6 +634,11 @@ class TestFunctionSchedulesAPI:
         assert isinstance(res, FunctionSchedulesList)
         assert len(res) == 1
 
+    def test_list_schedules_with_function_id_and_function_external_id_raises(self):
+        with pytest.raises(AssertionError) as excinfo:
+            FUNCTION_SCHEDULES_API.list(function_id=123, function_external_id="my-func")
+            assert "Only function_id or function_external_id allowed when listing schedules." in str(excinfo.value)
+
     def test_create_schedules_with_function_external_id(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.create(
             name="my-schedule",
