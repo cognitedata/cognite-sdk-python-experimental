@@ -502,6 +502,16 @@ def _assert_exactly_one_of_function_id_and_function_external_id(function_id, fun
     ), "Exactly one of function_id and function_external_id must be specified"
 
 
+def _assert_at_most_one_of_function_id_and_function_external_id(function_id, function_external_id):
+    utils._auxiliary.assert_type(function_id, "function_id", [Integral], allow_none=True)
+    utils._auxiliary.assert_type(function_external_id, "function_external_id", [str], allow_none=True)
+    has_function_id = function_id is not None
+    has_function_external_id = function_external_id is not None
+    assert not (
+        has_function_id and has_function_external_id
+    ), "Only function_id or function_external_id allowed when listing schedules."
+
+
 class FunctionCallsAPI(APIClient):
     _LIST_CLASS = FunctionCallList
 
@@ -688,6 +698,7 @@ class FunctionSchedulesAPI(APIClient):
     def list(
         self,
         name: str = None,
+        function_id: int = None,
         function_external_id: str = None,
         created_time: Union[Dict[str, int], TimestampRange] = None,
         cron_expression: str = None,
@@ -697,6 +708,7 @@ class FunctionSchedulesAPI(APIClient):
 
         Args:
             name (str): Name of the function schedule.
+            function_id (int): ID of the function the schedules are linked to.
             function_external_id (str): External ID of the function the schedules are linked to.
             created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
             cron_expression (str): Cron expression.
@@ -721,11 +733,14 @@ class FunctionSchedulesAPI(APIClient):
                 >>> schedules = func.list_schedules(limit=None)
 
         """
+        _assert_at_most_one_of_function_id_and_function_external_id(function_id, function_external_id)
+
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
 
         filter = FunctionSchedulesFilter(
             name=name,
+            function_id=function_id,
             function_external_id=function_external_id,
             created_time=created_time,
             cron_expression=cron_expression,
