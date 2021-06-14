@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, call
 
 import pytest
 
-from cognite.experimental._constants import LIST_LIMIT_DEFAULT
 from cognite.experimental.data_classes import Function, FunctionSchedule
 
 
@@ -60,16 +59,19 @@ class TestFunction:
         empty_function._cognite_client.functions.retrieve.return_value = None
         empty_function.update()
 
-    def test_list_schedules(self, function, function_schedules):
+    @pytest.mark.parametrize("limit", [2, None, -1, float("inf")])
+    def test_list_schedules(self, function, function_schedules, limit):
         function._cognite_client.functions.schedules.list.side_effect = [
             [function_schedules[0]],
             [function_schedules[1]],
         ]
 
-        function.list_schedules()
+        schedules = function.list_schedules(limit=limit)
 
         calls = [
-            call(function_external_id=function.external_id, limit=LIST_LIMIT_DEFAULT),
-            call(function_id=function.id, limit=LIST_LIMIT_DEFAULT),
+            call(function_external_id=function.external_id, limit=limit),
+            call(function_id=function.id, limit=limit),
         ]
+
+        assert 2 == len(schedules)
         function._cognite_client.functions.schedules.list.assert_has_calls(calls)
