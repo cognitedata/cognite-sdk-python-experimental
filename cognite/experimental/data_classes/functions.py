@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Union
 from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
 from cognite.client.data_classes.shared import TimestampRange
 
-from cognite.experimental._constants import LIST_LIMIT_DEFAULT
+from cognite.experimental._constants import LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT
 
 
 class Function(CogniteResource):
@@ -120,7 +120,11 @@ class Function(CogniteResource):
             function_external_id=self.external_id, limit=limit
         )
         schedules_by_id = self._cognite_client.functions.schedules.list(function_id=self.id, limit=limit)
-        return schedules_by_external_id + schedules_by_id
+
+        if limit in [float("inf"), -1, None]:
+            limit = LIST_LIMIT_CEILING
+
+        return (schedules_by_external_id + schedules_by_id)[:limit]
 
     def retrieve_call(self, id: int) -> "FunctionCall":
         """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
