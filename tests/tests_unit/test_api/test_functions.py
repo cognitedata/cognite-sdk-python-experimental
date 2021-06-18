@@ -526,7 +526,7 @@ def mock_function_call_logs_response(rsps):
     yield rsps
 
 
-SCHEDULE1 = {
+SCHEDULE_WITH_FUNCTION_EXTERNAL_ID = {
     "createdTime": 123,
     "cronExpression": "*/5 * * * *",
     "description": "Hi",
@@ -536,7 +536,7 @@ SCHEDULE1 = {
     "when": "Every 5 minutes",
 }
 
-SCHEDULE2 = {
+SCHEDULE_WITH_FUNCTION_ID_AND_SESSION = {
     "createdTime": 456,
     "cronExpression": "*/5 * * * *",
     "description": "Hi",
@@ -544,13 +544,14 @@ SCHEDULE2 = {
     "id": 8012683333564363,
     "name": "my-schedule",
     "when": "Every 5 minutes",
+    "sessionId": 12345,
 }
 
 
 @pytest.fixture
 def mock_filter_function_schedules_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/list"
-    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE_WITH_FUNCTION_EXTERNAL_ID]})
 
     yield rsps
 
@@ -559,8 +560,8 @@ def mock_filter_function_schedules_response(rsps):
 def mock_function_schedules_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
     rsps.assert_all_requests_are_fired = False
-    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE1]})
-    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+    rsps.add(rsps.GET, url, status=200, json={"items": [SCHEDULE_WITH_FUNCTION_EXTERNAL_ID]})
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE_WITH_FUNCTION_EXTERNAL_ID]})
 
     yield rsps
 
@@ -577,22 +578,14 @@ def mock_function_schedules_response_oidc_client_credentials(rsps):
     )
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
-    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE_WITH_FUNCTION_ID_AND_SESSION]})
     yield rsps
 
 
 @pytest.fixture
 def mock_function_schedules_retrieve_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules/byids"
-    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE1]})
-
-    yield rsps
-
-
-@pytest.fixture
-def mock_function_schedules_response_with_data(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/functions/schedules"
-    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE2]})
+    rsps.add(rsps.POST, url, status=200, json={"items": [SCHEDULE_WITH_FUNCTION_EXTERNAL_ID]})
 
     yield rsps
 
@@ -607,15 +600,18 @@ def mock_function_schedules_delete_response(rsps):
 
 @pytest.fixture
 def mock_schedule_get_data_response(rsps):
-    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/schedules/{SCHEDULE2['id']}/input_data"
-    rsps.add(rsps.GET, url, status=200, json={"id": SCHEDULE2["id"], "data": {"value": 2}})
+    url = (
+        FUNCTIONS_API._get_base_url_with_base_path()
+        + f"/functions/schedules/{SCHEDULE_WITH_FUNCTION_ID_AND_SESSION['id']}/input_data"
+    )
+    rsps.add(rsps.GET, url, status=200, json={"id": SCHEDULE_WITH_FUNCTION_ID_AND_SESSION["id"], "data": {"value": 2}})
 
     yield rsps
 
 
 class TestFunctionSchedulesAPI:
     def test_retrieve_schedules(self, mock_function_schedules_retrieve_response):
-        res = FUNCTION_SCHEDULES_API.retrieve(id=SCHEDULE1["id"])
+        res = FUNCTION_SCHEDULES_API.retrieve(id=SCHEDULE_WITH_FUNCTION_EXTERNAL_ID["id"])
         assert isinstance(res, FunctionSchedule)
         expected = mock_function_schedules_retrieve_response.calls[0].response.json()["items"][0]
         expected.pop("when")
@@ -651,7 +647,9 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_create_schedules_oidc_with_function_id(self, mock_function_schedules_response_oidc_client_credentials):
+    def test_create_schedules_with_function_id_and_client_credentials(
+        self, mock_function_schedules_response_oidc_client_credentials
+    ):
         res = FUNCTION_SCHEDULES_API.create(
             name="my-schedule",
             function_id=123,
@@ -665,7 +663,7 @@ class TestFunctionSchedulesAPI:
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
-    def test_create_schedules_oidc_with_function_external_id_raises(self):
+    def test_create_schedules_with_function_external_id_and_client_credentials_raises(self):
         with pytest.raises(AssertionError) as excinfo:
             FUNCTION_SCHEDULES_API.create(
                 name="my-schedule",
@@ -688,7 +686,7 @@ class TestFunctionSchedulesAPI:
             )
         assert "Exactly one of function_id and function_external_id must be specified" in str(excinfo.value)
 
-    def test_create_schedules_with_data(self, mock_function_schedules_response_with_data):
+    def test_create_schedules_with_data(self, mock_function_schedules_response):
         res = FUNCTION_SCHEDULES_API.create(
             name="my-schedule",
             function_external_id="user/hello-cognite/hello-cognite:latest",
@@ -697,7 +695,7 @@ class TestFunctionSchedulesAPI:
             data={"value": 2},
         )
         assert isinstance(res, FunctionSchedule)
-        expected = mock_function_schedules_response_with_data.calls[0].response.json()["items"][0]
+        expected = mock_function_schedules_response.calls[0].response.json()["items"][0]
         expected.pop("when")
         assert expected == res.dump(camel_case=True)
 
