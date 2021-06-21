@@ -9,6 +9,7 @@ PNID_FILE_ID = 3261066797848581
 
 
 class TestPNIDParsingIntegration:
+    @pytest.mark.skip(reason="Skipping this temporarily until context-team has a fix.")
     def test_run_diagram_detect(self):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
