@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.57.1]
+
+### Added
+- `session_id` property to `FunctionSchedule` class, which is the id of the session started when creating a schedule with client credentials.
+
 ## [0.57.0]
 
 ### Changed
