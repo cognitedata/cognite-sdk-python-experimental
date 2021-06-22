@@ -1,6 +1,7 @@
 import copy
 from collections import UserList
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from enum import Enum
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 from cognite.client.data_classes import ContextualizationJob
@@ -14,6 +15,10 @@ from cognite.client.utils._auxiliary import to_camel_case
 
 from cognite.experimental.data_classes.utils.pandas import dataframe_summarize
 from cognite.experimental.data_classes.utils.rules_output import _color_matches, _label_groups
+
+
+class ContextualizationJobType(Enum):
+    PNID_PARSER = "pnid_parsing"
 
 
 class EntityMatchingMatchRule(CogniteResource):
@@ -465,6 +470,8 @@ class PNIDDetectionPageList(UserList):
 
 
 class PNIDConvertResults(ContextualizationJob):
+    _JOB_TYPE = ContextualizationJobType.PNID_PARSER
+
     @property
     def image(self):
         """Returns the result as an SVG image for output in jupyter"""
@@ -474,6 +481,8 @@ class PNIDConvertResults(ContextualizationJob):
 
 
 class PNIDDetectResults(ContextualizationJob):
+    _JOB_TYPE = ContextualizationJobType.PNID_PARSER
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -552,6 +561,8 @@ class DiagramConvertItem(CogniteResource):
 
 
 class DiagramConvertResults(ContextualizationJob):
+    _JOB_TYPE = ContextualizationJobType.PNID_PARSER
+
     def __getitem__(self, find_id) -> DiagramConvertItem:
         """retrieves the results for the file with (external) id"""
         found = [
@@ -586,6 +597,8 @@ class DiagramDetectItem(CogniteResource):
 
 
 class DiagramDetectResults(ContextualizationJob):
+    _JOB_TYPE = ContextualizationJobType.PNID_PARSER
+
     def __getitem__(self, find_id) -> DiagramDetectItem:
         """retrieves the results for the file with (external) id"""
         found = [
