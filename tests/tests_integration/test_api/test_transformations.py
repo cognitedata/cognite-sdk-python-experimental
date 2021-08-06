@@ -32,3 +32,11 @@ class TestTransformationsAPI:
             and new_transformation.destination.rawType == "plain_raw"
             and new_transformation.id is not None
         )
+
+    def test_retrieve(self, new_transformation):
+        retrieved_transformation = COGNITE_CLIENT.transformations.retrieve(new_transformation.id)
+        assert (
+            new_transformation.name == retrieved_transformation.name
+            and new_transformation.destination.type == retrieved_transformation.destination.type
+            and new_transformation.id == retrieved_transformation.id
+        )
