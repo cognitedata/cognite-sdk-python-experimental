@@ -40,3 +40,7 @@ class TestTransformationsAPI:
             and new_transformation.destination.type == retrieved_transformation.destination.type
             and new_transformation.id == retrieved_transformation.id
         )
+
+    def test_list(self, new_transformation):
+        retrieved_transformations = COGNITE_CLIENT.transformations.list()
+        assert new_transformation.id in [transformation.id for transformation in retrieved_transformations]
