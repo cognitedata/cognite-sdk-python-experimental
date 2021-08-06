@@ -1,14 +1,8 @@
-import time
-from unittest import mock
-
 import pytest
-from cognite.client import utils
-from cognite.client.exceptions import CogniteAPIError, CogniteNotFoundError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Transformation
 from cognite.experimental.data_classes.transformations import TransformationDestination
-from tests.utils import set_request_limit
 
 COGNITE_CLIENT = CogniteClient()
 
