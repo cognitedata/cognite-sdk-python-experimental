@@ -19,9 +19,9 @@ class _RawTableFactory:
         return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
 
 
-TransformationDestination.assets = TransformationDestination("assets")
-TransformationDestination.timeseries = TransformationDestination("timeseries")
-TransformationDestination.asset_hierarchy = TransformationDestination("asset_hierarchy")
+TransformationDestination.Assets = TransformationDestination("assets")
+TransformationDestination.Timeseries = TransformationDestination("timeseries")
+TransformationDestination.AssetHierarchy = TransformationDestination("asset_hierarchy")
 TransformationDestination.Events = TransformationDestination("events")
 TransformationDestination.Datapoints = TransformationDestination("datapoints")
 TransformationDestination.StringDatapoints = TransformationDestination("string_datapoints")
