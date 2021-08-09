@@ -37,9 +37,17 @@ class TransformationsAPI(APIClient):
             Create new transformations:
 
                 >>> from cognite.experimental import CogniteClient
-                >>> from cognite.experimental.data_classes import Transfromation
+                >>> from cognite.experimental.data_classes import Transformation, TransformationDestination
                 >>> c = CogniteClient()
-                >>> transformations = [Transformation(name="transformation1"), Transformation(name="transformation2")]
+                >>> transformations = [
+                >>>     Transformation(
+                >>>         name="transformation1", destination=TransformationDestination.Assets
+                >>>     ),
+                >>>     Transformation(
+                >>>         name="transformation2",
+                >>>         destination=TransformationDestination.Raw("myDatabase", "myTable"),
+                >>>     ),
+                >>> ]
                 >>> res = c.transformations.create(transformations)
         """
         utils._auxiliary.assert_type(transformation, "transformation", [Transformation, list])
