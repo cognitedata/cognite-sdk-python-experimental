@@ -81,7 +81,7 @@ class TransformationSchedulesAPI(APIClient):
         external_id: Union[str, List[str]] = None,
         ignore_unknown_ids: bool = False,
     ) -> None:
-        """`Unsubscribe one or more schedules <https://doc.cognitedata.com/api/playground/#operation/deleteSchedules>`_
+        """`Unschedule one or more transformations <https://doc.cognitedata.com/api/playground/#operation/deleteSchedules>`_
 
         Args:
             id (Union[int, List[int]): Id or list of ids
