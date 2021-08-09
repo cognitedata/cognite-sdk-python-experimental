@@ -9,7 +9,7 @@ COGNITE_CLIENT = CogniteClient()
 
 @pytest.fixture
 def new_transformation():
-    transform = Transformation(name="any", destination=TransformationDestination.Raw("", ""))
+    transform = Transformation(name="any", destination=TransformationDestination.Raw())
     ts = COGNITE_CLIENT.transformations.create(transform)
 
     yield ts

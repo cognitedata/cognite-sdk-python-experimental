@@ -15,7 +15,7 @@ class RawTable(TransformationDestination):
 
 
 class _RawTableFactory:
-    def __call__(self, database: str = None, table: str = None):
+    def __call__(self, database: str = "", table: str = ""):
         return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
 
 
