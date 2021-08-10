@@ -156,33 +156,3 @@ class TransformationsAPI(APIClient):
                 >>> res = c.transformations.update(my_update)
         """
         return self._update_multiple(items=item)
-
-    def _do_request(self, method: str, url_path: str, **kwargs) -> Response:
-        is_retryable, full_url = self._resolve_url(method, url_path)
-
-        json_payload = kwargs.get("json")
-        headers = self._configure_headers(self._config.headers.copy())
-        headers.update(kwargs.get("headers") or {})
-
-        if json_payload:
-            data = _json.dumps(json_payload, default=utils._auxiliary.json_dump_default)
-            kwargs["data"] = data
-
-        kwargs["headers"] = headers
-
-        # requests will by default follow redirects. This can be an SSRF-hazard if
-        # the client can be tricked to request something with an open redirect, in
-        # addition to leaking the token, as requests will send the headers to the
-        # redirected-to endpoint.
-        # If redirects are to be followed in a call, this should be opted into instead.
-        kwargs.setdefault("allow_redirects", False)
-
-        if is_retryable:
-            res = self._http_client_with_retry.request(method=method, url=full_url, **kwargs)
-        else:
-            res = self._http_client.request(method=method, url=full_url, **kwargs)
-
-        if not self._status_ok(res.status_code):
-            self._raise_API_error(res, payload=json_payload)
-        self._log_request(res, payload=json_payload)
-        return res
