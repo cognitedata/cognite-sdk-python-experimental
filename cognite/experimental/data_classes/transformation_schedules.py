@@ -8,10 +8,10 @@ class TransformationSchedule(CogniteResource):
         request_scheduler_id: Id of the schedule in request scheduler service.
         id (int): Transformation id.
         external_id (str): Transformation externalId.
-        created_at (int): Time when the schedule was created.
+        created_time (int): Time when the schedule was created.
+        last_updated_time (int): Time when the schedule was last updated.
         interval (str): Cron expression describes when the function should be called. Use http://www.cronmaker.com to create a cron expression.
         is_paused (bool): If true, the transformation is not scheduled.
-        config_id (int): Transformation id for backward compatibility.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
