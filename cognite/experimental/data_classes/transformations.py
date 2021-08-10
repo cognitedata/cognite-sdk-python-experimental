@@ -48,7 +48,7 @@ class TransformationDestination:
     def StringDatapoints():
         """`To be used when the transformation is meant to produce string data points.`_
         """
-        return TransformationDestination("string_datapoints")
+        return TransformationDestination("stringdatapoints")
 
     @property
     @staticmethod
