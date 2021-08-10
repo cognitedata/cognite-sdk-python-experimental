@@ -83,7 +83,7 @@ class TransformationSchedulesAPI(APIClient):
         Args:
             include_public (bool): Whether public transformations should be included in the results. (default true).
             cursor (str): Cursor for paging through results.
-            limit (int): Limits the number of results to be returned. The maximum is 1000, default limit is 25.
+            limit (int): Limits the number of results to be returned. To retrieve all results use limit=-1, default limit is 25.
 
         Returns:
             TransformationList: List of transformations
