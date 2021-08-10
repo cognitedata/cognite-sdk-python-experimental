@@ -23,7 +23,7 @@ class TransformationSchedule(CogniteResource):
         created_time: int = None,
         last_updated_time: int = None,
         interval: str = None,
-        is_paused: bool = None,
+        is_paused: bool = True,
         cognite_client=None,
     ):
         self.request_scheduler_id = request_scheduler_id
@@ -44,6 +44,27 @@ class TransformationSchedule(CogniteResource):
         return hash(self.request_scheduler_id)
 
 
+class TransformationScheduleUpdate(CogniteUpdate):
+    """Changes applied to transformation schedule
+
+    Args:
+        id (int): Transformation id.
+        external_id (str): Transformation externalId.
+    """
+
+    class _PrimitiveTransformationScheduleUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "TransformationScheduleUpdate":
+            return self._set(value)
+
+    @property
+    def interval(self):
+        return TransformationScheduleUpdate._PrimitiveTransformationScheduleUpdate(self, "interval")
+
+    @property
+    def is_paused(self):
+        return TransformationScheduleUpdate._PrimitiveTransformationScheduleUpdate(self, "isPaused")
+
+
 class TransformationScheduleList(CogniteResourceList):
     _RESOURCE = TransformationSchedule
-    _ASSERT_CLASSES = False
+    _UPDATE = TransformationScheduleUpdate

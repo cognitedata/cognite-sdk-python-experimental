@@ -2,84 +2,74 @@ from cognite.client.data_classes._base import *
 
 
 class TransformationDestination:
-    """TransformationDestination has static properties and methods to define the target resource type of a transformation
+    """TransformationDestination has static methods to define the target resource type of a transformation
     """
 
     def __init__(self, type: str = None):
         self.type = type
 
-    @property
     @staticmethod
-    def Assets():
+    def assets():
         """`To be used when the transformation is meant to produce assets.`_
         """
         return TransformationDestination("assets")
 
-    @property
     @staticmethod
-    def Timeseries():
+    def timeseries():
         """`To be used when the transformation is meant to produce time series.`_
         """
         return TransformationDestination("timeseries")
 
-    @property
     @staticmethod
-    def AssetHierarchy():
+    def assethierarchy():
         """`To be used when the transformation is meant to produce asset hierarchies.`_
         """
         return TransformationDestination("assethierarchy")
 
-    @property
     @staticmethod
-    def Events():
+    def events():
         """`To be used when the transformation is meant to produce events.`_
         """
         return TransformationDestination("events")
 
-    @property
     @staticmethod
-    def Datapoints():
+    def datapoints():
         """`To be used when the transformation is meant to produce numeric data points.`_
         """
         return TransformationDestination("datapoints")
 
-    @property
     @staticmethod
-    def StringDatapoints():
+    def stringdatapoints():
         """`To be used when the transformation is meant to produce string data points.`_
         """
         return TransformationDestination("stringdatapoints")
 
-    @property
     @staticmethod
-    def Sequences():
+    def sequences():
         """`To be used when the transformation is meant to produce sequences.`_
         """
         return TransformationDestination("sequences")
 
-    @property
     @staticmethod
-    def Files():
+    def files():
         """`To be used when the transformation is meant to produce files.`_
         """
         return TransformationDestination("files")
 
-    @property
     @staticmethod
-    def Labels():
+    def labels():
         """`To be used when the transformation is meant to produce labels.`_
         """
         return TransformationDestination("labels")
 
-    @property
     @staticmethod
-    def Relationships():
+    def relationships():
         """`To be used when the transformation is meant to produce relationships.`_
         """
         return TransformationDestination("relationships")
 
     @staticmethod
-    def Raw(database: str = "", table: str = ""):
+    def raw(database: str = "", table: str = ""):
         """`To be used when the transformation is meant to produce raw table rows.`_
 
         Args:

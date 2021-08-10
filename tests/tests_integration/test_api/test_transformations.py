@@ -1,15 +1,14 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Transformation, TransformationUpdate
-from cognite.experimental.data_classes.transformations import TransformationDestination
+from cognite.experimental.data_classes import Transformation, TransformationDestination, TransformationUpdate
 
 COGNITE_CLIENT = CogniteClient()
 
 
 @pytest.fixture
 def new_transformation():
-    transform = Transformation(name="any", destination=TransformationDestination.Raw())
+    transform = Transformation(name="any", destination=TransformationDestination.raw())
     ts = COGNITE_CLIENT.transformations.create(transform)
 
     yield ts
@@ -19,6 +18,11 @@ def new_transformation():
 
 
 class TestTransformationsAPI:
+    def test_create_asset_transformation(self):
+        transform = Transformation(name="any", destination=TransformationDestination.assets())
+        ts = COGNITE_CLIENT.transformations.create(transform)
+        COGNITE_CLIENT.transformations.delete(id=ts.id)
+
     def test_create(self, new_transformation):
         assert (
             new_transformation.name == "any"

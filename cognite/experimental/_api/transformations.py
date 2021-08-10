@@ -41,11 +41,11 @@ class TransformationsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> transformations = [
                 >>>     Transformation(
-                >>>         name="transformation1", destination=TransformationDestination.Assets
+                >>>         name="transformation1", destination=TransformationDestination.assets()
                 >>>     ),
                 >>>     Transformation(
                 >>>         name="transformation2",
-                >>>         destination=TransformationDestination.Raw("myDatabase", "myTable"),
+                >>>         destination=TransformationDestination.raw("myDatabase", "myTable"),
                 >>>     ),
                 >>> ]
                 >>> res = c.transformations.create(transformations)
@@ -152,7 +152,7 @@ class TransformationsAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes import TransformationUpdate
                 >>> c = CogniteClient()
-                >>> my_update = TransformationUpdate(id=1).query.set("SELECT * FROM _cdf.assets").is_public.set(false)
+                >>> my_update = TransformationUpdate(id=1).query.set("SELECT * FROM _cdf.assets").is_public.set(False)
                 >>> res = c.transformations.update(my_update)
         """
         return self._update_multiple(items=item)

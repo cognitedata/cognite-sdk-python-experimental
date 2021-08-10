@@ -14,6 +14,7 @@ from cognite.experimental.data_classes import (
     TransformationList,
     TransformationSchedule,
     TransformationScheduleList,
+    TransformationScheduleUpdate,
 )
 from cognite.experimental.data_classes.transformations import TransformationFilter
 
@@ -48,6 +49,33 @@ class TransformationSchedulesAPI(APIClient):
         """
         utils._auxiliary.assert_type(schedule, "schedule", [TransformationSchedule, list])
         return self._create_multiple(schedule)
+
+    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[TransformationSchedule]:
+        """`Retrieve a single transformation schedule by the id or external id of its transformation. <https://docs.cognite.com/api/playground/#operation/getTransformationSchedule>`_
+
+        Args:
+            id (int, optional): transformation ID
+            external_id (str, optional): transformation External ID
+
+        Returns:
+            Optional[TransformationSchedule]: Requested transformation schedule or None if it does not exist.
+
+        Examples:
+
+            Get transformation schedule by transformation id:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.transformations.schedules.retrieve(id=1)
+
+            Get transformation schedule by transformation external id:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.transformations.schedules.retrieve(external_id="1")
+        """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def list(self, include_public: bool = True, limit: Optional[int] = LIST_LIMIT_DEFAULT,) -> TransformationList:
         """`List all transformation schedules. <https://docs.cognite.com/api/playground/#operation/transformationSchedules>`_
@@ -102,3 +130,39 @@ class TransformationSchedulesAPI(APIClient):
         self._delete_multiple(
             ids=id, external_ids=external_id, wrap_ids=True, extra_body_fields={"ignoreUnknownIds": ignore_unknown_ids},
         )
+
+    def update(
+        self,
+        item: Union[
+            TransformationSchedule,
+            TransformationScheduleUpdate,
+            List[Union[TransformationSchedule, TransformationScheduleUpdate]],
+        ],
+    ) -> Union[TransformationSchedule, TransformationScheduleList]:
+        """`Update one or more transformation schedules <https://docs.cognite.com/api/playground/#operation/updateTransformationSchedules>`_
+
+        Args:
+            item (Union[TransformationSchedule, TransformationScheduleUpdate, List[Union[TransformationSchedule, TransformationScheduleUpdate]]]): Transformation schedule(s) to update
+
+        Returns:
+            Union[TransformationSchedule, TransformationScheduleList]: Updated transformation schedule(s)
+
+        Examples:
+
+            Update a transformation schedule that you have fetched. This will perform a full update of the schedule::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> transformation_schedule = c.transformations.schedules.retrieve(id=1)
+                >>> transformation_schedule.is_paused = True
+                >>> res = c.transformations.update(transformation)
+
+            Perform a partial update on a transformation schedule, updating the interval and unpausing it::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes import TransformationScheduleUpdate
+                >>> c = CogniteClient()
+                >>> my_update = TransformationScheduleUpdate(id=1).interval.set("0 * * * *").is_paused.set(False)
+                >>> res = c.transformations.schedules.update(my_update)
+        """
+        return self._update_multiple(items=item)
