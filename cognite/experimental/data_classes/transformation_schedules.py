@@ -20,7 +20,8 @@ class TransformationSchedule(CogniteResource):
         request_scheduler_id: int = None,
         id: int = None,
         external_id: str = None,
-        created_at: int = None,
+        created_time: int = None,
+        last_updated_time: int = None,
         interval: str = None,
         is_paused: bool = None,
         cognite_client=None,
@@ -28,7 +29,8 @@ class TransformationSchedule(CogniteResource):
         self.request_scheduler_id = request_scheduler_id
         self.id = id
         self.external_id = external_id
-        self.created_at = created_at
+        self.created_time = created_time
+        self.last_updated_time = last_updated_time
         self.interval = interval
         self.is_paused = is_paused
         self.cognite_client = cognite_client

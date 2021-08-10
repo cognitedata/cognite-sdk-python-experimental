@@ -118,9 +118,9 @@ class OidcCredentials:
 
 
 class TransformationJobBlockade:
-    def __init__(self, reason: str = None, time: Optional[int] = None):
+    def __init__(self, reason: str = None, created_time: Optional[int] = None):
         self.reason = reason
-        self.time = time
+        self.created_time = created_time
 
 
 class Transformation(CogniteResource):
