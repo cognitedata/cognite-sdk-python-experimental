@@ -41,7 +41,7 @@ class TransformationSchedulesAPI(APIClient):
             Create new schedules:
 
                 >>> from cognite.experimental import CogniteClient
-                >>> from cognite.experimental.data_classes import Transfromation
+                >>> from cognite.experimental.data_classes import Transformation
                 >>> c = CogniteClient()
                 >>> schedules = [TransformationSchedule(name="transformation1"), TransformationSchedule(name="transformation2")]
                 >>> res = c.transformations.schedule(schedules)
