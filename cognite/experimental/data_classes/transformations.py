@@ -27,7 +27,7 @@ class TransformationDestination:
     def AssetHierarchy():
         """`To be used when the transformation is meant to produce asset hierarchies.`_
         """
-        return TransformationDestination("asset_hierarchy")
+        return TransformationDestination("assethierarchy")
 
     @property
     @staticmethod
