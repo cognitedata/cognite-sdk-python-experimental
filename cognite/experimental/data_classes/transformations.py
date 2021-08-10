@@ -2,8 +2,94 @@ from cognite.client.data_classes._base import *
 
 
 class TransformationDestination:
+    """TransformationDestination has static properties and methods to define the target resource type of a transformation
+    """
+
     def __init__(self, type: str = None):
         self.type = type
+
+    @property
+    @staticmethod
+    def Assets():
+        """`To be used when the transformation is meant to produce assets.`_
+        """
+        return TransformationDestination("assets")
+
+    @property
+    @staticmethod
+    def Timeseries():
+        """`To be used when the transformation is meant to produce time series.`_
+        """
+        return TransformationDestination("timeseries")
+
+    @property
+    @staticmethod
+    def AssetHierarchy():
+        """`To be used when the transformation is meant to produce asset hierarchies.`_
+        """
+        return TransformationDestination("asset_hierarchy")
+
+    @property
+    @staticmethod
+    def Events():
+        """`To be used when the transformation is meant to produce events.`_
+        """
+        return TransformationDestination("events")
+
+    @property
+    @staticmethod
+    def Datapoints():
+        """`To be used when the transformation is meant to produce numeric data points.`_
+        """
+        return TransformationDestination("datapoints")
+
+    @property
+    @staticmethod
+    def StringDatapoints():
+        """`To be used when the transformation is meant to produce string data points.`_
+        """
+        return TransformationDestination("string_datapoints")
+
+    @property
+    @staticmethod
+    def Sequences():
+        """`To be used when the transformation is meant to produce sequences.`_
+        """
+        return TransformationDestination("sequences")
+
+    @property
+    @staticmethod
+    def Files():
+        """`To be used when the transformation is meant to produce files.`_
+        """
+        return TransformationDestination("files")
+
+    @property
+    @staticmethod
+    def Labels():
+        """`To be used when the transformation is meant to produce labels.`_
+        """
+        return TransformationDestination("labels")
+
+    @property
+    @staticmethod
+    def Relationships():
+        """`To be used when the transformation is meant to produce relationships.`_
+        """
+        return TransformationDestination("relationships")
+
+    @staticmethod
+    def Raw(database: str = "", table: str = ""):
+        """`To be used when the transformation is meant to produce raw table rows.`_
+
+        Args:
+            database (str) – database name of the target raw table.
+            table (str) – name of the target raw table
+
+        Returns:
+            TransformationDestination pointing to the target table
+        """
+        return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
 
 
 class RawTable(TransformationDestination):
@@ -12,24 +98,6 @@ class RawTable(TransformationDestination):
         self.rawType = raw_type
         self.database = database
         self.table = table
-
-
-class _RawTableFactory:
-    def __call__(self, database: str = "", table: str = ""):
-        return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
-
-
-TransformationDestination.Assets = TransformationDestination("assets")
-TransformationDestination.Timeseries = TransformationDestination("timeseries")
-TransformationDestination.AssetHierarchy = TransformationDestination("asset_hierarchy")
-TransformationDestination.Events = TransformationDestination("events")
-TransformationDestination.Datapoints = TransformationDestination("datapoints")
-TransformationDestination.StringDatapoints = TransformationDestination("string_datapoints")
-TransformationDestination.Sequences = TransformationDestination("sequences")
-TransformationDestination.Files = TransformationDestination("files")
-TransformationDestination.Labels = TransformationDestination("labels")
-TransformationDestination.Relationships = TransformationDestination("relationships")
-TransformationDestination.Raw = _RawTableFactory()
 
 
 class OidcCredentials:
