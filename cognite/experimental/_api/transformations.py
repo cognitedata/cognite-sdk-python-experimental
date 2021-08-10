@@ -8,7 +8,7 @@ from requests import Response
 from cognite.experimental._api.transformation_schedules import TransformationSchedulesAPI
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import Transformation, TransformationList
-from cognite.experimental.data_classes.transformations import TransformationFilter
+from cognite.experimental.data_classes.transformations import TransformationFilter, TransformationUpdate
 
 
 class TransformationsAPI(APIClient):
@@ -125,6 +125,37 @@ class TransformationsAPI(APIClient):
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+
+    def update(
+        self, item: Union[Transformation, TransformationUpdate, List[Union[Transformation, TransformationUpdate]]]
+    ) -> Union[Transformation, TransformationList]:
+        """`Update one or more transformations <https://docs.cognite.com/api/playground/#operation/updateTransformations>`_
+
+        Args:
+            item (Union[Transformation, TransformationUpdate, List[Union[Transformation, TransformationUpdate]]]): Transformation(s) to update
+
+        Returns:
+            Union[Transformation, TransformationList]: Updated transformation(s)
+
+        Examples:
+
+            Update a transformation that you have fetched. This will perform a full update of the transformation::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> transformation = c.transformations.retrieve(id=1)
+                >>> transformation.query = "SELECT * FROM _cdf.assets"
+                >>> res = c.transformations.update(transformation)
+
+            Perform a partial update on a transformation, updating the query and making it private::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes import TransformationUpdate
+                >>> c = CogniteClient()
+                >>> my_update = TransformationUpdate(id=1).query.set("SELECT * FROM _cdf.assets").is_public.set(false)
+                >>> res = c.transformations.update(my_update)
+        """
+        return self._update_multiple(items=item)
 
     def _do_request(self, method: str, url_path: str, **kwargs) -> Response:
         is_retryable, full_url = self._resolve_url(method, url_path)

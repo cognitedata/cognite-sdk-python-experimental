@@ -1,7 +1,7 @@
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import Transformation
+from cognite.experimental.data_classes import Transformation, TransformationUpdate
 from cognite.experimental.data_classes.transformations import TransformationDestination
 
 COGNITE_CLIENT = CogniteClient()
@@ -33,6 +33,27 @@ class TestTransformationsAPI:
             new_transformation.name == retrieved_transformation.name
             and new_transformation.destination.type == retrieved_transformation.destination.type
             and new_transformation.id == retrieved_transformation.id
+        )
+
+    def test_update_full(self, new_transformation):
+        new_transformation.name = "new name"
+        new_transformation.query = "SELECT * from _cdf.assets"
+        updated_transformation = COGNITE_CLIENT.transformations.update(new_transformation)
+        retrieved_transformation = COGNITE_CLIENT.transformations.retrieve(new_transformation.id)
+        assert (
+            updated_transformation.name == retrieved_transformation.name == "new name"
+            and updated_transformation.query == retrieved_transformation.query == "SELECT * from _cdf.assets"
+        )
+
+    def test_update_partial(self, new_transformation):
+        update_transformation = (
+            TransformationUpdate(id=new_transformation.id).name.set("new name").query.set("SELECT * from _cdf.assets")
+        )
+        updated_transformation = COGNITE_CLIENT.transformations.update(update_transformation)
+        retrieved_transformation = COGNITE_CLIENT.transformations.retrieve(new_transformation.id)
+        assert (
+            updated_transformation.name == retrieved_transformation.name == "new name"
+            and updated_transformation.query == retrieved_transformation.query == "SELECT * from _cdf.assets"
         )
 
     def test_list(self, new_transformation):

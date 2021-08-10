@@ -213,80 +213,60 @@ class Transformation(CogniteResource):
 
 
 class TransformationUpdate(CogniteUpdate):
-    """Changes applied to ExtractionPipeline
+    """Changes applied to transformation
 
     Args:
         id (int): A server-generated ID for the object.
-        external_id (str): The external ID provided by the client. Must be unique for the resource type.
+        external_id (str): External Id provided by client. Should be unique within the project.
     """
 
-    class _PrimitiveExtractionPipelineUpdate(CognitePrimitiveUpdate):
+    class _PrimitiveTransformationUpdate(CognitePrimitiveUpdate):
         def set(self, value: Any) -> "TransformationUpdate":
             return self._set(value)
 
-    class _ObjectExtractionPipelineUpdate(CogniteObjectUpdate):
-        def set(self, value: Dict) -> "TransformationUpdate":
-            return self._set(value)
-
-        def add(self, value: Dict) -> "TransformationUpdate":
-            return self._add(value)
-
-        def remove(self, value: List) -> "TransformationUpdate":
-            return self._remove(value)
-
-    class _ListExtractionPipelineUpdate(CogniteListUpdate):
-        def set(self, value: List) -> "TransformationUpdate":
-            return self._set(value)
-
-        def add(self, value: List) -> "TransformationUpdate":
-            return self._add(value)
-
-        def remove(self, value: List) -> "TransformationUpdate":
-            return self._remove(value)
-
     @property
     def external_id(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "externalId")
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "externalId")
 
     @property
     def name(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "name")
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "name")
 
     @property
-    def description(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "description")
+    def destination(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "destination")
 
     @property
-    def data_set_id(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "dataSetId")
+    def conflict_mode(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "conflictMode")
 
     @property
-    def raw_tables(self):
-        return TransformationUpdate._ListExtractionPipelineUpdate(self, "rawTables")
+    def query(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "query")
 
     @property
-    def metadata(self):
-        return TransformationUpdate._ObjectExtractionPipelineUpdate(self, "metadata")
+    def source_oidc_credentials(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "sourceOidcCredentials")
 
     @property
-    def source(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "source")
+    def destination_oidc_credentials(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "destinationOidcCredentials")
 
     @property
-    def documentation(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "documentation")
+    def source_api_key(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "sourceApiKey")
 
     @property
-    def schedule(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "schedule")
+    def destination_api_key(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "destinationApiKey")
 
     @property
-    def contacts(self):
-        return TransformationUpdate._ListExtractionPipelineUpdate(self, "contacts")
+    def is_public(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "isPublic")
 
     @property
-    def skip_notifications_in_minutes(self):
-        return TransformationUpdate._PrimitiveExtractionPipelineUpdate(self, "skipNotificationsInMinutes")
+    def ignore_null_fields(self):
+        return TransformationUpdate._PrimitiveTransformationUpdate(self, "ignoreNullFields")
 
 
 class TransformationList(CogniteResourceList):
