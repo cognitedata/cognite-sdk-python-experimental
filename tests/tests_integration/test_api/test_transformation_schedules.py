@@ -30,7 +30,7 @@ def new_transformation():
 
 @pytest.fixture
 def new_schedule(new_transformation):
-    schedule = TransformationSchedule(id=new_transformation.id, interval="0 * * * *", is_paused=False)
+    schedule = TransformationSchedule(id=new_transformation.id, interval="0 * * * *")
     tsc = COGNITE_CLIENT.transformations.schedules.create(schedule)
 
     yield tsc

@@ -23,7 +23,7 @@ class TransformationSchedule(CogniteResource):
         created_time: int = None,
         last_updated_time: int = None,
         interval: str = None,
-        is_paused: bool = True,
+        is_paused: bool = False,
         cognite_client=None,
     ):
         self.request_scheduler_id = request_scheduler_id
