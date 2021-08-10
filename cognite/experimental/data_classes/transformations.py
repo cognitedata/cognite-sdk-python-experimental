@@ -301,6 +301,5 @@ class TransformationFilter(CogniteFilter):
         include_public (bool): Whether public transformations should be included in the results. The default is true.
     """
 
-    def __init__(self, include_public: bool = True, cursor: str = None):
+    def __init__(self, include_public: bool = True):
         self.include_public = include_public
-        self.cursor = cursor
