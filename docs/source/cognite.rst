@@ -19,6 +19,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
+* client.transformations: `Transformations`_
 
 CogniteClient
 -------------
@@ -479,3 +480,31 @@ Get suggestions for missing entries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.templatecompletion.TemplateCompletionAPI.complete
 
+Transformations
+------------------------
+
+Create transformations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.create
+
+Retrieve transformations by id
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.retrieve
+
+List transformations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.list
+
+Update transformations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.update
+
+Delete transformations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.delete
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.transformations
+    :members:
+    :show-inheritance:

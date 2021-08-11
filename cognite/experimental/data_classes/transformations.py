@@ -9,61 +9,61 @@ class TransformationDestination:
 
     @staticmethod
     def assets():
-        """`To be used when the transformation is meant to produce assets.`_"""
+        """To be used when the transformation is meant to produce assets."""
         return TransformationDestination("assets")
 
     @staticmethod
     def timeseries():
-        """`To be used when the transformation is meant to produce time series.`_"""
+        """To be used when the transformation is meant to produce time series."""
         return TransformationDestination("timeseries")
 
     @staticmethod
     def assethierarchy():
-        """`To be used when the transformation is meant to produce asset hierarchies.`_"""
+        """To be used when the transformation is meant to produce asset hierarchies."""
         return TransformationDestination("assethierarchy")
 
     @staticmethod
     def events():
-        """`To be used when the transformation is meant to produce events.`_"""
+        """To be used when the transformation is meant to produce events."""
         return TransformationDestination("events")
 
     @staticmethod
     def datapoints():
-        """`To be used when the transformation is meant to produce numeric data points.`_"""
+        """To be used when the transformation is meant to produce numeric data points."""
         return TransformationDestination("datapoints")
 
     @staticmethod
     def stringdatapoints():
-        """`To be used when the transformation is meant to produce string data points.`_"""
+        """To be used when the transformation is meant to produce string data points."""
         return TransformationDestination("stringdatapoints")
 
     @staticmethod
     def sequences():
-        """`To be used when the transformation is meant to produce sequences.`_"""
+        """To be used when the transformation is meant to produce sequences."""
         return TransformationDestination("sequences")
 
     @staticmethod
     def files():
-        """`To be used when the transformation is meant to produce files.`_"""
+        """To be used when the transformation is meant to produce files."""
         return TransformationDestination("files")
 
     @staticmethod
     def labels():
-        """`To be used when the transformation is meant to produce labels.`_"""
+        """To be used when the transformation is meant to produce labels."""
         return TransformationDestination("labels")
 
     @staticmethod
     def relationships():
-        """`To be used when the transformation is meant to produce relationships.`_"""
+        """To be used when the transformation is meant to produce relationships."""
         return TransformationDestination("relationships")
 
     @staticmethod
     def raw(database: str = "", table: str = ""):
-        """`To be used when the transformation is meant to produce raw table rows.`_
+        """To be used when the transformation is meant to produce raw table rows.
 
         Args:
-            database (str) – database name of the target raw table.
-            table (str) – name of the target raw table
+            database (str): database name of the target raw table.
+            table (str): name of the target raw table
 
         Returns:
             TransformationDestination pointing to the target table
@@ -110,7 +110,7 @@ class Transformation(CogniteResource):
         external_id (str): The external ID provided by the client. Must be unique for the resource type.
         name (str): The name of the Transformation.
         query (str): SQL query of the transformation.
-        destination (TransformationDestination): Configuration of the transformation sink (either TransformationDestination.assets(), TransformationDestination.timeseries(), TransformationDestination.assethierarchy(), TransformationDestination.events(), TransformationDestination.datapoints(), TransformationDestination.stringdatapoints(), TransformationDestination.sequences(), TransformationDestination.files(), TransformationDestination.labels(), TransformationDestination.relationships() or TransformationDestination.raw("database","table") ).
+        destination (TransformationDestination): see TransformationDestination for options.
         conflict_mode (str): What to do in case of id collisions: either "abort", "upsert", "update" or "delete"
         is_public (bool): Indicates if the transformation is visible to all in project or only to the owner.
         ignore_null_fields (bool): Indicates how null values are handled on updates: ignore or set null.
