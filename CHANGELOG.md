@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.59]
+
+### Added
+- `transformations` api client, which allows the creation, deletion, update and retrieval of transformations.
+- `transformations.schedules` api client, which allows the schedule, unschedule and retrieval of recurring runs of a transformation.
+
 ## [0.57.1]
 
 ### Added
