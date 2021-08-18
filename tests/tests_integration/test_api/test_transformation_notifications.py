@@ -2,7 +2,6 @@ import random
 import string
 
 import pytest
-from _pytest.outcomes import skip
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Transformation, TransformationDestination, TransformationNotification
