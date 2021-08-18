@@ -113,8 +113,8 @@ class FunctionsAPI(APIClient):
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
-        utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=False)
-        utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=False)
+        utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=True)
+        utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=True)
 
         sleep_time = 1.0  # seconds
         for i in range(MAX_RETRIES):
