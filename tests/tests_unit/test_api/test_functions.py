@@ -376,17 +376,9 @@ class TestFunctionsAPI:
         assert isinstance(res, Function)
         assert mock_functions_create_response.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
 
-    def test_create_with_cpu_none_raises(self, mock_functions_create_response):
-        with pytest.raises(TypeError):
-            FUNCTIONS_API.create(name="myfunction", file_id=1234, cpu=None)
-
     def test_create_with_cpu_not_float_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
             FUNCTIONS_API.create(name="myfunction", file_id=1234, cpu="0.2")
-
-    def test_create_with_memory_none_raises(self, mock_functions_create_response):
-        with pytest.raises(TypeError):
-            FUNCTIONS_API.create(name="myfunction", file_id=1234, memory=None)
 
     def test_create_with_memory_not_float_raises(self, mock_functions_create_response):
         with pytest.raises(TypeError):
