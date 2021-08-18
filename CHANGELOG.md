@@ -15,8 +15,8 @@ Changes are grouped as follows
 ## [0.59.1]
 
 ### Changed
-- In `FunctionSchedulesAPI.create`, the default value of `cpu` is changed from `0.25` to `None`, thus deferring the default value to the API, which also is `0.25`. The `cpu` keyword cannot be used for functions deployed in Azure.
-- In `FunctionSchedulesAPI.create`, the default value of `memory` is changed from `1.0` to `None`, thus deferring the default value to the API, which also is `1.0`. The `memory` keyword cannot be used for functions deployed in Azure.
+- In `FunctionsAPI.create`, the default value of `cpu` is changed from `0.25` to `None`, thus deferring the default value to the API, which also is `0.25`. The `cpu` keyword cannot be used for functions deployed in Azure.
+- In `FunctionsAPI.create`, the default value of `memory` is changed from `1.0` to `None`, thus deferring the default value to the API, which also is `1.0`. The `memory` keyword cannot be used for functions deployed in Azure.
 
 ## [0.59]
 
