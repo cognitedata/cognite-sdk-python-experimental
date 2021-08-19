@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.59.1]
+
+### Changed
+- In `FunctionsAPI.create`, the default value of `cpu` is changed from `0.25` to `None`, thus deferring the default value to the API, which also is `0.25`. The argument is unavailable in Azure.
+- In `FunctionsAPI.create`, the default value of `memory` is changed from `1.0` to `None`, thus deferring the default value to the API, which also is `1.0`. The argument is unavailable in Azure.
+
 ## [0.59]
 
 ### Added
