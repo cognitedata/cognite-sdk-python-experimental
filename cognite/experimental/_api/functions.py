@@ -50,8 +50,8 @@ class FunctionsAPI(APIClient):
         api_key: Optional[str] = None,
         secrets: Optional[Dict] = None,
         env_vars: Optional[Dict] = None,
-        cpu: Number = 0.25,
-        memory: Number = 1.0,
+        cpu: Optional[Number] = None,
+        memory: Optional[Number] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -79,8 +79,8 @@ class FunctionsAPI(APIClient):
             api_key (str, optional):                API key that can be used inside the function to access data in CDF.
             secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
             env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 20 environment variables.
-            cpu (Number):                           Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
-            memory (Number):                        Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
+            cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
+            memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
 
         Returns:
             Function: The created function.
@@ -113,8 +113,8 @@ class FunctionsAPI(APIClient):
         elif function_handle:
             _validate_function_handle(function_handle)
             file_id = self._zip_and_upload_handle(function_handle, name)
-        utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=False)
-        utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=False)
+        utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=True)
+        utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=True)
 
         sleep_time = 1.0  # seconds
         for i in range(MAX_RETRIES):
@@ -134,10 +134,12 @@ class FunctionsAPI(APIClient):
             "owner": owner,
             "fileId": file_id,
             "functionPath": function_path,
-            "cpu": float(cpu),
-            "memory": float(memory),
             "envVars": env_vars,
         }
+        if cpu:
+            function.update({"cpu": cpu})
+        if memory:
+            function.update({"memory": memory})
         if external_id:
             function.update({"externalId": external_id})
         if api_key:
