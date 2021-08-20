@@ -91,7 +91,7 @@ class PNIDParsingAPI(ContextAPI):
 
     def convert(
         self, items: List[Dict], grayscale: bool = None, file_id: int = None, file_external_id: str = None
-    ) -> ContextualizationJob:
+    ) -> PNIDConvertResults:
         """Convert a P&ID to an interactive SVG where the provided annotations are highlighted.
         The resulting SVG is not uploaded to CDF.
 
@@ -102,7 +102,7 @@ class PNIDParsingAPI(ContextAPI):
             grayscale (bool, optional): Return the SVG version in grayscale colors only (reduces the file size). Defaults to None.
 
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .result property of this job will block waiting for results.
+            PNIDConvertResults: Resulting queued job. Note that .result property of this job will block waiting for results.
         """
         if file_id is None and file_external_id is None:
             raise ValueError("File id and file external id cannot both be none")
