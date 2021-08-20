@@ -65,11 +65,23 @@ class TransformationNotificationsAPI(APIClient):
 
         Example:
 
-            List transformations::
+            List all notifications::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> notifications_list = c.transformations.notifications.list()
+            
+            List all notifications by transformation id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> notifications_list = c.transformations.notifications.list(config_id = 1)
+
+            List all notifications by transformation external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> notifications_list = c.transformations.notifications.list(config_external_id = "myExternalId")
         """
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
