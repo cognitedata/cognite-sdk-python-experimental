@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.59.2]
+
+### Added
+- `transformations.notifications` api client, which allows the creation, deletion and retrieval of transformation email notifications.
+
 ## [0.59.1]
 
 ### Changed
