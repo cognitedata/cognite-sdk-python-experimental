@@ -4,6 +4,7 @@ from cognite.experimental.data_classes.contextualization import *
 from cognite.experimental.data_classes.extractionpipelineruns import *
 from cognite.experimental.data_classes.extractionpipelines import *
 from cognite.experimental.data_classes.functions import *
+from cognite.experimental.data_classes.transformation_jobs import *
 from cognite.experimental.data_classes.transformation_notifications import *
 from cognite.experimental.data_classes.transformation_schedules import *
 from cognite.experimental.data_classes.transformations import *
