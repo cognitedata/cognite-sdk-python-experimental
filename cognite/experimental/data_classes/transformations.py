@@ -1,5 +1,7 @@
 from cognite.client.data_classes._base import *
 
+from cognite.experimental.data_classes import TransformationJob
+
 
 class TransformationDestination:
     """TransformationDestination has static methods to define the target resource type of a transformation"""
@@ -176,6 +178,9 @@ class Transformation(CogniteResource):
         self.owner = owner
         self.owner_is_current_user = owner_is_current_user
         self._cognite_client = cognite_client
+
+    def run(self) -> TransformationJob:
+        return self._cognite_client.transformations.run(transformation_id=self.id)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):

@@ -12,6 +12,7 @@ from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILIN
 from cognite.experimental.data_classes import (
     Transformation,
     TransformationFilter,
+    TransformationJob,
     TransformationList,
     TransformationUpdate,
 )
@@ -163,3 +164,31 @@ class TransformationsAPI(APIClient):
                 >>> res = c.transformations.update(my_update)
         """
         return self._update_multiple(items=item)
+
+    def run(self, transformation_id: int) -> TransformationJob:
+        """`Run a transformation. <https://docs.cognite.com/api/playground/#operation/runTransformation>`_
+
+        Args:
+            transformation_id (int): internal Transformation id
+
+        Returns:
+            Created transformation job
+
+        Examples:
+
+            Run transformation by id:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>>
+                >>> res = c.transformations.run(id = 1)
+        """
+
+        resource_path = (self._RESOURCE_PATH + f"/{transformation_id}/run",)
+
+        res = self._post(
+            url_path=utils._auxiliary.interpolate_and_url_encode(
+                self._RESOURCE_PATH + "/{}/run", str(transformation_id)
+            )
+        )
+        return TransformationJob._load(res.json(), cognite_client=self._cognite_client)
