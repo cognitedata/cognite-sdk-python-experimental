@@ -1,6 +1,6 @@
 from cognite.client.data_classes._base import *
 
-from cognite.experimental.data_classes import TransformationJob
+from cognite.experimental.data_classes.transformation_jobs import TransformationJob
 
 
 class TransformationDestination:
