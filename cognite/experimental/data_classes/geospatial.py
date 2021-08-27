@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from cognite.client import utils
-from cognite.client.data_classes._base import CogniteResource
+from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
 
 class FeatureType(CogniteResource):
@@ -29,3 +29,7 @@ class FeatureType(CogniteResource):
             snake_case_key = utils._auxiliary.to_snake_case(key)
             setattr(instance, snake_case_key, value)
         return instance
+
+
+class FeatureTypeList(CogniteResourceList):
+    _RESOURCE = FeatureType
