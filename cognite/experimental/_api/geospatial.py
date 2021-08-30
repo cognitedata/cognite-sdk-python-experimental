@@ -9,11 +9,12 @@ class ExperimentalGeospatialAPI(APIClient):
 
     _RESOURCE_PATH = "/spatial/featuretypes"
     _LIST_CLASS = FeatureTypeList
+    _ASSERT_CLASSES = False
 
     def create_feature_types(
         self, feature_type: Union[FeatureType, List[FeatureType]]
     ) -> Union[FeatureType, List[FeatureType]]:
-        """`Creates feature types`
+        """`Creates feature types`_
 
         Args:
 
@@ -22,7 +23,12 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         return self._create_multiple(items=feature_type)
 
-    def delete_feature_type(self, external_id: Union[str, List[str]] = None,) -> None:
-        """`Delete one or more feature type`
+    def delete_feature_types(self, external_id: Union[str, List[str]] = None) -> None:
+        """`Delete one or more feature type`_
         """
         self._delete_multiple(external_ids=external_id, wrap_ids=True)
+
+    def list_feature_types(self) -> FeatureTypeList:
+        """`List feature types`_
+        """
+        return self._list(method="POST")

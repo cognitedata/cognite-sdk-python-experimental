@@ -33,3 +33,4 @@ class FeatureType(CogniteResource):
 
 class FeatureTypeList(CogniteResourceList):
     _RESOURCE = FeatureType
+    _ASSERT_CLASSES = False
