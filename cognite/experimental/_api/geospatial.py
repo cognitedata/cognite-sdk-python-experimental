@@ -28,7 +28,7 @@ class ExperimentalGeospatialAPI(APIClient):
             Create new type definitions::
 
                 >>> from cognite.experimental import CogniteClient
-                >>> from cognite.experimental.data_classes import Type
+                >>> from cognite.experimental.data_classes.geospatial import FeatureType
                 >>> c = CogniteClient()
                 >>> feature_types = [
                 ...     FeatureType(external_id="wells", attributes={"location": {"type": "POINT", "srid": 4326}})
