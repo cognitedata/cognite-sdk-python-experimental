@@ -37,6 +37,7 @@ jobs:
           COGNITE_PROJECT: python-sdk-test
           COGNITE_BASE_URL: https://greenfield.cognitedata.com
           COGNITE_CLIENT_NAME: cognite-sdk-experimental-integration-tests
+          COGNITE_DISABLE_GZIP: true
       run: |
         coverage run --source cognite.experimental -m pytest -v tests
         coverage xml
