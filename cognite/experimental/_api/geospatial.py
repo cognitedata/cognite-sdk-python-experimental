@@ -32,3 +32,8 @@ class ExperimentalGeospatialAPI(APIClient):
         """`List feature types`_
         """
         return self._list(method="POST")
+
+    def retrieve_feature_types(self, external_id: Union[str, List[str]] = None) -> FeatureTypeList:
+        """`Retrieve feature types
+        """
+        return self._retrieve_multiple(wrap_ids=True, external_ids=external_id)

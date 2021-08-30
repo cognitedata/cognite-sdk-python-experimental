@@ -1,18 +1,25 @@
+import pytest
+
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.geospatial import FeatureType
 
 COGNITE_CLIENT = CogniteClient()
 
 
+@pytest.fixture
+def new_feature_type():
+    feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
+        FeatureType(external_id="my_feature_type", attributes={"temperature": {"type": "DOUBLE"}})
+    )
+    yield feature_type
+    COGNITE_CLIENT.geospatial.delete_feature_types(external_id="my_feature_type")
+
+
 class TestGeospatialAPI:
-    def test_create_feature_types(self):
-        try:
-            COGNITE_CLIENT.geospatial.delete_feature_types(external_id="my_feature_type")
-        except:
-            pass
-        COGNITE_CLIENT.geospatial.create_feature_types(
-            FeatureType(external_id="my_feature_type", attributes={"temperature": {"type": "DOUBLE"}})
-        )
+    def test_retrieve_external_id(self, new_feature_type):
         res = COGNITE_CLIENT.geospatial.list_feature_types()
-        COGNITE_CLIENT.geospatial.delete_feature_types(external_id="my_feature_type")
-        print(res)
+        assert res[0] == COGNITE_CLIENT.geospatial.retrieve_feature_types(external_id=res[0].external_id)
+
+    def test_list(self, new_feature_type):
+        res = COGNITE_CLIENT.geospatial.list_feature_types()
+        assert 0 < len(res) < 100
