@@ -104,6 +104,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Args:
             feature_type : Feature type definition for the features to create.
+            feature: one feature or a list of features to create
 
         Returns:
             Union[Feature, FeatureList]: Created features
@@ -126,6 +127,7 @@ class ExperimentalGeospatialAPI(APIClient):
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatures>
 
         Args:
+            feature_type : Feature type definition for the features to delete.
             external_id (Union[str, List[str]]): External ID or list of external ids
 
         Returns:
@@ -148,6 +150,7 @@ class ExperimentalGeospatialAPI(APIClient):
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeaturesByIds>
 
         Args:
+            feature_type : Feature type definition for the features to retrieve.
             external_id (Union[str, List[str]]): External ID or list of external ids
 
         Returns:
@@ -172,6 +175,7 @@ class ExperimentalGeospatialAPI(APIClient):
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatures>
 
         Args:
+            feature_type : Feature type definition for the features to update.
             feature (Union[Feature, List[Feature]]): feature or list of features
 
         Returns:
@@ -213,8 +217,9 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
                 >>> my_feature = c.geospatial.create_features(my_feature_type, Feature(external_id="my_feature", temperature=12.4))
-                >>> # do some stuff
-                >>> my_updated_feature = c.geospatial.update_features(my_feature_type, Feature(external_id="my_feature", temperature=6.237))
+                >>> res = c.geospatial.search_features(my_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}})
+                >>> for f in res:
+                ...     # do something with the features
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
