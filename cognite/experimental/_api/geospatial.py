@@ -167,5 +167,31 @@ class ExperimentalGeospatialAPI(APIClient):
             wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=FeatureList
         )
 
+    def update_features(self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]) -> FeatureList:
+        """`Update features`_
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatures>
+
+        Args:
+            feature (Union[Feature, List[Feature]]): feature or list of features
+
+        Returns:
+            FeatureList: Updated features
+
+        Examples:
+
+            Update one feature::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> my_feature = c.geospatial.create_features(my_feature_type, Feature(external_id="my_feature", temperature=12.4))
+                >>> # do some stuff
+                >>> my_updated_feature = c.geospatial.update_features(my_feature_type, Feature(external_id="my_feature", temperature=6.237))
+        """
+        # updates for feature are not following the patch structure from other resources
+        # they are more like a replace so an update looks like a feature creation (yeah, borderline ?)
+        resource_path = self._feature_resource_path(feature_type) + "/update"
+        return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList)
+
     def _feature_resource_path(self, feature_type: FeatureType):
         return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
