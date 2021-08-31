@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Union
 
 from cognite.client._api_client import APIClient
 
-from cognite.experimental.data_classes.geospatial import FeatureType, FeatureTypeList
+from cognite.experimental.data_classes.geospatial import Feature, FeatureList, FeatureType, FeatureTypeList
 
 
 class ExperimentalGeospatialAPI(APIClient):
@@ -101,3 +101,30 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> res = c.geospatial.retrieve_feature_types(external_id="1")
         """
         return self._retrieve_multiple(wrap_ids=True, external_ids=external_id)
+
+    def create_features(
+        self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]
+    ) -> Union[Feature, List[Feature]]:
+        """`Creates features`_
+        """
+        resource_path = self._feature_resource_path(feature_type)
+        return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList)
+
+    def delete_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> None:
+        """`Delete one or more feature`_
+        """
+        resource_path = self._feature_resource_path(feature_type)
+        self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
+
+    def retrieve_features(
+        self, feature_type: FeatureType, external_id: Union[str, List[str]] = None
+    ) -> FeatureTypeList:
+        """`Retrieve features`_
+        """
+        resource_path = self._feature_resource_path(feature_type)
+        return self._retrieve_multiple(
+            wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=FeatureList
+        )
+
+    def _feature_resource_path(self, feature_type: FeatureType):
+        return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
