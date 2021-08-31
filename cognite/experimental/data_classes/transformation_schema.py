@@ -22,16 +22,13 @@ class TransformationSchemaMapType(TransformationSchemaType):
 
 
 class TransformationSchemaColumn(CogniteResource):
-    """Transformation schema column represents a column of the expected sql structure for a destination type.
+    """Represents a column of the expected sql structure for a destination type.
 
     Args:
-        request_scheduler_id: Id of the schedule in request scheduler service.
-        id (int): Transformation id.
-        external_id (str): Transformation externalId.
-        created_time (int): Time when the schedule was created.
-        last_updated_time (int): Time when the schedule was last updated.
-        interval (str): Cron expression describes when the function should be called. Use http://www.cronmaker.com to create a cron expression.
-        is_paused (bool): If true, the transformation is not scheduled.
+        name (str): Column name
+        sql_type (str): Type of the column in sql format.
+        type (TransformationSchemaType): Type of the column in json format.
+        nullable (bool): Values for the column can be null or not
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
