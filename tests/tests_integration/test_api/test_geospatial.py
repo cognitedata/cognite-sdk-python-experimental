@@ -62,3 +62,14 @@ class TestGeospatialAPI:
         )
         assert res.external_id == new_feature.external_id
         assert res.temperature == 6.237
+
+    def test_search_features(self, new_feature_type, new_feature):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=new_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}}, limit=10
+        )
+        assert res[0].external_id == new_feature.external_id
+        assert res[0].temperature == 12.4
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=new_feature_type, filter={"range": {"attribute": "temperature", "lt": 12.0}}, limit=10
+        )
+        assert len(res) == 0

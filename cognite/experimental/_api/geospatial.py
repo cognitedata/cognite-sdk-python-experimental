@@ -193,5 +193,34 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type) + "/update"
         return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList)
 
+    def search_features(self, feature_type: FeatureType, filter: Dict[str, Any], limit: int = 100) -> FeatureList:
+        """`Search for features`_
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
+
+        Args:
+            feature_type: the feature type to search for
+            filter (Dict[str, Any]): the search filter
+            limit (int): maximum number of results
+
+        Returns:
+            FeatureList: the filtered features
+
+        Examples:
+
+            Search for features::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> my_feature = c.geospatial.create_features(my_feature_type, Feature(external_id="my_feature", temperature=12.4))
+                >>> # do some stuff
+                >>> my_updated_feature = c.geospatial.update_features(my_feature_type, Feature(external_id="my_feature", temperature=6.237))
+        """
+        resource_path = self._feature_resource_path(feature_type) + "/search"
+        cls = FeatureList
+        resource_path = resource_path or self._RESOURCE_PATH
+        res = self._post(url_path=resource_path, json={"filter": filter, "limit": limit},)
+        return cls._load(res.json()["items"], cognite_client=self._cognite_client)
+
     def _feature_resource_path(self, feature_type: FeatureType):
         return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
