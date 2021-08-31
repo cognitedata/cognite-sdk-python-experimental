@@ -1,15 +1,8 @@
-import json as _json
-from typing import List, Optional, Union
-
 from cognite.client import utils
 from cognite.client._api_client import APIClient
 
-from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
-from cognite.experimental.data_classes import (
-    TransformationDestination,
-    TransformationSchemaColumn,
-    TransformationSchemaColumnList,
-)
+from cognite.experimental._constants import LIST_LIMIT_CEILING
+from cognite.experimental.data_classes import TransformationDestination, TransformationSchemaColumnList
 
 
 class TransformationSchemaAPI(APIClient):

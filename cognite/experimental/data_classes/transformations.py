@@ -2,7 +2,12 @@ from cognite.client.data_classes._base import *
 
 
 class TransformationDestination:
-    """TransformationDestination has static methods to define the target resource type of a transformation"""
+    """TransformationDestination has static methods to define the target resource type of a transformation
+
+    Args:
+        type (str): Used as data type identifier on transformation creation/retrieval.
+        schema_type (str): Used as data type identifier on schema retrieval (doesn't always coincide with type).
+    """
 
     def __init__(self, type: str = None, schema_type: str = None):
         self.type = type
