@@ -4,58 +4,59 @@ from cognite.client.data_classes._base import *
 class TransformationDestination:
     """TransformationDestination has static methods to define the target resource type of a transformation"""
 
-    def __init__(self, type: str = None):
+    def __init__(self, type: str = None, schema_type: str = None):
         self.type = type
+        self.schema_type = schema_type if schema_type else type
 
     @staticmethod
     def assets():
         """To be used when the transformation is meant to produce assets."""
-        return TransformationDestination("assets")
+        return TransformationDestination(type="assets")
 
     @staticmethod
     def timeseries():
         """To be used when the transformation is meant to produce time series."""
-        return TransformationDestination("timeseries")
+        return TransformationDestination(type="timeseries")
 
     @staticmethod
     def assethierarchy():
         """To be used when the transformation is meant to produce asset hierarchies."""
-        return TransformationDestination("assethierarchy")
+        return TransformationDestination(type="assethierarchy", schema_type="asset_hierarchy")
 
     @staticmethod
     def events():
         """To be used when the transformation is meant to produce events."""
-        return TransformationDestination("events")
+        return TransformationDestination(type="events")
 
     @staticmethod
     def datapoints():
         """To be used when the transformation is meant to produce numeric data points."""
-        return TransformationDestination("datapoints")
+        return TransformationDestination(type="datapoints")
 
     @staticmethod
     def stringdatapoints():
         """To be used when the transformation is meant to produce string data points."""
-        return TransformationDestination("stringdatapoints")
+        return TransformationDestination(type="stringdatapoints", schema_type="string_datapoints")
 
     @staticmethod
     def sequences():
         """To be used when the transformation is meant to produce sequences."""
-        return TransformationDestination("sequences")
+        return TransformationDestination(type="sequences")
 
     @staticmethod
     def files():
         """To be used when the transformation is meant to produce files."""
-        return TransformationDestination("files")
+        return TransformationDestination(type="files")
 
     @staticmethod
     def labels():
         """To be used when the transformation is meant to produce labels."""
-        return TransformationDestination("labels")
+        return TransformationDestination(type="labels")
 
     @staticmethod
     def relationships():
         """To be used when the transformation is meant to produce relationships."""
-        return TransformationDestination("relationships")
+        return TransformationDestination(type="relationships")
 
     @staticmethod
     def raw(database: str = "", table: str = ""):
@@ -68,12 +69,14 @@ class TransformationDestination:
         Returns:
             TransformationDestination pointing to the target table
         """
-        return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
+        return RawTable(type="raw_table", schema_type="raw", raw_type="plain_raw", database=database, table=table)
 
 
 class RawTable(TransformationDestination):
-    def __init__(self, type: str = None, raw_type: str = None, database: str = None, table: str = None):
-        super().__init__(type=type)
+    def __init__(
+        self, type: str = None, schema_type: str = None, raw_type: str = None, database: str = None, table: str = None
+    ):
+        super().__init__(type=type, schema_type=schema_type)
         self.rawType = raw_type
         self.database = database
         self.table = table

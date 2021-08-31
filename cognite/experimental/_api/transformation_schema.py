@@ -35,6 +35,8 @@ class TransformationSchemaAPI(APIClient):
                 >>> columns = c.transformations.schema.retrieve(destination = TransformationDestination.assets())
         """
 
-        url_path = utils._auxiliary.interpolate_and_url_encode(self._RESOURCE_PATH + "/{}", str(destination.type))
+        url_path = utils._auxiliary.interpolate_and_url_encode(
+            self._RESOURCE_PATH + "/{}", str(destination.schema_type)
+        )
 
         return self._list(method="GET", limit=LIST_LIMIT_CEILING, resource_path=url_path)
