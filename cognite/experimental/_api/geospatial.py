@@ -35,12 +35,6 @@ class ExperimentalGeospatialAPI(APIClient):
                 ...     FeatureType(external_id="pipelines", attributes={"location": {"type": "LINESTRING", "srid": 2001}})
                 ... ]
                 >>> res = c.geospatial.create_feature_types(feature_types)
-
-
-        Args:
-
-        Returns:
-            FeatureType: The created feature types.
         """
         return self._create_multiple(items=feature_type)
 
@@ -87,7 +81,7 @@ class ExperimentalGeospatialAPI(APIClient):
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeatureTypesByIds>
 
         Args:
-            external_id (str, optional): External ID
+            external_id (Union[str, List[str]]): External ID
 
         Returns:
             FeatureTypeList: Requested Type or None if it does not exist.
@@ -106,20 +100,67 @@ class ExperimentalGeospatialAPI(APIClient):
         self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]
     ) -> Union[Feature, List[Feature]]:
         """`Creates features`_
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatures>
+
+        Args:
+            feature_type : Feature type definition for the features to create.
+
+        Returns:
+            Union[Feature, FeatureList]: Created features
+
+        Examples:
+
+            Create a new feature::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes.geospatial import FeatureType
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> res = c.geospatial.create_features(my_feature_types, Feature(external_id="my_feature", temperature=12.4))
         """
         resource_path = self._feature_resource_path(feature_type)
         return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList)
 
     def delete_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> None:
         """`Delete one or more feature`_
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatures>
+
+        Args:
+            external_id (Union[str, List[str]]): External ID or list of external ids
+
+        Returns:
+            None
+
+        Examples:
+
+            Delete feature type definitions external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> c.geospatial.delete_feature(my_feature_type, external_id=my_feature)
         """
         resource_path = self._feature_resource_path(feature_type)
         self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
 
-    def retrieve_features(
-        self, feature_type: FeatureType, external_id: Union[str, List[str]] = None
-    ) -> FeatureTypeList:
+    def retrieve_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> FeatureList:
         """`Retrieve features`_
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeaturesByIds>
+
+        Args:
+            external_id (Union[str, List[str]]): External ID or list of external ids
+
+        Returns:
+            FeatureList: Requested features or None if it does not exist.
+
+        Examples:
+
+            Retrieve one feature by its external id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> c.geospatial.retrieve_feature(my_feature_type, external_id="my_feature")
         """
         resource_path = self._feature_resource_path(feature_type)
         return self._retrieve_multiple(
