@@ -11,6 +11,7 @@ from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelineruns import ExtractionPipelinesRunsAPI
 from cognite.experimental._api.extractionpipelines import ExtractionPipelinesAPI
 from cognite.experimental._api.functions import FunctionsAPI
+from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
@@ -99,6 +100,7 @@ class CogniteClient(Client):
 
         self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
+        self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
