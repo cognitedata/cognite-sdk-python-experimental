@@ -1,7 +1,7 @@
 import copy
 from collections import UserList
 from enum import Enum
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 from cognite.client.data_classes import ContextualizationJob
@@ -563,6 +563,10 @@ class DiagramConvertItem(CogniteResource):
 class DiagramConvertResults(ContextualizationJob):
     _JOB_TYPE = ContextualizationJobType.PNID_PARSER
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._items = None
+
     def __getitem__(self, find_id) -> DiagramConvertItem:
         """retrieves the results for the file with (external) id"""
         found = [
@@ -577,9 +581,17 @@ class DiagramConvertResults(ContextualizationJob):
         return DiagramConvertItem._load(found[0], cognite_client=self._cognite_client)
 
     @property
-    def items(self) -> List[DiagramConvertItem]:
+    def items(self) -> Optional[List[DiagramConvertItem]]:
         """returns a list of all results by file"""
-        return [DiagramConvertItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]]
+        if self.status == "Completed":
+            self._items = [
+                DiagramConvertItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]
+            ]
+        return self._items
+
+    @items.setter
+    def items(self, items) -> List[DiagramConvertItem]:
+        self._items = items
 
 
 class DiagramDetectItem(CogniteResource):
@@ -599,6 +611,10 @@ class DiagramDetectItem(CogniteResource):
 class DiagramDetectResults(ContextualizationJob):
     _JOB_TYPE = ContextualizationJobType.PNID_PARSER
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._items = None
+
     def __getitem__(self, find_id) -> DiagramDetectItem:
         """retrieves the results for the file with (external) id"""
         found = [
@@ -613,9 +629,17 @@ class DiagramDetectResults(ContextualizationJob):
         return DiagramDetectItem._load(found[0], cognite_client=self._cognite_client)
 
     @property
-    def items(self) -> List[DiagramDetectItem]:
+    def items(self) -> Optional[List[DiagramDetectItem]]:
         """returns a list of all results by file"""
-        return [DiagramDetectItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]]
+        if self.status == "Completed":
+            self._items = [
+                DiagramDetectItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]
+            ]
+        return self._items
+
+    @items.setter
+    def items(self, items) -> List[DiagramDetectItem]:
+        self._items = items
 
     @property
     def errors(self) -> List[str]:
