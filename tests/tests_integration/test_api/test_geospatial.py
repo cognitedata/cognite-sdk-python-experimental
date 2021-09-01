@@ -12,7 +12,7 @@ COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 @pytest.fixture
 def new_feature_type():
-    external_id = f"FT_{uuid.uuid4().hex[:12]}"
+    external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
         FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
     )
@@ -22,7 +22,7 @@ def new_feature_type():
 
 @pytest.fixture
 def new_feature(new_feature_type):
-    external_id = f"F_{uuid.uuid4().hex[:12]}"
+    external_id = f"F_{uuid.uuid4().hex[:10]}"
     feature = COGNITE_CLIENT.geospatial.create_features(
         new_feature_type, Feature(external_id=external_id, temperature=12.4)
     )
