@@ -21,6 +21,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('pyproject.toml') }}
+
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip poetry
