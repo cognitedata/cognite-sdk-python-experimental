@@ -22,7 +22,7 @@ class TestTransformationSchemaAPI:
 
     def test_asset_hierarchy(self):
         asset_columns = COGNITE_CLIENT.transformations.schema.retrieve(
-            destination=TransformationDestination.assethierarchy()
+            destination=TransformationDestination.asset_hierarchy()
         )
         assert len(asset_columns) > 0
         assert len([col for col in asset_columns if col.name == "externalId"]) > 0

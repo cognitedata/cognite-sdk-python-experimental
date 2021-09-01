@@ -24,9 +24,9 @@ class TransformationDestination:
         return TransformationDestination(type="timeseries")
 
     @staticmethod
-    def assethierarchy():
+    def asset_hierarchy():
         """To be used when the transformation is meant to produce asset hierarchies."""
-        return TransformationDestination(type="assethierarchy", schema_type="asset_hierarchy")
+        return TransformationDestination(type="asset_hierarchy")
 
     @staticmethod
     def events():
@@ -39,9 +39,9 @@ class TransformationDestination:
         return TransformationDestination(type="datapoints")
 
     @staticmethod
-    def stringdatapoints():
+    def string_datapoints():
         """To be used when the transformation is meant to produce string data points."""
-        return TransformationDestination(type="stringdatapoints", schema_type="string_datapoints")
+        return TransformationDestination(type="string_datapoints")
 
     @staticmethod
     def sequences():
