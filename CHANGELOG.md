@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.59.3]
+## [0.59.4]
 
 ### Changed
 - `FunctionsAPI.call` and `FunctionSchedulesAPI.create` fail with CogniteAPIError if the request to the sessions API is unsuccesful (instead of creating calls/schedules without sessions).
+
+## [0.59.3]
+
+### Fixed
+- Classes `DiagramDetectResults` and `DiagramConvertResults` return items-property correctly when the job is not completed.
 
 ## [0.59.2]
 
