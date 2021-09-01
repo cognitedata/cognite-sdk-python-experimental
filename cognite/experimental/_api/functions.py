@@ -414,17 +414,24 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
 
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"clientId": f"{client_id}", "clientSecret": f"{client_secret}"}]}
-    res = cognite_client.post(session_url, json=payload)
-    nonce = res.json()["items"][0]["nonce"]
-    return nonce
+    try:
+        res = cognite_client.post(session_url, json=payload)
+        nonce = res.json()["items"][0]["nonce"]
+        return nonce
+    except CogniteAPIError as e:
+        print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
+        return None
 
 
 def _use_token_exchange(cognite_client: CogniteClient):
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"tokenExchange": True}]}
-    res = cognite_client.post(url=session_url, json=payload)
-    nonce = res.json()["items"][0]["nonce"]
-    return nonce
+    try:
+        res = cognite_client.post(url=session_url, json=payload)
+        nonce = res.json()["items"][0]["nonce"]
+        return nonce
+    except CogniteAPIError as e:
+        print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
 
 
 def _using_client_credential_flow(cognite_client: CogniteClient):
