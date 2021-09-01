@@ -541,6 +541,13 @@ Delete transformation notifications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_notifications.TransformationNotificationsAPI.delete
 
+Transformation Schema
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Get transformation schema
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.transformation_schema.TransformationSchemaAPI.retrieve
+
 Data classes
 ^^^^^^^^^^^^
 .. automodule:: cognite.experimental.data_classes.transformations
@@ -550,5 +557,8 @@ Data classes
     :members:
     :show-inheritance:
 .. automodule:: cognite.experimental.data_classes.transformation_notifications
+    :members:
+    :show-inheritance:
+.. automodule:: cognite.experimental.data_classes.transformation_schema
     :members:
     :show-inheritance:

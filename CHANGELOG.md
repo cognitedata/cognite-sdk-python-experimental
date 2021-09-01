@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+
+## [0.59.3]
+
+### Added
+- `transformations.schema` api client, which allows the retrieval of the expected schema of sql transformations based on the destination data type.
+
 ## [0.59.2]
 
 ### Added
