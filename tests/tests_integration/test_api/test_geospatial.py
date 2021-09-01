@@ -30,6 +30,7 @@ def disable_gzip():
 
 
 class TestGeospatialAPI:
+    @pytest.mark.skip(reason="Failing sporadically. Vincent will follow up with PR to make it more robust.")
     def test_retrieve_external_id(self, new_feature_type):
         res = COGNITE_CLIENT.geospatial.list_feature_types()
         assert res[0] == COGNITE_CLIENT.geospatial.retrieve_feature_types(external_id=res[0].external_id)
