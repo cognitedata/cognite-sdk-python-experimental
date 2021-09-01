@@ -25,7 +25,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Create new type definitions::
+            Create new type definitions:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes.geospatial import FeatureType
@@ -50,7 +50,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Delete feature type definitions external id::
+            Delete feature type definitions external id:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -67,7 +67,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Iterate over feature type definitions::
+            Iterate over feature type definitions:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -88,7 +88,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Get Type by external id::
+            Get Type by external id:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -111,7 +111,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Create a new feature::
+            Create a new feature:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes.geospatial import FeatureType
@@ -135,7 +135,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Delete feature type definitions external id::
+            Delete feature type definitions external id:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -158,7 +158,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Retrieve one feature by its external id::
+            Retrieve one feature by its external id:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -183,7 +183,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Update one feature::
+            Update one feature:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -211,7 +211,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Search for features::
+            Search for features:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
