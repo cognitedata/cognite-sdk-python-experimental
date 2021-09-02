@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.59.3]
+
+### Fixed
+- Classes `DiagramDetectResults` and `DiagramConvertResults` return items-property correctly when the job is not completed.
+
 ## [0.59.2]
 
 ### Added
