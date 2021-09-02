@@ -10,6 +10,10 @@ class ExperimentalGeospatialAPI(APIClient):
     _RESOURCE_PATH = "/spatial/featuretypes"
     _LIST_CLASS = FeatureTypeList
     _ASSERT_CLASSES = False
+    _cognite_domain = None
+
+    def set_cognite_domain(self, cognite_domain: str):
+        self._cognite_domain = cognite_domain
 
     def create_feature_types(
         self, feature_type: Union[FeatureType, List[FeatureType]]
@@ -36,6 +40,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 ... ]
                 >>> res = c.geospatial.create_feature_types(feature_types)
         """
+        self._configure_cognite_domain()
         return self._create_multiple(items=feature_type)
 
     def delete_feature_types(self, external_id: Union[str, List[str]] = None) -> None:
@@ -56,6 +61,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> c.geospatial.delete_feature_types(external_id=["wells", "pipelines"])
         """
+        self._configure_cognite_domain()
         self._delete_multiple(external_ids=external_id, wrap_ids=True)
 
     def list_feature_types(self) -> FeatureTypeList:
@@ -74,6 +80,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> for feature_type in c.geospatial.list_feature_types():
                 ...     feature_type # do something with the feature type definition
         """
+        self._configure_cognite_domain()
         return self._list(method="POST")
 
     def retrieve_feature_types(self, external_id: Union[str, List[str]] = None) -> FeatureTypeList:
@@ -94,6 +101,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> res = c.geospatial.retrieve_feature_types(external_id="1")
         """
+        self._configure_cognite_domain()
         return self._retrieve_multiple(wrap_ids=True, external_ids=external_id)
 
     def create_features(
@@ -119,6 +127,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
                 >>> res = c.geospatial.create_features(my_feature_types, Feature(external_id="my_feature", temperature=12.4))
         """
+        self._configure_cognite_domain()
         resource_path = self._feature_resource_path(feature_type)
         return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList)
 
@@ -142,6 +151,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
                 >>> c.geospatial.delete_feature(my_feature_type, external_id=my_feature)
         """
+        self._configure_cognite_domain()
         resource_path = self._feature_resource_path(feature_type)
         self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
 
@@ -165,6 +175,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
                 >>> c.geospatial.retrieve_feature(my_feature_type, external_id="my_feature")
         """
+        self._configure_cognite_domain()
         resource_path = self._feature_resource_path(feature_type)
         return self._retrieve_multiple(
             wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=FeatureList
@@ -194,6 +205,7 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         # updates for feature are not following the patch structure from other resources
         # they are more like a replace so an update looks like a feature creation (yeah, borderline ?)
+        self._configure_cognite_domain()
         resource_path = self._feature_resource_path(feature_type) + "/update"
         return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList)
 
@@ -221,6 +233,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> for f in res:
                 ...     # do something with the features
         """
+        self._configure_cognite_domain()
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
         resource_path = resource_path or self._RESOURCE_PATH
@@ -229,3 +242,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     def _feature_resource_path(self, feature_type: FeatureType):
         return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
+
+    def _configure_cognite_domain(self):
+        if self._cognite_domain is not None:
+            self._configure_headers({"x-cognite-domain": self._cognite_domain})

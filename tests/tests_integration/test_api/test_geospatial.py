@@ -10,8 +10,9 @@ COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 
-@pytest.fixture
-def new_feature_type():
+@pytest.fixture(params=[None, "smoke_test"])
+def new_feature_type(request):
+    COGNITE_CLIENT.geospatial.set_cognite_domain(request.param)
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
         FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
