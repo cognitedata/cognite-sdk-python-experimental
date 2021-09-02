@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.59.4]
+## [0.60.2]
 
 ### Changed
 - `FunctionsAPI.call` and `FunctionSchedulesAPI.create` fail with CogniteAPIError if the request to the sessions API is unsuccesful (instead of creating calls/schedules without sessions).
+
+## [0.60.1]
+
+### Added
+- `transformations.schedules.retrieve_multiple` to retrieve multiple transformation schedules by transformation ids and external ids.
 
 ## [0.59.3]
 
