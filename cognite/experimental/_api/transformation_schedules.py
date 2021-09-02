@@ -84,7 +84,7 @@ class TransformationSchedulesAPI(APIClient):
         include_public: bool = True,
         ignore_unknown_ids: bool = False,
     ) -> TransformationScheduleList:
-        """`Retrieve a multiple transformation schedules by the id or external id of its transformation. <https://docs.cognite.com/api/playground/#operation/getTransformationSchedule>`_
+        """`Retrieve multiple transformation schedules by the ids or external ids of the corresponding transformations. <https://docs.cognite.com/api/playground/#operation/getTransformationSchedule>`_
 
         Args:
             ids (int, optional): transformation IDs
@@ -97,13 +97,13 @@ class TransformationSchedulesAPI(APIClient):
 
         Examples:
 
-            Get transformation schedules by transformation id:
+            Get transformation schedules by transformation ids:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.transformations.schedules.retrieve_multiple(ids=[1, 2, 3])
 
-            Get transformation schedules by transformation external id:
+            Get transformation schedules by transformation external ids:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
