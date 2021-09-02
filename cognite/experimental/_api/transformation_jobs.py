@@ -59,4 +59,4 @@ class TransformationJobsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> res = c.transformations.retrieve(id=1)
         """
-        return self._retrieve_multiple(ids=id, wrap_ids=False)
+        return self._retrieve(id=id)
