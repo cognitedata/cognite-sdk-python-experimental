@@ -9,9 +9,8 @@ class TransformationDestination:
         schema_type (str): Used as data type identifier on schema retrieval (doesn't always coincide with type).
     """
 
-    def __init__(self, type: str = None, schema_type: str = None):
+    def __init__(self, type: str = None):
         self.type = type
-        self.schema_type = schema_type if schema_type else type
 
     @staticmethod
     def assets():
@@ -74,14 +73,12 @@ class TransformationDestination:
         Returns:
             TransformationDestination pointing to the target table
         """
-        return RawTable(type="raw_table", schema_type="raw", raw_type="plain_raw", database=database, table=table)
+        return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
 
 
 class RawTable(TransformationDestination):
-    def __init__(
-        self, type: str = None, schema_type: str = None, raw_type: str = None, database: str = None, table: str = None
-    ):
-        super().__init__(type=type, schema_type=schema_type)
+    def __init__(self, type: str = None, raw_type: str = None, database: str = None, table: str = None):
+        super().__init__(type=type)
         self.rawType = raw_type
         self.database = database
         self.table = table
