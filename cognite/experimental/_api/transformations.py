@@ -8,6 +8,7 @@ from requests import Response
 from cognite.experimental._api.transformation_jobs import TransformationJobsAPI
 from cognite.experimental._api.transformation_notifications import TransformationNotificationsAPI
 from cognite.experimental._api.transformation_schedules import TransformationSchedulesAPI
+from cognite.experimental._api.transformation_schema import TransformationSchemaAPI
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
 from cognite.experimental.data_classes import (
     Transformation,
@@ -26,6 +27,7 @@ class TransformationsAPI(APIClient):
         super().__init__(*args, **kwargs)
         self.jobs = TransformationJobsAPI(*args, **kwargs)
         self.schedules = TransformationSchedulesAPI(*args, **kwargs)
+        self.schema = TransformationSchemaAPI(*args, **kwargs)
         self.notifications = TransformationNotificationsAPI(*args, **kwargs)
 
     def create(

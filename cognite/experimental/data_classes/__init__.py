@@ -8,5 +8,6 @@ from cognite.experimental.data_classes.geospatial import *
 from cognite.experimental.data_classes.transformation_jobs import *
 from cognite.experimental.data_classes.transformation_notifications import *
 from cognite.experimental.data_classes.transformation_schedules import *
+from cognite.experimental.data_classes.transformation_schema import *
 from cognite.experimental.data_classes.transformations import *
 from cognite.experimental.data_classes.types import *
