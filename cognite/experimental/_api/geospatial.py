@@ -15,6 +15,9 @@ class ExperimentalGeospatialAPI(APIClient):
     def set_cognite_domain(self, cognite_domain: str):
         self._cognite_domain = cognite_domain
 
+    def get_cognite_domain(self):
+        return self._cognite_domain
+
     def create_feature_types(
         self, feature_type: Union[FeatureType, List[FeatureType]]
     ) -> Union[FeatureType, List[FeatureType]]:
@@ -245,4 +248,4 @@ class ExperimentalGeospatialAPI(APIClient):
 
     def _configure_cognite_domain(self):
         if self._cognite_domain is not None:
-            self._configure_headers({"x-cognite-domain": self._cognite_domain})
+            self._config.headers.update({"x-cognite-domain": self._cognite_domain})
