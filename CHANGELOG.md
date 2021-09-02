@@ -13,10 +13,20 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## [0.59.3]
+## [0.60.2]
 
 ### Added
 - `transformations.schema` api client, which allows the retrieval of the expected schema of sql transformations based on the destination data type.
+
+## [0.60.1]
+
+### Added
+- `transformations.schedules.retrieve_multiple` to retrieve multiple transformation schedules by transformation ids and external ids.
+
+## [0.59.3]
+
+### Fixed
+- Classes `DiagramDetectResults` and `DiagramConvertResults` return items-property correctly when the job is not completed.
 
 ## [0.59.2]
 
