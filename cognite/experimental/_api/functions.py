@@ -419,8 +419,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         nonce = res.json()["items"][0]["nonce"]
         return nonce
     except CogniteAPIError as e:
-        print("Unable to get nonce using client credentials flow. The session API returned with error:", e.message)
-        return None
+        raise CogniteAPIError("Failed to create session using client credentials flow.") from e
 
 
 def _use_token_exchange(cognite_client: CogniteClient):
@@ -431,7 +430,7 @@ def _use_token_exchange(cognite_client: CogniteClient):
         nonce = res.json()["items"][0]["nonce"]
         return nonce
     except CogniteAPIError as e:
-        print("Unable to get nonce using token exchange flow. The session API returned with error:", e.message)
+        raise CogniteAPIError("Failed to create session using token exchange flow.") from e
 
 
 def _using_client_credential_flow(cognite_client: CogniteClient):
