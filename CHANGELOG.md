@@ -13,6 +13,11 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
+## [0.60.4]
+
+### Changed
+- Extraction pipeline entity updated to be same with API entity.
+
 ## [0.60.3]
 
 ### Added
