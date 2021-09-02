@@ -12,11 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.2]
+## [0.60.3]
 
 ### Added
 - `transformations.jobs` api client, which allows the retrieval of transformation runs status.
 - `transformations.run` method, which allows to run transformations.
+
+## [0.60.2]
+
+### Changed
+- `FunctionsAPI.call` and `FunctionSchedulesAPI.create` fail with CogniteAPIError if the request to the sessions API is unsuccesful (instead of creating calls/schedules without sessions).
 
 ## [0.60.1]
 
