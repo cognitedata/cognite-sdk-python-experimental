@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.1]
+
+### Added
+- `transformations.schedules.retrieve_multiple` to retrieve multiple transformation schedules by transformation ids and external ids.
+
 ## [0.59.3]
 
 ### Fixed
