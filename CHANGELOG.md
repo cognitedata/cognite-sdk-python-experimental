@@ -13,10 +13,15 @@ Changes are grouped as follows
 - `Security` in case of vulnerabilities.
 
 
-## [0.60.2]
+## [0.60.3]
 
 ### Added
 - `transformations.schema` api client, which allows the retrieval of the expected schema of sql transformations based on the destination data type.
+
+## [0.60.2]
+
+### Changed
+- `FunctionsAPI.call` and `FunctionSchedulesAPI.create` fail with CogniteAPIError if the request to the sessions API is unsuccesful (instead of creating calls/schedules without sessions).
 
 ## [0.60.1]
 
