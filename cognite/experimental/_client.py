@@ -21,8 +21,7 @@ from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAP
 from cognite.experimental._api.transformations import TransformationsAPI
 from cognite.experimental._api.types import TypesAPI
 
-APIClient.RETRYABLE_POST_ENDPOINTS |= {
-}
+APIClient.RETRYABLE_POST_ENDPOINTS |= {}
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
     for api in ["types", "labels", "functions", "templates"]
