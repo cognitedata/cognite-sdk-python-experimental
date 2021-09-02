@@ -193,7 +193,7 @@ svg_url = job.result['svgUrl']
 
 ## Entity Extraction
 
-The following methods are available for a project whitelisted for unstructured search, and only for file types supported in the search index. 
+The following methods are available for file types supported in the search index. 
 ```python
 job = client.entity_extraction.extract(entities=["23-VG-9102", "23-VG-1000-not-existing"], 
                                file_ids = [1234])
