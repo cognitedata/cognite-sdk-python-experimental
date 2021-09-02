@@ -89,7 +89,7 @@ class TransformationSchedulesAPI(APIClient):
         Args:
             ids (int, optional): transformation IDs
             external_ids (str, optional): transformation External IDs
-
+            include_public (bool): Whether public transformations should be included in the results. (default true).
             ignore_unknown_ids (bool): Ignore IDs and external IDs that are not found rather than throw an exception.
 
         Returns:
@@ -101,13 +101,13 @@ class TransformationSchedulesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.transformations.schedules.retrieve(ids=[1, 2, 3])
+                >>> res = c.transformations.schedules.retrieve_multiple(ids=[1, 2, 3])
 
             Get transformation schedules by transformation external id:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.transformations.schedules.retrieve(external_ids=["t1", "t2"])
+                >>> res = c.transformations.schedules.retrieve_multiple(external_ids=["t1", "t2"])
         """
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
