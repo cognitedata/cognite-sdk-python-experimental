@@ -507,27 +507,27 @@ Transformation Schedules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Create transformation Schedules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_schedules.TransformationSchedulesAPI.create
 
 Retrieve transformation schedules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_schedules.TransformationSchedulesAPI.retrieve
 
 Retrieve multiple transformation schedules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_schedules.TransformationSchedulesAPI.retrieve_multiple
 
 List transformation schedules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_schedules.TransformationSchedulesAPI.list
 
 Update transformation schedules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_schedules.TransformationSchedulesAPI.update
 
 Delete transformation schedules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_schedules.TransformationSchedulesAPI.delete
 
 Transformation Notifications
