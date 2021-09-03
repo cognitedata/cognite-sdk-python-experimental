@@ -15,16 +15,19 @@ class FeatureType(CogniteResource):
         last_updated_time: int = None,
         attributes: Dict[str, Any] = None,
         cognite_client=None,
+        cognite_domain=None,
     ):
         self.external_id = external_id
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.attributes = attributes
         self._cognite_client = cognite_client
+        self._cognite_domain = cognite_domain
 
     @classmethod
     def _load(cls, resource: Dict, cognite_client=None):
-        instance = cls(cognite_client=cognite_client)
+        cognite_domain = cognite_client.geospatial.get_current_cognite_domain()
+        instance = cls(cognite_client=cognite_client, cognite_domain=cognite_domain)
         for key, value in resource.items():
             snake_case_key = utils._auxiliary.to_snake_case(key)
             setattr(instance, snake_case_key, value)
