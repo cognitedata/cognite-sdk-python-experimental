@@ -1,3 +1,4 @@
+import functools
 from typing import Any, Dict, List, Union
 
 from cognite.client._api_client import APIClient
@@ -19,6 +20,7 @@ class ExperimentalGeospatialAPI(APIClient):
         return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
 
     def _with_cognite_domain(func):
+        @functools.wraps(func)
         def wrapper_with_cognite_domain(self, *args, **kwargs):
             self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
             if self._cognite_domain is not None:
