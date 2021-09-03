@@ -13,17 +13,17 @@ class TransformationJobStatus(str, Enum):
 
 
 class TransformationJob(CogniteResource):
-    """The transformation joob resource allows following the status of execution of a transformation run.
+    """The transformation job resource allows following the status of execution of a transformation run.
 
     Args:
         id (int): A server-generated ID for the object.
         uuid (UUID): A server-generated UUID for the object.
         status (TransformationJobStatus): Status of the job.
-        source_project (str): Name of the cdf project where the data will be read from.
-        destination_project (str): Name of the cdf project where the data will be written to.
+        source_project (str): Name of the CDF project the data will be read from.
+        destination_project (str): Name of the CDF project the data will be written to.
         destination_type (str): Target resource type of the transformation.
-        destination_database (str): Target detabase if the destination type is raw.
-        destination_table (str): Target table name if the destination type is raw.
+        destination_database (str): Target database if the destination type is raw.
+        destination_table (str): Target table name if the destination type is RAW.
         conflict_mode (str): What to do in case of id collisions: either "abort", "upsert", "update" or "delete".
         raw_query (str): Query of the transformation that is being executed.
         error (str): Error message from the server.

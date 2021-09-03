@@ -15,8 +15,8 @@ Changes are grouped as follows
 ## [0.60.4]
 
 ### Added
-- `transformations.jobs` api client, which allows the retrieval of transformation runs status.
-- `transformations.run` method, which allows to run transformations.
+- `transformations.jobs` api client, which retrieves the  status of transformation runs.
+- `transformations.run` method, which runs transformations.
 
 ## [0.60.3]
 
