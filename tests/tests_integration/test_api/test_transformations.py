@@ -18,7 +18,7 @@ def new_transformation():
     transform = Transformation(
         name="any",
         destination=TransformationDestination.assets(),
-        query="select id, name from _cdf.assets",
+        query="select id, name from _cdf.assets limit 10000",
         source_api_key=COGNITE_CLIENT.config.api_key,
         destination_api_key=COGNITE_CLIENT.config.api_key,
         ignore_null_fields=True,
@@ -99,7 +99,7 @@ class TestTransformationsAPI:
             and job.destination_project == COGNITE_CLIENT.config.project
             and job.destination_type == "assets"
             and job.conflict_mode == "upsert"
-            and job.raw_query == "select id, name from _cdf.assets"
+            and job.raw_query == new_transformation.query
             and job.error is None
             and job.ignore_null_fields
         )
