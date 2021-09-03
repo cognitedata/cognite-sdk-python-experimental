@@ -22,10 +22,6 @@ from cognite.experimental._api.transformations import TransformationsAPI
 from cognite.experimental._api.types import TypesAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
-    "/files/unstructured/search",
-    "/files/unstructured/downloadlink/parsed",
-}
-APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
     for api in ["types", "labels", "functions", "templates"]
     for endpoint in ["list", "byids", "search"]
