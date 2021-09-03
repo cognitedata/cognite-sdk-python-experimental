@@ -7,9 +7,12 @@ from cognite.experimental.data_classes.geospatial import Feature, FeatureList, F
 
 class ExperimentalGeospatialAPI(APIClient):
 
+    X_COGNITE_DOMAIN = "x-cognite-domain"
+
     _RESOURCE_PATH = "/spatial/featuretypes"
     _LIST_CLASS = FeatureTypeList
     _ASSERT_CLASSES = False
+
     _cognite_domain = None
 
     def set_cognite_domain(self, cognite_domain: str):
@@ -257,10 +260,9 @@ class ExperimentalGeospatialAPI(APIClient):
         return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
 
     def _with_cognite_domain(self, func):
+        self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
         if self._cognite_domain is not None:
-            self._config.headers.update({"x-cognite-domain": self._cognite_domain})
-        else:
-            self._config.headers.pop("x-cognite-domain", None)
+            self._config.headers.update({self.X_COGNITE_DOMAIN: self._cognite_domain})
         res = func()
-        self._config.headers.pop("x-cognite-domain", None)
+        self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
         return res
