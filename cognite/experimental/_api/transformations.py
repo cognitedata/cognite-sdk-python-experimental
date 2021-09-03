@@ -186,8 +186,6 @@ class TransformationsAPI(APIClient):
                 >>> res = c.transformations.run(id = 1)
         """
 
-        resource_path = (self._RESOURCE_PATH + f"/{transformation_id}/run",)
-
         res = self._post(
             url_path=utils._auxiliary.interpolate_and_url_encode(
                 self._RESOURCE_PATH + "/{}/run", str(transformation_id)
