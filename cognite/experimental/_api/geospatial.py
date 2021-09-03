@@ -29,10 +29,10 @@ class ExperimentalGeospatialAPI(APIClient):
 
         return wrapper_with_cognite_domain
 
-    def set_cognite_domain(self, cognite_domain: str):
+    def set_current_cognite_domain(self, cognite_domain: str):
         self._cognite_domain = cognite_domain
 
-    def get_cognite_domain(self):
+    def get_current_cognite_domain(self):
         return self._cognite_domain
 
     @_with_cognite_domain

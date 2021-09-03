@@ -12,7 +12,7 @@ COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 @pytest.fixture(params=[None, "smoke_test"])
 def new_feature_type(request):
-    COGNITE_CLIENT.geospatial.set_cognite_domain(request.param)
+    COGNITE_CLIENT.geospatial.set_current_cognite_domain(request.param)
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
         FeatureType(
@@ -37,7 +37,7 @@ def new_feature(new_feature_type):
 @pytest.fixture(autouse=False, scope="module")
 def clean_old_feature_types():
     for domain in [None, "smoke_test"]:
-        COGNITE_CLIENT.geospatial.set_cognite_domain(domain)
+        COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
         res = COGNITE_CLIENT.geospatial.list_feature_types()
         for ft in res:
             print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
