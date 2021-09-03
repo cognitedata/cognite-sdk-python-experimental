@@ -2,6 +2,7 @@ import os
 import uuid
 
 import pytest
+from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.geospatial import Feature, FeatureType
@@ -110,7 +111,7 @@ class TestGeospatialAPI:
         assert res.temperature == 6.237
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
 
-    def test_search_features(self, cognite_domain, test_feature_type, test_feature):
+    def test_search_single_feature(self, cognite_domain, test_feature_type, test_feature):
         res = COGNITE_CLIENT.geospatial.search_features(
             feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}}, limit=10
         )
@@ -144,3 +145,27 @@ class TestGeospatialAPI:
         assert res[0].external_id == test_feature.external_id
         assert res[1].external_id == another_test_feature.external_id
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
+
+    def test_search_multiple_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "gt": -20.0, "lt": 20.0}}
+        )
+        assert len(res) == 2
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "gt": 0.0, "lt": 20.0}}
+        )
+        assert len(res) == 1
+        assert res[0].external_id == test_feature.external_id
+        assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
+
+    def test_search_wrong_domain(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        COGNITE_CLIENT.geospatial.set_current_cognite_domain(None if cognite_domain == "smoke_test" else "smoke_test")
+        try:
+            COGNITE_CLIENT.geospatial.search_features(
+                feature_type=test_feature_type,
+                filter={"range": {"attribute": "temperature", "gt": -20.0, "lt": 20.0}},
+                limit=10,
+            )
+            raise pytest.fail("Domain settings is messed up... search_features(...) should have raised an exception")
+        except CogniteAPIError:
+            COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
