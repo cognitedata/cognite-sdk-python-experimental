@@ -1,4 +1,5 @@
-from asyncio import sleep
+import asyncio
+import time
 from enum import Enum
 from uuid import UUID
 
@@ -82,34 +83,63 @@ class TransformationJob(CogniteResource):
         self.finished_time = updated.finished_time
         self.last_seen_time = updated.last_seen_time
 
-    async def completion_coroutine(self, pooling_interval: float = 1):
-        """`Gets an asyncio coroutine, that will be resolved once the job is finished. <https://docs.cognite.com/api/playground/#operation/runTransformation>`_
+    def wait(self, pooling_interval: float = 1):
+        """`Waits for the job to finish.`_
+
+        Args:
+            pooling_interval (float): time (s) to wait between job status updates, default is one second.
+
+        Examples:
+            run transformations 1 and 2 in parallel, and run 3 once they finish successfully:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>>
+                >>> job1 = c.transformations.run(id = 1, wait = False) 
+                >>> job2 = c.transformations.run(id = 2, wait = False)  
+                >>> job1.wait()
+                >>> job2.wait()
+                >>> if TransformationJobStatus.FAILED not in [job1.status, job2.status]:
+                >>>     c.transformations.run(id = 3, wait = False)
+        """
+        while self.status not in [TransformationJobStatus.FAILED, TransformationJobStatus.COMPLETED]:
+            time.sleep(1.0)
+            self.update()
+
+        return self
+
+    async def wait_async(self, pooling_interval: float = 1):
+        """`Asyncio coroutine, waits for the job to finish asynchronously.`_
 
         Args:
             pooling_interval (float): time (s) to wait between job status updates, default is one second.
 
         Returns:
-            coroutine object that can be awaited or scheduled.
+            asyncio.coroutine: coroutine object that will finish when the job finishes.
 
         Examples:
 
-            start running transformation2 once transformation1 has finished if successful:
+            run transformations 1 and 2 in parallel, and run 3 once they finish successfully:
 
                 >>> from asyncio import ensure_future
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>>
                 >>> async def run_succesive_transformations():
-                >>>     job1 = c.transformations.run(id = 1) 
-                >>>     await job1.completion_coroutine()
-                >>>     if job1.status != TransformationJobStatus.FAILED:
-                >>>         c.transformations.run(id = 2)
+                >>>     job1 = c.transformations.run(id = 1, wait = False) 
+                >>>     job2 = c.transformations.run(id = 2, wait = False) 
+                >>>     await job1.wait_async()
+                >>>     await job2.wait_async()
+                >>>     if TransformationJobStatus.FAILED not in [job1.status, job2.status]:
+                >>>         c.transformations.run(id = 3, wait = False)
                 >>>
                 >>> ensure_future(run_succesive_transformations())
         """
         while self.status not in [TransformationJobStatus.FAILED, TransformationJobStatus.COMPLETED]:
-            await sleep(pooling_interval)
+            await asyncio.sleep(pooling_interval)
             self.update()
+
+        return self
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):

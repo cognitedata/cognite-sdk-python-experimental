@@ -1,5 +1,4 @@
 import pytest
-import pytest_asyncio.plugin
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
@@ -87,14 +86,13 @@ class TestTransformationsAPI:
         retrieved_transformations = COGNITE_CLIENT.transformations.list()
         assert new_transformation.id in [transformation.id for transformation in retrieved_transformations]
 
-    @pytest.mark.asyncio
-    async def test_run(self, new_transformation: Transformation):
+    def test_run(self, new_transformation: Transformation):
         job = new_transformation.run()
 
         assert (
             job.id is not None
             and job.uuid is not None
-            and job.status in (TransformationJobStatus.RUNNING, TransformationJobStatus.CREATED)
+            and job.status == TransformationJobStatus.COMPLETED
             and job.source_project == COGNITE_CLIENT.config.project
             and job.destination_project == COGNITE_CLIENT.config.project
             and job.destination_type == "assets"
@@ -104,5 +102,19 @@ class TestTransformationsAPI:
             and job.ignore_null_fields
         )
 
-        await job.completion_coroutine()
-        assert job.status == TransformationJobStatus.COMPLETED
+    @pytest.mark.asyncio
+    async def test_run_async(self, new_transformation: Transformation):
+        job = await new_transformation.run_async()
+
+        assert (
+            job.id is not None
+            and job.uuid is not None
+            and job.status == TransformationJobStatus.COMPLETED
+            and job.source_project == COGNITE_CLIENT.config.project
+            and job.destination_project == COGNITE_CLIENT.config.project
+            and job.destination_type == "assets"
+            and job.conflict_mode == "upsert"
+            and job.raw_query == new_transformation.query
+            and job.error is None
+            and job.ignore_null_fields
+        )
