@@ -165,11 +165,14 @@ class TransformationsAPI(APIClient):
         """
         return self._update_multiple(items=item)
 
-    def run(self, transformation_id: int, wait: bool = True) -> TransformationJob:
+    def run(
+        self, transformation_id: int = None, transformation_external_id: str = None, wait: bool = True
+    ) -> TransformationJob:
         """`Run a transformation. <https://docs.cognite.com/api/playground/#operation/runTransformation>`_
 
         Args:
             transformation_id (int): internal Transformation id
+            transformation_external_id (str): external Transformation id
             wait (bool): Wait until the transformation run is finished. Defaults to True.
 
         Returns:
@@ -191,6 +194,10 @@ class TransformationsAPI(APIClient):
                 >>>
                 >>> res = c.transformations.run(id = 1, wait = False)
         """
+        utils._auxiliary.assert_exactly_one_of_id_or_external_id(transformation_id, transformation_external_id)
+
+        if transformation_external_id:
+            transformation_id = self.retrieve(external_id=transformation_external_id).id
 
         response = self._post(
             url_path=utils._auxiliary.interpolate_and_url_encode(
@@ -204,11 +211,14 @@ class TransformationsAPI(APIClient):
 
         return job
 
-    def run_async(self, transformation_id: int) -> Awaitable[TransformationJob]:
+    def run_async(
+        self, transformation_id: int = None, transformation_external_id: str = None
+    ) -> Awaitable[TransformationJob]:
         """`Run a transformation to completion asynchronously. <https://docs.cognite.com/api/playground/#operation/runTransformation>`_
 
         Args:
             transformation_id (int): internal Transformation id
+            transformation_external_id (str): external Transformation id
 
         Returns:
             Completed transformation job
@@ -230,11 +240,7 @@ class TransformationsAPI(APIClient):
                 >>> loop.close()
         """
 
-        response = self._post(
-            url_path=utils._auxiliary.interpolate_and_url_encode(
-                self._RESOURCE_PATH + "/{}/run", str(transformation_id)
-            )
+        job = self.run(
+            transformation_id=transformation_id, transformation_external_id=transformation_external_id, wait=False
         )
-        job = TransformationJob._load(response.json(), cognite_client=self._cognite_client)
-
         return job.wait_async()
