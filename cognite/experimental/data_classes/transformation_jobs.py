@@ -83,11 +83,11 @@ class TransformationJob(CogniteResource):
         self.finished_time = updated.finished_time
         self.last_seen_time = updated.last_seen_time
 
-    def wait(self, pooling_interval: float = 1):
+    def wait(self, polling_interval: float = 1):
         """`Waits for the job to finish.`_
 
         Args:
-            pooling_interval (float): time (s) to wait between job status updates, default is one second.
+            polling_interval (float): time (s) to wait between job status updates, default is one second.
 
         Examples:
             run transformations 1 and 2 in parallel, and run 3 once they finish successfully:
@@ -103,16 +103,16 @@ class TransformationJob(CogniteResource):
                 >>>     c.transformations.run(id = 3, wait = False)
         """
         while self.status not in [TransformationJobStatus.FAILED, TransformationJobStatus.COMPLETED]:
-            time.sleep(1.0)
+            time.sleep(polling_interval)
             self.update()
 
         return self
 
-    async def wait_async(self, pooling_interval: float = 1):
+    async def wait_async(self, polling_interval: float = 1):
         """`Asyncio coroutine, waits for the job to finish asynchronously.`_
 
         Args:
-            pooling_interval (float): time (s) to wait between job status updates, default is one second.
+            polling_interval (float): time (s) to wait between job status updates, default is one second.
 
         Returns:
             asyncio.coroutine: coroutine object that will finish when the job finishes.
@@ -136,7 +136,7 @@ class TransformationJob(CogniteResource):
                 >>> ensure_future(run_succesive_transformations())
         """
         while self.status not in [TransformationJobStatus.FAILED, TransformationJobStatus.COMPLETED]:
-            await asyncio.sleep(pooling_interval)
+            await asyncio.sleep(polling_interval)
             self.update()
 
         return self
