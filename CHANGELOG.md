@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.4]
+
+### Added
+- `transformations.jobs` api client, which retrieves the  status of transformation runs.
+- `transformations.run` method, which runs transformations.
 
 ## [0.60.3]
 
