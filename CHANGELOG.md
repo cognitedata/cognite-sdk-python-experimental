@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.5]
+
+### Changed
+- `transformations.notifications`now uses `transformation_id` and `transformation_external_id` instead of `config_id` and `config_external_id`. 
+
 ## [0.60.4]
 
 ### Added
