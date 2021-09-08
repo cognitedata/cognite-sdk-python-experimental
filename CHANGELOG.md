@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.6]
+
+### Added
+- `TransformationJob.transformation_id` field to asossiate a job with it's source transformation.
+
 ## [0.60.5]
 
 ### Changed
