@@ -4,13 +4,7 @@ import string
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import (
-    Transformation,
-    TransformationDestination,
-    TransformationJob,
-    TransformationJobStatus,
-    TransformationUpdate,
-)
+from cognite.experimental.data_classes import Transformation, TransformationDestination, TransformationUpdate
 
 COGNITE_CLIENT = CogniteClient()
 prefix = "".join(random.choice(string.ascii_letters) for i in range(6))
@@ -19,13 +13,7 @@ prefix = "".join(random.choice(string.ascii_letters) for i in range(6))
 @pytest.fixture
 def new_transformation():
     transform = Transformation(
-        name="any",
-        external_id=f"{prefix}-transformation",
-        destination=TransformationDestination.assets(),
-        query="select id, name from _cdf.assets limit 5000",
-        source_api_key=COGNITE_CLIENT.config.api_key,
-        destination_api_key=COGNITE_CLIENT.config.api_key,
-        ignore_null_fields=True,
+        name="any", external_id=f"{prefix}-transformation", destination=TransformationDestination.assets(),
     )
     ts = COGNITE_CLIENT.transformations.create(transform)
 
@@ -90,76 +78,3 @@ class TestTransformationsAPI:
     def test_list(self, new_transformation):
         retrieved_transformations = COGNITE_CLIENT.transformations.list()
         assert new_transformation.id in [transformation.id for transformation in retrieved_transformations]
-
-    @pytest.mark.asyncio
-    async def test_run_without_wait(self, new_transformation: Transformation):
-        job = new_transformation.run(wait=False)
-
-        assert (
-            job.id is not None
-            and job.uuid is not None
-            and job.status == TransformationJobStatus.CREATED
-            and job.transformation_id == new_transformation.id
-            and job.source_project == COGNITE_CLIENT.config.project
-            and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
-            and job.conflict_mode == "upsert"
-            and job.raw_query == new_transformation.query
-            and job.error is None
-            and job.ignore_null_fields
-        )
-        await job.wait_async()
-        assert job.status == TransformationJobStatus.COMPLETED
-
-    def test_run(self, new_transformation: Transformation):
-        job = new_transformation.run()
-
-        assert (
-            job.id is not None
-            and job.uuid is not None
-            and job.status == TransformationJobStatus.COMPLETED
-            and job.transformation_id == new_transformation.id
-            and job.source_project == COGNITE_CLIENT.config.project
-            and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
-            and job.conflict_mode == "upsert"
-            and job.raw_query == new_transformation.query
-            and job.error is None
-            and job.ignore_null_fields
-        )
-
-    @pytest.mark.asyncio
-    async def test_run_async(self, new_transformation: Transformation):
-        job = await new_transformation.run_async()
-
-        assert (
-            job.id is not None
-            and job.uuid is not None
-            and job.status == TransformationJobStatus.COMPLETED
-            and job.transformation_id == new_transformation.id
-            and job.source_project == COGNITE_CLIENT.config.project
-            and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
-            and job.conflict_mode == "upsert"
-            and job.raw_query == new_transformation.query
-            and job.error is None
-            and job.ignore_null_fields
-        )
-
-    @pytest.mark.asyncio
-    async def test_run_by_external_id_async(self, new_transformation: Transformation):
-        job = await COGNITE_CLIENT.transformations.run_async(transformation_external_id=f"{prefix}-transformation")
-
-        assert (
-            job.id is not None
-            and job.uuid is not None
-            and job.status == TransformationJobStatus.COMPLETED
-            and job.transformation_id == new_transformation.id
-            and job.source_project == COGNITE_CLIENT.config.project
-            and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
-            and job.conflict_mode == "upsert"
-            and job.raw_query == new_transformation.query
-            and job.error is None
-            and job.ignore_null_fields
-        )

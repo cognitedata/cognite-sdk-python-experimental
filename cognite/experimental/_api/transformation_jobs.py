@@ -1,5 +1,6 @@
 from typing import Optional
 
+from cognite.client import utils
 from cognite.client._api_client import APIClient
 
 from cognite.experimental._constants import LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT
@@ -10,7 +11,9 @@ class TransformationJobsAPI(APIClient):
     _RESOURCE_PATH = "/transformations/jobs"
     _LIST_CLASS = TransformationJobList
 
-    def list(self, limit: Optional[int] = LIST_LIMIT_DEFAULT,) -> TransformationJobList:
+    def list(
+        self, limit: Optional[int] = LIST_LIMIT_DEFAULT, transformation_id: Optional[int] = None
+    ) -> TransformationJobList:
         """`List all running transformation jobs. <https://docs.cognite.com/api/playground/#operation/transformationJobs>`_
 
         Args:
@@ -30,6 +33,12 @@ class TransformationJobsAPI(APIClient):
         """
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
+
+        if transformation_id is not None:
+            resource_path = utils._auxiliary.interpolate_and_url_encode(
+                "/transformations/{}/jobs", str(transformation_id)
+            )
+            return self._list(method="GET", limit=limit, resource_path=resource_path)
 
         return self._list(method="GET", limit=limit,)
 
