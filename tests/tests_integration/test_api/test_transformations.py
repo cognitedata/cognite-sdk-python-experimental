@@ -7,14 +7,11 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import Transformation, TransformationDestination, TransformationUpdate
 
 COGNITE_CLIENT = CogniteClient()
-prefix = "".join(random.choice(string.ascii_letters) for i in range(6))
 
 
 @pytest.fixture
 def new_transformation():
-    transform = Transformation(
-        name="any", external_id=f"{prefix}-transformation", destination=TransformationDestination.assets(),
-    )
+    transform = Transformation(name="any", destination=TransformationDestination.assets(),)
     ts = COGNITE_CLIENT.transformations.create(transform)
 
     yield ts
