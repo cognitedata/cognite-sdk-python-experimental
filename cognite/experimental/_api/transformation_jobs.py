@@ -17,8 +17,8 @@ class TransformationJobsAPI(APIClient):
         """`List all running transformation jobs. <https://docs.cognite.com/api/playground/#operation/transformationJobs>`_
 
         Args:
-            cursor (str): Cursor for paging through results.
             limit (int): Limits the number of results to be returned. To retrieve all results use limit=-1, default limit is 25.
+            transformation_id (int): Filters the results by the internal transformation id.
 
         Returns:
             TransformationJobList: List of transformation jobs
@@ -30,6 +30,12 @@ class TransformationJobsAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> transformation_jobs_list = c.transformations.jobs.list()
+
+            List transformation jobs of a single transformation::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> transformation_jobs_list = c.transformations.jobs.list(transformation_id = 1)
         """
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING

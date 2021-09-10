@@ -125,7 +125,7 @@ class TestTransformationJobsAPI:
     async def list_jobs_by_transformation_id_async(self, new_running_transformation):
         (new_job, new_transformation) = new_running_transformation
 
-        retrieved_jobs = COGNITE_CLIENT.transformations.jobs.list(transformation_id=new_transformation.id)
+        retrieved_jobs = new_running_transformation.jobs()
         assert new_job.id in [job.id for job in retrieved_jobs]
         assert all(job.transformation_id == new_transformation.id for job in retrieved_jobs)
 

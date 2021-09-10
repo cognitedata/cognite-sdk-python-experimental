@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.7]
+
+### Added
+- `transformation_id` parameter in `TransformationJobsAPI.list()`, to list only the jobs associated with a given transformation.
+
 ## [0.60.6]
 
 ### Added
