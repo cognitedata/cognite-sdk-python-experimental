@@ -139,10 +139,10 @@ class TransformationsAPI(APIClient):
 
         Args:
             ids (List[int]): List of ids to retrieve
-            external_ids (str, optional): List of external ids to retrieve
+            external_ids (List[str]): List of external ids to retrieve
 
         Returns:
-            Optional[Transformation]: Requested transformation or None if it does not exist.
+            TransformationList: Requested transformation or None if it does not exist.
 
         Examples:
 
