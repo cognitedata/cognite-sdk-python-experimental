@@ -64,7 +64,7 @@ class TestTransformationJobsAPI:
             and job.transformation_id == new_transformation.id
             and job.source_project == COGNITE_CLIENT.config.project
             and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
+            and job.destination.type == "assets"
             and job.conflict_mode == "upsert"
             and job.raw_query == new_transformation.query
             and job.error is None
@@ -81,7 +81,7 @@ class TestTransformationJobsAPI:
             and job.transformation_id == new_transformation.id
             and job.source_project == COGNITE_CLIENT.config.project
             and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
+            and job.destination.type == "assets"
             and job.conflict_mode == "upsert"
             and job.raw_query == new_transformation.query
             and job.error is None
@@ -99,7 +99,7 @@ class TestTransformationJobsAPI:
             and job.transformation_id == new_transformation.id
             and job.source_project == COGNITE_CLIENT.config.project
             and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
+            and job.destination.type == "assets"
             and job.conflict_mode == "upsert"
             and job.raw_query == new_transformation.query
             and job.error is None
@@ -117,7 +117,7 @@ class TestTransformationJobsAPI:
             and job.transformation_id == new_transformation.id
             and job.source_project == COGNITE_CLIENT.config.project
             and job.destination_project == COGNITE_CLIENT.config.project
-            and job.destination_type == "assets"
+            and job.destination.type == "assets"
             and job.conflict_mode == "upsert"
             and job.raw_query == new_transformation.query
             and job.error is None

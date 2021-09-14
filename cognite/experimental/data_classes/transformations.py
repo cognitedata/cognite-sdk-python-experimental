@@ -1,7 +1,5 @@
 from cognite.client.data_classes._base import *
 
-from cognite.experimental.data_classes.transformation_jobs import TransformationJob, TransformationJobList
-
 
 class TransformationDestination:
     """TransformationDestination has static methods to define the target resource type of a transformation
@@ -183,13 +181,13 @@ class Transformation(CogniteResource):
         self.owner_is_current_user = owner_is_current_user
         self._cognite_client = cognite_client
 
-    def run(self, wait: bool = True) -> TransformationJob:
+    def run(self, wait: bool = True) -> "job_classes.TransformationJob":
         return self._cognite_client.transformations.run(transformation_id=self.id, wait=wait)
 
-    def run_async(self) -> Awaitable[TransformationJob]:
+    def run_async(self) -> Awaitable["job_classes.TransformationJob"]:
         return self._cognite_client.transformations.run_async(transformation_id=self.id)
 
-    def jobs(self) -> TransformationJobList:
+    def jobs(self) -> "job_classes.TransformationJobList":
         return self._cognite_client.transformations.jobs.list(transformation_id=self.id)
 
     @classmethod
@@ -274,3 +272,6 @@ class TransformationFilter(CogniteFilter):
 
     def __init__(self, include_public: bool = True):
         self.include_public = include_public
+
+
+import cognite.experimental.data_classes.transformation_jobs as job_classes
