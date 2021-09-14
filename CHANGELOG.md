@@ -33,6 +33,11 @@ Changes are grouped as follows
 - `transformations.jobs` api client, which retrieves the  status of transformation runs.
 - `transformations.run` method, which runs transformations.
 
+## [0.60.4]
+
+### Changed
+- Extraction pipeline entity updated to be same with API entity.
+
 ## [0.60.3]
 
 ### Added
