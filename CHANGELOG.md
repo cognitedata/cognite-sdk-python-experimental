@@ -12,7 +12,7 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.7]
+## [0.60.8]
 
 ### Added
 - `TransformationsApi.retrieve_multiple` method, to get multiple transformations from the backend in a single request.
