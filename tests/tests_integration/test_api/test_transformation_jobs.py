@@ -25,6 +25,9 @@ def new_transformation():
 
     yield ts
 
+    COGNITE_CLIENT.transformations.delete(id=ts.id)
+    assert COGNITE_CLIENT.transformations.retrieve(ts.id) is None
+
 
 other_transformation = new_transformation
 
