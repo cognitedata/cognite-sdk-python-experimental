@@ -20,6 +20,9 @@ def new_transformation():
     assert COGNITE_CLIENT.transformations.retrieve(ts.id) is None
 
 
+other_transformation = new_transformation
+
+
 class TestTransformationsAPI:
     def test_create_asset_transformation(self):
         transform = Transformation(name="any", destination=TransformationDestination.assets())
@@ -50,6 +53,15 @@ class TestTransformationsAPI:
             and new_transformation.destination.type == retrieved_transformation.destination.type
             and new_transformation.id == retrieved_transformation.id
         )
+
+    def test_retrieve_multiple(self, new_transformation, other_transformation):
+        retrieved_transformations = COGNITE_CLIENT.transformations.retrieve_multiple(
+            ids=[new_transformation.id, other_transformation.id]
+        )
+        assert len(retrieved_transformations) == 2
+        assert new_transformation.id in [
+            transformation.id for transformation in retrieved_transformations
+        ] and other_transformation.id in [transformation.id for transformation in retrieved_transformations]
 
     def test_update_full(self, new_transformation):
         new_transformation.name = "new name"
