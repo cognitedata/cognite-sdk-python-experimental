@@ -1,3 +1,4 @@
+import functools
 from typing import Any, Dict, List, Union
 
 from cognite.client._api_client import APIClient
@@ -7,10 +8,36 @@ from cognite.experimental.data_classes.geospatial import Feature, FeatureList, F
 
 class ExperimentalGeospatialAPI(APIClient):
 
+    X_COGNITE_DOMAIN = "x-cognite-domain"
+
     _RESOURCE_PATH = "/spatial/featuretypes"
     _LIST_CLASS = FeatureTypeList
     _ASSERT_CLASSES = False
 
+    _cognite_domain = None
+
+    def _feature_resource_path(self, feature_type: FeatureType):
+        return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"
+
+    def _with_cognite_domain(func):
+        @functools.wraps(func)
+        def wrapper_with_cognite_domain(self, *args, **kwargs):
+            self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
+            if self._cognite_domain is not None:
+                self._config.headers.update({self.X_COGNITE_DOMAIN: self._cognite_domain})
+            res = func(self, *args, **kwargs)
+            self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
+            return res
+
+        return wrapper_with_cognite_domain
+
+    def set_current_cognite_domain(self, cognite_domain: str):
+        self._cognite_domain = cognite_domain
+
+    def get_current_cognite_domain(self):
+        return self._cognite_domain
+
+    @_with_cognite_domain
     def create_feature_types(
         self, feature_type: Union[FeatureType, List[FeatureType]]
     ) -> Union[FeatureType, List[FeatureType]]:
@@ -38,6 +65,7 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         return self._create_multiple(items=feature_type)
 
+    @_with_cognite_domain
     def delete_feature_types(self, external_id: Union[str, List[str]] = None) -> None:
         """`Delete one or more feature type`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatureTypes>
@@ -56,8 +84,9 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> c.geospatial.delete_feature_types(external_id=["wells", "pipelines"])
         """
-        self._delete_multiple(external_ids=external_id, wrap_ids=True)
+        return self._delete_multiple(external_ids=external_id, wrap_ids=True)
 
+    @_with_cognite_domain
     def list_feature_types(self) -> FeatureTypeList:
         """`List feature types`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/listFeatureTypes>
@@ -76,6 +105,7 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         return self._list(method="POST")
 
+    @_with_cognite_domain
     def retrieve_feature_types(self, external_id: Union[str, List[str]] = None) -> FeatureTypeList:
         """`Retrieve feature types`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeatureTypesByIds>
@@ -96,6 +126,7 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         return self._retrieve_multiple(wrap_ids=True, external_ids=external_id)
 
+    @_with_cognite_domain
     def create_features(
         self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]
     ) -> Union[Feature, List[Feature]]:
@@ -122,6 +153,7 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type)
         return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList)
 
+    @_with_cognite_domain
     def delete_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> None:
         """`Delete one or more feature`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatures>
@@ -145,6 +177,7 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type)
         self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
 
+    @_with_cognite_domain
     def retrieve_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> FeatureList:
         """`Retrieve features`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeaturesByIds>
@@ -170,6 +203,7 @@ class ExperimentalGeospatialAPI(APIClient):
             wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=FeatureList
         )
 
+    @_with_cognite_domain
     def update_features(self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]) -> FeatureList:
         """`Update features`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatures>
@@ -197,6 +231,7 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type) + "/update"
         return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList)
 
+    @_with_cognite_domain
     def search_features(self, feature_type: FeatureType, filter: Dict[str, Any], limit: int = 100) -> FeatureList:
         """`Search for features`_
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
@@ -226,6 +261,3 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = resource_path or self._RESOURCE_PATH
         res = self._post(url_path=resource_path, json={"filter": filter, "limit": limit},)
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
-
-    def _feature_resource_path(self, feature_type: FeatureType):
-        return self._RESOURCE_PATH + "/" + feature_type.external_id + "/features"

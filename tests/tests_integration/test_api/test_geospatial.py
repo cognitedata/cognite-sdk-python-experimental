@@ -10,11 +10,14 @@ COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 
-@pytest.fixture
-def new_feature_type():
+@pytest.fixture(params=[None, "smoke_test"])
+def new_feature_type(request):
+    COGNITE_CLIENT.geospatial.set_current_cognite_domain(request.param)
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
-        FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
+        FeatureType(
+            external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}}, cognite_domain=request.param
+        )
     )
     yield feature_type
     COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id)
@@ -30,7 +33,19 @@ def new_feature(new_feature_type):
     COGNITE_CLIENT.geospatial.delete_features(new_feature_type, external_id=external_id)
 
 
-@pytest.fixture(autouse=True)
+# we need to filter the old types based on their age, so setting autouse to false for now
+@pytest.fixture(autouse=False, scope="module")
+def clean_old_feature_types():
+    for domain in [None, "smoke_test"]:
+        COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
+        res = COGNITE_CLIENT.geospatial.list_feature_types()
+        for ft in res:
+            print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
+            COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id)
+    yield
+
+
+@pytest.fixture(autouse=True, scope="module")
 def disable_gzip():
     v = os.getenv(COGNITE_DISABLE_GZIP)
     os.environ[COGNITE_DISABLE_GZIP] = "true"
