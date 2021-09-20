@@ -68,11 +68,11 @@ class TransformationJobsAPI(APIClient):
         return self._retrieve(id=id)
 
     def retrieve_multiple(self, ids: List[int], ignore_unknown_ids: bool = False) -> TransformationJobList:
-        """`Retrieve a multiple transformation jobs by id. <https://docs.cognite.com/api/playground/#operation/getTransformationJob>`_
+        """`Retrieve multiple transformation jobs by id. <https://docs.cognite.com/api/playground/#operation/getTransformationJob>`_
 
         Args:
             ids (List[int]): Job internal Ids
-            ignore_unknown_ids (bool): Ignore IDs and external IDs that are not found rather than throw an exception.
+            ignore_unknown_ids (bool): Ignore IDs that are not found rather than throw an exception.
 
         Returns:
             TransformationJobList: Requested transformation jobs.
