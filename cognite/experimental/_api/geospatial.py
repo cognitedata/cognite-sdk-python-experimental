@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Union
 from cognite.client._api_client import APIClient
 
 from cognite.experimental.data_classes.geospatial import (
+    CoordinateReferenceSystem,
     CoordinateReferenceSystemList,
     Feature,
     FeatureList,
@@ -289,14 +290,12 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         if isinstance(srids, numbers.Integral):
             srids = [srids]
-        elif not isinstance(srids, list):
-            raise TypeError("srid must be int or list of int")
+
         res = self._post(url_path="/spatial/crs/byids", json={"items": [{"srid": srid} for srid in srids]})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def list_coordinate_reference_systems(self, onlyCustom=False) -> CoordinateReferenceSystemList:
-        """`Retrieve features``
-        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getCRS>
+        """`Retrieve features`
 
         Args:
             onlyCustom: list only custom CRSs or not
@@ -314,3 +313,51 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         res = self._get(url_path="/spatial/crs/list", params={"filterCustom": onlyCustom})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
+
+    def create_coordinate_reference_systems(
+        self, crs: Union[CoordinateReferenceSystem, List[CoordinateReferenceSystem]]
+    ) -> CoordinateReferenceSystemList:
+        """`Create Coordinate Reference System`
+
+        Args:
+            crs: a CoordinateReferenceSystem or a list of CoordinateReferenceSystem
+
+        Returns:
+            CoordinateReferenceSystemList: list of CRSs.
+
+        Examples:
+
+            Create a custom CRS:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> custom_crs = CoordinateReferenceSystem(srid = 121111, wkt="wkt", proj_string="proj")
+                >>> crs = c.geospatial.create_coordinate_reference_systems(custom_crs)
+        """
+        if isinstance(crs, CoordinateReferenceSystem):
+            crs = [crs]
+
+        res = self._post(url_path="/spatial/crs", json={"items": [it.dump(camel_case=True) for it in crs]})
+        return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
+
+    def delete_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> None:
+        """`Delete Coordinate Reference System`
+
+        Args:
+            srids: (Union[int, List[int]]): SRID or list of SRIDs
+
+        Returns:
+            None
+
+        Examples:
+
+            Delete a custom CRS:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> crs = c.geospatial.create_coordinate_reference_systems(srids=[121111])
+        """
+        if isinstance(srids, numbers.Integral):
+            srids = [srids]
+
+        self._post(url_path="/spatial/crs/delete", json={"items": [{"srid": srid} for srid in srids]})

@@ -5,10 +5,19 @@ import pytest
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.geospatial import Feature, FeatureType
+from cognite.experimental.data_classes.geospatial import CoordinateReferenceSystem, Feature, FeatureType
 
 COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
+
+
+@pytest.fixture()
+def test_crs():
+    crs = COGNITE_CLIENT.geospatial.create_coordinate_reference_systems(
+        crs=CoordinateReferenceSystem(srid=121111, wkt="wkt", proj_string="proj")
+    )
+    yield crs[0]
+    COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])
 
 
 @pytest.fixture(params=[None, "smoke_test"])
@@ -69,6 +78,17 @@ def clean_old_feature_types():
         for ft in res:
             print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
             COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id)
+    yield
+
+
+# we clean up the old custom CRS from a previous failed run
+@pytest.fixture(autouse=False, scope="module")
+def clean_old_custom_crs():
+    try:
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
+    except:
+        pass
+
     yield
 
 
@@ -183,3 +203,7 @@ class TestGeospatialAPI:
         assert len(res) > 8000
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(onlyCustom=True)
         assert len(res) == 0
+
+    def test_list_custom_coordinate_reference_systems(self, test_crs):
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(onlyCustom=True)
+        assert test_crs.srid in set(map(lambda x: x.srid, res))

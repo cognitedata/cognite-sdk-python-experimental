@@ -69,12 +69,10 @@ class CoordinateReferenceSystem(CogniteResource):
     """A representation of a feature in the geospatial api.
     """
 
-    def __init__(
-        self, srid: int = None, cognite_client=None, **attributes,
-    ):
+    def __init__(self, srid: int = None, wkt: str = None, proj_string: str = None, cognite_client=None):
         self.srid = srid
-        for key in attributes:
-            setattr(self, key, attributes[key])
+        self.wkt = wkt
+        self.proj_string = proj_string
         self._cognite_client = cognite_client
 
     @classmethod
