@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.10]
+
+### Added
+- `oicdCredentials.audience` parameter for transformations.
+
 ## [0.60.9]
 
 ### Added
