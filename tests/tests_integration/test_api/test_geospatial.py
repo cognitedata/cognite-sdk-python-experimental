@@ -177,3 +177,9 @@ class TestGeospatialAPI:
     def test_get_multiple_coordinate_reference_systems(self):
         res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=[4326, 4327])
         assert set(map(lambda x: x.srid, res)) == {4326, 4327}
+
+    def test_list_coordinate_reference_systems(self):
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems()
+        assert len(res) > 8000
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(onlyCustom=True)
+        assert len(res) == 0

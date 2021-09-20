@@ -2,11 +2,9 @@ import functools
 import numbers
 from typing import Any, Dict, List, Union
 
-from cognite.client import utils
 from cognite.client._api_client import APIClient
 
 from cognite.experimental.data_classes.geospatial import (
-    CoordinateReferenceSystem,
     CoordinateReferenceSystemList,
     Feature,
     FeatureList,
@@ -272,7 +270,7 @@ class ExperimentalGeospatialAPI(APIClient):
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def get_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> CoordinateReferenceSystemList:
-        """`Retrieve features``
+        """`Get Coordinate Reference Systems`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getCRS>
 
         Args:
@@ -283,7 +281,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Examples:
 
-            Retrieve one feature by its external id:
+            Get two CRS definitions:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -294,4 +292,25 @@ class ExperimentalGeospatialAPI(APIClient):
         elif not isinstance(srids, list):
             raise TypeError("srid must be int or list of int")
         res = self._post(url_path="/spatial/crs/byids", json={"items": [{"srid": srid} for srid in srids]})
+        return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
+
+    def list_coordinate_reference_systems(self, onlyCustom=False) -> CoordinateReferenceSystemList:
+        """`Retrieve features``
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getCRS>
+
+        Args:
+            onlyCustom: list only custom CRSs or not
+
+        Returns:
+            CoordinateReferenceSystemList: list of CRSs.
+
+        Examples:
+
+            Fetch all custom CRSs:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> crs = c.geospatial.list_coordinate_reference_systems(onlyCustom=True)
+        """
+        res = self._get(url_path="/spatial/crs/list", params={"filterCustom": onlyCustom})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
