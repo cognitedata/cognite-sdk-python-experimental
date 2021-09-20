@@ -491,6 +491,12 @@ Retrieve transformations by id
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.transformations.TransformationsAPI.retrieve
 
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.retrieve_multiple
+
+Run transformations by id
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.transformations.TransformationsAPI.run
+
 List transformations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.transformations.TransformationsAPI.list
@@ -545,6 +551,17 @@ Delete transformation notifications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.transformation_notifications.TransformationNotificationsAPI.delete
 
+Transformation Jobs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Retrieve transformation jobs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.transformation_jobs.TransformationJobsAPI.retrieve
+
+List transformation jobs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.transformation_jobs.TransformationJobsAPI.list
+
 Transformation Schema
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -561,6 +578,9 @@ Data classes
     :members:
     :show-inheritance:
 .. automodule:: cognite.experimental.data_classes.transformation_notifications
+    :members:
+    :show-inheritance:
+.. automodule:: cognite.experimental.data_classes.transformation_jobs
     :members:
     :show-inheritance:
 .. automodule:: cognite.experimental.data_classes.transformation_schema

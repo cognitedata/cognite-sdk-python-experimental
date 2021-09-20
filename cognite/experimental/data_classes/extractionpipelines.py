@@ -23,7 +23,6 @@ class ExtractionPipeline(CogniteResource):
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         last_updated_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
         created_by (str): ExtractionPipeline creator, usually email.
-        skip_notifications_in_minutes (int): Number value for system to skip sending email notification in minutes after last sending.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
@@ -47,7 +46,6 @@ class ExtractionPipeline(CogniteResource):
         created_time: int = None,
         last_updated_time: int = None,
         created_by: str = None,
-        skip_notifications_in_minutes: int = None,
         cognite_client=None,
     ):
         self.id = id
@@ -68,7 +66,6 @@ class ExtractionPipeline(CogniteResource):
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.created_by = created_by
-        self.skip_notifications_in_minutes = skip_notifications_in_minutes
         self._cognite_client = cognite_client
 
     @classmethod
@@ -151,10 +148,6 @@ class ExtractionPipelineUpdate(CogniteUpdate):
     @property
     def contacts(self):
         return ExtractionPipelineUpdate._ListExtractionPipelineUpdate(self, "contacts")
-
-    @property
-    def skip_notifications_in_minutes(self):
-        return ExtractionPipelineUpdate._PrimitiveExtractionPipelineUpdate(self, "skipNotificationsInMinutes")
 
 
 class ExtractionPipelineList(CogniteResourceList):

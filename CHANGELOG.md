@@ -12,6 +12,36 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.9]
+
+### Added
+- `transformation_id` parameter in `TransformationJobsAPI.list()`, to list only the jobs associated with a given transformation.
+
+## [0.60.8]
+
+### Added
+- `TransformationsApi.retrieve_multiple` method, to get multiple transformations from the backend in a single request.
+
+## [0.60.6]
+
+### Added
+- `TransformationJob.transformation_id` field to asossiate a job with it's source transformation.
+
+## [0.60.5]
+
+### Changed
+- `transformations.notifications`now uses `transformation_id` and `transformation_external_id` instead of `config_id` and `config_external_id`. 
+
+## [0.60.4]
+
+### Added
+- `transformations.jobs` api client, which retrieves the  status of transformation runs.
+- `transformations.run` method, which runs transformations.
+
+## [0.60.4]
+
+### Changed
+- Extraction pipeline entity updated to be same with API entity.
 
 ## [0.60.3]
 
