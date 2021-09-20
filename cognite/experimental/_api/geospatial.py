@@ -1,9 +1,18 @@
 import functools
+import numbers
 from typing import Any, Dict, List, Union
 
+from cognite.client import utils
 from cognite.client._api_client import APIClient
 
-from cognite.experimental.data_classes.geospatial import Feature, FeatureList, FeatureType, FeatureTypeList
+from cognite.experimental.data_classes.geospatial import (
+    CoordinateReferenceSystem,
+    CoordinateReferenceSystemList,
+    Feature,
+    FeatureList,
+    FeatureType,
+    FeatureTypeList,
+)
 
 
 class ExperimentalGeospatialAPI(APIClient):
@@ -41,7 +50,7 @@ class ExperimentalGeospatialAPI(APIClient):
     def create_feature_types(
         self, feature_type: Union[FeatureType, List[FeatureType]]
     ) -> Union[FeatureType, List[FeatureType]]:
-        """`Creates feature types`_
+        """`Creates feature types`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatureTypes>
 
         Args:
@@ -67,7 +76,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def delete_feature_types(self, external_id: Union[str, List[str]] = None) -> None:
-        """`Delete one or more feature type`_
+        """`Delete one or more feature type`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatureTypes>
 
         Args:
@@ -88,7 +97,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def list_feature_types(self) -> FeatureTypeList:
-        """`List feature types`_
+        """`List feature types`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/listFeatureTypes>
 
         Returns:
@@ -107,7 +116,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def retrieve_feature_types(self, external_id: Union[str, List[str]] = None) -> FeatureTypeList:
-        """`Retrieve feature types`_
+        """`Retrieve feature types`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeatureTypesByIds>
 
         Args:
@@ -130,7 +139,7 @@ class ExperimentalGeospatialAPI(APIClient):
     def create_features(
         self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]
     ) -> Union[Feature, List[Feature]]:
-        """`Creates features`_
+        """`Creates features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatures>
 
         Args:
@@ -155,7 +164,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def delete_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> None:
-        """`Delete one or more feature`_
+        """`Delete one or more feature`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatures>
 
         Args:
@@ -179,7 +188,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def retrieve_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> FeatureList:
-        """`Retrieve features`_
+        """`Retrieve features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getFeaturesByIds>
 
         Args:
@@ -205,7 +214,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def update_features(self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]) -> FeatureList:
-        """`Update features`_
+        """`Update features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatures>
 
         Args:
@@ -233,7 +242,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def search_features(self, feature_type: FeatureType, filter: Dict[str, Any], limit: int = 100) -> FeatureList:
-        """`Search for features`_
+        """`Search for features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
 
         Args:
@@ -261,3 +270,28 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = resource_path or self._RESOURCE_PATH
         res = self._post(url_path=resource_path, json={"filter": filter, "limit": limit},)
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
+
+    def get_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> CoordinateReferenceSystemList:
+        """`Retrieve features``
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/getCRS>
+
+        Args:
+            srids: (Union[int, List[int]]): SRID or list of SRIDs
+
+        Returns:
+            CoordinateReferenceSystemList: Requested CRSs.
+
+        Examples:
+
+            Retrieve one feature by its external id:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> crs = c.geospatial.get_coordinate_reference_systems(srids=[4326, 4327])
+        """
+        if isinstance(srids, numbers.Integral):
+            srids = [srids]
+        elif not isinstance(srids, list):
+            raise TypeError("srid must be int or list of int")
+        res = self._post(url_path="/spatial/crs/byids", json={"items": [{"srid": srid} for srid in srids]})
+        return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)

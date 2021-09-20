@@ -169,3 +169,11 @@ class TestGeospatialAPI:
             raise pytest.fail("Domain settings is messed up... search_features(...) should have raised an exception")
         except CogniteAPIError:
             COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
+
+    def test_get_coordinate_reference_system(self):
+        res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=4326)
+        assert res[0].srid == 4326
+
+    def test_get_multiple_coordinate_reference_systems(self):
+        res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=[4326, 4327])
+        assert set(map(lambda x: x.srid, res)) == {4326, 4327}
