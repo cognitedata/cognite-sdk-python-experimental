@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.11]
+
+### Added
+- `TransformationJobsAPI.list_metrics` method to retrieve job metrics.
+
 ## [0.60.10]
 
 ### Added
