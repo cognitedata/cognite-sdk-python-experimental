@@ -25,7 +25,7 @@ def test_crs():
     COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])
 
 
-@pytest.fixture(params=[None, "smoke_test"])
+@pytest.fixture(params=[None, "sdk_test"])
 def cognite_domain(request):
     yield request.param
 
@@ -77,7 +77,7 @@ def another_test_feature(test_feature_type):
 # we need to filter the old types based on their age, so setting autouse to false for now
 @pytest.fixture(autouse=False, scope="module")
 def clean_old_feature_types():
-    for domain in [None, "smoke_test"]:
+    for domain in [None, "sdk_test"]:
         COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
         res = COGNITE_CLIENT.geospatial.list_feature_types()
         for ft in res:
@@ -181,7 +181,7 @@ class TestGeospatialAPI:
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
 
     def test_search_wrong_domain(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
-        COGNITE_CLIENT.geospatial.set_current_cognite_domain(None if cognite_domain == "smoke_test" else "smoke_test")
+        COGNITE_CLIENT.geospatial.set_current_cognite_domain(None if cognite_domain == "sdk_test" else "sdk_test")
         try:
             COGNITE_CLIENT.geospatial.search_features(
                 feature_type=test_feature_type,
