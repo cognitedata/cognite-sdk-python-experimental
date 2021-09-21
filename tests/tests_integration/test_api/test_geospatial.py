@@ -5,13 +5,27 @@ import pytest
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.geospatial import Feature, FeatureType
+from cognite.experimental.data_classes.geospatial import CoordinateReferenceSystem, Feature, FeatureType
 
 COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 
-@pytest.fixture(params=[None, "smoke_test"])
+@pytest.fixture()
+def test_crs():
+    wkt = """GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,
+    AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],
+    PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,
+    AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]"""
+    proj_string = """+proj=longlat +a=6377276.345 +b=6356075.41314024 +no_defs"""
+    crs = COGNITE_CLIENT.geospatial.create_coordinate_reference_systems(
+        crs=CoordinateReferenceSystem(srid=121111, wkt=wkt, proj_string=proj_string)
+    )
+    yield crs[0]
+    COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])
+
+
+@pytest.fixture(params=[None, "sdk_test"])
 def cognite_domain(request):
     yield request.param
 
@@ -63,13 +77,21 @@ def another_test_feature(test_feature_type):
 # we need to filter the old types based on their age, so setting autouse to false for now
 @pytest.fixture(autouse=False, scope="module")
 def clean_old_feature_types():
-    for domain in [None, "smoke_test"]:
+    for domain in [None, "sdk_test"]:
         COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
         res = COGNITE_CLIENT.geospatial.list_feature_types()
         for ft in res:
             print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
             COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id)
-    yield
+
+
+# we clean up the old custom CRS from a previous failed run
+@pytest.fixture(autouse=False, scope="module")
+def clean_old_custom_crs():
+    try:
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
+    except:
+        pass
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -159,7 +181,7 @@ class TestGeospatialAPI:
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
 
     def test_search_wrong_domain(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
-        COGNITE_CLIENT.geospatial.set_current_cognite_domain(None if cognite_domain == "smoke_test" else "smoke_test")
+        COGNITE_CLIENT.geospatial.set_current_cognite_domain(None if cognite_domain == "sdk_test" else "sdk_test")
         try:
             COGNITE_CLIENT.geospatial.search_features(
                 feature_type=test_feature_type,
@@ -169,3 +191,21 @@ class TestGeospatialAPI:
             raise pytest.fail("Domain settings is messed up... search_features(...) should have raised an exception")
         except CogniteAPIError:
             COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
+
+    def test_get_coordinate_reference_system(self):
+        res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=4326)
+        assert res[0].srid == 4326
+
+    def test_get_multiple_coordinate_reference_systems(self):
+        res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=[4326, 4327])
+        assert set(map(lambda x: x.srid, res)) == {4326, 4327}
+
+    def test_list_coordinate_reference_systems(self):
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems()
+        assert len(res) > 8000
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
+        assert len(res) == 0
+
+    def test_list_custom_coordinate_reference_systems(self, test_crs):
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
+        assert test_crs.srid in set(map(lambda x: x.srid, res))
