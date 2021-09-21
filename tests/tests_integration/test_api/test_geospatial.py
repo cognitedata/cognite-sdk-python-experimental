@@ -83,7 +83,6 @@ def clean_old_feature_types():
         for ft in res:
             print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
             COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id)
-    yield
 
 
 # we clean up the old custom CRS from a previous failed run
@@ -93,8 +92,6 @@ def clean_old_custom_crs():
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
     except:
         pass
-
-    yield
 
 
 @pytest.fixture(autouse=True, scope="module")
