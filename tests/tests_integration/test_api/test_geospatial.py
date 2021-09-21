@@ -13,8 +13,13 @@ COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 @pytest.fixture()
 def test_crs():
+    wkt = """GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,
+    AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],
+    PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,
+    AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]"""
+    proj_string = """+proj=longlat +a=6377276.345 +b=6356075.41314024 +no_defs"""
     crs = COGNITE_CLIENT.geospatial.create_coordinate_reference_systems(
-        crs=CoordinateReferenceSystem(srid=121111, wkt="wkt", proj_string="proj")
+        crs=CoordinateReferenceSystem(srid=121111, wkt=wkt, proj_string=proj_string)
     )
     yield crs[0]
     COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])
