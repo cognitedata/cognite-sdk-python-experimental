@@ -293,11 +293,11 @@ class ExperimentalGeospatialAPI(APIClient):
         res = self._post(url_path="/spatial/crs/byids", json={"items": [{"srid": srid} for srid in srids]})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
-    def list_coordinate_reference_systems(self, onlyCustom=False) -> CoordinateReferenceSystemList:
+    def list_coordinate_reference_systems(self, only_custom=False) -> CoordinateReferenceSystemList:
         """`Retrieve features`
 
         Args:
-            onlyCustom: list only custom CRSs or not
+            only_custom: list only custom CRSs or not
 
         Returns:
             CoordinateReferenceSystemList: list of CRSs.
@@ -308,9 +308,9 @@ class ExperimentalGeospatialAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> crs = c.geospatial.list_coordinate_reference_systems(onlyCustom=True)
+                >>> crs = c.geospatial.list_coordinate_reference_systems(only_custom=True)
         """
-        res = self._get(url_path="/spatial/crs/list", params={"filterCustom": onlyCustom})
+        res = self._get(url_path="/spatial/crs/list", params={"filterCustom": only_custom})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def create_coordinate_reference_systems(

@@ -203,9 +203,9 @@ class TestGeospatialAPI:
     def test_list_coordinate_reference_systems(self):
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems()
         assert len(res) > 8000
-        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(onlyCustom=True)
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert len(res) == 0
 
     def test_list_custom_coordinate_reference_systems(self, test_crs):
-        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(onlyCustom=True)
+        res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert test_crs.srid in set(map(lambda x: x.srid, res))
