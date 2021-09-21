@@ -45,7 +45,7 @@ class ExperimentalGeospatialAPI(APIClient):
     @_with_cognite_domain
     def create_feature_types(
         self, feature_type: Union[FeatureType, List[FeatureType]]
-    ) -> Union[FeatureType, List[FeatureType]]:
+    ) -> Union[FeatureType, FeatureTypeList]:
         """`Creates feature types`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatureTypes>
 
@@ -136,7 +136,7 @@ class ExperimentalGeospatialAPI(APIClient):
     @_with_cognite_domain
     def create_features(
         self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]
-    ) -> Union[Feature, List[Feature]]:
+    ) -> Union[Feature, FeatureList]:
         """`Creates features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatures>
 
@@ -354,7 +354,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> crs = c.geospatial.create_coordinate_reference_systems(srids=[121111])
+                >>> crs = c.geospatial.delete_coordinate_reference_systems(srids=[121111])
         """
         if isinstance(srids, numbers.Integral):
             srids = [srids]
