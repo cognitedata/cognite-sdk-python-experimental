@@ -63,3 +63,27 @@ class Feature(CogniteResource):
 class FeatureList(CogniteResourceList):
     _RESOURCE = Feature
     _ASSERT_CLASSES = False
+
+
+class CoordinateReferenceSystem(CogniteResource):
+    """A representation of a feature in the geospatial api.
+    """
+
+    def __init__(self, srid: int = None, wkt: str = None, proj_string: str = None, cognite_client=None):
+        self.srid = srid
+        self.wkt = wkt
+        self.proj_string = proj_string
+        self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Dict, cognite_client=None):
+        instance = cls(cognite_client=cognite_client)
+        for key, value in resource.items():
+            snake_case_key = utils._auxiliary.to_snake_case(key)
+            setattr(instance, snake_case_key, value)
+        return instance
+
+
+class CoordinateReferenceSystemList(CogniteResourceList):
+    _RESOURCE = CoordinateReferenceSystem
+    _ASSERT_CLASSES = False

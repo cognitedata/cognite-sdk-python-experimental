@@ -16,6 +16,7 @@ Changes are grouped as follows
 
 ### Added
 - `TransformationJobsAPI.list_metrics` method to retrieve job metrics.
+- `transformations.jobs.retrieve_multiple` method to get multiple jobs by id in a single API call.
 
 ## [0.60.10]
 
