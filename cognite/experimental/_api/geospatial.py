@@ -50,7 +50,7 @@ class ExperimentalGeospatialAPI(APIClient):
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatureTypes>
 
         Args:
-            FeatureType (Union[FeatureType, List[FeatureType]]): feature type definition or list of feature type definitions to create.
+            feature_type (Union[FeatureType, List[FeatureType]]): feature type definition or list of feature type definitions to create.
 
         Returns:
             Union[FeatureType, FeatureTypeList]: Created feature type definition(s)
@@ -77,6 +77,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         Args:
             external_id (Union[str, List[str]]): External ID or list of external ids
+            force (bool): if `true` the features will also be dropped
 
         Returns:
             None
