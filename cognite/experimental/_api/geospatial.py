@@ -243,7 +243,9 @@ class ExperimentalGeospatialAPI(APIClient):
         return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList)
 
     @_with_cognite_domain
-    def search_features(self, feature_type: FeatureType, filter: Dict[str, Any], limit: int = 100) -> FeatureList:
+    def search_features(
+        self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None, limit: int = 100
+    ) -> FeatureList:
         """`Search for features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
 
@@ -251,6 +253,7 @@ class ExperimentalGeospatialAPI(APIClient):
             feature_type: the feature type to search for
             filter (Dict[str, Any]): the search filter
             limit (int): maximum number of results
+            attributes (Dict[str, Any]): the output attribute selection
 
         Returns:
             FeatureList: the filtered features
@@ -266,11 +269,18 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> res = c.geospatial.search_features(my_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}})
                 >>> for f in res:
                 ...     # do something with the features
+
+            Search for features and select output attributes:
+
+                >>> res = c.geospatial.search_features(my_feature_type, filter={}, attributes={"temperature": {}, "pressure": {}})
+
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
         resource_path = resource_path
-        res = self._post(url_path=resource_path, json={"filter": filter, "limit": limit},)
+        res = self._post(
+            url_path=resource_path, json={"filter": filter, "limit": limit, "output": {"attributes": attributes}}
+        )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def get_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> CoordinateReferenceSystemList:
