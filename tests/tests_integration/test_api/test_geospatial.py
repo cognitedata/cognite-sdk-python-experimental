@@ -209,3 +209,13 @@ class TestGeospatialAPI:
     def test_list_custom_coordinate_reference_systems(self, test_crs):
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert test_crs.srid in set(map(lambda x: x.srid, res))
+
+    def test_force_delete_feature_type(self):
+        external_id = f"FT_{uuid.uuid4().hex[:10]}"
+        feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
+            FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
+        )
+        COGNITE_CLIENT.geospatial.create_features(
+            feature_type, Feature(external_id=f"F_{uuid.uuid4().hex[:10]}", temperature=12.4)
+        )
+        COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id, force=True)
