@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.11]
+
+### Added
+- `TransformationJobsAPI.list_metrics` method to retrieve job metrics.
+- `transformations.jobs.retrieve_multiple` method to get multiple jobs by id in a single API call.
+
 ## [0.60.10]
 
 ### Added
