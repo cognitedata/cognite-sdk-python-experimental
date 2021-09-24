@@ -36,7 +36,13 @@ def test_feature_type(cognite_domain):
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
         FeatureType(
-            external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}}, cognite_domain=cognite_domain
+            external_id=external_id,
+            attributes={
+                "volume": {"type": "DOUBLE"},
+                "temperature": {"type": "DOUBLE"},
+                "pressure": {"type": "DOUBLE"},
+            },
+            cognite_domain=cognite_domain,
         )
     )
     yield feature_type
@@ -58,7 +64,7 @@ def another_test_feature_type(cognite_domain):
 def test_feature(test_feature_type):
     external_id = f"F_{uuid.uuid4().hex[:10]}"
     feature = COGNITE_CLIENT.geospatial.create_features(
-        test_feature_type, Feature(external_id=external_id, temperature=12.4)
+        test_feature_type, Feature(external_id=external_id, temperature=12.4, volume=1212.0, pressure=2121.0)
     )
     yield feature
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
@@ -68,7 +74,7 @@ def test_feature(test_feature_type):
 def another_test_feature(test_feature_type):
     external_id = f"F_{uuid.uuid4().hex[:10]}"
     feature = COGNITE_CLIENT.geospatial.create_features(
-        test_feature_type, Feature(external_id=external_id, temperature=-10.8)
+        test_feature_type, Feature(external_id=external_id, temperature=-10.8, pressure=123.456, volume=654.2)
     )
     yield feature
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
@@ -127,7 +133,8 @@ class TestGeospatialAPI:
 
     def test_update_single_feature(self, cognite_domain, test_feature_type, test_feature):
         res = COGNITE_CLIENT.geospatial.update_features(
-            feature_type=test_feature_type, feature=Feature(external_id=test_feature.external_id, temperature=6.237)
+            feature_type=test_feature_type,
+            feature=Feature(external_id=test_feature.external_id, temperature=6.237, pressure=12.21, volume=34.43),
         )
         assert res.external_id == test_feature.external_id
         assert res.temperature == 6.237
@@ -209,3 +216,21 @@ class TestGeospatialAPI:
     def test_list_custom_coordinate_reference_systems(self, test_crs):
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert test_crs.srid in set(map(lambda x: x.srid, res))
+
+    def test_force_delete_feature_type(self):
+        external_id = f"FT_{uuid.uuid4().hex[:10]}"
+        feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
+            FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
+        )
+        COGNITE_CLIENT.geospatial.create_features(
+            feature_type, Feature(external_id=f"F_{uuid.uuid4().hex[:10]}", temperature=12.4)
+        )
+        COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id, force=True)
+
+    def test_search_with_output_selection(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, attributes={"temperature": {}, "volume": {}}
+        )
+        assert len(res) == 2
+        assert not hasattr(res[0], "pressure")
+        assert not hasattr(res[1], "pressure")
