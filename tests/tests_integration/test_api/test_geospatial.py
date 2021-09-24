@@ -5,7 +5,13 @@ import pytest
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.geospatial import CoordinateReferenceSystem, Feature, FeatureType
+from cognite.experimental.data_classes.geospatial import (
+    AttributeAndSearchSpec,
+    CoordinateReferenceSystem,
+    Feature,
+    FeatureType,
+    FeatureTypeUpdate,
+)
 
 COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
@@ -42,6 +48,7 @@ def test_feature_type(cognite_domain):
                 "temperature": {"type": "DOUBLE"},
                 "pressure": {"type": "DOUBLE"},
             },
+            search_spec={"vol_press_idx": {"attributes": ["volume", "pressure"]}},
             cognite_domain=cognite_domain,
         )
     )
@@ -217,7 +224,7 @@ class TestGeospatialAPI:
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert test_crs.srid in set(map(lambda x: x.srid, res))
 
-    def test_force_delete_feature_type(self):
+    def test_force_delete_feature_types(self):
         external_id = f"FT_{uuid.uuid4().hex[:10]}"
         feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
             FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
@@ -234,3 +241,17 @@ class TestGeospatialAPI:
         assert len(res) == 2
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[1], "pressure")
+
+    def test_update_feature_types(self, cognite_domain, test_feature_type):
+        res = COGNITE_CLIENT.geospatial.update_feature_types(
+            update=FeatureTypeUpdate(
+                external_id=test_feature_type.external_id,
+                add=AttributeAndSearchSpec(
+                    attributes={"altitude": {"type": "DOUBLE", "optional": True}},
+                    search_spec={"altitude_idx": {"attributes": ["altitude"]}},
+                ),
+            ),
+        )
+        assert len(res) == 1
+        assert len(res[0].attributes) == 7
+        assert len(res[0].search_spec) == 5
