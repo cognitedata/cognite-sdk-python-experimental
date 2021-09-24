@@ -343,7 +343,9 @@ class ExperimentalGeospatialAPI(APIClient):
 
             Stream features and select output attributes:
 
-                >>> res = c.geospatial.stream_features(my_feature_type, filter={}, attributes={"temperature": {}, "pressure": {}})
+                >>> features = c.geospatial.stream_features(my_feature_type, filter={}, attributes={"temperature": {}, "pressure": {}})
+                >>> for f in features:
+                ...     # do something with the features
 
         """
         resource_path = self._feature_resource_path(feature_type) + "/search-streaming"
