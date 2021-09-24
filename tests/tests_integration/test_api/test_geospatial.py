@@ -6,10 +6,11 @@ from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.geospatial import (
+    AttributeAndSearchSpec,
     CoordinateReferenceSystem,
     Feature,
     FeatureType,
-    FeatureTypePatch,
+    FeatureTypeUpdate,
 )
 
 COGNITE_CLIENT = CogniteClient()
@@ -241,12 +242,14 @@ class TestGeospatialAPI:
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[1], "pressure")
 
-    def test_patch_feature_types(self, cognite_domain, test_feature_type):
+    def test_update_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.update_feature_types(
-            patch=FeatureTypePatch(
+            update=FeatureTypeUpdate(
                 external_id=test_feature_type.external_id,
-                attributes={"altitude": {"type": "DOUBLE", "optional": True}},
-                search_spec={"altitude_idx": {"attributes": ["altitude"]}},
+                add=AttributeAndSearchSpec(
+                    attributes={"altitude": {"type": "DOUBLE", "optional": True}},
+                    search_spec={"altitude_idx": {"attributes": ["altitude"]}},
+                ),
             ),
         )
         assert len(res) == 1

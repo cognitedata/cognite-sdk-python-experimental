@@ -11,7 +11,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureList,
     FeatureType,
     FeatureTypeList,
-    FeatureTypePatch,
+    FeatureTypeUpdate,
 )
 
 
@@ -139,32 +139,32 @@ class ExperimentalGeospatialAPI(APIClient):
         )
 
     @_with_cognite_domain
-    def update_feature_types(self, patch: Union[FeatureTypePatch, List[FeatureTypePatch]] = None) -> FeatureTypeList:
+    def update_feature_types(self, update: Union[FeatureTypeUpdate, List[FeatureTypeUpdate]] = None) -> FeatureTypeList:
         """`Patch feature types`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatureType>
 
         Args:
-            patch (Union[FeatureTypePatch, List[FeatureTypePatch]]): the patch the apply
+            update (Union[FeatureTypeUpdate, List[FeatureTypePatch]]): the update to apply
 
         Returns:
             FeatureTypeList: The updated feature types.
 
         Examples:
 
-            Patch one feature type:
+            Add one attribute to a feature type:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.geospatial.update_feature_types(patch=FeatureTypePatch(external_id="wells", attributes={"altitude": {"type": "DOUBLE"}}))
+                >>> res = c.geospatial.update_feature_types(update=FeatureTypeUpdate(external_id="wells", add=AttributeAndSearchSpec(attributes={"altitude": {"type": "DOUBLE"}})))
         """
-        if isinstance(patch, FeatureTypePatch):
-            patch = [patch]
+        if isinstance(update, FeatureTypeUpdate):
+            update = [update]
 
-        mapper = lambda patch: {
-            "attributes": None if not hasattr(patch, "attributes") else patch.attributes,
-            "searchSpec": None if not hasattr(patch, "search_spec") else patch.search_spec,
+        mapper = lambda it: {
+            "attributes": None if not hasattr(it, "attributes") else it.attributes,
+            "searchSpec": None if not hasattr(it, "search_spec") else it.search_spec,
         }
-        json = {"items": [{"externalId": it.external_id, "add": mapper(it)} for it in patch]}
+        json = {"items": [{"externalId": it.external_id, "add": mapper(it.add)} for it in update]}
         res = self._post(url_path=f"/spatial/featuretypes/update", json=json)
         return FeatureTypeList._load(res.json()["items"], cognite_client=self._cognite_client)
 
