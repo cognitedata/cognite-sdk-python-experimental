@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 
 import pytest
@@ -80,26 +81,6 @@ def another_test_feature(test_feature_type):
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
 
 
-# we need to filter the old types based on their age, so setting autouse to false for now
-@pytest.fixture(autouse=False, scope="module")
-def clean_old_feature_types():
-    for domain in [None, "sdk_test"]:
-        COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
-        res = COGNITE_CLIENT.geospatial.list_feature_types()
-        for ft in res:
-            print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
-            COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id)
-
-
-# we clean up the old custom CRS from a previous failed run
-@pytest.fixture(autouse=False, scope="module")
-def clean_old_custom_crs():
-    try:
-        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
-    except:
-        pass
-
-
 @pytest.fixture(autouse=True, scope="module")
 def disable_gzip():
     v = os.getenv(COGNITE_DISABLE_GZIP)
@@ -109,6 +90,34 @@ def disable_gzip():
         os.environ.pop(COGNITE_DISABLE_GZIP)
     else:
         os.environ[COGNITE_DISABLE_GZIP] = v
+
+
+# we clean up the old feature types from a previous failed run
+@pytest.fixture(autouse=True, scope="module")
+def clean_old_feature_types(disable_gzip):
+    try:
+        for domain in [None, "sdk_test", "smoke_test"]:
+            COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
+            res = COGNITE_CLIENT.geospatial.list_feature_types()
+            for ft in res:
+                feature_type_age_in_milliseconds = time.time() * 1000 - ft.last_updated_time
+                one_hour_in_milliseconds = 3600 * 1000
+                if feature_type_age_in_milliseconds > one_hour_in_milliseconds:
+                    print(
+                        f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}"
+                    )
+                    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id, force=True)
+    except:
+        pass
+
+
+# we clean up the old custom CRS from a previous failed run
+@pytest.fixture(autouse=True, scope="module")
+def clean_old_custom_crs(disable_gzip):
+    try:
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
+    except:
+        pass
 
 
 class TestGeospatialAPI:
