@@ -47,6 +47,7 @@ def test_feature_type(cognite_domain):
                 "temperature": {"type": "DOUBLE"},
                 "pressure": {"type": "DOUBLE"},
             },
+            search_spec={"vol_press_idx": {"attributes": ["volume", "pressure"]}},
             cognite_domain=cognite_domain,
         )
     )
@@ -243,9 +244,11 @@ class TestGeospatialAPI:
     def test_patch_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.patch_feature_types(
             patch=FeatureTypePatch(
-                external_id=test_feature_type.external_id, attributes={"altitude": {"type": "DOUBLE", "optional": True}}
+                external_id=test_feature_type.external_id,
+                attributes={"altitude": {"type": "DOUBLE", "optional": True}},
+                search_spec={"altitude_idx": {"attributes": ["altitude"]}},
             ),
         )
         assert len(res) == 1
         assert len(res[0].attributes) == 7
-        assert len(res[0].search_spec) == 3
+        assert len(res[0].search_spec) == 5

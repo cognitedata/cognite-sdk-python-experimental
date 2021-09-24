@@ -14,6 +14,7 @@ class FeatureType(CogniteResource):
         created_time: int = None,
         last_updated_time: int = None,
         attributes: Dict[str, Any] = None,
+        search_spec: Dict[str, Any] = None,
         cognite_client=None,
         cognite_domain=None,
     ):
@@ -21,6 +22,7 @@ class FeatureType(CogniteResource):
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.attributes = attributes
+        self.search_spec = search_spec
         self._cognite_client = cognite_client
         self._cognite_domain = cognite_domain
 
@@ -53,7 +55,7 @@ class FeatureTypePatch(CogniteResource):
     ):
         self.external_id = external_id
         self.attributes = attributes
-        self.search_spec: search_spec
+        self.search_spec = search_spec
         self._cognite_client = cognite_client
         self._cognite_domain = cognite_domain
 
