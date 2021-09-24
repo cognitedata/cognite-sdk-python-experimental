@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import uuid
 
@@ -17,6 +18,9 @@ from cognite.experimental.data_classes.geospatial import (
 COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
+# sdk integration tests run concurrently so this makes the CI builds independent from each other
+FIXED_SRID = 121111 + sys.version_info.minor
+
 
 @pytest.fixture()
 def test_crs():
@@ -26,10 +30,10 @@ def test_crs():
     AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]"""
     proj_string = """+proj=longlat +a=6377276.345 +b=6356075.41314024 +no_defs"""
     crs = COGNITE_CLIENT.geospatial.create_coordinate_reference_systems(
-        crs=CoordinateReferenceSystem(srid=121111, wkt=wkt, proj_string=proj_string)
+        crs=CoordinateReferenceSystem(srid=FIXED_SRID, wkt=wkt, proj_string=proj_string)
     )
     yield crs[0]
-    COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])
+    COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])
 
 
 @pytest.fixture(params=[None, "sdk_test"])
@@ -122,7 +126,7 @@ def clean_old_feature_types(disable_gzip):
 @pytest.fixture(autouse=True, scope="module")
 def clean_old_custom_crs(disable_gzip):
     try:
-        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])  # clean up
     except:
         pass
 
