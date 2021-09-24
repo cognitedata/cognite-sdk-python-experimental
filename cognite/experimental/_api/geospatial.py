@@ -139,7 +139,7 @@ class ExperimentalGeospatialAPI(APIClient):
         )
 
     @_with_cognite_domain
-    def patch_feature_types(self, patch: Union[FeatureTypePatch, List[FeatureTypePatch]] = None) -> FeatureTypeList:
+    def update_feature_types(self, patch: Union[FeatureTypePatch, List[FeatureTypePatch]] = None) -> FeatureTypeList:
         """`Patch feature types`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatureType>
 
@@ -155,7 +155,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> res = c.geospatial.patch_feature_types(patch=FeatureTypePatch(external_id="wells", attributes={"altitude": {"type": "DOUBLE"}}))
+                >>> res = c.geospatial.update_feature_types(patch=FeatureTypePatch(external_id="wells", attributes={"altitude": {"type": "DOUBLE"}}))
         """
         if isinstance(patch, FeatureTypePatch):
             patch = [patch]

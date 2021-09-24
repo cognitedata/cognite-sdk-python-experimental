@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.13]
+
+### Added
+- `GeospatialAPI.update_feature_types` method to update feature types.
+
 ## [0.60.12]
 
 ### Changed

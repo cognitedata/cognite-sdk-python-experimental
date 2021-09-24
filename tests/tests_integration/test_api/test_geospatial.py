@@ -242,7 +242,7 @@ class TestGeospatialAPI:
         assert not hasattr(res[1], "pressure")
 
     def test_patch_feature_types(self, cognite_domain, test_feature_type):
-        res = COGNITE_CLIENT.geospatial.patch_feature_types(
+        res = COGNITE_CLIENT.geospatial.update_feature_types(
             patch=FeatureTypePatch(
                 external_id=test_feature_type.external_id,
                 attributes={"altitude": {"type": "DOUBLE", "optional": True}},
