@@ -1,4 +1,5 @@
 import functools
+import json as complexjson
 import numbers
 from typing import Any, Dict, Generator, List, Union
 
@@ -314,10 +315,9 @@ class ExperimentalGeospatialAPI(APIClient):
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
-    @_with_cognite_domain
     def stream_features(
         self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None
-    ) -> Generator[str, None, None]:
+    ) -> Generator[Feature, None, None]:
         """`Stream features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/streamFeatures>
 
@@ -349,8 +349,15 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type) + "/search-streaming"
         resource_path = resource_path
         json = {"filter": filter, "output": {"attributes": attributes, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
+
+        self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
+        if self._cognite_domain is not None:
+            self._config.headers.update({self.X_COGNITE_DOMAIN: feature_type._cognite_domain})
         res = self._do_request("POST", url_path=resource_path, json=json, timeout=self._config.timeout, stream=True)
-        return res.iter_lines()
+        self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
+
+        for line in res.iter_lines():
+            yield Feature._load(complexjson.loads(line))
 
     def get_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> CoordinateReferenceSystemList:
         """`Get Coordinate Reference Systems`
