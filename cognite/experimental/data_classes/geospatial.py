@@ -39,6 +39,30 @@ class FeatureTypeList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
 
+class FeatureTypePatch(CogniteResource):
+    """A representation of a feature type patch in the geospatial api.
+    """
+
+    def __init__(
+        self,
+        external_id: str = None,
+        attributes: Dict[str, Any] = None,
+        search_spec: Dict[str, Any] = None,
+        cognite_client=None,
+        cognite_domain=None,
+    ):
+        self.external_id = external_id
+        self.attributes = attributes
+        self.search_spec: search_spec
+        self._cognite_client = cognite_client
+        self._cognite_domain = cognite_domain
+
+
+class FeatureTypePatchList:
+    _RESOURCE = FeatureTypePatch
+    _ASSERT_CLASSES = False
+
+
 class Feature(CogniteResource):
     """A representation of a feature in the geospatial api.
     """
