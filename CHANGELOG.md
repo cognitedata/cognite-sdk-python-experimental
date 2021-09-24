@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.12]
+
+### Changed
+- `TransformationDestination.raw()` now uses `type = 'raw'` istead of `'raw_table'` and doesn't use deprecated `raw_type` parameter.
+
 ## [0.60.11]
 
 ### Added
