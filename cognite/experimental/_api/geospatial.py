@@ -11,6 +11,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureList,
     FeatureType,
     FeatureTypeList,
+    FeatureTypeUpdate,
 )
 
 
@@ -136,6 +137,36 @@ class ExperimentalGeospatialAPI(APIClient):
         return self._retrieve_multiple(
             wrap_ids=True, external_ids=external_id, cls=FeatureTypeList, resource_path="/spatial/featuretypes"
         )
+
+    @_with_cognite_domain
+    def update_feature_types(self, update: Union[FeatureTypeUpdate, List[FeatureTypeUpdate]] = None) -> FeatureTypeList:
+        """`Patch feature types`
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatureType>
+
+        Args:
+            update (Union[FeatureTypeUpdate, List[FeatureTypePatch]]): the update to apply
+
+        Returns:
+            FeatureTypeList: The updated feature types.
+
+        Examples:
+
+            Add one attribute to a feature type:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.update_feature_types(update=FeatureTypeUpdate(external_id="wells", add=AttributeAndSearchSpec(attributes={"altitude": {"type": "DOUBLE"}})))
+        """
+        if isinstance(update, FeatureTypeUpdate):
+            update = [update]
+
+        mapper = lambda it: {
+            "attributes": None if not hasattr(it, "attributes") else it.attributes,
+            "searchSpec": None if not hasattr(it, "search_spec") else it.search_spec,
+        }
+        json = {"items": [{"externalId": it.external_id, "add": mapper(it.add)} for it in update]}
+        res = self._post(url_path=f"/spatial/featuretypes/update", json=json)
+        return FeatureTypeList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     @_with_cognite_domain
     def create_features(

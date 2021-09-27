@@ -14,6 +14,7 @@ class FeatureType(CogniteResource):
         created_time: int = None,
         last_updated_time: int = None,
         attributes: Dict[str, Any] = None,
+        search_spec: Dict[str, Any] = None,
         cognite_client=None,
         cognite_domain=None,
     ):
@@ -21,6 +22,7 @@ class FeatureType(CogniteResource):
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.attributes = attributes
+        self.search_spec = search_spec
         self._cognite_client = cognite_client
         self._cognite_domain = cognite_domain
 
@@ -36,6 +38,35 @@ class FeatureType(CogniteResource):
 
 class FeatureTypeList(CogniteResourceList):
     _RESOURCE = FeatureType
+    _ASSERT_CLASSES = False
+
+
+class AttributeAndSearchSpec:
+    """A representation of a feature type attribute and search spec.
+    """
+
+    def __init__(
+        self, attributes: Dict[str, Any] = None, search_spec: Dict[str, Any] = None,
+    ):
+        self.attributes = attributes
+        self.search_spec = search_spec
+
+
+class FeatureTypeUpdate:
+    """A representation of a feature type update in the geospatial api.
+    """
+
+    def __init__(
+        self, external_id: str = None, add: AttributeAndSearchSpec = None, cognite_client=None, cognite_domain=None,
+    ):
+        self.external_id = external_id
+        self.add = add
+        self._cognite_client = cognite_client
+        self._cognite_domain = cognite_domain
+
+
+class FeatureTypeUpdateList:
+    _RESOURCE = FeatureTypeUpdate
     _ASSERT_CLASSES = False
 
 
