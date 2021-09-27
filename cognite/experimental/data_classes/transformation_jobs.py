@@ -148,8 +148,13 @@ class TransformationJob(CogniteResource):
                 >>> c = CogniteClient()
                 >>>
                 >>> job = c.transformations.run(id = 1, wait = False)  
-                >>> if job.wait(timeout = 5.0*60).status not in [TransformationJobStatus.FAILED, TransformationJobStatus.COMPLETED]:
-                >>>     # send notification of long running transformation
+                >>> job.wait(timeout = 5.0*60)
+                >>> if job.status == TransformationJobStatus.FAILED:
+                >>>     # do something if job failed
+                >>> elif job.status == TransformationJobStatus.COMPLETED:
+                >>>     # do something if job completed successfully
+                >>> else:
+                >>>     # do something if job is still running
         """
         self.update()
         if timeout is None:
@@ -203,8 +208,12 @@ class TransformationJob(CogniteResource):
                 >>> async def run_succesive_transformations():
                 >>>     job = c.transformations.run(id = 1, wait = False)
                 >>>     await job.wait_async(timeout = 5.0*60) 
-                >>>     if job.status not in [TransformationJobStatus.FAILED, TransformationJobStatus.COMPLETED]:
-                >>>         # send notification of long running transformation
+                >>>     if job.status == TransformationJobStatus.FAILED:
+                >>>         # do something if job failed
+                >>>     elif job.status == TransformationJobStatus.COMPLETED:
+                >>>         # do something if job completed successfully
+                >>>     else:
+                >>>         # do something if job is still running
                 >>>
                 >>> ensure_future(run_succesive_transformations())
         """
