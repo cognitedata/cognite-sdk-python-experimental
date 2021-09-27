@@ -18,7 +18,7 @@ from cognite.experimental.data_classes.geospatial import (
 COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
-# sdk integration tests run concurrently so this makes the CI builds independent from each other
+# sdk integration tests run concurrently on 3 python versions so this makes the CI builds independent from each other
 FIXED_SRID = 121111 + sys.version_info.minor
 
 
