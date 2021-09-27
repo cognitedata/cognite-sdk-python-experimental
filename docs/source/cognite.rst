@@ -627,6 +627,10 @@ Retrieve Features
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_features
 
+Update Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_features
+
 Search Features
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.search_features
