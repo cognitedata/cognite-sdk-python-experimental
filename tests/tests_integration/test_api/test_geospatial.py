@@ -11,6 +11,7 @@ from cognite.experimental.data_classes.geospatial import (
     AttributeAndSearchSpec,
     CoordinateReferenceSystem,
     Feature,
+    FeatureList,
     FeatureType,
     FeatureTypeUpdate,
 )
@@ -268,3 +269,8 @@ class TestGeospatialAPI:
         assert len(res) == 1
         assert len(res[0].attributes) == 7
         assert len(res[0].search_spec) == 5
+
+    def test_stream_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        features = COGNITE_CLIENT.geospatial.stream_features(feature_type=test_feature_type, filter={})
+        feature_list = FeatureList(list(features))
+        assert len(feature_list) == 2

@@ -1,6 +1,7 @@
 import functools
+import json as complexjson
 import numbers
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Generator, List, Union
 
 from cognite.client._api_client import APIClient
 
@@ -313,6 +314,52 @@ class ExperimentalGeospatialAPI(APIClient):
             url_path=resource_path, json={"filter": filter, "limit": limit, "output": {"attributes": attributes}}
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
+
+    def stream_features(
+        self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None
+    ) -> Generator[Feature, None, None]:
+        """`Stream features`
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/streamFeatures>
+
+        Args:
+            feature_type: the feature type to search for
+            filter (Dict[str, Any]): the search filter
+            attributes (Dict[str, Any]): the output attribute selection
+
+        Returns:
+            Generator[Feature]: a generator for the filtered features
+
+        Examples:
+
+            Stream features:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> my_feature = c.geospatial.create_features(my_feature_type, Feature(external_id="my_feature", temperature=12.4))
+                >>> features = c.geospatial.stream_features(my_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}})
+                >>> for f in features:
+                ...     # do something with the features
+
+            Stream features and select output attributes:
+
+                >>> features = c.geospatial.stream_features(my_feature_type, filter={}, attributes={"temperature": {}, "pressure": {}})
+                >>> for f in features:
+                ...     # do something with the features
+
+        """
+        resource_path = self._feature_resource_path(feature_type) + "/search-streaming"
+        resource_path = resource_path
+        json = {"filter": filter, "output": {"attributes": attributes, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
+
+        self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
+        if self._cognite_domain is not None:
+            self._config.headers.update({self.X_COGNITE_DOMAIN: feature_type._cognite_domain})
+        res = self._do_request("POST", url_path=resource_path, json=json, timeout=self._config.timeout, stream=True)
+        self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
+
+        for line in res.iter_lines():
+            yield Feature._load(complexjson.loads(line))
 
     def get_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> CoordinateReferenceSystemList:
         """`Get Coordinate Reference Systems`
