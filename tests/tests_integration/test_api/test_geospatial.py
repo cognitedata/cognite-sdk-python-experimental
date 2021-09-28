@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 import uuid
 
 import pytest
@@ -9,12 +11,16 @@ from cognite.experimental.data_classes.geospatial import (
     AttributeAndSearchSpec,
     CoordinateReferenceSystem,
     Feature,
+    FeatureList,
     FeatureType,
     FeatureTypeUpdate,
 )
 
 COGNITE_CLIENT = CogniteClient()
 COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
+
+# sdk integration tests run concurrently on 3 python versions so this makes the CI builds independent from each other
+FIXED_SRID = 121111 + sys.version_info.minor
 
 
 @pytest.fixture()
@@ -25,10 +31,10 @@ def test_crs():
     AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]"""
     proj_string = """+proj=longlat +a=6377276.345 +b=6356075.41314024 +no_defs"""
     crs = COGNITE_CLIENT.geospatial.create_coordinate_reference_systems(
-        crs=CoordinateReferenceSystem(srid=121111, wkt=wkt, proj_string=proj_string)
+        crs=CoordinateReferenceSystem(srid=FIXED_SRID, wkt=wkt, proj_string=proj_string)
     )
     yield crs[0]
-    COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])
+    COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])
 
 
 @pytest.fixture(params=[None, "sdk_test"])
@@ -87,26 +93,6 @@ def another_test_feature(test_feature_type):
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
 
 
-# we need to filter the old types based on their age, so setting autouse to false for now
-@pytest.fixture(autouse=False, scope="module")
-def clean_old_feature_types():
-    for domain in [None, "sdk_test"]:
-        COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
-        res = COGNITE_CLIENT.geospatial.list_feature_types()
-        for ft in res:
-            print(f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}")
-            COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id)
-
-
-# we clean up the old custom CRS from a previous failed run
-@pytest.fixture(autouse=False, scope="module")
-def clean_old_custom_crs():
-    try:
-        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
-    except:
-        pass
-
-
 @pytest.fixture(autouse=True, scope="module")
 def disable_gzip():
     v = os.getenv(COGNITE_DISABLE_GZIP)
@@ -116,6 +102,34 @@ def disable_gzip():
         os.environ.pop(COGNITE_DISABLE_GZIP)
     else:
         os.environ[COGNITE_DISABLE_GZIP] = v
+
+
+# we clean up the old feature types from a previous failed run
+@pytest.fixture(autouse=True, scope="module")
+def clean_old_feature_types(disable_gzip):
+    try:
+        for domain in [None, "sdk_test", "smoke_test"]:
+            COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
+            res = COGNITE_CLIENT.geospatial.list_feature_types()
+            for ft in res:
+                feature_type_age_in_milliseconds = time.time() * 1000 - ft.last_updated_time
+                one_hour_in_milliseconds = 3600 * 1000
+                if feature_type_age_in_milliseconds > one_hour_in_milliseconds:
+                    print(
+                        f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}"
+                    )
+                    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id, force=True)
+    except:
+        pass
+
+
+# we clean up the old custom CRS from a previous failed run
+@pytest.fixture(autouse=True, scope="module")
+def clean_old_custom_crs(disable_gzip):
+    try:
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])  # clean up
+    except:
+        pass
 
 
 class TestGeospatialAPI:
@@ -255,3 +269,8 @@ class TestGeospatialAPI:
         assert len(res) == 1
         assert len(res[0].attributes) == 7
         assert len(res[0].search_spec) == 5
+
+    def test_stream_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        features = COGNITE_CLIENT.geospatial.stream_features(feature_type=test_feature_type, filter={})
+        feature_list = FeatureList(list(features))
+        assert len(feature_list) == 2

@@ -2,7 +2,7 @@ Quickstart
 ==========
 
 .. WARNING::
-  All of these extentions are experimental and subject to breaking changes. They should not be used in production code.
+  All of these extensions are experimental and subject to breaking changes. They should not be used in production code.
 
 For a quickstart guide see the main SDK Documentation at https://cognite-docs.readthedocs-hosted.com/projects/cognite-sdk-python/en/latest/cognite.html
 
@@ -20,6 +20,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
 * client.transformations: `Transformations`_
+* client.geospatial: `Geospatial`_
 
 CogniteClient
 -------------
@@ -586,5 +587,81 @@ Data classes
     :members:
     :show-inheritance:
 .. automodule:: cognite.experimental.data_classes.transformation_schema
+    :members:
+    :show-inheritance:
+
+Geospatial
+------------------------
+
+Feature Types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create Feature Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_feature_types
+
+Retrieve Feature Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_feature_types
+
+Update Feature Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_feature_types
+
+List Feature Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_feature_types
+
+Delete Feature Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_feature_types
+
+Features
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_features
+
+Retrieve Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_features
+
+Update Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_features
+
+Search Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.search_features
+
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.stream_features
+
+Delete Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_features
+
+Coordinate Reference Systems (CRS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create Custom CRS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_coordinate_reference_systems
+
+Get CRS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.get_coordinate_reference_systems
+
+List CRSs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_coordinate_reference_systems
+
+Delete Custom CRS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_coordinate_reference_systems
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.geospatial
     :members:
     :show-inheritance:

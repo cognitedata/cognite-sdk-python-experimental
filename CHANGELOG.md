@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.14]
+
+### Added
+- `GeospatialAPI.stream_features` method to stream features.
+
 ## [0.60.13]
 
 ### Added
