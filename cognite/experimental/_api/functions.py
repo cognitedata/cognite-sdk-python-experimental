@@ -137,15 +137,15 @@ class FunctionsAPI(APIClient):
             "envVars": env_vars,
         }
         if cpu:
-            function.update({"cpu": cpu})
+            function["cpu"] = cpu
         if memory:
-            function.update({"memory": memory})
+            function["memory"] = memory
         if external_id:
-            function.update({"externalId": external_id})
+            function["externalId"] = external_id
         if api_key:
-            function.update({"apiKey": api_key})
+            function["apiKey"] = api_key
         if secrets:
-            function.update({"secrets": secrets})
+            function["secrets"] = secrets
         body = {"items": [function]}
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
@@ -311,9 +311,6 @@ class FunctionsAPI(APIClient):
         if external_id:
             id = self.retrieve(external_id=external_id).id
 
-        url = f"/functions/{id}/call"
-        body = {}
-
         # Case 1: Client credentials inferred from the instantiated client.
         # Case 2: Token on behalf of the user. We use token exchange.
         nonce = None
@@ -326,6 +323,7 @@ class FunctionsAPI(APIClient):
         if data is None:
             data = {}
         body = {"data": data, "nonce": nonce}
+        url = f"/functions/{id}/call"
         res = self._post(url, json=body)
 
         function_call = FunctionCall._load(res.json(), cognite_client=self._cognite_client)
@@ -391,7 +389,7 @@ class FunctionsAPI(APIClient):
             )
 
 
-def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None) -> Optional[str]:
+def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None) -> str:
     """
     If client_credentials is passed, will use those, otherwise will implicitly use those the client was instantiated
     with
@@ -401,7 +399,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
             client_secret
 
     Returns:
-        nonce (optional, str): a nonce if able to obtain, otherwise returns None
+        nonce (optional, str): a nonce if able to obtain, otherwise raises CogniteAPIError.
 
     """
 
@@ -413,7 +411,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         client_secret = cognite_client.config.token_client_secret
 
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
-    payload = {"items": [{"clientId": f"{client_id}", "clientSecret": f"{client_secret}"}]}
+    payload = {"items": [{"clientId": client_id, "clientSecret": client_secret}]}
     try:
         res = cognite_client.post(session_url, json=payload)
         nonce = res.json()["items"][0]["nonce"]
@@ -422,7 +420,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         raise CogniteAPIError("Failed to create session using client credentials flow.") from e
 
 
-def _use_token_exchange(cognite_client: CogniteClient):
+def _use_token_exchange(cognite_client: CogniteClient) -> str:
     session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"tokenExchange": True}]}
     try:
@@ -438,15 +436,12 @@ def _using_client_credential_flow(cognite_client: CogniteClient):
     Determine whether the Cognite client is configured for client-credential flow.
     """
     client_config = cognite_client.config
-    if (
+    return (
         client_config.token_client_secret
         and client_config.token_client_id
         and client_config.token_url
         and client_config.token_scopes
-    ):
-        return True
-    else:
-        return False
+    )
 
 
 def convert_file_path_to_module_path(file_path: str):
