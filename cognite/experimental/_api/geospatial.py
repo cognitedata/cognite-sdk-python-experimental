@@ -350,7 +350,7 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         resource_path = self._feature_resource_path(feature_type) + "/search-streaming"
         resource_path = resource_path
-        json = {"filter": filter, "output": {"attributes": attributes, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
+        json = {"filter": filter, "output": {"attributes": attributes, "output": {"jsonStreamFormat": "NEW_LINE_DELIMITED"}}}
 
         self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
         if self._cognite_domain is not None:
