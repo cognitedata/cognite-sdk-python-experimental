@@ -26,6 +26,20 @@ class ExperimentalGeospatialAPI(APIClient):
     def _feature_resource_path(feature_type: FeatureType):
         return f"/spatial/featuretypes/{feature_type.external_id}/features"
 
+    def _no_log(func):
+        def _nop(*args, **kwargs):
+            pass
+
+        @functools.wraps(func)
+        def wrapper_no_log(self, *args, **kwargs):
+            tmp = self._log_request
+            self._log_request = _nop
+            res = func(self, *args, **kwargs)
+            self._log_request = tmp
+            return res
+
+        return wrapper_no_log
+
     def _with_cognite_domain(func):
         @functools.wraps(func)
         def wrapper_with_cognite_domain(self, *args, **kwargs):
@@ -315,6 +329,7 @@ class ExperimentalGeospatialAPI(APIClient):
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
+    @_no_log
     def stream_features(
         self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None
     ) -> Generator[Feature, None, None]:

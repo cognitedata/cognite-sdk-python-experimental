@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 import time
 import uuid
@@ -53,6 +54,10 @@ def test_feature_type(cognite_domain):
                 "volume": {"type": "DOUBLE"},
                 "temperature": {"type": "DOUBLE"},
                 "pressure": {"type": "DOUBLE"},
+                "attr1": {"type": "LONG", "optional": "true"},
+                "attr2": {"type": "LONG", "optional": "true"},
+                "attr3": {"type": "LONG", "optional": "true"},
+                "attr4": {"type": "LONG", "optional": "true"},
             },
             search_spec={"vol_press_idx": {"attributes": ["volume", "pressure"]}},
             cognite_domain=cognite_domain,
@@ -93,6 +98,27 @@ def another_test_feature(test_feature_type):
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
 
 
+@pytest.fixture
+def many_features(test_feature_type):
+    specs = [
+        Feature(
+            external_id=f"F_{uuid.uuid4().hex[:10]}",
+            temperature=random.uniform(-50, 50),
+            pressure=random.uniform(100, 1000),
+            volume=random.uniform(1, 100),
+            attr1=random.randint(10000, 20000),
+            attr2=random.randint(10000, 20000),
+            attr3=random.randint(10000, 20000),
+            attr4=random.randint(10000, 20000),
+        )
+        for _ in range(0, 10000)
+    ]
+    features = COGNITE_CLIENT.geospatial.create_features(test_feature_type, specs)
+    yield features
+    external_ids = [f.external_id for f in features]
+    COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_ids)
+
+
 @pytest.fixture(autouse=True, scope="module")
 def disable_gzip():
     v = os.getenv(COGNITE_DISABLE_GZIP)
@@ -127,6 +153,7 @@ def clean_old_feature_types(disable_gzip):
 @pytest.fixture(autouse=True, scope="module")
 def clean_old_custom_crs(disable_gzip):
     try:
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])  # clean up
     except:
         pass
@@ -267,10 +294,10 @@ class TestGeospatialAPI:
             ),
         )
         assert len(res) == 1
-        assert len(res[0].attributes) == 7
+        assert len(res[0].attributes) == 11
         assert len(res[0].search_spec) == 5
 
-    def test_stream_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+    def test_stream_features(self, cognite_domain, test_feature_type, many_features):
         features = COGNITE_CLIENT.geospatial.stream_features(feature_type=test_feature_type, filter={})
         feature_list = FeatureList(list(features))
-        assert len(feature_list) == 2
+        assert len(feature_list) == 10000
