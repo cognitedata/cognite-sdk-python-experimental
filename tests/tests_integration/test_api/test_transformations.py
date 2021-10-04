@@ -93,3 +93,12 @@ class TestTransformationsAPI:
     def test_list(self, new_transformation):
         retrieved_transformations = COGNITE_CLIENT.transformations.list()
         assert new_transformation.id in [transformation.id for transformation in retrieved_transformations]
+
+    def test_preview(self):
+        query_result = COGNITE_CLIENT.transformations.preview(query="select id, name from _cdf.assets", limit=100)
+        assert (
+            query_result.schema is not None
+            and query_result.results is not None
+            and len(query_result.schema) == 2
+            and len(query_result.results) == 100
+        )

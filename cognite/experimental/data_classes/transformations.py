@@ -1,6 +1,7 @@
 from cognite.client.data_classes._base import *
 
 from cognite.experimental.data_classes.transformation_jobs import *
+from cognite.experimental.data_classes.transformation_schema import *
 
 
 class TransformationDestination:
@@ -287,3 +288,24 @@ class TransformationFilter(CogniteFilter):
 
     def __init__(self, include_public: bool = True):
         self.include_public = include_public
+
+
+class TransformationPreviewResult(CogniteResource):
+    """Allows previewing the result of a sql transformation before executing it.
+
+    Args:
+        schema (TransformationSchemaColumnList): List of column descriptions.
+        results (List[Dict]): List of resulting rows. Each row is a dictionary where the key is the column name and the value is the entrie.        
+    """
+
+    def __init__(self, schema: "TransformationSchemaColumnList", results: List[Dict], cognite_client=None):
+        self.schema = schema
+        self.results = results
+        self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(TransformationPreviewResult, cls)._load(resource, cognite_client)
+        if isinstance(instance.schema, list):
+            instance.schema = TransformationSchemaColumnList._load(instance.schema, cognite_client=cognite_client)
+        return instance
