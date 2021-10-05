@@ -52,8 +52,8 @@ def other_schedule(other_transformation):
     yield from schedule_from_transformation(other_transformation)
 
 
+@pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
 class TestTransformationSchedulesAPI:
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_create(self, new_schedule: TransformationSchedule):
         assert (
             new_schedule.interval == "0 * * * *"
@@ -63,7 +63,6 @@ class TestTransformationSchedulesAPI:
             and new_schedule.last_updated_time is not None
         )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_retrieve(self, new_schedule: TransformationSchedule):
         retrieved_schedule = COGNITE_CLIENT.transformations.schedules.retrieve(new_schedule.id)
         assert (
@@ -73,7 +72,6 @@ class TestTransformationSchedulesAPI:
             and new_schedule.is_paused == retrieved_schedule.is_paused
         )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_retrieve_multiple(self, new_schedule: TransformationSchedule, other_schedule: TransformationSchedule):
         assert new_schedule.id != other_schedule.id
         ids = [new_schedule.id, other_schedule.id]
@@ -92,7 +90,6 @@ class TestTransformationSchedulesAPI:
                 and other_schedule.is_paused == retrieved_schedule.is_paused
             )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_update_full(self, new_schedule):
         new_schedule.interval = "5 * * * *"
         new_schedule.is_paused = True
@@ -103,7 +100,6 @@ class TestTransformationSchedulesAPI:
             and updated_schedule.is_paused == retrieved_schedule.is_paused == True
         )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_update_partial(self, new_schedule):
         update_schedule = TransformationScheduleUpdate(id=new_schedule.id).interval.set("5 * * * *").is_paused.set(True)
         updated_schedule = COGNITE_CLIENT.transformations.schedules.update(update_schedule)
@@ -113,7 +109,6 @@ class TestTransformationSchedulesAPI:
             and updated_schedule.is_paused == retrieved_schedule.is_paused == True
         )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_list(self, new_schedule):
         retrieved_schedules = COGNITE_CLIENT.transformations.schedules.list()
         assert new_schedule.id in [schedule.id for schedule in retrieved_schedules]

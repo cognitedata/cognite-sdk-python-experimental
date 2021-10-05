@@ -63,9 +63,9 @@ async def other_running_transformation(other_transformation):
         yield transform
 
 
+@pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
 class TestTransformationJobsAPI:
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_run_without_wait(self, new_running_transformation):
         (job, new_transformation) = new_running_transformation
         assert (
@@ -82,7 +82,6 @@ class TestTransformationJobsAPI:
             and job.ignore_null_fields
         )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_run(self, new_transformation: Transformation):
         job = new_transformation.run()
 
@@ -100,7 +99,6 @@ class TestTransformationJobsAPI:
             and job.ignore_null_fields
         )
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     def test_run_with_timeout(self, longer_transformation: Transformation):
         init = time.time()
         timeout = 2
@@ -109,7 +107,6 @@ class TestTransformationJobsAPI:
 
         assert job.status == TransformationJobStatus.RUNNING and timeout <= final - init <= timeout + 1
 
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     @pytest.mark.asyncio
     async def test_run_async(self, new_transformation: Transformation):
         job = await new_transformation.run_async()
@@ -129,7 +126,6 @@ class TestTransformationJobsAPI:
         )
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_run_with_timeout_async(self, longer_transformation: Transformation):
         init = time.time()
         timeout = 2
@@ -139,7 +135,6 @@ class TestTransformationJobsAPI:
         assert job.status == TransformationJobStatus.RUNNING and timeout <= final - init <= timeout + 1
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_run_by_external_id_async(self, new_transformation: Transformation):
         job = await COGNITE_CLIENT.transformations.run_async(transformation_external_id=new_transformation.external_id)
 
@@ -158,7 +153,6 @@ class TestTransformationJobsAPI:
         )
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_list_jobs_by_transformation_id(self, new_running_transformation):
         (new_job, new_transformation) = new_running_transformation
 
@@ -167,7 +161,6 @@ class TestTransformationJobsAPI:
         assert all(job.transformation_id == new_transformation.id for job in retrieved_jobs)
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_list_jobs(self, new_running_transformation, other_running_transformation):
         (new_job, _) = new_running_transformation
         (other_job, _) = other_running_transformation
@@ -177,7 +170,6 @@ class TestTransformationJobsAPI:
         assert other_job.id in [job.id for job in retrieved_jobs]
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_metrics(self, new_running_transformation):
         (job, _) = new_running_transformation
         await asyncio.sleep(1.0)
@@ -185,7 +177,6 @@ class TestTransformationJobsAPI:
         assert metrics is not None
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
     async def test_retrieve_multiple(self, new_running_transformation, other_running_transformation):
         (new_job, _) = new_running_transformation
         (other_job, _) = other_running_transformation
