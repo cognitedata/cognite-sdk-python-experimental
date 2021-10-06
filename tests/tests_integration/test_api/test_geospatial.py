@@ -16,7 +16,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureTypeUpdate,
 )
 
-COGNITE_CLIENT = CogniteClient()
+COGNITE_CLIENT = CogniteClient(max_workers=1)
 
 # sdk integration tests run concurrently on 3 python versions so this makes the CI builds independent from each other
 FIXED_SRID = 121111 + sys.version_info.minor
