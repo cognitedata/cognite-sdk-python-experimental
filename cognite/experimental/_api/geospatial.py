@@ -329,7 +329,6 @@ class ExperimentalGeospatialAPI(APIClient):
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
-    # _no_log
     def stream_features(
         self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None
     ) -> Generator[Feature, None, None]:
