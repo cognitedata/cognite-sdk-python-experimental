@@ -70,7 +70,6 @@ class TestTransformationSchedulesAPI:
         assert (
             new_schedule.interval == "0 * * * *"
             and new_schedule.is_paused == False
-            and new_schedule.request_scheduler_id is not None
             and new_schedule.created_time is not None
             and new_schedule.last_updated_time is not None
         )
@@ -79,7 +78,6 @@ class TestTransformationSchedulesAPI:
         retrieved_schedule = COGNITE_CLIENT.transformations.schedules.retrieve(new_schedule.id)
         assert (
             new_schedule.id == retrieved_schedule.id
-            and new_schedule.request_scheduler_id == retrieved_schedule.request_scheduler_id
             and new_schedule.interval == retrieved_schedule.interval
             and new_schedule.is_paused == retrieved_schedule.is_paused
         )
@@ -92,12 +90,10 @@ class TestTransformationSchedulesAPI:
         for retrieved_schedule in retrieved_schedules:
             assert (
                 new_schedule.id == retrieved_schedule.id
-                and new_schedule.request_scheduler_id == retrieved_schedule.request_scheduler_id
                 and new_schedule.interval == retrieved_schedule.interval
                 and new_schedule.is_paused == retrieved_schedule.is_paused
             ) or (
                 other_schedule.id == retrieved_schedule.id
-                and other_schedule.request_scheduler_id == retrieved_schedule.request_scheduler_id
                 and other_schedule.interval == retrieved_schedule.interval
                 and other_schedule.is_paused == retrieved_schedule.is_paused
             )
