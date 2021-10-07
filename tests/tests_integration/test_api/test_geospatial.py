@@ -141,6 +141,9 @@ def clean_old_feature_types():
 def clean_old_custom_crs():
     try:
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
+    except:
+        pass
+    try:
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])  # clean up
     except:
         pass
