@@ -132,6 +132,7 @@ def clean_old_custom_crs(disable_gzip):
         pass
 
 
+@pytest.mark.skip(reason="Three tests running in parallel cause conflict in DB, Geospatial team will follow up.")
 class TestGeospatialAPI:
     def test_retrieve_single_feature_type_by_external_id(self, cognite_domain, test_feature_type):
         assert (
