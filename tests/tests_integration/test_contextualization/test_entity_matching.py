@@ -1,9 +1,3 @@
-import random
-
-import pytest
-from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel, EntityMatchingModelList
-from cognite.client.exceptions import CogniteAPIError
-
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
     EntityMatchingMatchList,
@@ -18,18 +12,7 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 class TestEntityMatchingIntegration:
     def test_pipeline(self):
-        linked_sequences = [
-            seq
-            for seq in COGNITE_CLIENT.sequences.list(limit=None)
-            if seq.asset_id is not None and seq.name is not None
-        ]
-        assert len(linked_sequences) > 0
-        sources = {"assetSubtreeIds": [{"id": linked_sequences[0].asset_id}], "resource": "sequences", "dataSetIds": []}
-        targets = {
-            "assetSubtreeIds": [{"id": t.asset_id} for t in linked_sequences],
-            "dataSetIds": [],
-            "resource": "assets",
-        }
+        sources = targets = {"assetSubtreeIds": [{"externalId": "test__asset_0"}], "resource": "assets"}
         pipeline = EntityMatchingPipeline(
             name="foo",
             sources=sources,
