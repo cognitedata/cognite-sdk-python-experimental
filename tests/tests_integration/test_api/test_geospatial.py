@@ -18,7 +18,6 @@ from cognite.experimental.data_classes.geospatial import (
 )
 
 COGNITE_CLIENT = CogniteClient(max_workers=1)
-COGNITE_DISABLE_GZIP = "COGNITE_DISABLE_GZIP"
 
 # sdk integration tests run concurrently on 3 python versions so this makes the CI builds independent from each other
 FIXED_SRID = 121111 + sys.version_info.minor
@@ -111,7 +110,7 @@ def many_features(large_feature_type):
         Feature(
             external_id=f"F_{uuid.uuid4().hex[:10]}", **{f"attr{i}": random.randint(10000, 20000) for i in range(0, 80)}
         )
-        for _ in range(0, 20000)
+        for _ in range(0, 2000)
     ]
     features = COGNITE_CLIENT.geospatial.create_features(large_feature_type, specs)
     yield features
@@ -119,20 +118,8 @@ def many_features(large_feature_type):
     COGNITE_CLIENT.geospatial.delete_features(large_feature_type, external_id=external_ids)
 
 
-@pytest.fixture(autouse=True, scope="module")
-def disable_gzip():
-    v = os.getenv(COGNITE_DISABLE_GZIP)
-    os.environ[COGNITE_DISABLE_GZIP] = "true"
-    yield
-    if v is None:
-        os.environ.pop(COGNITE_DISABLE_GZIP)
-    else:
-        os.environ[COGNITE_DISABLE_GZIP] = v
-
-
 # we clean up the old feature types from a previous failed run
-@pytest.fixture(autouse=True, scope="module")
-def clean_old_feature_types(disable_gzip):
+def clean_old_feature_types():
     try:
         for domain in [None, "sdk_test", "smoke_test"]:
             COGNITE_CLIENT.geospatial.set_current_cognite_domain(domain)
@@ -151,7 +138,7 @@ def clean_old_feature_types(disable_gzip):
 
 # we clean up the old custom CRS from a previous failed run
 @pytest.fixture(autouse=True, scope="module")
-def clean_old_custom_crs(disable_gzip):
+def clean_old_custom_crs():
     try:
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])  # clean up
@@ -257,10 +244,10 @@ class TestGeospatialAPI:
 
     def test_list_coordinate_reference_systems(self):
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems()
-        all = len(res)
-        assert len(res) > 8000
+        all = res
+        assert len(all) > 8000
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
-        assert len(res) < all
+        assert len(res) < len(all)
 
     def test_list_custom_coordinate_reference_systems(self, test_crs):
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
