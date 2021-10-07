@@ -2,6 +2,7 @@ import pytest
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
+    OidcCredentials,
     Transformation,
     TransformationDestination,
     TransformationSchedule,
@@ -17,8 +18,20 @@ def new_transformation():
         name="any",
         destination=TransformationDestination.assets(),
         query="select * from _cdf.assets",
-        source_api_key=COGNITE_CLIENT.config.api_key,
-        destination_api_key=COGNITE_CLIENT.config.api_key,
+        source_oidc_credentials=OidcCredentials(
+            client_id=COGNITE_CLIENT.config.token_client_id,
+            client_secret=COGNITE_CLIENT.config.token_client_secret,
+            scopes=",".join(COGNITE_CLIENT.config.token_scopes),
+            token_uri=COGNITE_CLIENT.config.token_url,
+            cdf_project_name=COGNITE_CLIENT.config.project,
+        ),
+        destination_oidc_credentials=OidcCredentials(
+            client_id=COGNITE_CLIENT.config.token_client_id,
+            client_secret=COGNITE_CLIENT.config.token_client_secret,
+            scopes=",".join(COGNITE_CLIENT.config.token_scopes),
+            token_uri=COGNITE_CLIENT.config.token_url,
+            cdf_project_name=COGNITE_CLIENT.config.project,
+        ),
     )
     ts = COGNITE_CLIENT.transformations.create(transform)
 
@@ -52,13 +65,11 @@ def other_schedule(other_transformation):
     yield from schedule_from_transformation(other_transformation)
 
 
-@pytest.mark.skip(reason="Not compatible with tokens, data integration team will follow up.")
 class TestTransformationSchedulesAPI:
     def test_create(self, new_schedule: TransformationSchedule):
         assert (
             new_schedule.interval == "0 * * * *"
             and new_schedule.is_paused == False
-            and new_schedule.request_scheduler_id is not None
             and new_schedule.created_time is not None
             and new_schedule.last_updated_time is not None
         )
@@ -67,7 +78,6 @@ class TestTransformationSchedulesAPI:
         retrieved_schedule = COGNITE_CLIENT.transformations.schedules.retrieve(new_schedule.id)
         assert (
             new_schedule.id == retrieved_schedule.id
-            and new_schedule.request_scheduler_id == retrieved_schedule.request_scheduler_id
             and new_schedule.interval == retrieved_schedule.interval
             and new_schedule.is_paused == retrieved_schedule.is_paused
         )
@@ -80,12 +90,10 @@ class TestTransformationSchedulesAPI:
         for retrieved_schedule in retrieved_schedules:
             assert (
                 new_schedule.id == retrieved_schedule.id
-                and new_schedule.request_scheduler_id == retrieved_schedule.request_scheduler_id
                 and new_schedule.interval == retrieved_schedule.interval
                 and new_schedule.is_paused == retrieved_schedule.is_paused
             ) or (
                 other_schedule.id == retrieved_schedule.id
-                and other_schedule.request_scheduler_id == retrieved_schedule.request_scheduler_id
                 and other_schedule.interval == retrieved_schedule.interval
                 and other_schedule.is_paused == retrieved_schedule.is_paused
             )
