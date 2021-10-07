@@ -10,7 +10,6 @@ COGNITE_CLIENT = CogniteClient()
 EMAPI = COGNITE_CLIENT.entity_matching
 
 
-@pytest.mark.skip(reason="Tests failing after clean up, Contextualization team will follow up.")
 class TestEntityMatchingIntegration:
     def test_pipeline(self):
         sources = targets = {"assetSubtreeIds": [{"externalId": "test__asset_0"}], "resource": "assets"}
