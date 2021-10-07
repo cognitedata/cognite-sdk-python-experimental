@@ -248,16 +248,12 @@ class Transformation(CogniteResource):
         """
         ret = CogniteResource.dump(self, camel_case=camel_case)
 
-        if camel_case:
-            source_key = "sourceOidcCredentials"
-            destination_key = "destinationOidcCredentials"
-        else:
-            source_key = "source_oidc_credentials"
-            destination_key = "destination_oidc_credentials"
+        source_key = "sourceOidcCredentials" if camel_case else "source_oidc_credentials"
+        destination_key = "destinationOidcCredentials" if camel_case else "destination_oidc_credentials"
 
         ret[source_key] = (
             self.source_oidc_credentials.dump(camel_case=camel_case)
-            if self.source_oidc_credentials is not None
+            if self.source_oidc_credentials
             else None
         )
         ret[destination_key] = (
