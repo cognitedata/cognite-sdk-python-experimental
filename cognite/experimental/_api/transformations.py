@@ -1,4 +1,3 @@
-import json
 from typing import Awaitable, List, Optional, Union
 
 from cognite.client import utils
@@ -309,7 +308,7 @@ class TransformationsAPI(APIClient):
                 >>>
                 >>> df = c.transformations.preview(query="select * from _cdf.assets").to_pandas()
         """
-        request_body = json.dumps({"query": query, "convertToString": convert_to_string})
+        request_body = {"query": query, "convertToString": convert_to_string}
 
         params = {"limit": limit, "sourceLimit": source_limit, "inferSchemaLimit": infer_schema_limit}
 

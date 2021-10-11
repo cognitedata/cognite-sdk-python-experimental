@@ -339,7 +339,9 @@ class TransformationPreviewResult(CogniteResource):
         results (List[Dict]): List of resulting rows. Each row is a dictionary where the key is the column name and the value is the entrie.        
     """
 
-    def __init__(self, schema: "TransformationSchemaColumnList", results: List[Dict], cognite_client=None):
+    def __init__(
+        self, schema: "TransformationSchemaColumnList" = None, results: List[Dict] = None, cognite_client=None
+    ):
         self.schema = schema
         self.results = results
         self._cognite_client = cognite_client
@@ -347,6 +349,12 @@ class TransformationPreviewResult(CogniteResource):
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
         instance = super(TransformationPreviewResult, cls)._load(resource, cognite_client)
-        if isinstance(instance.schema, list):
-            instance.schema = TransformationSchemaColumnList._load(instance.schema, cognite_client=cognite_client)
+        if isinstance(instance.schema, Dict):
+            items = instance.schema.get("items")
+            if items is not None:
+                instance.schema = TransformationSchemaColumnList._load(items, cognite_client=cognite_client)
+        if isinstance(instance.results, Dict):
+            items = instance.results.get("items")
+            if items is not None:
+                instance.results = items
         return instance
