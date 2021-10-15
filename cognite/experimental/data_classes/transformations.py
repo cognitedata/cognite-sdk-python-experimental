@@ -71,6 +71,11 @@ class TransformationDestination:
         return TransformationDestination(type="relationships")
 
     @staticmethod
+    def data_sets():
+        """To be used when the transformation is meant to produce data sets."""
+        return TransformationDestination(type="data_sets")
+
+    @staticmethod
     def raw(database: str = "", table: str = ""):
         """To be used when the transformation is meant to produce raw table rows.
 
