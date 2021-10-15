@@ -136,7 +136,7 @@ class OidcCredentials:
         return ret
 
 
-class TransformationJobBlockade:
+class TransformationBlockedInfo:
     def __init__(self, reason: str = None, created_time: Optional[int] = None):
         self.reason = reason
         self.created_time = created_time
