@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 import time
 import uuid
@@ -63,6 +64,17 @@ def test_feature_type(cognite_domain):
 
 
 @pytest.fixture()
+def large_feature_type():
+    external_id = f"FT_{uuid.uuid4().hex[:10]}"
+    feature_type_spec = FeatureType(
+        external_id=external_id, attributes={f"attr{i}": {"type": "LONG"} for i in range(0, 80)}
+    )
+    feature_type = COGNITE_CLIENT.geospatial.create_feature_types(feature_type_spec)
+    yield feature_type
+    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id)
+
+
+@pytest.fixture()
 def another_test_feature_type(cognite_domain):
     COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
@@ -100,6 +112,20 @@ def another_test_feature(test_feature_type):
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
 
 
+@pytest.fixture
+def many_features(large_feature_type):
+    specs = [
+        Feature(
+            external_id=f"F_{uuid.uuid4().hex[:10]}", **{f"attr{i}": random.randint(10000, 20000) for i in range(0, 80)}
+        )
+        for _ in range(0, 2000)
+    ]
+    features = COGNITE_CLIENT.geospatial.create_features(large_feature_type, specs)
+    yield features
+    external_ids = [f.external_id for f in features]
+    COGNITE_CLIENT.geospatial.delete_features(large_feature_type, external_id=external_ids)
+
+
 # we clean up the old feature types from a previous failed run
 def clean_old_feature_types():
     try:
@@ -121,6 +147,10 @@ def clean_old_feature_types():
 # we clean up the old custom CRS from a previous failed run
 @pytest.fixture(autouse=True, scope="module")
 def clean_old_custom_crs():
+    try:
+        COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[121111])  # clean up
+    except:
+        pass
     try:
         COGNITE_CLIENT.geospatial.delete_coordinate_reference_systems(srids=[FIXED_SRID])  # clean up
     except:
@@ -278,7 +308,7 @@ class TestGeospatialAPI:
         assert len(res[0].attributes) == 8
         assert len(res[0].search_spec) == 5
 
-    def test_stream_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
-        features = COGNITE_CLIENT.geospatial.stream_features(feature_type=test_feature_type, filter={})
+    def test_stream_features(self, large_feature_type, many_features):
+        features = COGNITE_CLIENT.geospatial.stream_features(feature_type=large_feature_type, filter={})
         feature_list = FeatureList(list(features))
-        assert len(feature_list) == 2
+        assert len(feature_list) == len(many_features)
