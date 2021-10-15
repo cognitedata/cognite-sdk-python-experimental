@@ -278,7 +278,7 @@ class TransformationsAPI(APIClient):
         convert_to_string: bool = False,
         limit: int = 100,
         source_limit: Optional[int] = 100,
-        infer_schema_limit=1000,
+        infer_schema_limit = 1000,
     ) -> TransformationPreviewResult:
         """`. <https://docs.cognite.com/api/playground/#operation/runTransformation>`_
 
