@@ -86,7 +86,9 @@ class TransformationsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> c.transformations.delete(id=[1,2,3], external_id="function3")
         """
-        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True, ignore_unknown_ids=ignore_unknown_ids)
+        self._delete_multiple(
+            ids=id, external_ids=external_id, wrap_ids=True, extra_body_fields={"ignoreUnknownIds": ignore_unknown_ids}
+        )
 
     def list(self, include_public: bool = True, limit: Optional[int] = LIST_LIMIT_DEFAULT,) -> TransformationList:
         """`List all transformations. <https://docs.cognite.com/api/playground/#operation/transformations>`_
