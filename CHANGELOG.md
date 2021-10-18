@@ -15,7 +15,7 @@ Changes are grouped as follows
 ## [0.60.18]
 
 ### Added
-- added support for `ignore_unknown_ids` parameter in `transformations.retrieve_multiple`.
+- added support for `ignore_unknown_ids` parameter in `transformations.retrieve_multiple` and `transformations.delete`.
 
 ## [0.60.17]
 
