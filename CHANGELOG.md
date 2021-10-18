@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.18]
+
+### Added
+- added support for `ignore_unknown_ids` parameter in `transformations.retrieve_multiple` and `transformations.delete`.
+
 ## [0.60.17]
 
 ### Changed
