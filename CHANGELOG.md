@@ -12,6 +12,21 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.18]
+
+### Added
+- added support for `ignore_unknown_ids` parameter in `transformations.retrieve_multiple` and `transformations.delete`.
+
+## [0.60.17]
+
+### Changed
+- Dependencies upgrade
+
+## [0.60.16]
+
+### Added
+- added `transformationsAPI.preview()` method, to preview the result of a query before running a transformation.
+
 ## [0.60.15]
 
 ### Added

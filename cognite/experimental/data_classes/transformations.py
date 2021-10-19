@@ -1,6 +1,7 @@
 from cognite.client.data_classes._base import *
 
 from cognite.experimental.data_classes.transformation_jobs import *
+from cognite.experimental.data_classes.transformation_schema import *
 
 
 class TransformationDestination:
@@ -70,6 +71,11 @@ class TransformationDestination:
         return TransformationDestination(type="relationships")
 
     @staticmethod
+    def data_sets():
+        """To be used when the transformation is meant to produce data sets."""
+        return TransformationDestination(type="data_sets")
+
+    @staticmethod
     def raw(database: str = "", table: str = ""):
         """To be used when the transformation is meant to produce raw table rows.
 
@@ -113,6 +119,27 @@ class OidcCredentials:
         self.token_uri = token_uri
         self.audience = audience
         self.cdf_project_name = cdf_project_name
+
+    def dump(self, camel_case: bool = False) -> Dict[str, Any]:
+        """Dump the instance into a json serializable Python data type.
+
+        Args:
+            camel_case (bool): Use camelCase for attribute names. Defaults to False.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the instance.
+        """
+        ret = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "scopes": self.scopes,
+            "token_uri": self.token_uri,
+            "audience": self.audience,
+            "cdf_project_name": self.cdf_project_name,
+        }
+        if camel_case:
+            return {utils._auxiliary.to_camel_case(key): value for key, value in ret.items()}
+        return ret
 
 
 class TransformationJobBlockade:
@@ -216,6 +243,26 @@ class Transformation(CogniteResource):
                 instance.destination = TransformationDestination(**snake_dict)
         return instance
 
+    def dump(self, camel_case: bool = False) -> Dict[str, Any]:
+        """Dump the instance into a json serializable Python data type.
+
+        Args:
+            camel_case (bool): Use camelCase for attribute names. Defaults to False.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the instance.
+        """
+        ret = CogniteResource.dump(self, camel_case=camel_case)
+
+        if self.source_oidc_credentials:
+            source_key = "sourceOidcCredentials" if camel_case else "source_oidc_credentials"
+            ret[source_key] = self.source_oidc_credentials.dump(camel_case=camel_case)
+        if self.destination_oidc_credentials:
+            destination_key = "destinationOidcCredentials" if camel_case else "destination_oidc_credentials"
+            ret[destination_key] = self.destination_oidc_credentials.dump(camel_case=camel_case)
+
+        return ret
+
     def __hash__(self):
         return hash(self.external_id)
 
@@ -287,3 +334,32 @@ class TransformationFilter(CogniteFilter):
 
     def __init__(self, include_public: bool = True):
         self.include_public = include_public
+
+
+class TransformationPreviewResult(CogniteResource):
+    """Allows previewing the result of a sql transformation before executing it.
+
+    Args:
+        schema (TransformationSchemaColumnList): List of column descriptions.
+        results (List[Dict]): List of resulting rows. Each row is a dictionary where the key is the column name and the value is the entrie.        
+    """
+
+    def __init__(
+        self, schema: "TransformationSchemaColumnList" = None, results: List[Dict] = None, cognite_client=None
+    ):
+        self.schema = schema
+        self.results = results
+        self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(TransformationPreviewResult, cls)._load(resource, cognite_client)
+        if isinstance(instance.schema, Dict):
+            items = instance.schema.get("items")
+            if items is not None:
+                instance.schema = TransformationSchemaColumnList._load(items, cognite_client=cognite_client)
+        if isinstance(instance.results, Dict):
+            items = instance.results.get("items")
+            if items is not None:
+                instance.results = items
+        return instance
