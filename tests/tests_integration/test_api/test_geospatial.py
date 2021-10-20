@@ -49,6 +49,7 @@ def test_feature_type(cognite_domain):
         FeatureType(
             external_id=external_id,
             attributes={
+                "position": {"type": "POINT", "srid": "4326", "optional": "true"},
                 "volume": {"type": "DOUBLE"},
                 "temperature": {"type": "DOUBLE"},
                 "pressure": {"type": "DOUBLE"},
@@ -76,7 +77,14 @@ def another_test_feature_type(cognite_domain):
 def test_feature(test_feature_type):
     external_id = f"F_{uuid.uuid4().hex[:10]}"
     feature = COGNITE_CLIENT.geospatial.create_features(
-        test_feature_type, Feature(external_id=external_id, temperature=12.4, volume=1212.0, pressure=2121.0)
+        test_feature_type,
+        Feature(
+            external_id=external_id,
+            position={"wkt": "POINT(2.2768485 48.8589506)"},
+            temperature=12.4,
+            volume=1212.0,
+            pressure=2121.0,
+        ),
     )
     yield feature
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
@@ -244,6 +252,18 @@ class TestGeospatialAPI:
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[1], "pressure")
 
+    def test_search_with_output_srid_selection(
+        self, cognite_domain, test_feature_type, test_feature, another_test_feature
+    ):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, attributes={"position": {"srid": "3857"}}
+        )
+        assert len(res) == 2
+        assert hasattr(res[0], "position")
+        assert res[0].position["wkt"] == "POINT(253457.6156334287 6250962.062720415)"
+        assert not hasattr(res[0], "pressure")
+        assert not hasattr(res[0], "volume")
+
     def test_update_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.update_feature_types(
             update=FeatureTypeUpdate(
@@ -255,7 +275,7 @@ class TestGeospatialAPI:
             ),
         )
         assert len(res) == 1
-        assert len(res[0].attributes) == 7
+        assert len(res[0].attributes) == 8
         assert len(res[0].search_spec) == 5
 
     def test_stream_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
