@@ -49,8 +49,7 @@ class AnnotationsAPI(APIClient):
                 {to_camel_case(k): v for k, v in f.items()} for f in filter["annotatedResourceIds"]
             ]
 
-        response = self._post(self._RESOURCE_PATH + "/list", json={"limit": limit, "filter": filter})
-        return AnnotationList._load(response.json()["items"])
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def update(
         self, item: Union[Annotation, AnnotationUpdate, List[Union[Annotation, AnnotationUpdate]]]
