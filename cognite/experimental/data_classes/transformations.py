@@ -169,6 +169,10 @@ class Transformation(CogniteResource):
         has_destination_api_key (bool): Indicates if the transformation is configured with a destination api key.
         has_source_oidc_credentials (bool): Indicates if the transformation is configured with a source oidc credentials set.
         has_destination_oidc_credentials (bool): Indicates if the transformation is configured with a destination oidc credentials set.
+        running_job (TransformationJob): Details for the job of this transformation currently running.
+        last_finished_job (TransformationJob): Details for the last finished job of this transformation.
+        blocked (TransformationBlockedInfo): Provides reason and time if the transformation is blocked.
+        schedule (TransformationSchedule): Details for the schedule if the transformation is scheduled.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
@@ -196,6 +200,8 @@ class Transformation(CogniteResource):
         has_destination_oidc_credentials: Optional[bool] = None,
         running_job: "TransformationJob" = None,
         last_finished_job: "TransformationJob" = None,
+        blocked: TransformationBlockedInfo = None,
+        schedule: "TransformationSchedule" = None,
         cognite_client=None,
     ):
         self.id = id
@@ -222,6 +228,8 @@ class Transformation(CogniteResource):
         self.owner_is_current_user = owner_is_current_user
         self.running_job = running_job
         self.last_finished_job = last_finished_job
+        self.blocked = blocked
+        self.schedule = schedule
         self._cognite_client = cognite_client
 
     def run(self, wait: bool = True, timeout: Optional[float] = None) -> "TransformationJob":
@@ -250,6 +258,12 @@ class Transformation(CogniteResource):
                 utils._auxiliary.to_snake_case(key): value for (key, value) in instance.last_finished_job.items()
             }
             instance.last_finished_job = TransformationJob._load(snake_dict, cognite_client=cognite_client)
+        if isinstance(instance.blocked, Dict):
+            snake_dict = {utils._auxiliary.to_snake_case(key): value for (key, value) in instance.blocked.items()}
+            instance.blocked = TransformationBlockedInfo(**snake_dict)
+        if isinstance(instance.schedule, Dict):
+            snake_dict = {utils._auxiliary.to_snake_case(key): value for (key, value) in instance.schedule.items()}
+            instance.schedule = TransformationSchedule._load(snake_dict, cognite_client=cognite_client)
         return instance
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
@@ -375,4 +389,5 @@ class TransformationPreviewResult(CogniteResource):
 
 
 from cognite.experimental.data_classes.transformation_jobs import TransformationJob, TransformationJobList
+from cognite.experimental.data_classes.transformation_schedules import TransformationSchedule
 from cognite.experimental.data_classes.transformation_schema import *
