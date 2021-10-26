@@ -15,7 +15,7 @@ Changes are grouped as follows
 ## [0.60.19]
 
 ### Added
-- added `Transformation.running_job` and `Transformation.last_finished_job` fields.
+- added `Transformation.running_job`, `Transformation.last_finished_job`, `Transformation.schedule` and `Transformation.blocked` fields.
 
 ## [0.60.18]
 
