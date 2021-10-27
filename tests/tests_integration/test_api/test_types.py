@@ -28,6 +28,7 @@ def post_spy():
         yield
 
 
+@pytest.mark.skip("Types api is down, will skip while we confirm if the whole client and data types should be removed.")
 class TestTypesAPI:
     def test_retrieve_eid(self):
         res = COGNITE_CLIENT.types.list()
