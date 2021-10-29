@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.19]
+## [0.60.20]
 
 ### Added
 - added `Transformation.running_job`, `Transformation.last_finished_job`, `Transformation.schedule` and `Transformation.blocked` fields.
+
+## [0.60.19]
+
+### Fixed
+- `str(TransformationPreviewResult)` no longer throws an exception.
 
 ## [0.60.18]
 
