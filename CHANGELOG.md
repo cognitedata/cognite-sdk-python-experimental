@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.19]
+
+### Fixed
+- `str(TransformationPreviewResult)` no longer throws an exception.
+
 ## [0.60.18]
 
 ### Added
