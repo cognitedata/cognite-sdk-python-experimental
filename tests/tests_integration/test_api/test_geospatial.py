@@ -300,13 +300,16 @@ class TestGeospatialAPI:
                 external_id=test_feature_type.external_id,
                 add=AttributeAndSearchSpec(
                     attributes={"altitude": {"type": "DOUBLE", "optional": True}},
-                    search_spec={"altitude_idx": {"attributes": ["altitude"]}},
+                    search_spec={
+                        "altitude_idx": {"attributes": ["altitude"]},
+                        "pos_alt_idx": {"attributes": ["position", "altitude"]},
+                    },
                 ),
             ),
         )
         assert len(res) == 1
         assert len(res[0].attributes) == 8
-        assert len(res[0].search_spec) == 5
+        assert len(res[0].search_spec) == 6
 
     def test_stream_features(self, large_feature_type, many_features):
         features = COGNITE_CLIENT.geospatial.stream_features(feature_type=large_feature_type, filter={})

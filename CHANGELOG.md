@@ -15,6 +15,11 @@ Changes are grouped as follows
 ## [0.60.21]
 
 ### Added
+- added `to_geopandas` on `FeatureList`.
+
+## [0.60.21]
+
+### Added
 - added `destination` filter on `TransformationNotificationsAPI.list()`.
 
 ## [0.60.20]
