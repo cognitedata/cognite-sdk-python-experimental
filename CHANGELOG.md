@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.23]
+
+### Fixed
+- handled `transformation.run` with invalid `external_id`.
+
+
 ## [0.60.22]
 
 ### Fixed

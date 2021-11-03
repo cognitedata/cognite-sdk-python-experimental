@@ -2,6 +2,7 @@ from typing import Awaitable, List, Optional, Union
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.exceptions import CogniteNotFoundError
 
 from cognite.experimental._api.transformation_jobs import TransformationJobsAPI
 from cognite.experimental._api.transformation_notifications import TransformationNotificationsAPI
@@ -234,9 +235,11 @@ class TransformationsAPI(APIClient):
                 >>> res = c.transformations.run(id = 1, wait = False)
         """
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(transformation_id, transformation_external_id)
-
-        if transformation_external_id:
-            transformation_id = self.retrieve(external_id=transformation_external_id).id
+        try:
+            if transformation_external_id:
+                transformation_id = self.retrieve(external_id=transformation_external_id).id
+        except:
+            raise CogniteNotFoundError(not_found=[{"external_id": transformation_external_id}])
 
         response = self._post(
             url_path=utils._auxiliary.interpolate_and_url_encode(
