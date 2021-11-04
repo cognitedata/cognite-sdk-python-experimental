@@ -1,6 +1,5 @@
-from typing import Dict, List, Union
+from typing import List, Optional
 
-from cognite.client import utils
 from cognite.client._api.templates import TemplatesAPI
 from cognite.client.data_classes import ContextualizationJob
 
@@ -56,4 +55,23 @@ class TemplateCompletionAPI(ContextAPI):
             template_name=template_name,
             asset_property=asset_property,
             version=version,
+        )
+
+    def suggest_instance(
+        self,
+        external_id: str,
+        template_name: str,
+        asset_property: Optional[str] = None,
+        version: Optional[int] = None,
+        asset_subtree_ids: Optional[List[int]] = None,
+        asset_subtree_external_ids: Optional[List[str]] = None,
+    ):
+        return self._run_job(
+            job_path="/instancesuggestion",
+            external_id=external_id,
+            template_name=template_name,
+            asset_property=asset_property,
+            version=version,
+            asset_subtree_ids=asset_subtree_ids,
+            asset_subtree_external_ids=asset_subtree_external_ids,
         )
