@@ -1,9 +1,9 @@
-import os
 import random
 import sys
 import time
 import uuid
 
+import geopandas
 import pytest
 from cognite.client.exceptions import CogniteAPIError
 
@@ -100,6 +100,24 @@ def test_feature(test_feature_type):
     )
     yield feature
     COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
+
+
+@pytest.fixture
+def two_test_features(test_feature_type):
+    external_ids = [f"F{i}_{uuid.uuid4().hex[:10]}" for i in range(2)]
+    features = [
+        Feature(
+            external_id=external_ids[i],
+            position={"wkt": "POINT(2.2768485 48.8589506)"},
+            temperature=12.4 + i,
+            volume=1212.0,
+            pressure=2121.0,
+        )
+        for i in range(2)
+    ]
+    feature = COGNITE_CLIENT.geospatial.create_features(test_feature_type, features)
+    yield feature
+    COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_ids)
 
 
 @pytest.fixture
@@ -300,15 +318,43 @@ class TestGeospatialAPI:
                 external_id=test_feature_type.external_id,
                 add=AttributeAndSearchSpec(
                     attributes={"altitude": {"type": "DOUBLE", "optional": True}},
-                    search_spec={"altitude_idx": {"attributes": ["altitude"]}},
+                    search_spec={
+                        "altitude_idx": {"attributes": ["altitude"]},
+                        "pos_alt_idx": {"attributes": ["position", "altitude"]},
+                    },
                 ),
             ),
         )
         assert len(res) == 1
         assert len(res[0].attributes) == 8
-        assert len(res[0].search_spec) == 5
+        assert len(res[0].search_spec) == 6
 
     def test_stream_features(self, large_feature_type, many_features):
         features = COGNITE_CLIENT.geospatial.stream_features(feature_type=large_feature_type, filter={})
         feature_list = FeatureList(list(features))
         assert len(feature_list) == len(many_features)
+
+    def test_to_pandas(self, test_feature_type, two_test_features):
+        df = two_test_features.to_pandas()
+        assert list(df) == [
+            "externalId",
+            "position",
+            "volume",
+            "temperature",
+            "pressure",
+            "createdTime",
+            "lastUpdatedTime",
+        ]
+
+    def test_to_geopandas(self, test_feature_type, two_test_features):
+        gdf = two_test_features.to_geopandas(geometry="position")
+        assert list(gdf) == [
+            "externalId",
+            "position",
+            "volume",
+            "temperature",
+            "pressure",
+            "createdTime",
+            "lastUpdatedTime",
+        ]
+        assert type(gdf.dtypes["position"]) == geopandas.array.GeometryDtype

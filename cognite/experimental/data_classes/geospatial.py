@@ -95,6 +95,23 @@ class FeatureList(CogniteResourceList):
     _RESOURCE = Feature
     _ASSERT_CLASSES = False
 
+    def to_geopandas(self, geometry: str, camel_case: bool = True) -> "geopandas.GeoDataFrame":
+        """Convert the instance into a geopandas GeoDataFrame.
+
+        Args:
+            geometry (str): The name of the geometry attribute
+            camel_case (bool): Convert column names to camel case (e.g. `externalId` instead of `external_id`)
+
+        Returns:
+            geopandas.GeoDataFrame: The geodataframe.
+        """
+        df = self.to_pandas(camel_case)
+        wkt = utils._auxiliary.local_import("shapely.wkt")
+        df[geometry] = df[geometry].apply(lambda g: wkt.loads(g["wkt"]))
+        gpd = utils._auxiliary.local_import("geopandas")
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        return gdf
+
 
 class CoordinateReferenceSystem(CogniteResource):
     """A representation of a feature in the geospatial api.
