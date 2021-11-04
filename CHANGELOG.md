@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.23]
+
+### Added
+- added `to_geopandas` on `FeatureList`.
+
 ## [0.60.22]
 
 ### Fixed
