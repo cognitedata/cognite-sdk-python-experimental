@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+import geopandas
 from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
@@ -91,6 +92,10 @@ class Feature(CogniteResource):
         return instance
 
 
+def _is_geometry_type(attribute_type: str):
+    return attribute_type in {"POINT"}
+
+
 class FeatureList(CogniteResourceList):
     _RESOURCE = Feature
     _ASSERT_CLASSES = False
@@ -111,6 +116,32 @@ class FeatureList(CogniteResourceList):
         gpd = utils._auxiliary.local_import("geopandas")
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
+
+    @staticmethod
+    def from_geopandas(feature_type: FeatureType, gdf: geopandas.GeoDataFrame) -> "FeatureList":
+        """Convert a GeoDataFrame instance into a FeatureList.
+
+        Args:
+            feature_type (FeatureType): The feature type the features will conform to
+            gdf (GeoDataFrame): the geodataframe instance to convert into features
+
+        Returns:
+            FeatureList: The list of features converted from the geodataframe rows.
+        """
+        features = []
+        for _, row in gdf.iterrows():
+            feature = Feature(external_id=row["externalId"])
+            for attr in feature_type.attributes.items():
+                attr_name = attr[0]
+                attr_type = attr[1]["type"]
+                if attr_name.startswith("_"):
+                    continue
+                if _is_geometry_type(attr_type):
+                    setattr(feature, attr_name, {"wkt": row[attr_name].wkt})
+                else:
+                    setattr(feature, attr_name, row[attr_name])
+            features.append(feature)
+        return FeatureList(features)
 
 
 class CoordinateReferenceSystem(CogniteResource):

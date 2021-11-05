@@ -360,3 +360,15 @@ class TestGeospatialAPI:
             "lastUpdatedTime",
         ]
         assert type(gdf.dtypes["position"]) == geopandas.array.GeometryDtype
+
+    def test_from_geopandas(self, test_feature_type, two_test_features):
+        gdf = two_test_features.to_geopandas(geometry="position")
+        fl = FeatureList.from_geopandas(test_feature_type, gdf)
+        assert type(fl) == FeatureList
+        assert len(fl) == 2
+        for f in fl:
+            for attr in test_feature_type.attributes.items():
+                attr_name = attr[0]
+                if attr_name.startswith("_"):
+                    continue
+                assert hasattr(f, attr_name)
