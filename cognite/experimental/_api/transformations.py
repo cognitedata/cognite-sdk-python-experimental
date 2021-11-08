@@ -289,18 +289,18 @@ class TransformationsAPI(APIClient):
         self,
         query: str = None,
         convert_to_string: bool = False,
-        limit: int = 100,
-        source_limit: Optional[int] = 100,
-        infer_schema_limit: Optional[int] = 1000,
+        limit: int = 1000,
+        source_limit: int = 100,
+        infer_schema_limit: int = 100,
     ) -> TransformationPreviewResult:
         """`. <https://docs.cognite.com/api/playground/#operation/runTransformation>`_
 
         Args:
             query (str): SQL query to run for preview.
             convert_to_string (bool): Stringify values in the query results, default is False.
-            limit (int): Maximum number of rows to return in the final result, default is 100.
-            source_limit (Union[int,str]): Maximum number of items to read from the data source or None to run without limit, default is 100.
-            infer_schema_limit: Limit for how many rows that are used for inferring result schema, default is 1000.
+            limit (int): Maximum number of rows to return in the final result, default is 1000.
+            source_limit (int): Maximum number of items to read from the data source or None to run without limit, default is 100. Use -1 to read all.
+            infer_schema_limit (int): Limit for how many rows that are used for inferring result schema, default is 100.
 
         Returns:
             Result of the executed query
@@ -322,8 +322,8 @@ class TransformationsAPI(APIClient):
                 >>> df = c.transformations.preview(query="select * from _cdf.assets").to_pandas()
         """
         request_body = {"query": query, "convertToString": convert_to_string}
-
-        params = {"limit": limit, "sourceLimit": source_limit, "inferSchemaLimit": infer_schema_limit}
+        source_limit_req = "all" if source_limit == -1 else source_limit
+        params = {"limit": limit, "sourceLimit": source_limit_req, "inferSchemaLimit": infer_schema_limit}
 
         response = self._post(url_path=self._RESOURCE_PATH + "/query/run", json=request_body, params=params)
         result = TransformationPreviewResult._load(response.json(), cognite_client=self._cognite_client)
