@@ -1,6 +1,5 @@
-import importlib.util
+import ast
 import os
-import sys
 import time
 from inspect import getsource
 from numbers import Integral, Number
@@ -14,7 +13,13 @@ from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
 from cognite.client.exceptions import CogniteAPIError
 
-from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
+from cognite.experimental._constants import (
+    HANDLE_ARGS,
+    HANDLER_FILE_NAME,
+    LIST_LIMIT_CEILING,
+    LIST_LIMIT_DEFAULT,
+    MAX_RETRIES,
+)
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -449,42 +454,38 @@ def convert_file_path_to_module_path(file_path: str):
 
 
 def validate_function_folder(root_path, function_path):
-    file_extension = Path(function_path).suffix
-    if file_extension != ".py":
+    if not function_path.endswith(".py"):
         raise TypeError(f"{function_path} is not a valid value for function_path. File extension must be .py.")
 
-    function_path_full = Path(root_path) / Path(
-        function_path
-    )  # This converts function_path to a Windows path if running on Windows
+    function_path_full = Path(root_path) / Path(function_path)
     if not function_path_full.is_file():
-        raise TypeError(f"No file found at location '{function_path}' in '{root_path}'.")
+        raise FileNotFoundError(f"No file found at location '{function_path}' in '{root_path}'.")
 
-    sys.path.insert(0, root_path)
+    _validate_function_handle_using_ast(function_path_full, function_name="handle")
 
-    # Necessary to clear the cache if you have previously imported the module (this would have precedence over sys.path)
-    cached_handler_module = sys.modules.get("handler")
-    if cached_handler_module:
-        del sys.modules["handler"]
 
-    module_path = convert_file_path_to_module_path(function_path)
-    handler = importlib.import_module(module_path)
+def _validate_function_handle_using_ast(file_path: Path, function_name: str) -> None:
+    with file_path.open() as f:
+        file = f.read()
 
-    if "handle" not in handler.__dir__():
-        raise TypeError(f"{function_path} must contain a function named 'handle'.")
-
-    _validate_function_handle(handler.handle)
-    sys.path.remove(root_path)
+    for node in ast.walk(ast.parse(file)):
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            bad_args = set(param.arg for param in node.args.args).difference(HANDLE_ARGS)
+            if not bad_args:
+                return
+            raise TypeError(
+                f"In file '{file_path}', function '{function_name}' contained illegal args: {bad_args}. "
+                f"The function arguments must be a subset of: {HANDLE_ARGS} (ordering does NOT matter)"
+            )
+    raise TypeError(f"No function named '{function_name}' was found in file '{file_path}'. It is required!")
 
 
 def _validate_function_handle(function_handle):
     if not function_handle.__code__.co_name == "handle":
-        raise TypeError("Function referenced by function_handle must be named handle.")
-    if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
-        set(["data", "client", "secrets", "function_call_info"])
-    ):
-        raise TypeError(
-            "Arguments to function referenced by function_handle must be a subset of (data, client, secrets, function_call_info)"
-        )
+        raise TypeError("Function referenced by function_handle must be named 'handle'.")
+
+    if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(HANDLE_ARGS):
+        raise TypeError(f"Arguments to function referenced by function_handle must be a subset of {HANDLE_ARGS}")
 
 
 def _assert_exactly_one_of_function_id_and_function_external_id(function_id, function_external_id):
