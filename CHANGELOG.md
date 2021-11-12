@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.26]
+
+### Fixed
+- added `TransformationBlockedInfo` `time` property to fix decoding `Transformation` objects.
+
 ## [0.60.25]
 
 ### Added
