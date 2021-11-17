@@ -10,7 +10,6 @@ PNID_FILE_ID = 3261066797848581
 
 
 class TestPNIDParsingIntegration:
-    @pytest.mark.skip("broken")
     def test_run_detect_str(self):
         entities = ["YT-96122", "XE-96125"]
         file_id = PNID_FILE_ID
@@ -37,7 +36,6 @@ class TestPNIDParsingIntegration:
         assert isinstance(ocr_result[0], PNIDDetectionList)
         assert isinstance(ocr_result[0]._repr_html_(), str)
 
-    @pytest.mark.skip("broken")
     def test_run_convert(self):
         items = [
             {
