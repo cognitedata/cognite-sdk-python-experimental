@@ -112,7 +112,7 @@ class CogniteClient(Client):
             self._config, api_version="playground", cognite_client=self
         )
 
-        self.transformations = TransformationsAPI(self._config, api_version="playground", cognite_client=self)
+        self.transformations = TransformationsAPI(self._config, api_version="v1", cognite_client=self)
 
         self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         # template completion only
