@@ -276,7 +276,12 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def search_features(
-        self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None, limit: int = 100, orderBy: Dict[str, str] = None
+        self,
+        feature_type: FeatureType,
+        filter: Dict[str, Any],
+        attributes: Dict[str, Any] = None,
+        limit: int = 100,
+        orderBy: Dict[str, str] = None,
     ) -> FeatureList:
         """`Search for features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
@@ -318,11 +323,13 @@ class ExperimentalGeospatialAPI(APIClient):
         res = self._post(
             url_path=resource_path,
             json={
-                    "filter": filter,
-                    "limit": limit,
-                    "output": {"attributes": attributes},
-                    "orderBy": None if oderBy == None else [{"attribute": item[0], "direction": item[1]} for item in orderBy.items()]
-                 }
+                "filter": filter,
+                "limit": limit,
+                "output": {"attributes": attributes},
+                "orderBy": None
+                if oderBy == None
+                else [{"attribute": item[0], "direction": item[1]} for item in orderBy.items()],
+            },
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
