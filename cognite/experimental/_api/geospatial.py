@@ -321,7 +321,7 @@ class ExperimentalGeospatialAPI(APIClient):
                     "filter": filter,
                     "limit": limit,
                     "output": {"attributes": attributes},
-                    "orderBy": None if oderBy == None else [{item[0]: item[1]} for item in orderBy.items()]
+                    "orderBy": None if oderBy == None else [{"attribute": item[0], "direction": item[1]} for item in orderBy.items()]
                  }
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
