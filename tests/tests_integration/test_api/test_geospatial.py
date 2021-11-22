@@ -319,14 +319,14 @@ class TestGeospatialAPI:
         res = COGNITE_CLIENT.geospatial.search_features(
             feature_type=test_feature_type, filter={}, orderBy={"temperature": "ASC"}
         )
-        assert res[0].temperature = -10.8
-        assert res[1].temperature = 12.4
+        assert res[0].temperature == -10.8
+        assert res[1].temperature == 12.4
 
         res = COGNITE_CLIENT.geospatial.search_features(
             feature_type=test_feature_type, filter={}, orderBy={"temperature": "DESC"}
         )
-        assert res[0].temperature = 12.4
-        assert res[1].temperature = -10.8
+        assert res[0].temperature == 12.4
+        assert res[1].temperature == -10.8
 
     def test_update_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.update_feature_types(
