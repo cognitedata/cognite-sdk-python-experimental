@@ -13,6 +13,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureType,
     FeatureTypeList,
     FeatureTypeUpdate,
+    OrderSpec,
 )
 
 
@@ -276,7 +277,12 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def search_features(
-        self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None, limit: int = 100
+        self,
+        feature_type: FeatureType,
+        filter: Dict[str, Any],
+        attributes: Dict[str, Any] = None,
+        limit: int = 100,
+        orderBy: List[OrderSpec] = None,
     ) -> FeatureList:
         """`Search for features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
@@ -286,6 +292,7 @@ class ExperimentalGeospatialAPI(APIClient):
             filter (Dict[str, Any]): the search filter
             limit (int): maximum number of results
             attributes (Dict[str, Any]): the output attribute selection
+            orderBy (List[OrderSpec]): the order specification
 
         Returns:
             FeatureList: the filtered features
@@ -306,12 +313,22 @@ class ExperimentalGeospatialAPI(APIClient):
 
                 >>> res = c.geospatial.search_features(my_feature_type, filter={}, attributes={"temperature": {}, "pressure": {}})
 
+            Search for features and order results:
+
+                >>> res = c.geospatial.search_features(my_feature_type, filter={}, orderBy={"temperature": "ASC", "pressure": "DESC"})
+
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
         resource_path = resource_path
+        order = (
+            None
+            if orderBy == None
+            else [{"attribute": item.attribute, "direction": item.direction} for item in orderBy]
+        )
         res = self._post(
-            url_path=resource_path, json={"filter": filter, "limit": limit, "output": {"attributes": attributes}}
+            url_path=resource_path,
+            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "orderBy": order},
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 

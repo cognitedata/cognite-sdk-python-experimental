@@ -15,6 +15,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureList,
     FeatureType,
     FeatureTypeUpdate,
+    OrderSpec,
 )
 
 COGNITE_CLIENT = CogniteClient(max_workers=1)
@@ -312,6 +313,19 @@ class TestGeospatialAPI:
         assert res[0].position["wkt"] == "POINT(253457.6156334287 6250962.062720415)"
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[0], "volume")
+
+    def test_search_with_order_by(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, orderBy=[OrderSpec(attribute="temperature", direction="ASC")]
+        )
+        assert res[0].temperature == -10.8
+        assert res[1].temperature == 12.4
+
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, orderBy=[OrderSpec(attribute="temperature", direction="DESC")]
+        )
+        assert res[0].temperature == 12.4
+        assert res[1].temperature == -10.8
 
     def test_update_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.update_feature_types(
