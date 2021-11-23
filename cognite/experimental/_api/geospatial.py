@@ -322,7 +322,7 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = resource_path
         res = self._post(
             url_path=resource_path,
-            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "orderBy": oderBy},
+            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "orderBy": orderBy},
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
