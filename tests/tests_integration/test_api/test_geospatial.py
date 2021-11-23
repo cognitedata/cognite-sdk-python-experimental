@@ -315,13 +315,13 @@ class TestGeospatialAPI:
 
     def test_search_with_order_by(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={}, orderBy=[{"attribute": "temperature", "direction": "ASC"}]
+            feature_type=test_feature_type, filter={}, orderBy=[OrderSpec(attribute="temperature", direction="ASC")]
         )
         assert res[0].temperature == -10.8
         assert res[1].temperature == 12.4
 
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={}, orderBy=[{"attribute": "temperature", "direction": "DESC"}]
+            feature_type=test_feature_type, filter={}, orderBy=[OrderSpec(attribute="temperature", direction="DESC")]
         )
         assert res[0].temperature == 12.4
         assert res[1].temperature == -10.8

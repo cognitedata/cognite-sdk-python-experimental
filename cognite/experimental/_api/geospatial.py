@@ -13,6 +13,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureType,
     FeatureTypeList,
     FeatureTypeUpdate,
+    OrderSpec,
 )
 
 
@@ -281,7 +282,7 @@ class ExperimentalGeospatialAPI(APIClient):
         filter: Dict[str, Any],
         attributes: Dict[str, Any] = None,
         limit: int = 100,
-        orderBy: Dict[str, str] = None,
+        orderBy: List[OrderSpec] = None,
     ) -> FeatureList:
         """`Search for features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
@@ -291,7 +292,7 @@ class ExperimentalGeospatialAPI(APIClient):
             filter (Dict[str, Any]): the search filter
             limit (int): maximum number of results
             attributes (Dict[str, Any]): the output attribute selection
-            orderBy (Dict[str, str]): the order specification
+            orderBy (List[OrderSpec]): the order specification
 
         Returns:
             FeatureList: the filtered features
@@ -320,9 +321,14 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
         resource_path = resource_path
+        order = (
+            None
+            if orderBy == None
+            else [{"attribute": item.attribute, "direction": item.direction} for item in orderBy]
+        )
         res = self._post(
             url_path=resource_path,
-            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "orderBy": orderBy},
+            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "orderBy": order},
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 

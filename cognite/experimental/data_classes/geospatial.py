@@ -166,3 +166,14 @@ class CoordinateReferenceSystem(CogniteResource):
 class CoordinateReferenceSystemList(CogniteResourceList):
     _RESOURCE = CoordinateReferenceSystem
     _ASSERT_CLASSES = False
+
+
+class OrderSpec:
+    """An order specification with respect to an attribute.
+    """
+
+    def __init__(
+        self, attribute: str, direction: str,
+    ):
+        self.attribute = attribute
+        self.direction = direction
