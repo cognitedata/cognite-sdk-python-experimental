@@ -15,6 +15,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureList,
     FeatureType,
     FeatureTypeUpdate,
+    OrderSpec
 )
 
 COGNITE_CLIENT = CogniteClient(max_workers=1)
