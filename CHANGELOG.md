@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.26]
+
+### Changed
+- extraction_pipelines.list() is updated to use filter.
+
 ## [0.60.25]
 
 ### Added

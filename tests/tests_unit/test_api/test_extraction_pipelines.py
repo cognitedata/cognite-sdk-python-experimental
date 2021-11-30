@@ -62,7 +62,7 @@ class TestExtractionPipelines:
         assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_list(self, mock_int_response):
-        res = TEST_API.list()
+        res = TEST_API.list(external_id_prefix="19")
         assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
     def test_create_single(self, mock_int_response):

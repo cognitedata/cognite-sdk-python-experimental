@@ -19,13 +19,20 @@ Then add users that should have access to ExtractionPipelines to that 'datasets-
 from cognite.experimental.data_classes import ExtractionPipeline
 
 ep1 = ExtractionPipeline(external_id="py test id", name="py test", description="python generated", data_set_id=1,
-                         schedule="", contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}])
+                         schedule="", contacts=[{"name": "Name", "email": "Name@test.no", "sendNotification": True}])
 res = client.extraction_pipelines.create(ep1)
 ```
 
 ## List ExtractionPipelines
 ```python
 ext_pipes_list = client.extraction_pipelines.list()
+list2 = client.extraction_pipelines.list(limit=6)
+list3 = client.extraction_pipelines.list(name="Name")
+list4 = client.extraction_pipelines.list(external_id_prefix="FX")
+contacts=[{"name": "Name", "email": "Name@test.no", "sendNotification": True}]
+list5 = client.extraction_pipelines.list(contacts=contacts)
+list6 = client.extraction_pipelines.list(data_set_ids=[11111111, 22222])
+list7 = client.extraction_pipelines.list(data_set_external_ids=["ext1", "ext2"])
 ```
 
 ##Update an ExtractionPipeline that already exists

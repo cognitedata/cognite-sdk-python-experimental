@@ -2,8 +2,14 @@ from typing import *
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes import TimestampRange
 
-from cognite.experimental.data_classes import ExtractionPipeline, ExtractionPipelineList, ExtractionPipelineUpdate
+from cognite.experimental.data_classes import (
+    ExtractionPipeline,
+    ExtractionPipelineFilter,
+    ExtractionPipelineList,
+    ExtractionPipelineUpdate,
+)
 
 
 class ExtractionPipelinesAPI(APIClient):
@@ -74,10 +80,41 @@ class ExtractionPipelinesAPI(APIClient):
             ids=ids, external_ids=external_ids, ignore_unknown_ids=ignore_unknown_ids, wrap_ids=True
         )
 
-    def list(self, limit: int = 25) -> ExtractionPipelineList:
+    def list(
+        self,
+        external_id_prefix: str = None,
+        name: str = None,
+        description: str = None,
+        data_set_ids: List[int] = None,
+        data_set_external_ids: List[str] = None,
+        schedule: str = None,
+        contacts: List[Dict[str, Any]] = None,
+        raw_tables: List[Dict[str, str]] = None,
+        metadata: Dict[str, str] = None,
+        source: str = None,
+        documentation: str = None,
+        created_by: str = None,
+        created_time: Union[Dict[str, Any], TimestampRange] = None,
+        last_updated_time: Union[Dict[str, Any], TimestampRange] = None,
+        limit: int = 25,
+    ) -> ExtractionPipelineList:
         """`List ExtractionPipelines <>`_
 
         Args:
+            external_id_prefix (str): Filter by this (case-sensitive) prefix for the external ID.
+            name (str): Name of Extraction Pipeline.
+            description (str): Description of Extraction Pipeline.
+            data_set_ids (List[int]): Return only Extraction Pipelines in the specified data sets with these ids.
+            data_set_external_ids (List[str]): Return only Extraction Pipelines in the specified data sets with these external ids.
+            schedule (str): Schedule text value of Extraction Pipeline.
+            contacts (List[Dict[str, Any]]): list of contacts [{"name": "value", "email": "value", "role": "value", "sendNotification": boolean},...].
+            raw_tables (List[Dict[str, str]): list of raw tables in list format: [{"dbName": "value", "tableName" : "value"}, ...].
+            metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value.
+            source (str): The source of this Extraction Pipeline.
+            created_by (str): ExtractionPipeline creator, usually email.
+            documentation (str): Documentation text value for Extraction Pipeline.
+            created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            last_updated_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
             limit (int, optional): Maximum number of ExtractionPipelines to return. Defaults to 25. Set to -1, float("inf") or None
                 to return all items.
 
@@ -90,10 +127,26 @@ class ExtractionPipelinesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> ep_list = c.extraction_pipelines.list(limit=5)
+                >>> ep_list = c.extraction_pipelines.list(limit=5, name="test_name")
         """
-
-        return self._list(method="GET", limit=limit,)
+        if data_set_ids or data_set_external_ids:
+            data_set_ids = self._process_ids(data_set_ids, data_set_external_ids, wrap_ids=True)
+        filter = ExtractionPipelineFilter(
+            external_id_prefix=external_id_prefix,
+            name=name,
+            description=description,
+            data_set_ids=data_set_ids,
+            schedule=schedule,
+            contacts=contacts,
+            raw_tables=raw_tables,
+            metadata=metadata,
+            source=source,
+            created_by=created_by,
+            documentation=documentation,
+            created_time=created_time,
+            last_updated_time=last_updated_time,
+        ).dump(camel_case=True)
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def create(
         self, extractionPipeline: Union[ExtractionPipeline, List[ExtractionPipeline]]
