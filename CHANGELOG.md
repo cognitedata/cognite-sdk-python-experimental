@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.27]
+
+### Added
+- Geospatial: support `allow_crs_transformation` for creating, updating and searching features.
+
 ## [0.60.26]
 
 ### Fixed
