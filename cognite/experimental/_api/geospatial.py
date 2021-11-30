@@ -294,7 +294,7 @@ class ExperimentalGeospatialAPI(APIClient):
         filter: Dict[str, Any],
         attributes: Dict[str, Any] = None,
         limit: int = 100,
-        orderBy: List[OrderSpec] = None,
+        order_by: List[OrderSpec] = None,
         allow_crs_transformation: bool = False,
     ) -> FeatureList:
         """`Search for features`
@@ -305,7 +305,7 @@ class ExperimentalGeospatialAPI(APIClient):
             filter (Dict[str, Any]): the search filter
             limit (int): maximum number of results
             attributes (Dict[str, Any]): the output attribute selection
-            orderBy (List[OrderSpec]): the order specification
+            order_by (List[OrderSpec]): the order specification
             allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
                 System defined in the feature type specification. When it is false, then requests with geometries in
                 Coordinate Reference System different from the ones defined in the feature type will result in
@@ -332,7 +332,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
             Search for features and order results:
 
-                >>> res = c.geospatial.search_features(my_feature_type, filter={}, orderBy={"temperature": "ASC", "pressure": "DESC"})
+                >>> res = c.geospatial.search_features(my_feature_type, filter={}, order_by={"temperature": "ASC", "pressure": "DESC"})
 
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
@@ -340,8 +340,8 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = resource_path
         order = (
             None
-            if orderBy == None
-            else [{"attribute": item.attribute, "direction": item.direction} for item in orderBy]
+            if order_by is None
+            else [{"attribute": item.attribute, "direction": item.direction} for item in order_by]
         )
         params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
         res = self._post(
