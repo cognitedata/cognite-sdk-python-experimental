@@ -286,6 +286,17 @@ class TestGeospatialAPI:
         except CogniteAPIError:
             COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
 
+    def test_search_wrong_crs(self, cognite_domain, test_feature_type, test_feature):
+        try:
+            COGNITE_CLIENT.geospatial.search_features(
+                feature_type=test_feature_type,
+                filter={"within": {"attribute": "location", "value": {"wkt": "", "srid": 3857}}},
+                limit=10,
+            )
+            raise pytest.fail("searching features using a geometry in invalid crs should have raised an exception")
+        except CogniteAPIError:
+            pass
+
     def test_get_coordinate_reference_system(self):
         res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=4326)
         assert res[0].srid == 4326

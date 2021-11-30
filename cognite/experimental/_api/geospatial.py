@@ -182,8 +182,8 @@ class ExperimentalGeospatialAPI(APIClient):
             feature: one feature or a list of features to create
             allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
                 System defined in the feature type specification. When it is false, then requests with geometries in
-                Coordinate Reference System different from the ones defined in the feature type will result in bad
-                request response code
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             Union[Feature, FeatureList]: Created features
@@ -264,8 +264,8 @@ class ExperimentalGeospatialAPI(APIClient):
             feature (Union[Feature, List[Feature]]): feature or list of features.
             allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
                 System defined in the feature type specification. When it is false, then requests with geometries in
-                Coordinate Reference System different from the ones defined in the feature type will result in bad
-                request response code.
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             FeatureList: Updated features
@@ -308,8 +308,8 @@ class ExperimentalGeospatialAPI(APIClient):
             orderBy (List[OrderSpec]): the order specification
             allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
                 System defined in the feature type specification. When it is false, then requests with geometries in
-                Coordinate Reference System different from the ones defined in the feature type will result in bad
-                request response code.
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             FeatureList: the filtered features
@@ -367,8 +367,8 @@ class ExperimentalGeospatialAPI(APIClient):
             attributes (Dict[str, Any]): the output attribute selection
             allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
                 System defined in the feature type specification. When it is false, then requests with geometries in
-                Coordinate Reference System different from the ones defined in the feature type will result in bad
-                request response code.
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             Generator[Feature]: a generator for the filtered features
