@@ -13,6 +13,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureType,
     FeatureTypeList,
     FeatureTypeUpdate,
+    OrderSpec,
 )
 
 
@@ -171,7 +172,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
     @_with_cognite_domain
     def create_features(
-        self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]
+        self, feature_type: FeatureType, feature: Union[Feature, List[Feature]], allow_crs_transformation: bool = False
     ) -> Union[Feature, FeatureList]:
         """`Creates features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/createFeatures>
@@ -179,6 +180,10 @@ class ExperimentalGeospatialAPI(APIClient):
         Args:
             feature_type : Feature type definition for the features to create.
             feature: one feature or a list of features to create
+            allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
+                System defined in the feature type specification. When it is false, then requests with geometries in
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             Union[Feature, FeatureList]: Created features
@@ -194,7 +199,8 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> res = c.geospatial.create_features(my_feature_types, Feature(external_id="my_feature", temperature=12.4))
         """
         resource_path = self._feature_resource_path(feature_type)
-        return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList)
+        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
+        return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList, params=params)
 
     @_with_cognite_domain
     def delete_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> None:
@@ -247,13 +253,19 @@ class ExperimentalGeospatialAPI(APIClient):
         )
 
     @_with_cognite_domain
-    def update_features(self, feature_type: FeatureType, feature: Union[Feature, List[Feature]]) -> FeatureList:
+    def update_features(
+        self, feature_type: FeatureType, feature: Union[Feature, List[Feature]], allow_crs_transformation: bool = False
+    ) -> FeatureList:
         """`Update features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/updateFeatures>
 
         Args:
             feature_type : Feature type definition for the features to update.
-            feature (Union[Feature, List[Feature]]): feature or list of features
+            feature (Union[Feature, List[Feature]]): feature or list of features.
+            allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
+                System defined in the feature type specification. When it is false, then requests with geometries in
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             FeatureList: Updated features
@@ -272,11 +284,18 @@ class ExperimentalGeospatialAPI(APIClient):
         # updates for feature are not following the patch structure from other resources
         # they are more like a replace so an update looks like a feature creation (yeah, borderline ?)
         resource_path = self._feature_resource_path(feature_type) + "/update"
-        return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList)
+        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
+        return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList, params=params)
 
     @_with_cognite_domain
     def search_features(
-        self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None, limit: int = 100
+        self,
+        feature_type: FeatureType,
+        filter: Dict[str, Any],
+        attributes: Dict[str, Any] = None,
+        limit: int = 100,
+        order_by: List[OrderSpec] = None,
+        allow_crs_transformation: bool = False,
     ) -> FeatureList:
         """`Search for features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/searchFeatures>
@@ -286,6 +305,11 @@ class ExperimentalGeospatialAPI(APIClient):
             filter (Dict[str, Any]): the search filter
             limit (int): maximum number of results
             attributes (Dict[str, Any]): the output attribute selection
+            order_by (List[OrderSpec]): the order specification
+            allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
+                System defined in the feature type specification. When it is false, then requests with geometries in
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             FeatureList: the filtered features
@@ -306,17 +330,33 @@ class ExperimentalGeospatialAPI(APIClient):
 
                 >>> res = c.geospatial.search_features(my_feature_type, filter={}, attributes={"temperature": {}, "pressure": {}})
 
+            Search for features and order results:
+
+                >>> res = c.geospatial.search_features(my_feature_type, filter={}, order_by={"temperature": "ASC", "pressure": "DESC"})
+
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
         resource_path = resource_path
+        order = (
+            None
+            if order_by is None
+            else [{"attribute": item.attribute, "direction": item.direction} for item in order_by]
+        )
+        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
         res = self._post(
-            url_path=resource_path, json={"filter": filter, "limit": limit, "output": {"attributes": attributes}}
+            url_path=resource_path,
+            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "orderBy": order},
+            params=params,
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def stream_features(
-        self, feature_type: FeatureType, filter: Dict[str, Any], attributes: Dict[str, Any] = None
+        self,
+        feature_type: FeatureType,
+        filter: Dict[str, Any],
+        attributes: Dict[str, Any] = None,
+        allow_crs_transformation: bool = False,
     ) -> Generator[Feature, None, None]:
         """`Stream features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/streamFeatures>
@@ -325,6 +365,10 @@ class ExperimentalGeospatialAPI(APIClient):
             feature_type: the feature type to search for
             filter (Dict[str, Any]): the search filter
             attributes (Dict[str, Any]): the output attribute selection
+            allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
+                System defined in the feature type specification. When it is false, then requests with geometries in
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
 
         Returns:
             Generator[Feature]: a generator for the filtered features
@@ -351,11 +395,14 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type) + "/search-streaming"
         resource_path = resource_path
         json = {"filter": filter, "output": {"attributes": attributes, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
+        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
 
         self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
         if self._cognite_domain is not None:
             self._config.headers.update({self.X_COGNITE_DOMAIN: feature_type._cognite_domain})
-        res = self._do_request("POST", url_path=resource_path, json=json, timeout=self._config.timeout, stream=True)
+        res = self._do_request(
+            "POST", url_path=resource_path, json=json, timeout=self._config.timeout, stream=True, params=params
+        )
         self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
 
         for line in res.iter_lines():

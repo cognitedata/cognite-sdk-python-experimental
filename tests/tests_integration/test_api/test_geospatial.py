@@ -15,6 +15,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureList,
     FeatureType,
     FeatureTypeUpdate,
+    OrderSpec,
 )
 
 COGNITE_CLIENT = CogniteClient(max_workers=1)
@@ -39,6 +40,11 @@ def test_crs():
 
 @pytest.fixture(params=[None, "sdk_test"])
 def cognite_domain(request):
+    yield request.param
+
+
+@pytest.fixture(params=[True, False])
+def allow_crs_transformation(request):
     yield request.param
 
 
@@ -176,6 +182,21 @@ def clean_old_custom_crs():
 
 
 class TestGeospatialAPI:
+    def test_create_features(self, test_feature_type, allow_crs_transformation):
+        external_id = f"F_{uuid.uuid4().hex[:10]}"
+        COGNITE_CLIENT.geospatial.create_features(
+            test_feature_type,
+            Feature(
+                external_id=external_id,
+                position={"wkt": "POINT(50 50)"},
+                temperature=12.4,
+                volume=1212.0,
+                pressure=2121.0,
+            ),
+            allow_crs_transformation=allow_crs_transformation,
+        )
+        COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
+
     def test_retrieve_single_feature_type_by_external_id(self, cognite_domain, test_feature_type):
         assert (
             test_feature_type.external_id
@@ -195,10 +216,11 @@ class TestGeospatialAPI:
         assert res.external_id == test_feature.external_id
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
 
-    def test_update_single_feature(self, cognite_domain, test_feature_type, test_feature):
+    def test_update_single_feature(self, cognite_domain, allow_crs_transformation, test_feature_type, test_feature):
         res = COGNITE_CLIENT.geospatial.update_features(
             feature_type=test_feature_type,
             feature=Feature(external_id=test_feature.external_id, temperature=6.237, pressure=12.21, volume=34.43),
+            allow_crs_transformation=allow_crs_transformation,
         )
         assert res.external_id == test_feature.external_id
         assert res.temperature == 6.237
@@ -264,6 +286,17 @@ class TestGeospatialAPI:
         except CogniteAPIError:
             COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
 
+    def test_search_wrong_crs(self, cognite_domain, test_feature_type, test_feature):
+        try:
+            COGNITE_CLIENT.geospatial.search_features(
+                feature_type=test_feature_type,
+                filter={"within": {"attribute": "location", "value": {"wkt": "", "srid": 3857}}},
+                limit=10,
+            )
+            raise pytest.fail("searching features using a geometry in invalid crs should have raised an exception")
+        except CogniteAPIError:
+            pass
+
     def test_get_coordinate_reference_system(self):
         res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=4326)
         assert res[0].srid == 4326
@@ -302,16 +335,32 @@ class TestGeospatialAPI:
         assert not hasattr(res[1], "pressure")
 
     def test_search_with_output_srid_selection(
-        self, cognite_domain, test_feature_type, test_feature, another_test_feature
+        self, cognite_domain, allow_crs_transformation, test_feature_type, test_feature, another_test_feature
     ):
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={}, attributes={"position": {"srid": "3857"}}
+            feature_type=test_feature_type,
+            filter={},
+            attributes={"position": {"srid": "3857"}},
+            allow_crs_transformation=allow_crs_transformation,
         )
         assert len(res) == 2
         assert hasattr(res[0], "position")
         assert res[0].position["wkt"] == "POINT(253457.6156334287 6250962.062720415)"
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[0], "volume")
+
+    def test_search_with_order_by(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, order_by=[OrderSpec(attribute="temperature", direction="ASC")]
+        )
+        assert res[0].temperature == -10.8
+        assert res[1].temperature == 12.4
+
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, order_by=[OrderSpec(attribute="temperature", direction="DESC")]
+        )
+        assert res[0].temperature == 12.4
+        assert res[1].temperature == -10.8
 
     def test_update_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.update_feature_types(

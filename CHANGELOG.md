@@ -12,11 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.27]
+## [0.60.28]
 
-### Changelog
+### Removed
 - `transformation_schedules.retrieve_multiple()` no longer acepts `is_public` parameter, it's asumed the user wants to retrieve the given ids either they are marked as public or not.
 - internal changes in the way `transformation.preview()` sends its parameters to the backend.
+
+## [0.60.27]
+
+### Added
+- Geospatial: support `allow_crs_transformation` for creating, updating and searching features.
 
 ## [0.60.26]
 
