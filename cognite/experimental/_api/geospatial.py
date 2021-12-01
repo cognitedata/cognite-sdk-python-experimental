@@ -14,6 +14,7 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureTypeList,
     FeatureTypeUpdate,
     OrderSpec,
+    AttributeAggregateList,
 )
 
 
@@ -337,7 +338,6 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
-        resource_path = resource_path
         order = (
             None
             if order_by is None
@@ -393,7 +393,6 @@ class ExperimentalGeospatialAPI(APIClient):
 
         """
         resource_path = self._feature_resource_path(feature_type) + "/search-streaming"
-        resource_path = resource_path
         json = {"filter": filter, "output": {"attributes": attributes, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
         params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
 
@@ -407,6 +406,49 @@ class ExperimentalGeospatialAPI(APIClient):
 
         for line in res.iter_lines():
             yield Feature._load(complexjson.loads(line))
+
+    @_with_cognite_domain
+    def aggregate_attribute(
+        self,
+        feature_type: FeatureType,
+        filter: Dict[str, Any],
+        attribute: str,
+        aggregates: List[str],
+        group_by: List[str] = None,
+    ) -> AttributeAggregateList:
+        """`Aggregate attribute of filtered features`
+        <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/aggregateFeatures>
+
+        Args:
+            feature_type: the feature type to filter features from
+            filter (Dict[str, Any]): the search filter
+            attribute (str): the attribute for which aggregates should be calculated
+            aggregates (List[str]): list of aggregates to be calculated
+            group_by (List[str]): list of attributes to group by with
+
+        Returns:
+            AttributeAggregateList: the filtered features
+
+        Examples:
+
+            Aggregate attribute of features:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
+                >>> my_feature = c.geospatial.create_features(my_feature_type, Feature(external_id="my_feature", temperature=12.4))
+                >>> res = c.geospatial.aggregate_attribute(my_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}}, attribute="temperature", aggregates=["max", "min"], groupBy=["category"])
+                >>> for a in res:
+                ...     # loop over aggregates in different groups
+
+        """
+        resource_path = self._feature_resource_path(feature_type) + "/aggregate"
+        cls = AttributeAggregateList
+        res = self._post(
+            url_path=resource_path,
+            json={"filter": filter, "attribute": attribute, "aggregates": aggregates, "groupBy": group_by},
+        )
+        return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def get_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> CoordinateReferenceSystemList:
         """`Get Coordinate Reference Systems`
