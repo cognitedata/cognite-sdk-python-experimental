@@ -442,6 +442,6 @@ class TestGeospatialAPI:
             filter={},
             attribute="temperature",
             aggregates=["min", "max"],
-            groupBy=["externalId"],
+            group_by=["externalId"],
         )
         assert len(res) == 2
