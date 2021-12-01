@@ -408,7 +408,7 @@ class ExperimentalGeospatialAPI(APIClient):
             yield Feature._load(complexjson.loads(line))
 
     @_with_cognite_domain
-    def aggregate_attribute(
+    def aggregate_features(
         self,
         feature_type: FeatureType,
         filter: Dict[str, Any],
@@ -416,7 +416,7 @@ class ExperimentalGeospatialAPI(APIClient):
         aggregates: List[str],
         group_by: List[str] = None,
     ) -> AttributeAggregateList:
-        """`Aggregate attribute of filtered features`
+        """`Aggregate filtered features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/aggregateFeatures>
 
         Args:
@@ -437,7 +437,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> my_feature_type = c.geospatial.retrieve_feature_types(external_id="my_feature_type")
                 >>> my_feature = c.geospatial.create_features(my_feature_type, Feature(external_id="my_feature", temperature=12.4))
-                >>> res = c.geospatial.aggregate_attribute(my_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}}, attribute="temperature", aggregates=["max", "min"], groupBy=["category"])
+                >>> res = c.geospatial.aggregate_features(my_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}}, attribute="temperature", aggregates=["max", "min"], groupBy=["category"])
                 >>> for a in res:
                 ...     # loop over aggregates in different groups
 

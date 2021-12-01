@@ -140,8 +140,8 @@ class FeatureList(CogniteResourceList):
         return FeatureList(features)
 
 
-class AttributeAggregate(CogniteResource):
-    """A result of aggregating features attribute in geospatial api."""
+class FeatureAggregate(CogniteResource):
+    """A result of aggregating features in geospatial api."""
 
     def __init__(self, cognite_client=None, **aggregates):
         for key in aggregates:
@@ -157,8 +157,8 @@ class AttributeAggregate(CogniteResource):
         return instance
 
 
-class AttributeAggregateList(CogniteResourceList):
-    _RESOURCE = AttributeAggregate
+class FeatureAggregateList(CogniteResourceList):
+    _RESOURCE = FeatureAggregate
     _ASSERT_CLASSES = False
 
 
