@@ -6,10 +6,10 @@ from typing import Any, Dict, Generator, List, Union
 from cognite.client._api_client import APIClient
 
 from cognite.experimental.data_classes.geospatial import (
-    AttributeAggregateList,
     CoordinateReferenceSystem,
     CoordinateReferenceSystemList,
     Feature,
+    FeatureAggregateList,
     FeatureList,
     FeatureType,
     FeatureTypeList,
@@ -415,7 +415,7 @@ class ExperimentalGeospatialAPI(APIClient):
         attribute: str,
         aggregates: List[str],
         group_by: List[str] = None,
-    ) -> AttributeAggregateList:
+    ) -> FeatureAggregateList:
         """`Aggregate filtered features`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/aggregateFeatures>
 
@@ -427,7 +427,7 @@ class ExperimentalGeospatialAPI(APIClient):
             group_by (List[str]): list of attributes to group by with
 
         Returns:
-            AttributeAggregateList: the filtered features
+            FeatureAggregateList: the filtered features
 
         Examples:
 
@@ -443,7 +443,7 @@ class ExperimentalGeospatialAPI(APIClient):
 
         """
         resource_path = self._feature_resource_path(feature_type) + "/aggregate"
-        cls = AttributeAggregateList
+        cls = FeatureAggregateList
         res = self._post(
             url_path=resource_path,
             json={"filter": filter, "attribute": attribute, "aggregates": aggregates, "groupBy": group_by},
