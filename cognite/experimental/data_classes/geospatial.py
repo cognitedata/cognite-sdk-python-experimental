@@ -45,9 +45,7 @@ class AttributeAndSearchSpec:
     """A representation of a feature type attribute and search spec."""
 
     def __init__(
-        self,
-        attributes: Dict[str, Any] = None,
-        search_spec: Dict[str, Any] = None,
+        self, attributes: Dict[str, Any] = None, search_spec: Dict[str, Any] = None,
     ):
         self.attributes = attributes
         self.search_spec = search_spec
@@ -57,11 +55,7 @@ class FeatureTypeUpdate:
     """A representation of a feature type update in the geospatial api."""
 
     def __init__(
-        self,
-        external_id: str = None,
-        add: AttributeAndSearchSpec = None,
-        cognite_client=None,
-        cognite_domain=None,
+        self, external_id: str = None, add: AttributeAndSearchSpec = None, cognite_client=None, cognite_domain=None,
     ):
         self.external_id = external_id
         self.add = add
@@ -78,10 +72,7 @@ class Feature(CogniteResource):
     """A representation of a feature in the geospatial api."""
 
     def __init__(
-        self,
-        external_id: str = None,
-        cognite_client=None,
-        **attributes,
+        self, external_id: str = None, cognite_client=None, **attributes,
     ):
         self.external_id = external_id
         for key in attributes:
@@ -198,9 +189,7 @@ class OrderSpec:
     """An order specification with respect to an attribute."""
 
     def __init__(
-        self,
-        attribute: str,
-        direction: str,
+        self, attribute: str, direction: str,
     ):
         self.attribute = attribute
         self.direction = direction
