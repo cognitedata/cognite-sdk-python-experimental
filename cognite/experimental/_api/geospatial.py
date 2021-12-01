@@ -6,6 +6,7 @@ from typing import Any, Dict, Generator, List, Union
 from cognite.client._api_client import APIClient
 
 from cognite.experimental.data_classes.geospatial import (
+    AttributeAggregateList,
     CoordinateReferenceSystem,
     CoordinateReferenceSystemList,
     Feature,
@@ -14,7 +15,6 @@ from cognite.experimental.data_classes.geospatial import (
     FeatureTypeList,
     FeatureTypeUpdate,
     OrderSpec,
-    AttributeAggregateList,
 )
 
 
