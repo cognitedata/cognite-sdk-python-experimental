@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.29]
+
+### Changed
+- `transformation.job.raw_query` renamed to `query`, because of API changes.
+
 ## [0.60.28]
 
 ### Removed
