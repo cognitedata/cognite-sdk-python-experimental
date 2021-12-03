@@ -65,7 +65,7 @@ class TransformationJobsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> res = c.transformations.jobs.retrieve(id=1)
         """
-        return self._retrieve(id=id)
+        return self._retrieve_multiple(ids=id, wrap_ids=True)
 
     def list_metrics(self, id: int) -> TransformationJobMetricList:
         """`List the metrics of a single transformation job. <https://docs.cognite.com/api/playground/#operation/getTransformationJob>`_
