@@ -6,8 +6,7 @@ from cognite.client.data_classes._base import CogniteResource, CogniteResourceLi
 
 
 class FeatureType(CogniteResource):
-    """A representation of a feature type in the geospatial api.
-    """
+    """A representation of a feature type in the geospatial api."""
 
     def __init__(
         self,
@@ -43,8 +42,7 @@ class FeatureTypeList(CogniteResourceList):
 
 
 class AttributeAndSearchSpec:
-    """A representation of a feature type attribute and search spec.
-    """
+    """A representation of a feature type attribute and search spec."""
 
     def __init__(
         self, attributes: Dict[str, Any] = None, search_spec: Dict[str, Any] = None,
@@ -54,8 +52,7 @@ class AttributeAndSearchSpec:
 
 
 class FeatureTypeUpdate:
-    """A representation of a feature type update in the geospatial api.
-    """
+    """A representation of a feature type update in the geospatial api."""
 
     def __init__(
         self, external_id: str = None, add: AttributeAndSearchSpec = None, cognite_client=None, cognite_domain=None,
@@ -72,8 +69,7 @@ class FeatureTypeUpdateList:
 
 
 class Feature(CogniteResource):
-    """A representation of a feature in the geospatial api.
-    """
+    """A representation of a feature in the geospatial api."""
 
     def __init__(
         self, external_id: str = None, cognite_client=None, **attributes,
@@ -144,9 +140,30 @@ class FeatureList(CogniteResourceList):
         return FeatureList(features)
 
 
+class FeatureAggregate(CogniteResource):
+    """A result of aggregating features in geospatial api."""
+
+    def __init__(self, cognite_client=None, **aggregates):
+        for key in aggregates:
+            setattr(self, key, aggregated[key])
+        self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Dict, cognite_client=None):
+        instance = cls(cognite_client=cognite_client)
+        for key, value in resource.items():
+            snake_case_key = utils._auxiliary.to_snake_case(key)
+            setattr(instance, snake_case_key, value)
+        return instance
+
+
+class FeatureAggregateList(CogniteResourceList):
+    _RESOURCE = FeatureAggregate
+    _ASSERT_CLASSES = False
+
+
 class CoordinateReferenceSystem(CogniteResource):
-    """A representation of a feature in the geospatial api.
-    """
+    """A representation of a feature in the geospatial api."""
 
     def __init__(self, srid: int = None, wkt: str = None, proj_string: str = None, cognite_client=None):
         self.srid = srid
@@ -169,8 +186,7 @@ class CoordinateReferenceSystemList(CogniteResourceList):
 
 
 class OrderSpec:
-    """An order specification with respect to an attribute.
-    """
+    """An order specification with respect to an attribute."""
 
     def __init__(
         self, attribute: str, direction: str,

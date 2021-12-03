@@ -421,3 +421,27 @@ class TestGeospatialAPI:
                 if attr_name.startswith("_"):
                     continue
                 assert hasattr(f, attr_name)
+
+    def test_aggregate(self, cognite_domain, test_feature_type, two_test_features):
+        res = COGNITE_CLIENT.geospatial.aggregate_features(
+            feature_type=test_feature_type, filter={}, attribute="temperature", aggregates=["min", "max"]
+        )
+        assert res[0].min == 12.4
+        assert res[0].max == 13.4
+
+        res = COGNITE_CLIENT.geospatial.aggregate_features(
+            feature_type=test_feature_type,
+            filter={"range": {"attribute": "temperature", "gt": 12.0, "lt": 13.0}},
+            attribute="temperature",
+            aggregates=["count"],
+        )
+        assert res[0].count == 1
+
+        res = COGNITE_CLIENT.geospatial.aggregate_features(
+            feature_type=test_feature_type,
+            filter={},
+            attribute="temperature",
+            aggregates=["min", "max"],
+            group_by=["externalId"],
+        )
+        assert len(res) == 2
