@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+
+## [0.60.30]
+
+### Added
+- new filter by `transformation_external_id` for `transformations.jobs.list()`.
+
 ## [0.60.29]
 
 ### Changed
