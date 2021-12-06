@@ -49,7 +49,9 @@ class TransformationJobsAPI(APIClient):
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING
 
-        filter = TransformationJobsFilter(transformation_id=transformation_id).dump(camel_case=True)
+        filter = TransformationJobsFilter(
+            transformation_id=transformation_id, transformation_external_id=transformation_external_id
+        ).dump(camel_case=True)
 
         return self._list(method="GET", limit=limit, filter=filter)
 
