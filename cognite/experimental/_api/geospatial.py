@@ -21,12 +21,13 @@ from cognite.experimental.data_classes.geospatial import (
 class ExperimentalGeospatialAPI(APIClient):
 
     X_COGNITE_DOMAIN = "x-cognite-domain"
+    _RESOURCE_PATH = "/geospatial"
 
     _cognite_domain = None
 
     @staticmethod
     def _feature_resource_path(feature_type: FeatureType):
-        return f"/spatial/featuretypes/{feature_type.external_id}/features"
+        return f"{ExperimentalGeospatialAPI._RESOURCE_PATH}/featuretypes/{feature_type.external_id}/features"
 
     def _with_cognite_domain(func):
         @functools.wraps(func)
@@ -72,7 +73,9 @@ class ExperimentalGeospatialAPI(APIClient):
                 ... ]
                 >>> res = c.geospatial.create_feature_types(feature_types)
         """
-        return self._create_multiple(items=feature_type, cls=FeatureTypeList, resource_path="/spatial/featuretypes")
+        return self._create_multiple(
+            items=feature_type, cls=FeatureTypeList, resource_path=f"{self._RESOURCE_PATH}/featuretypes"
+        )
 
     @_with_cognite_domain
     def delete_feature_types(self, external_id: Union[str, List[str]], force: bool = False) -> None:
@@ -96,7 +99,7 @@ class ExperimentalGeospatialAPI(APIClient):
         """
         params = {"force": "true"} if force else None
         return self._delete_multiple(
-            external_ids=external_id, wrap_ids=True, resource_path="/spatial/featuretypes", params=params
+            external_ids=external_id, wrap_ids=True, resource_path=f"{self._RESOURCE_PATH}/featuretypes", params=params
         )
 
     @_with_cognite_domain
@@ -116,7 +119,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> for feature_type in c.geospatial.list_feature_types():
                 ...     feature_type # do something with the feature type definition
         """
-        return self._list(method="POST", cls=FeatureTypeList, resource_path="/spatial/featuretypes")
+        return self._list(method="POST", cls=FeatureTypeList, resource_path=f"{self._RESOURCE_PATH}/featuretypes")
 
     @_with_cognite_domain
     def retrieve_feature_types(self, external_id: Union[str, List[str]] = None) -> FeatureTypeList:
@@ -138,7 +141,10 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> res = c.geospatial.retrieve_feature_types(external_id="1")
         """
         return self._retrieve_multiple(
-            wrap_ids=True, external_ids=external_id, cls=FeatureTypeList, resource_path="/spatial/featuretypes"
+            wrap_ids=True,
+            external_ids=external_id,
+            cls=FeatureTypeList,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
         )
 
     @_with_cognite_domain
@@ -168,7 +174,7 @@ class ExperimentalGeospatialAPI(APIClient):
             "searchSpec": None if not hasattr(it, "search_spec") else {"add": it.search_spec},
         }
         json = {"items": [{"externalId": it.external_id, "update": mapper(it.add)} for it in update]}
-        res = self._post(url_path=f"/spatial/featuretypes/update", json=json)
+        res = self._post(url_path=f"{self._RESOURCE_PATH}/featuretypes/update", json=json)
         return FeatureTypeList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     @_with_cognite_domain
@@ -471,7 +477,9 @@ class ExperimentalGeospatialAPI(APIClient):
         if isinstance(srids, numbers.Integral):
             srids = [srids]
 
-        res = self._post(url_path="/spatial/crs/byids", json={"items": [{"srid": srid} for srid in srids]})
+        res = self._post(
+            url_path=f"{self._RESOURCE_PATH}/crs/byids", json={"items": [{"srid": srid} for srid in srids]}
+        )
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def list_coordinate_reference_systems(self, only_custom=False) -> CoordinateReferenceSystemList:
@@ -491,7 +499,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> crs = c.geospatial.list_coordinate_reference_systems(only_custom=True)
         """
-        res = self._get(url_path="/spatial/crs/list", params={"filterCustom": only_custom})
+        res = self._get(url_path=f"{self._RESOURCE_PATH}/crs/list", params={"filterCustom": only_custom})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def create_coordinate_reference_systems(
@@ -517,7 +525,9 @@ class ExperimentalGeospatialAPI(APIClient):
         if isinstance(crs, CoordinateReferenceSystem):
             crs = [crs]
 
-        res = self._post(url_path="/spatial/crs", json={"items": [it.dump(camel_case=True) for it in crs]})
+        res = self._post(
+            url_path=f"{self._RESOURCE_PATH}/crs", json={"items": [it.dump(camel_case=True) for it in crs]}
+        )
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def delete_coordinate_reference_systems(self, srids: Union[int, List[int]] = None) -> None:
@@ -540,4 +550,4 @@ class ExperimentalGeospatialAPI(APIClient):
         if isinstance(srids, numbers.Integral):
             srids = [srids]
 
-        self._post(url_path="/spatial/crs/delete", json={"items": [{"srid": srid} for srid in srids]})
+        self._post(url_path=f"{self._RESOURCE_PATH}/crs/delete", json={"items": [{"srid": srid} for srid in srids]})
