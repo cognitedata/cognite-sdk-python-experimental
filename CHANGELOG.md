@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.30]
+
+### Changed
+- Geospatial new path support and new feature type update format support.
 
 ## [0.60.30]
 
