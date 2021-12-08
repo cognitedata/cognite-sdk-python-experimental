@@ -164,10 +164,10 @@ class ExperimentalGeospatialAPI(APIClient):
             update = [update]
 
         mapper = lambda it: {
-            "attributes": None if not hasattr(it, "attributes") else it.attributes,
-            "searchSpec": None if not hasattr(it, "search_spec") else it.search_spec,
+            "attributes": None if not hasattr(it, "attributes") else {"add": it.attributes},
+            "searchSpec": None if not hasattr(it, "search_spec") else {"add": it.search_spec},
         }
-        json = {"items": [{"externalId": it.external_id, "add": mapper(it.add)} for it in update]}
+        json = {"items": [{"externalId": it.external_id, "update": mapper(it.add)} for it in update]}
         res = self._post(url_path=f"/spatial/featuretypes/update", json=json)
         return FeatureTypeList._load(res.json()["items"], cognite_client=self._cognite_client)
 
