@@ -1,6 +1,5 @@
 from typing import Any, Dict
 
-import geopandas
 from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
@@ -109,12 +108,12 @@ class FeatureList(CogniteResourceList):
         df = self.to_pandas(camel_case)
         wkt = utils._auxiliary.local_import("shapely.wkt")
         df[geometry] = df[geometry].apply(lambda g: wkt.loads(g["wkt"]))
-        gpd = utils._auxiliary.local_import("geopandas")
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        geopandas = utils._auxiliary.local_import("geopandas")
+        gdf = geopandas.GeoDataFrame(df, geometry=geometry)
         return gdf
 
     @staticmethod
-    def from_geopandas(feature_type: FeatureType, gdf: geopandas.GeoDataFrame) -> "FeatureList":
+    def from_geopandas(feature_type: FeatureType, gdf: "geopandas.GeoDataFrame") -> "FeatureList":
         """Convert a GeoDataFrame instance into a FeatureList.
 
         Args:

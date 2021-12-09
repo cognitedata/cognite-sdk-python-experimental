@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.33]
+## [0.60.34]
 
 ### Fixed
 - Geospatial: follow api changes regarding allowCrsTransformation and delete recursive options.
+
+## [0.60.33]
+
+### Changed
+- Make geopandas and shapely dependencies optional
 
 ## [0.60.32]
 
