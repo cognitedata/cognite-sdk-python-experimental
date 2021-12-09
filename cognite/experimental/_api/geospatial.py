@@ -346,23 +346,19 @@ class ExperimentalGeospatialAPI(APIClient):
 
             Search for features and order results:
 
-                >>> res = c.geospatial.search_features(my_feature_type, filter={}, order_by={"temperature": "ASC", "pressure": "DESC"})
+                >>> res = c.geospatial.search_features(my_feature_type, filter={}, order_by=[OrderSpec("temperature", "ASC"), OrderSpec("pressure", "DESC")])
 
         """
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
-        order = (
-            None
-            if order_by is None
-            else [{"attribute": item.attribute, "direction": item.direction} for item in order_by]
-        )
+        order = None if order_by is None else [f"{item.attribute}:{item.direction}" for item in order_by]
         res = self._post(
             url_path=resource_path,
             json={
                 "filter": filter,
                 "limit": limit,
                 "output": {"attributes": attributes},
-                "orderBy": order,
+                "sort": order,
                 "allowCrsTransformation": (True if allow_crs_transformation else None),
             },
         )

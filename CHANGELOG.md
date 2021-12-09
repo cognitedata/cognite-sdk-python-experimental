@@ -12,10 +12,15 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.32]
+## [0.60.33]
 
 ### Fixed
 - Geospatial: follow api changes regarding allowCrsTransformation and delete recursive options.
+
+## [0.60.32]
+
+### Changed
+- Geospatial search: update to reflect API change in order_by
 
 ## [0.60.31]
 
