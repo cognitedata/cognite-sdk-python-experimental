@@ -12,7 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.30]
+## [0.60.32]
+
+### Changed
+- Geospatial search: update to reflect API change in order_by
+
+## [0.60.31]
 
 ### Changed
 - Geospatial new path support and new feature type update format support.
