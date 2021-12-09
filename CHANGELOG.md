@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.33]
+
+### Changed
+- Make geopandas and shapely dependencies optional
+
 ## [0.60.32]
 
 ### Changed

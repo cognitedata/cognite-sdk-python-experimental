@@ -3,8 +3,8 @@ import sys
 import time
 import uuid
 
-import geopandas
 import pytest
+from cognite.client import utils
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
@@ -406,6 +406,7 @@ class TestGeospatialAPI:
             "createdTime",
             "lastUpdatedTime",
         ]
+        geopandas = utils._auxiliary.local_import("geopandas")
         assert type(gdf.dtypes["position"]) == geopandas.array.GeometryDtype
 
     def test_from_geopandas(self, test_feature_type, two_test_features):
