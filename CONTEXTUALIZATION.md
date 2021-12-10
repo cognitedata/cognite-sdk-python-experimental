@@ -189,7 +189,9 @@ If 1234 and 5678 are valid file_ids from the project associated with the client,
 svg of the first page of 1234 as a string after a few seconds.
 ```python
 job = client.diagrams.detect(file_ids=[1234, 5678], entities=[{'name': 'string1'},{'name': 'string2'}])
-result = job.result # result[items] = [{"annotations": [...], "fileId": 1234}, {"annotations": [...], "fileId": 5678}]
+result = job.result
+print(result[items])
+# > [{"annotations": [...], "fileId": 1234}, {"annotations": [...], "fileId": 5678}]
 convert_job = job.convert()
 first_file_first_page_svg_url = convert_job.result.items[0].pages.data[0]['svg_url']
 ```
