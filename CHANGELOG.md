@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.35]
+
+### Fixed
+- Geospatial: log should not consume streaming content.
+- Geospatial: throw CogniteConnectionError when streaming connection closes 
+
 ## [0.60.34]
 
 ### Fixed
