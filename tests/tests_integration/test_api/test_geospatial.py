@@ -163,7 +163,7 @@ def clean_old_feature_types():
                     print(
                         f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}"
                     )
-                    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id, force=True)
+                    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id, recursive=True)
     except:
         pass
 
@@ -315,7 +315,7 @@ class TestGeospatialAPI:
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert test_crs.srid in set(map(lambda x: x.srid, res))
 
-    def test_force_delete_feature_types(self):
+    def test_recursive_delete_feature_types(self):
         external_id = f"FT_{uuid.uuid4().hex[:10]}"
         feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
             FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
@@ -323,7 +323,7 @@ class TestGeospatialAPI:
         COGNITE_CLIENT.geospatial.create_features(
             feature_type, Feature(external_id=f"F_{uuid.uuid4().hex[:10]}", temperature=12.4)
         )
-        COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id, force=True)
+        COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id, recursive=True)
 
     def test_search_with_output_selection(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
         res = COGNITE_CLIENT.geospatial.search_features(

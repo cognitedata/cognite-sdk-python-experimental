@@ -78,13 +78,13 @@ class ExperimentalGeospatialAPI(APIClient):
         )
 
     @_with_cognite_domain
-    def delete_feature_types(self, external_id: Union[str, List[str]], force: bool = False) -> None:
+    def delete_feature_types(self, external_id: Union[str, List[str]], recursive: bool = False) -> None:
         """`Delete one or more feature type`
         <https://pr-1323.specs.preview.cogniteapp.com/v1.json.html#operation/deleteFeatureTypes>
 
         Args:
             external_id (Union[str, List[str]]): External ID or list of external ids
-            force (bool): if `true` the features will also be dropped
+            recursive (bool): if `true` the features will also be dropped
 
         Returns:
             None
@@ -97,9 +97,12 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> c.geospatial.delete_feature_types(external_id=["wells", "pipelines"])
         """
-        params = {"force": "true"} if force else None
+        extra_body_fields = {"recursive": True} if recursive else {}
         return self._delete_multiple(
-            external_ids=external_id, wrap_ids=True, resource_path=f"{self._RESOURCE_PATH}/featuretypes", params=params
+            external_ids=external_id,
+            wrap_ids=True,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+            extra_body_fields=extra_body_fields,
         )
 
     @_with_cognite_domain
@@ -206,8 +209,10 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> res = c.geospatial.create_features(my_feature_types, Feature(external_id="my_feature", temperature=12.4))
         """
         resource_path = self._feature_resource_path(feature_type)
-        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
-        return self._create_multiple(items=feature, resource_path=resource_path, cls=FeatureList, params=params)
+        extra_body_fields = {"allowCrsTransformation": "true"} if allow_crs_transformation else {}
+        return self._create_multiple(
+            items=feature, resource_path=resource_path, cls=FeatureList, extra_body_fields=extra_body_fields
+        )
 
     @_with_cognite_domain
     def delete_features(self, feature_type: FeatureType, external_id: Union[str, List[str]] = None) -> None:
@@ -291,8 +296,10 @@ class ExperimentalGeospatialAPI(APIClient):
         # updates for feature are not following the patch structure from other resources
         # they are more like a replace so an update looks like a feature creation (yeah, borderline ?)
         resource_path = self._feature_resource_path(feature_type) + "/update"
-        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
-        return self._create_multiple(feature, resource_path=resource_path, cls=FeatureList, params=params)
+        extra_body_fields = {"allowCrsTransformation": "true"} if allow_crs_transformation else {}
+        return self._create_multiple(
+            feature, resource_path=resource_path, cls=FeatureList, extra_body_fields=extra_body_fields
+        )
 
     @_with_cognite_domain
     def search_features(
@@ -345,11 +352,15 @@ class ExperimentalGeospatialAPI(APIClient):
         resource_path = self._feature_resource_path(feature_type) + "/search"
         cls = FeatureList
         order = None if order_by is None else [f"{item.attribute}:{item.direction}" for item in order_by]
-        params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
         res = self._post(
             url_path=resource_path,
-            json={"filter": filter, "limit": limit, "output": {"attributes": attributes}, "sort": order},
-            params=params,
+            json={
+                "filter": filter,
+                "limit": limit,
+                "output": {"attributes": attributes},
+                "sort": order,
+                "allowCrsTransformation": (True if allow_crs_transformation else None),
+            },
         )
         return cls._load(res.json()["items"], cognite_client=self._cognite_client)
 

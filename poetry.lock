@@ -147,7 +147,7 @@ test = ["pytest-cov"]
 
 [[package]]
 name = "cognite-sdk"
-version = "2.38.1"
+version = "2.38.2"
 description = "Client library for Cognite Data Fusion (CDF)"
 category = "main"
 optional = false
@@ -638,11 +638,11 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "readme-renderer"
-version = "30.0"
+version = "31.0"
 description = "readme_renderer is a library for rendering \"readme\" descriptions for Warehouse"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [package.dependencies]
 bleach = ">=2.1.0"
@@ -1052,7 +1052,7 @@ geopandas = ["geopandas", "shapely"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0.0"
-content-hash = "f4b7a1d96e754db03c55407765d160ac34959eb14b9bbd8f6fd4731665d501dc"
+content-hash = "96f3ab424e095e9b5a2386f38a18c1b497846043153a5ef5de63599be90db6a5"
 
 [metadata.files]
 alabaster = [
@@ -1156,8 +1156,8 @@ cligj = [
     {file = "cligj-0.7.2.tar.gz", hash = "sha256:a4bc13d623356b373c2c27c53dbd9c68cae5d526270bfa71f6c6fa69669c6b27"},
 ]
 cognite-sdk = [
-    {file = "cognite-sdk-2.38.1.tar.gz", hash = "sha256:df0e991979cc4633c4f1e33c841256d8b0f5608b010a6432c3e772e3164c783a"},
-    {file = "cognite_sdk-2.38.1-py3-none-any.whl", hash = "sha256:488e010f3a80a2754a56a82e50fd914fb9560e26deaaef940b5dc77e83f97f5a"},
+    {file = "cognite-sdk-2.38.2.tar.gz", hash = "sha256:135afbe6684f8d463ea21935321a5474b194296eb77625a03dbe1e9653f7a650"},
+    {file = "cognite_sdk-2.38.2-py3-none-any.whl", hash = "sha256:599740534b9e50aa246596fa51560c1cd4f034cbb60a9c7e3080c636c4901686"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
@@ -1540,8 +1540,8 @@ pyyaml = [
     {file = "PyYAML-6.0.tar.gz", hash = "sha256:68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2"},
 ]
 readme-renderer = [
-    {file = "readme_renderer-30.0-py2.py3-none-any.whl", hash = "sha256:3286806450d9961d6e3b5f8a59f77e61503799aca5155c8d8d40359b4e1e1adc"},
-    {file = "readme_renderer-30.0.tar.gz", hash = "sha256:8299700d7a910c304072a7601eafada6712a5b011a20139417e1b1e9f04645d8"},
+    {file = "readme_renderer-31.0-py3-none-any.whl", hash = "sha256:03b3cca3d1a8ef9d2200258c282eae4b8b60bc53b674c0588cb214785465213a"},
+    {file = "readme_renderer-31.0.tar.gz", hash = "sha256:8ceeb608a1bc6f474430db890a4b9b6006e16d9d26b81a84a1e2e2aae4454f9b"},
 ]
 regex = [
     {file = "regex-2020.11.13-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8b882a78c320478b12ff024e81dc7d43c1462aa4a3341c754ee65d857a521f85"},
