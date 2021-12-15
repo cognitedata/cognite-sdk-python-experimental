@@ -12,7 +12,7 @@ class FeatureType(CogniteResource):
         external_id: str = None,
         created_time: int = None,
         last_updated_time: int = None,
-        attributes: Dict[str, Any] = None,
+        properties: Dict[str, Any] = None,
         search_spec: Dict[str, Any] = None,
         cognite_client=None,
         cognite_domain=None,
@@ -20,7 +20,7 @@ class FeatureType(CogniteResource):
         self.external_id = external_id
         self.created_time = created_time
         self.last_updated_time = last_updated_time
-        self.attributes = attributes
+        self.properties = properties
         self.search_spec = search_spec
         self._cognite_client = cognite_client
         self._cognite_domain = cognite_domain
@@ -40,13 +40,13 @@ class FeatureTypeList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
 
-class AttributeAndSearchSpec:
-    """A representation of a feature type attribute and search spec."""
+class PropertyAndSearchSpec:
+    """A representation of a feature type property and search spec."""
 
     def __init__(
-        self, attributes: Dict[str, Any] = None, search_spec: Dict[str, Any] = None,
+        self, properties: Dict[str, Any] = None, search_spec: Dict[str, Any] = None,
     ):
-        self.attributes = attributes
+        self.properties = properties
         self.search_spec = search_spec
 
 
@@ -54,7 +54,7 @@ class FeatureTypeUpdate:
     """A representation of a feature type update in the geospatial api."""
 
     def __init__(
-        self, external_id: str = None, add: AttributeAndSearchSpec = None, cognite_client=None, cognite_domain=None,
+        self, external_id: str = None, add: PropertyAndSearchSpec = None, cognite_client=None, cognite_domain=None,
     ):
         self.external_id = external_id
         self.add = add
@@ -71,11 +71,11 @@ class Feature(CogniteResource):
     """A representation of a feature in the geospatial api."""
 
     def __init__(
-        self, external_id: str = None, cognite_client=None, **attributes,
+        self, external_id: str = None, cognite_client=None, **properties,
     ):
         self.external_id = external_id
-        for key in attributes:
-            setattr(self, key, attributes[key])
+        for key in properties:
+            setattr(self, key, properties[key])
         self._cognite_client = cognite_client
 
     @classmethod
@@ -87,8 +87,8 @@ class Feature(CogniteResource):
         return instance
 
 
-def _is_geometry_type(attribute_type: str):
-    return attribute_type in {"POINT"}
+def _is_geometry_type(property_type: str):
+    return property_type in {"POINT"}
 
 
 class FeatureList(CogniteResourceList):
@@ -99,7 +99,7 @@ class FeatureList(CogniteResourceList):
         """Convert the instance into a geopandas GeoDataFrame.
 
         Args:
-            geometry (str): The name of the geometry attribute
+            geometry (str): The name of the geometry property
             camel_case (bool): Convert column names to camel case (e.g. `externalId` instead of `external_id`)
 
         Returns:
@@ -126,7 +126,7 @@ class FeatureList(CogniteResourceList):
         features = []
         for _, row in gdf.iterrows():
             feature = Feature(external_id=row["externalId"])
-            for attr in feature_type.attributes.items():
+            for attr in feature_type.properties.items():
                 attr_name = attr[0]
                 attr_type = attr[1]["type"]
                 if attr_name.startswith("_"):
@@ -185,10 +185,10 @@ class CoordinateReferenceSystemList(CogniteResourceList):
 
 
 class OrderSpec:
-    """An order specification with respect to an attribute."""
+    """An order specification with respect to an property."""
 
     def __init__(
-        self, attribute: str, direction: str,
+        self, property: str, direction: str,
     ):
-        self.attribute = attribute
+        self.property = property
         self.direction = direction
