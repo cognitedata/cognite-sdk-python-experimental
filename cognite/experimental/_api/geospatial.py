@@ -4,6 +4,8 @@ import numbers
 from typing import Any, Dict, Generator, List, Union
 
 from cognite.client._api_client import APIClient
+from cognite.client.exceptions import CogniteConnectionError
+from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import (
     CoordinateReferenceSystem,
@@ -417,8 +419,11 @@ class ExperimentalGeospatialAPI(APIClient):
         )
         self._config.headers.pop(self.X_COGNITE_DOMAIN, None)
 
-        for line in res.iter_lines():
-            yield Feature._load(complexjson.loads(line))
+        try:
+            for line in res.iter_lines():
+                yield Feature._load(complexjson.loads(line))
+        except (ChunkedEncodingError, ConnectionError) as e:
+            raise CogniteConnectionError(e)
 
     @_with_cognite_domain
     def aggregate_features(
