@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.36]
+
+### Changed
+- Geospatial: breaking change, attribute becomes property, following the api terminology
+
 ## [0.60.35]
 
 ### Fixed
