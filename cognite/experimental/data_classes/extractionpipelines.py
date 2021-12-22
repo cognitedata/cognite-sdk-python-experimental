@@ -224,3 +224,45 @@ class ExtractionPipelineFilter(CogniteFilter):
             if instance.last_updated_time is not None:
                 instance.last_updated_time = TimestampRange(**instance.last_updated_time)
         return instance
+
+
+class Event(CogniteResource):
+    """A representation of an Event.
+
+    Args:
+        id (int): A server-generated ID for the object.
+        ext_pipe_id (str): The reference id ro extraction pipeline.
+        type (str): success/failure/notseen/alive/other.
+        message (str): Message of event.
+        created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        cognite_client (CogniteClient): The client to associate with this object.
+    """
+
+    def __init__(
+        self,
+        id: int = None,
+        ext_pipe_id: int = None,
+        type: str = None,
+        message: str = None,
+        created_time: int = None,
+        cognite_client=None,
+    ):
+        self.id = id
+        self.ext_pipe_id = ext_pipe_id
+        self.type = type
+        self.message = message
+        self.created_time = created_time
+        self._cognite_client = cognite_client
+
+    @classmethod
+    def _load(cls, resource: Union[Dict, str], cognite_client=None):
+        instance = super(Event, cls)._load(resource, cognite_client)
+        return instance
+
+    def __hash__(self):
+        return hash(self.external_id)
+
+
+class EventList(CogniteResourceList):
+    _RESOURCE = Event
+    _ASSERT_CLASSES = False

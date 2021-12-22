@@ -56,14 +56,23 @@ res1 = client.extraction_pipelines.retrieve(id=res.id)
 
 ##Retrieve ExtractionPipelines by ids and external ids
 ```python
-epList = client.extraction_pipelines.retrieve_multiple(ids=[23,24,25, 120], external_ids=['test_id'])
+epList = client.extraction_pipelines.retrieve_multiple(ids=[23, 24, 25, 120], external_ids=['test_id'])
+```
+
+##List Events for given ExtractionPipeline by ExtractionPipeline id
+```python
+res = client.extraction_pipelines.list_events(ext_pipe_id=675)
+```
+
+##Get Event by its id and referred ExtractionPipeline id
+```python
+res = client.extraction_pipelines.get_event(ext_pipe_id=675, event_id=112)
 ```
 
 ##List ExtractionPipeline runs 
 ```python
 runsList = client.extraction_pipeline_runs.list(external_id=res1.external_id)
 ```
-
 
 ##Filter ExtractionPipeline runs 
 ```python

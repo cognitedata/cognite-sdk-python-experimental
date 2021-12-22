@@ -5,6 +5,8 @@ from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
 
 from cognite.experimental.data_classes import (
+    Event,
+    EventList,
     ExtractionPipeline,
     ExtractionPipelineFilter,
     ExtractionPipelineList,
@@ -221,3 +223,46 @@ class ExtractionPipelinesAPI(APIClient):
                 >>> res = c.extraction_pipelines.update(update)
         """
         return self._update_multiple(items=item)
+
+    def list_events(self, ext_pipe_id: int) -> Union[Event, EventList]:
+        """`Return list of extraction pipeline events for given extraction pipeline id <>`_
+
+        Args:
+            ext_pipe_id (int): ID of the extraction pipeline.
+
+        Returns:
+            Union[Event, EventList]: List of events for given extraction pipeline id.
+
+        Examples:
+
+            List Events::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.extraction_pipelines.list_events(ext_pipe_id=675)
+        """
+        url = f"/extpipes/{ext_pipe_id}/events"
+        res = self._get(url)
+        return EventList._load(res.json()["items"])
+
+    def get_event(self, ext_pipe_id: int, event_id: int) -> Optional[Event]:
+        """`Return Event by its id and its extraction pipeline id <>`_
+
+        Args:
+            ext_pipe_id (int): ID of the extraction pipeline.
+            event_id (int): ID of the event.
+
+        Returns:
+            Optional[Event]: Event, if it exists for given event_id and referred to extraction pipeline with given ext_pipe_id
+
+        Examples:
+
+            Retrive event by its id, if it is referred to ExtractionPipeline with ext_pipe_id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.extraction_pipelines.get_event(ext_pipe_id=675, event_id=112)
+        """
+        url = f"/extpipes/{ext_pipe_id}/events/{event_id}"
+        res = self._get(url)
+        return Event._load(res.json())

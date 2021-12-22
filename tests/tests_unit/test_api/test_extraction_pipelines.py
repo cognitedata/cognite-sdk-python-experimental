@@ -3,7 +3,13 @@ import re
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ExtractionPipeline, ExtractionPipelineList, ExtractionPipelineUpdate
+from cognite.experimental.data_classes import (
+    Event,
+    EventList,
+    ExtractionPipeline,
+    ExtractionPipelineList,
+    ExtractionPipelineUpdate,
+)
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -46,6 +52,49 @@ def mock_int_empty(rsps):
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
+    rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
+    yield rsps
+
+
+@pytest.fixture
+def mock_events_list(rsps):
+    response_body = {
+        "items": [
+            {
+                "id": 118,
+                "extPipeId": 697,
+                "type": "success",
+                "message": "Success run was received for this pipeline",
+                "createdTime": 1639403670638,
+            },
+            {
+                "id": 117,
+                "extPipeId": 697,
+                "type": "failure",
+                "message": "failure message",
+                "createdTime": 1639403639010,
+            },
+        ]
+    }
+    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/697/events")
+    rsps.assert_all_requests_are_fired = False
+
+    rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
+    yield rsps
+
+
+@pytest.fixture
+def mock_get_event(rsps):
+    response_body = {
+        "id": 118,
+        "extPipeId": 697,
+        "type": "success",
+        "message": "Success run was received for this pipeline",
+        "createdTime": 1639403670638,
+    }
+    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/697/events/118")
+    rsps.assert_all_requests_are_fired = False
+
     rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
     yield rsps
 
@@ -154,3 +203,13 @@ class TestExtractionPipelines:
                 {"externalId": "py test id", "update": {"rawTables": {"add": [{"dbName": "db", "tableName": "table"}]}}}
             ]
         } == jsgz_load(mock_int_response.calls[0].request.body)
+
+    def test_list_events(self, mock_events_list):
+        res = TEST_API.list_events(ext_pipe_id=697)
+        assert isinstance(res, EventList)
+        assert mock_events_list.calls[0].response.json()["items"] == res.dump(camel_case=True)
+
+    def test_get_event(self, mock_get_event):
+        res = TEST_API.get_event(ext_pipe_id=697, event_id=118)
+        assert isinstance(res, Event)
+        assert mock_get_event.calls[0].response.json() == res.dump(camel_case=True)

@@ -16,6 +16,7 @@ Changes are grouped as follows
 
 ### Changed
 - extraction_pipelines.list() is updated to use filter.
+- extraction_pipelines.list_events() and extraction_pipelines.list_events() added. 
 
 ## [0.60.36]
 
