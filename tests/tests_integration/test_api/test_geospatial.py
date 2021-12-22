@@ -3,18 +3,19 @@ import sys
 import time
 import uuid
 
-import geopandas
 import pytest
+from cognite.client import utils
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.geospatial import (
-    AttributeAndSearchSpec,
     CoordinateReferenceSystem,
     Feature,
     FeatureList,
     FeatureType,
     FeatureTypeUpdate,
+    OrderSpec,
+    PropertyAndSearchSpec,
 )
 
 COGNITE_CLIENT = CogniteClient(max_workers=1)
@@ -42,6 +43,11 @@ def cognite_domain(request):
     yield request.param
 
 
+@pytest.fixture(params=[True, False])
+def allow_crs_transformation(request):
+    yield request.param
+
+
 @pytest.fixture()
 def test_feature_type(cognite_domain):
     COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
@@ -49,13 +55,13 @@ def test_feature_type(cognite_domain):
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
         FeatureType(
             external_id=external_id,
-            attributes={
+            properties={
                 "position": {"type": "POINT", "srid": "4326", "optional": "true"},
                 "volume": {"type": "DOUBLE"},
                 "temperature": {"type": "DOUBLE"},
                 "pressure": {"type": "DOUBLE"},
             },
-            search_spec={"vol_press_idx": {"attributes": ["volume", "pressure"]}},
+            search_spec={"vol_press_idx": {"properties": ["volume", "pressure"]}},
             cognite_domain=cognite_domain,
         )
     )
@@ -67,7 +73,7 @@ def test_feature_type(cognite_domain):
 def large_feature_type():
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type_spec = FeatureType(
-        external_id=external_id, attributes={f"attr{i}": {"type": "LONG"} for i in range(0, 80)}
+        external_id=external_id, properties={f"attr{i}": {"type": "LONG"} for i in range(0, 80)}
     )
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(feature_type_spec)
     yield feature_type
@@ -79,7 +85,7 @@ def another_test_feature_type(cognite_domain):
     COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
     feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
-        FeatureType(external_id=external_id, attributes={"volume": {"type": "DOUBLE"}}, cognite_domain=cognite_domain)
+        FeatureType(external_id=external_id, properties={"volume": {"type": "DOUBLE"}}, cognite_domain=cognite_domain)
     )
     yield feature_type
     COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id)
@@ -157,7 +163,7 @@ def clean_old_feature_types():
                     print(
                         f"Deleting old feature type {ft.external_id} in domain {'default' if domain is None else domain}"
                     )
-                    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id, force=True)
+                    COGNITE_CLIENT.geospatial.delete_feature_types(external_id=ft.external_id, recursive=True)
     except:
         pass
 
@@ -176,6 +182,21 @@ def clean_old_custom_crs():
 
 
 class TestGeospatialAPI:
+    def test_create_features(self, test_feature_type, allow_crs_transformation):
+        external_id = f"F_{uuid.uuid4().hex[:10]}"
+        COGNITE_CLIENT.geospatial.create_features(
+            test_feature_type,
+            Feature(
+                external_id=external_id,
+                position={"wkt": "POINT(50 50)"},
+                temperature=12.4,
+                volume=1212.0,
+                pressure=2121.0,
+            ),
+            allow_crs_transformation=allow_crs_transformation,
+        )
+        COGNITE_CLIENT.geospatial.delete_features(test_feature_type, external_id=external_id)
+
     def test_retrieve_single_feature_type_by_external_id(self, cognite_domain, test_feature_type):
         assert (
             test_feature_type.external_id
@@ -195,10 +216,11 @@ class TestGeospatialAPI:
         assert res.external_id == test_feature.external_id
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
 
-    def test_update_single_feature(self, cognite_domain, test_feature_type, test_feature):
+    def test_update_single_feature(self, cognite_domain, allow_crs_transformation, test_feature_type, test_feature):
         res = COGNITE_CLIENT.geospatial.update_features(
             feature_type=test_feature_type,
             feature=Feature(external_id=test_feature.external_id, temperature=6.237, pressure=12.21, volume=34.43),
+            allow_crs_transformation=allow_crs_transformation,
         )
         assert res.external_id == test_feature.external_id
         assert res.temperature == 6.237
@@ -206,12 +228,12 @@ class TestGeospatialAPI:
 
     def test_search_single_feature(self, cognite_domain, test_feature_type, test_feature):
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "gt": 12.0}}, limit=10
+            feature_type=test_feature_type, filter={"range": {"property": "temperature", "gt": 12.0}}, limit=10
         )
         assert res[0].external_id == test_feature.external_id
         assert res[0].temperature == 12.4
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "lt": 12.0}}, limit=10
+            feature_type=test_feature_type, filter={"range": {"property": "temperature", "lt": 12.0}}, limit=10
         )
         assert len(res) == 0
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
@@ -229,7 +251,6 @@ class TestGeospatialAPI:
         )
         assert COGNITE_CLIENT.geospatial.get_current_cognite_domain() == cognite_domain
 
-    @pytest.mark.skip(reason="This test fails several times.")
     def test_retrieve_multiple_features_by_external_id(
         self, cognite_domain, test_feature_type, test_feature, another_test_feature
     ):
@@ -242,11 +263,11 @@ class TestGeospatialAPI:
 
     def test_search_multiple_features(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "gt": -20.0, "lt": 20.0}}
+            feature_type=test_feature_type, filter={"range": {"property": "temperature", "gt": -20.0, "lt": 20.0}}
         )
         assert len(res) == 2
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={"range": {"attribute": "temperature", "gt": 0.0, "lt": 20.0}}
+            feature_type=test_feature_type, filter={"range": {"property": "temperature", "gt": 0.0, "lt": 20.0}}
         )
         assert len(res) == 1
         assert res[0].external_id == test_feature.external_id
@@ -257,12 +278,23 @@ class TestGeospatialAPI:
         try:
             COGNITE_CLIENT.geospatial.search_features(
                 feature_type=test_feature_type,
-                filter={"range": {"attribute": "temperature", "gt": -20.0, "lt": 20.0}},
+                filter={"range": {"property": "temperature", "gt": -20.0, "lt": 20.0}},
                 limit=10,
             )
             raise pytest.fail("Domain settings is messed up... search_features(...) should have raised an exception")
         except CogniteAPIError:
             COGNITE_CLIENT.geospatial.set_current_cognite_domain(cognite_domain)
+
+    def test_search_wrong_crs(self, cognite_domain, test_feature_type, test_feature):
+        try:
+            COGNITE_CLIENT.geospatial.search_features(
+                feature_type=test_feature_type,
+                filter={"within": {"property": "location", "value": {"wkt": "", "srid": 3857}}},
+                limit=10,
+            )
+            raise pytest.fail("searching features using a geometry in invalid crs should have raised an exception")
+        except CogniteAPIError:
+            pass
 
     def test_get_coordinate_reference_system(self):
         res = COGNITE_CLIENT.geospatial.get_coordinate_reference_systems(srids=4326)
@@ -283,29 +315,32 @@ class TestGeospatialAPI:
         res = COGNITE_CLIENT.geospatial.list_coordinate_reference_systems(only_custom=True)
         assert test_crs.srid in set(map(lambda x: x.srid, res))
 
-    def test_force_delete_feature_types(self):
+    def test_recursive_delete_feature_types(self):
         external_id = f"FT_{uuid.uuid4().hex[:10]}"
         feature_type = COGNITE_CLIENT.geospatial.create_feature_types(
-            FeatureType(external_id=external_id, attributes={"temperature": {"type": "DOUBLE"}})
+            FeatureType(external_id=external_id, properties={"temperature": {"type": "DOUBLE"}})
         )
         COGNITE_CLIENT.geospatial.create_features(
             feature_type, Feature(external_id=f"F_{uuid.uuid4().hex[:10]}", temperature=12.4)
         )
-        COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id, force=True)
+        COGNITE_CLIENT.geospatial.delete_feature_types(external_id=external_id, recursive=True)
 
     def test_search_with_output_selection(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={}, attributes={"temperature": {}, "volume": {}}
+            feature_type=test_feature_type, filter={}, properties={"temperature": {}, "volume": {}}
         )
         assert len(res) == 2
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[1], "pressure")
 
     def test_search_with_output_srid_selection(
-        self, cognite_domain, test_feature_type, test_feature, another_test_feature
+        self, cognite_domain, allow_crs_transformation, test_feature_type, test_feature, another_test_feature
     ):
         res = COGNITE_CLIENT.geospatial.search_features(
-            feature_type=test_feature_type, filter={}, attributes={"position": {"srid": "3857"}}
+            feature_type=test_feature_type,
+            filter={},
+            properties={"position": {"srid": "3857"}},
+            allow_crs_transformation=allow_crs_transformation,
         )
         assert len(res) == 2
         assert hasattr(res[0], "position")
@@ -313,24 +348,36 @@ class TestGeospatialAPI:
         assert not hasattr(res[0], "pressure")
         assert not hasattr(res[0], "volume")
 
+    def test_search_with_order_by(self, cognite_domain, test_feature_type, test_feature, another_test_feature):
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, order_by=[OrderSpec(property="temperature", direction="ASC")]
+        )
+        assert res[0].temperature == -10.8
+        assert res[1].temperature == 12.4
+
+        res = COGNITE_CLIENT.geospatial.search_features(
+            feature_type=test_feature_type, filter={}, order_by=[OrderSpec(property="temperature", direction="DESC")]
+        )
+        assert res[0].temperature == 12.4
+        assert res[1].temperature == -10.8
+
     def test_update_feature_types(self, cognite_domain, test_feature_type):
         res = COGNITE_CLIENT.geospatial.update_feature_types(
             update=FeatureTypeUpdate(
                 external_id=test_feature_type.external_id,
-                add=AttributeAndSearchSpec(
-                    attributes={"altitude": {"type": "DOUBLE", "optional": True}},
+                add=PropertyAndSearchSpec(
+                    properties={"altitude": {"type": "DOUBLE", "optional": True}},
                     search_spec={
-                        "altitude_idx": {"attributes": ["altitude"]},
-                        "pos_alt_idx": {"attributes": ["position", "altitude"]},
+                        "altitude_idx": {"properties": ["altitude"]},
+                        "pos_alt_idx": {"properties": ["position", "altitude"]},
                     },
                 ),
             ),
         )
         assert len(res) == 1
-        assert len(res[0].attributes) == 8
+        assert len(res[0].properties) == 8
         assert len(res[0].search_spec) == 6
 
-    @pytest.mark.skip(reason="This test fails several times.")
     def test_stream_features(self, large_feature_type, many_features):
         features = COGNITE_CLIENT.geospatial.stream_features(feature_type=large_feature_type, filter={})
         feature_list = FeatureList(list(features))
@@ -359,6 +406,7 @@ class TestGeospatialAPI:
             "createdTime",
             "lastUpdatedTime",
         ]
+        geopandas = utils._auxiliary.local_import("geopandas")
         assert type(gdf.dtypes["position"]) == geopandas.array.GeometryDtype
 
     def test_from_geopandas(self, test_feature_type, two_test_features):
@@ -367,8 +415,32 @@ class TestGeospatialAPI:
         assert type(fl) == FeatureList
         assert len(fl) == 2
         for f in fl:
-            for attr in test_feature_type.attributes.items():
+            for attr in test_feature_type.properties.items():
                 attr_name = attr[0]
                 if attr_name.startswith("_"):
                     continue
                 assert hasattr(f, attr_name)
+
+    def test_aggregate(self, cognite_domain, test_feature_type, two_test_features):
+        res = COGNITE_CLIENT.geospatial.aggregate_features(
+            feature_type=test_feature_type, filter={}, property="temperature", aggregates=["min", "max"]
+        )
+        assert res[0].min == 12.4
+        assert res[0].max == 13.4
+
+        res = COGNITE_CLIENT.geospatial.aggregate_features(
+            feature_type=test_feature_type,
+            filter={"range": {"property": "temperature", "gt": 12.0, "lt": 13.0}},
+            property="temperature",
+            aggregates=["count"],
+        )
+        assert res[0].count == 1
+
+        res = COGNITE_CLIENT.geospatial.aggregate_features(
+            feature_type=test_feature_type,
+            filter={},
+            property="temperature",
+            aggregates=["min", "max"],
+            group_by=["externalId"],
+        )
+        assert len(res) == 2

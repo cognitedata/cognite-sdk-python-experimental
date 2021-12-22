@@ -12,10 +12,67 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.26]
+## [0.60.37]
 
 ### Changed
 - extraction_pipelines.list() is updated to use filter.
+
+## [0.60.36]
+
+### Changed
+- Geospatial: breaking change, attribute becomes property, following the api terminology
+
+## [0.60.35]
+
+### Fixed
+- Geospatial: log should not consume streaming content.
+- Geospatial: throw CogniteConnectionError when streaming connection closes 
+
+## [0.60.34]
+
+### Fixed
+- Geospatial: follow api changes regarding allowCrsTransformation and delete recursive options.
+
+## [0.60.33]
+
+### Changed
+- Make geopandas and shapely dependencies optional
+
+## [0.60.32]
+
+### Changed
+- Geospatial search: update to reflect API change in order_by
+
+## [0.60.31]
+
+### Changed
+- Geospatial new path support and new feature type update format support.
+
+## [0.60.30]
+
+### Added
+- new filter by `transformation_external_id` for `transformations.jobs.list()`.
+
+## [0.60.29]
+
+### Changed
+- `transformation.job.raw_query` renamed to `query`, because of API changes.
+
+## [0.60.28]
+
+### Removed
+- `transformation_schedules.retrieve_multiple()` no longer acepts `is_public` parameter, it's asumed the user wants to retrieve the given ids either they are marked as public or not.
+- internal changes in the way `transformation.preview()` sends its parameters to the backend.
+
+## [0.60.27]
+
+### Added
+- Geospatial: support `allow_crs_transformation` for creating, updating and searching features.
+
+## [0.60.26]
+
+### Fixed
+- added `TransformationBlockedInfo` `time` property to fix decoding `Transformation` objects.
 
 ## [0.60.25]
 

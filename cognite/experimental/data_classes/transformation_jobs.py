@@ -58,7 +58,7 @@ class TransformationJob(CogniteResource):
         destination_database (str): Target database if the destination type is raw.
         destination_table (str): Target table name if the destination type is RAW.
         conflict_mode (str): What to do in case of id collisions: either "abort", "upsert", "update" or "delete".
-        raw_query (str): Query of the transformation that is being executed.
+        query (str): Query of the transformation that is being executed.
         error (str): Error message from the server.
         ignore_null_fields (bool): Indicates how null values are handled on updates: ignore or set null.
         created_time (int): Time when the job was created.
@@ -78,7 +78,7 @@ class TransformationJob(CogniteResource):
         destination_project: str = None,
         destination: "TransformationDestination" = None,
         conflict_mode: str = None,
-        raw_query: str = None,
+        query: str = None,
         error: str = None,
         ignore_null_fields: bool = False,
         created_time: int = None,
@@ -95,7 +95,7 @@ class TransformationJob(CogniteResource):
         self.destination_project = destination_project
         self.destination = destination
         self.conflict_mode = conflict_mode
-        self.raw_query = raw_query
+        self.query = query
         self.error = error
         self.ignore_null_fields = ignore_null_fields
         self.created_time = created_time
@@ -248,6 +248,19 @@ class TransformationJob(CogniteResource):
 class TransformationJobList(CogniteResourceList):
     _RESOURCE = TransformationJob
     _ASSERT_CLASSES = False
+
+
+class TransformationJobsFilter(CogniteFilter):
+    """
+
+    Args:
+        transformation_id (Optional[int]):  Filter jobs by transformation internal numeric ID.
+        transformation_external_id (str): Filter jobs by transformation external ID.
+    """
+
+    def __init__(self, transformation_id: Optional[int] = None, transformation_external_id: str = None):
+        self.transformation_id = transformation_id
+        self.transformation_external_id = transformation_external_id
 
 
 from cognite.experimental.data_classes.transformations import RawTable, TransformationDestination

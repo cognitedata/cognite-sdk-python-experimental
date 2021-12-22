@@ -238,11 +238,9 @@ class TransformationsAPI(APIClient):
         if transformation_external_id:
             transformation_id = self.retrieve(external_id=transformation_external_id).id
 
-        response = self._post(
-            url_path=utils._auxiliary.interpolate_and_url_encode(
-                self._RESOURCE_PATH + "/{}/run", str(transformation_id)
-            )
-        )
+        id = {"externalId": transformation_external_id, "id": transformation_id}
+
+        response = self._post(json=id, url_path=self._RESOURCE_PATH + "/run")
         job = TransformationJob._load(response.json(), cognite_client=self._cognite_client)
 
         if wait:
@@ -321,11 +319,15 @@ class TransformationsAPI(APIClient):
                 >>>
                 >>> df = c.transformations.preview(query="select * from _cdf.assets").to_pandas()
         """
-        request_body = {"query": query, "convertToString": convert_to_string}
+        request_body = {
+            "query": query,
+            "convertToString": convert_to_string,
+            "limit": limit,
+            "sourceLimit": source_limit,
+            "inferSchemaLimit": infer_schema_limit,
+        }
 
-        params = {"limit": limit, "sourceLimit": source_limit, "inferSchemaLimit": infer_schema_limit}
-
-        response = self._post(url_path=self._RESOURCE_PATH + "/query/run", json=request_body, params=params)
+        response = self._post(url_path=self._RESOURCE_PATH + "/query/run", json=request_body)
         result = TransformationPreviewResult._load(response.json(), cognite_client=self._cognite_client)
 
         return result
