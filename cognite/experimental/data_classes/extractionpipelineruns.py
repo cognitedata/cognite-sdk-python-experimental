@@ -10,6 +10,7 @@ class ExtractionPipelineRun(CogniteResource):
         status (str): success/failure/seen.
         message (str): failure message.
         created_time (int): The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
+        event_id (int): An id to event object.
         cognite_client (CogniteClient): The client to associate with this object.
     """
 
@@ -19,12 +20,14 @@ class ExtractionPipelineRun(CogniteResource):
         status: str = None,
         message: str = None,
         created_time: int = None,
+        event_id: int = None,
         cognite_client=None,
     ):
         self.external_id = external_id
         self.status = status
         self.message = message
         self.created_time = created_time
+        self.event_id = event_id
         self._cognite_client = cognite_client
 
 

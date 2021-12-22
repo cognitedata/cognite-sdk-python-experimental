@@ -2,8 +2,16 @@ from typing import *
 
 from cognite.client import utils
 from cognite.client._api_client import APIClient
+from cognite.client.data_classes import TimestampRange
 
-from cognite.experimental.data_classes import ExtractionPipeline, ExtractionPipelineList, ExtractionPipelineUpdate
+from cognite.experimental.data_classes import (
+    Event,
+    EventList,
+    ExtractionPipeline,
+    ExtractionPipelineFilter,
+    ExtractionPipelineList,
+    ExtractionPipelineUpdate,
+)
 
 
 class ExtractionPipelinesAPI(APIClient):
@@ -74,10 +82,41 @@ class ExtractionPipelinesAPI(APIClient):
             ids=ids, external_ids=external_ids, ignore_unknown_ids=ignore_unknown_ids, wrap_ids=True
         )
 
-    def list(self, limit: int = 25) -> ExtractionPipelineList:
+    def list(
+        self,
+        external_id_prefix: str = None,
+        name: str = None,
+        description: str = None,
+        data_set_ids: List[int] = None,
+        data_set_external_ids: List[str] = None,
+        schedule: str = None,
+        contacts: List[Dict[str, Any]] = None,
+        raw_tables: List[Dict[str, str]] = None,
+        metadata: Dict[str, str] = None,
+        source: str = None,
+        documentation: str = None,
+        created_by: str = None,
+        created_time: Union[Dict[str, Any], TimestampRange] = None,
+        last_updated_time: Union[Dict[str, Any], TimestampRange] = None,
+        limit: int = 25,
+    ) -> ExtractionPipelineList:
         """`List ExtractionPipelines <>`_
 
         Args:
+            external_id_prefix (str): Filter by this (case-sensitive) prefix for the external ID.
+            name (str): Name of Extraction Pipeline.
+            description (str): Description of Extraction Pipeline.
+            data_set_ids (List[int]): Return only Extraction Pipelines in the specified data sets with these ids.
+            data_set_external_ids (List[str]): Return only Extraction Pipelines in the specified data sets with these external ids.
+            schedule (str): Schedule text value of Extraction Pipeline.
+            contacts (List[Dict[str, Any]]): list of contacts [{"name": "value", "email": "value", "role": "value", "sendNotification": boolean},...].
+            raw_tables (List[Dict[str, str]): list of raw tables in list format: [{"dbName": "value", "tableName" : "value"}, ...].
+            metadata (Dict[str, str]): Custom, application specific metadata. String key -> String value.
+            source (str): The source of this Extraction Pipeline.
+            created_by (str): ExtractionPipeline creator, usually email.
+            documentation (str): Documentation text value for Extraction Pipeline.
+            created_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
+            last_updated_time (Union[Dict[str, int], TimestampRange]):  Range between two timestamps. Possible keys are `min` and `max`, with values given as time stamps in ms.
             limit (int, optional): Maximum number of ExtractionPipelines to return. Defaults to 25. Set to -1, float("inf") or None
                 to return all items.
 
@@ -90,10 +129,26 @@ class ExtractionPipelinesAPI(APIClient):
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> ep_list = c.extraction_pipelines.list(limit=5)
+                >>> ep_list = c.extraction_pipelines.list(limit=5, name="test_name")
         """
-
-        return self._list(method="GET", limit=limit,)
+        if data_set_ids or data_set_external_ids:
+            data_set_ids = self._process_ids(data_set_ids, data_set_external_ids, wrap_ids=True)
+        filter = ExtractionPipelineFilter(
+            external_id_prefix=external_id_prefix,
+            name=name,
+            description=description,
+            data_set_ids=data_set_ids,
+            schedule=schedule,
+            contacts=contacts,
+            raw_tables=raw_tables,
+            metadata=metadata,
+            source=source,
+            created_by=created_by,
+            documentation=documentation,
+            created_time=created_time,
+            last_updated_time=last_updated_time,
+        ).dump(camel_case=True)
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def create(
         self, extractionPipeline: Union[ExtractionPipeline, List[ExtractionPipeline]]
@@ -168,3 +223,46 @@ class ExtractionPipelinesAPI(APIClient):
                 >>> res = c.extraction_pipelines.update(update)
         """
         return self._update_multiple(items=item)
+
+    def list_events(self, ext_pipe_id: int) -> Union[Event, EventList]:
+        """`Return list of extraction pipeline events for given extraction pipeline id <>`_
+
+        Args:
+            ext_pipe_id (int): ID of the extraction pipeline.
+
+        Returns:
+            Union[Event, EventList]: List of events for given extraction pipeline id.
+
+        Examples:
+
+            List Events::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.extraction_pipelines.list_events(ext_pipe_id=675)
+        """
+        url = f"/extpipes/{ext_pipe_id}/events"
+        res = self._get(url)
+        return EventList._load(res.json()["items"])
+
+    def get_event(self, ext_pipe_id: int, event_id: int) -> Optional[Event]:
+        """`Return Event by its id and its extraction pipeline id <>`_
+
+        Args:
+            ext_pipe_id (int): ID of the extraction pipeline.
+            event_id (int): ID of the event.
+
+        Returns:
+            Optional[Event]: Event, if it exists for given event_id and referred to extraction pipeline with given ext_pipe_id
+
+        Examples:
+
+            Retrive event by its id, if it is referred to ExtractionPipeline with ext_pipe_id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.extraction_pipelines.get_event(ext_pipe_id=675, event_id=112)
+        """
+        url = f"/extpipes/{ext_pipe_id}/events/{event_id}"
+        res = self._get(url)
+        return Event._load(res.json())

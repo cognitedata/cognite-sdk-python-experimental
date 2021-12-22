@@ -19,13 +19,20 @@ Then add users that should have access to ExtractionPipelines to that 'datasets-
 from cognite.experimental.data_classes import ExtractionPipeline
 
 ep1 = ExtractionPipeline(external_id="py test id", name="py test", description="python generated", data_set_id=1,
-                         schedule="", contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}])
+                         schedule="", contacts=[{"name": "Name", "email": "Name@test.no", "sendNotification": True}])
 res = client.extraction_pipelines.create(ep1)
 ```
 
 ## List ExtractionPipelines
 ```python
 ext_pipes_list = client.extraction_pipelines.list()
+list2 = client.extraction_pipelines.list(limit=6)
+list3 = client.extraction_pipelines.list(name="Name")
+list4 = client.extraction_pipelines.list(external_id_prefix="FX")
+contacts=[{"name": "Name", "email": "Name@test.no", "sendNotification": True}]
+list5 = client.extraction_pipelines.list(contacts=contacts)
+list6 = client.extraction_pipelines.list(data_set_ids=[11111111, 22222])
+list7 = client.extraction_pipelines.list(data_set_external_ids=["ext1", "ext2"])
 ```
 
 ##Update an ExtractionPipeline that already exists
@@ -49,14 +56,23 @@ res1 = client.extraction_pipelines.retrieve(id=res.id)
 
 ##Retrieve ExtractionPipelines by ids and external ids
 ```python
-epList = client.extraction_pipelines.retrieve_multiple(ids=[23,24,25, 120], external_ids=['test_id'])
+epList = client.extraction_pipelines.retrieve_multiple(ids=[23, 24, 25, 120], external_ids=['test_id'])
+```
+
+##List Events for given ExtractionPipeline by ExtractionPipeline id
+```python
+res = client.extraction_pipelines.list_events(ext_pipe_id=675)
+```
+
+##Get Event by its id and referred ExtractionPipeline id
+```python
+res = client.extraction_pipelines.get_event(ext_pipe_id=675, event_id=112)
 ```
 
 ##List ExtractionPipeline runs 
 ```python
 runsList = client.extraction_pipeline_runs.list(external_id=res1.external_id)
 ```
-
 
 ##Filter ExtractionPipeline runs 
 ```python
