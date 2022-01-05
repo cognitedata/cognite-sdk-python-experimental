@@ -12,9 +12,6 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.60.37]
-- Functions: Changed max number of secrets to 30, and env vars to 100
-
 ## [0.60.36]
 
 ### Changed
