@@ -1,0 +1,241 @@
+from typing import Any, Dict, List, Optional, Union
+
+import json
+
+from cognite.annotation_types import AnnotationPayload, resolve_annotation_type
+
+from cognite.experimental._client import CogniteClient
+from cognite.client.utils._auxiliary import to_snake_case, to_camel_case
+
+from cognite.client.data_classes._base import (
+    CogniteFilter,
+    CognitePrimitiveUpdate,
+    CogniteObjectUpdate,
+    CogniteResource,
+    CogniteResourceList,
+    CogniteUpdate,
+)
+
+from utils.str_enum import StrEnum
+
+class AnnotationStatus(StrEnum):
+    SUGGESTED = "suggested"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+class AnnotationV2(CogniteResource):
+    """Representation of an annotation in CDF.
+
+    Args:
+        annotation_type (str): Type name of the annotation type
+        data (AnnotationPayload): The data payload containing the annotation information. Must match to the given annotation_type.
+        status (AnnotationStatus): The status of the annotation, e.g. "suggested", "approved", "rejected"
+        
+        annotated_resource_type (str): Type name of the CDF resource that is annotated, e.g. "file"
+        annotated_resource_id (int, optional): The server-generated id of the CDF resource that is annotated. Defaults to None.
+        annotated_resource_external_id (str, optional): The user-defined id of the CDF resource that is annotated. Defaults to None.
+
+        creating_app (str): The name of the app from which this annotation was created.
+        creating_app_version (str): The version of the app that created this annotation. Must be a valid semantic versioning (SemVer) string.
+        creating_user: (str, optional): The user that created this annotation. Can be set to None, which means that the annotation was created by a service.[str] = None
+
+        linked_resource_type (str, optional): The CDF resource type of an optional linked CDF resource. Defaults to None.
+        linked_resource_id (int, optional): The server-generated id of an optional linked CDF resource. Defaults to None.
+        linked_resource_external_id (str, optional): The user-defined id of an optional linked CDF resource. Defaults to None.
+
+        id (int, optional): A server-generated id for the object. Read only.
+        created_time (int, optional): Time since this annotation was created in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read only.
+        last_updated_time (int, optional): Time since this annotation was last updated in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read only.
+        
+        cognite_client (CogniteClient, optional): The client to associate with this object. Read only.
+    """
+    def __init__(
+        self,
+        annotation_type: str,
+        data: AnnotationPayload,
+        status: AnnotationStatus,
+
+        creating_app: str,
+        creating_app_version: str,
+        creating_user: Optional[str],
+
+        annotated_resource_type: str,
+        annotated_resource_id: Optional[int] = None,
+        annotated_resource_external_id: Optional[str] = None,
+
+        linked_resource_id: Optional[int] = None,
+        linked_resource_external_id: Optional[str] = None,
+        linked_resource_type: Optional[str] = None,
+    ) -> None:
+        self.annotation_type = annotation_type
+        self.data = data
+        self.status = status
+        self.creating_app = creating_app
+        self.creating_app_version = creating_app_version
+        self.creating_user = creating_user
+        self.annotated_resource_type = annotated_resource_type
+        self. annotated_resource_id = annotated_resource_id
+        self.annotated_resource_external_id = annotated_resource_external_id
+        self.linked_resource_id = linked_resource_id
+        self.linked_resource_external_id = linked_resource_external_id
+        self.linked_resource_type = linked_resource_type
+        self.id = None # Read only
+        self.created_time = None # Read only
+        self.last_updated_time = None # Read only
+        self._cognite_client = None # Read only
+
+    @classmethod
+    def _load(cls, resource: Union[Dict[str, Any], str], cognite_client=None) -> "AnnotationV2":
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client=cognite_client)
+        elif isinstance(resource, dict):
+            return cls.from_dict(resource, cognite_client=cognite_client)
+        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+
+    @classmethod
+    def from_dict(cls, resource: Dict[str, Any], cognite_client: Optional[CogniteClient] = None) -> "AnnotationV2":
+        # Create base annotation
+        data = {to_snake_case(key): val for key,val in resource.items()}
+        ann_type = resolve_annotation_type(data["annotation_type"])
+        annotation = AnnotationV2(
+            annotation_type=data["annotation_type"],
+            data = ann_type.parse_obj(data["data"]),
+            status = AnnotationStatus(data["status"]),
+
+            creating_app=data["creating_app"],
+            creating_app_version=data["creating_app_version"],
+            creating_user=data.get("creating_user"),
+
+            annotated_resource_type=data["annotated_resource_type"],
+            annotated_resource_id=data.get("annotated_resource_id"),
+            annotated_resource_external_id=data.get("annotated_resource_external_id"),
+
+            linked_resource_id=data.get("linked_resource_id"),
+            linked_resource_external_id=data.get("linked_resource_external_id"),
+            linked_resource_type=data.get("linked_resource_type"),
+        )
+        # Fill in read-only values
+        annotation.id = data.get("id")
+        annotation.created_time = data.get("created_time")
+        annotation.last_updated_time = data.get("last_updated_time")
+        annotation._cognite_client = cognite_client
+
+    def dump(self, camel_case: bool = False) -> Dict[str, Any]:
+        ret = super().dump(camel_case=camel_case)
+        ret["status"] = str(ret["status"])
+        ret["data"] = ret["data"].dict()
+        return ret
+
+class AnnotationV2Filter(CogniteFilter):
+    """Filter on annotations with various criteria
+
+    Args:
+        annotated_resource_type (str): The type of the CDF resource that is annotated, e.g. "file"
+        annotated_resource_ids (List[Dict[str, Any]]): List of ids and external ids of the annotated CDF resources to filter in. Example format: [{"id": 1234}, {"external_id": "ext_1234"}]. Must contain at least one item.
+        status (AnnotationStatus, optional): Status of annotations to filter for, e.g. "suggested", "approved", "rejected"
+        creating_user (str, optional): Name of the user who created the annotations to filter for. Can be set explicitly to "None" to filter for annotations created by a service.
+        creating_app (str, optional): Name of the app from which the annotations to filter for where created. 
+        creating_app_version (str, optional): Version of the app from which the annotations to filter for were created.
+        linked_resource_type(str, optional): Type of the CDF resource the annotations to filter for are linked to, if any.
+        linked_resource_ids(List[Dict[str, Any]], optional): List of ids or external ids the annotations are linked to. Example format: [{"id": 1234}, {"external_id": "ext_1234"}]
+        annotation_type(str, optional): Type name of the annotations
+    """
+    def __init__(
+        self,
+        annotated_resource_type: str,
+        annotated_resource_ids: List[Dict[str, Any]],
+        status: Optional[AnnotationStatus] = None,
+        creating_user: Optional[str] = "", # None means filtering for a service # TODO this does not work yet?
+        creating_app: Optional[str] = None,
+        creating_app_version: Optional[str] = None,
+        linked_resource_type: Optional[str] = None,
+        linked_resource_ids: Optional[List[Dict[str, Any]]] = None,
+        annotation_type: Optional[str] = None,
+    ) -> None:
+        self.annotated_resource_type = annotated_resource_type
+        self.annotated_resource_ids = annotated_resource_ids
+        self.status = status
+        self.creating_user = creating_user
+        self.creating_app = creating_app
+        self.creating_app_version = creating_app_version
+        self.linked_resource_type = linked_resource_type
+        self.linked_resource_ids = linked_resource_ids
+        self.annotation_type = annotation_type
+        #self._cognite_client = None # Read only. Will be filled by superclass load. # TODO is this true? Will this ever be used?
+
+    # @classmethod
+    # def _load(cls, resource: Union[Dict, str], cognite_client=None) -> "AnnotationV2Filter":
+    #     # Just call super class to fill self._cognite_client
+    #     return super(AnnotationV2Filter, cls)._load(resource, cognite_client=cognite_client)
+
+    @classmethod
+    def dump(self, camel_case: bool = False):
+        result = super(AnnotationV2Filter, self).dump(camel_case)
+        # Special handling for creating_user
+        key = "creatingUser" if camel_case else "creating_user"
+        if result[key] == "":
+            del result[key]
+        elif self.creating_user is None:
+            result[key] = None
+        return result
+
+
+class AnnotationV2Update(CogniteUpdate):
+    # TODO
+    """Changes applied to annotation
+
+    Args:
+        id (int): A server-generated ID for the object.
+    """
+
+    def __init__(self, id: int):
+        super().__init__(id=id)
+
+    class _PrimitiveAnnotationUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Union[None, str, int, bool]) -> "AnnotationV2Update":
+            return self._set(value)
+
+    class _AnnotationDataUpdate(CogniteObjectUpdate):
+        def set(self, value: Union[Dict[str, Any], AnnotationPayload]) -> "AnnotationV2Update":
+            val = value if isinstance(value, dict) else value.dict()
+            return self._set(val)
+
+    class _AnnotationStatusUpdate(CognitePrimitiveUpdate):
+        def set(self, value: AnnotationStatus) -> "AnnotationV2Update":
+            return self._set(str(value))
+
+    class _AnnotationTypeUpdate(CognitePrimitiveUpdate):
+        def set(self, value: str) -> "AnnotationV2Update":
+            return self._set(value)
+    
+    @property
+    def data(self) -> "AnnotationV2Update._AnnotationDataUpdate":
+        return AnnotationV2Update._AnnotationDataUpdate(self, "data")
+
+    @property
+    def status(self) -> "AnnotationV2Update._AnnotationStatusUpdate":
+        return AnnotationV2Update._AnnotationStatusUpdate(self, "status")
+
+    @property
+    def annotation_type(self) -> "AnnotationV2Update._AnnotationTypeUpdate":
+        return AnnotationV2Update._AnnotationTypeUpdate(self, "annotation_type")
+
+    @property
+    def linked_resource_type(self) -> "AnnotationV2Update._PrimitiveAnnotationUpdate":
+        return AnnotationV2Update._PrimitiveAnnotationUpdate(self, "linked_resource_type")
+
+    @property
+    def linked_resource_id(self) -> "AnnotationV2Update._PrimitiveAnnotationUpdate":
+        return AnnotationV2Update._PrimitiveAnnotationUpdate(self, "linked_resource_id")
+
+    @property
+    def linked_resource_external_id(self) -> "AnnotationV2Update._PrimitiveAnnotationUpdate":
+        return AnnotationV2Update._PrimitiveAnnotationUpdate(self, "linked_resource_id")
+
+    
+
+
+
+class AnnotationV2List(CogniteResourceList):
+    _RESOURCE = AnnotationV2
+    _UPDATE = AnnotationV2Update
