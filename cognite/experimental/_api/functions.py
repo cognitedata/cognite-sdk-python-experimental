@@ -77,8 +77,8 @@ class FunctionsAPI(APIClient):
             description (str, optional):            Description of the function.
             owner (str, optional):                  Owner of this function. Typically used to know who created it.
             api_key (str, optional):                API key that can be used inside the function to access data in CDF.
-            secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 5 secrets, all keys must be unique, and cannot be apikey.
-            env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 20 environment variables.
+            secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 30 secrets, all keys must be unique, and cannot be apikey.
+            env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
             cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
             memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
 
@@ -109,10 +109,10 @@ class FunctionsAPI(APIClient):
 
         if folder:
             validate_function_folder(folder, function_path)
-            file_id = self._zip_and_upload_folder(folder, name)
+            file_id = self._zip_and_upload_folder(folder, name, external_id)
         elif function_handle:
             _validate_function_handle(function_handle)
-            file_id = self._zip_and_upload_handle(function_handle, name)
+            file_id = self._zip_and_upload_handle(function_handle, name, external_id)
         utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=True)
         utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=True)
 
@@ -332,7 +332,7 @@ class FunctionsAPI(APIClient):
 
         return function_call
 
-    def _zip_and_upload_folder(self, folder, name) -> int:
+    def _zip_and_upload_folder(self, folder: str, name: str, external_id: Optional[str] = None) -> int:
         # / is not allowed in file names
         name = name.replace("/", "-")
 
@@ -349,14 +349,17 @@ class FunctionsAPI(APIClient):
                         zf.write(os.path.join(root, filename))
                 zf.close()
 
-                file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+                overwrite = True if external_id else False
+                file = self._cognite_client.files.upload(
+                    zip_path, name=f"{name}.zip", external_id=external_id, overwrite=overwrite
+                )
 
             return file.id
 
         finally:
             os.chdir(current_dir)
 
-    def _zip_and_upload_handle(self, function_handle, name) -> int:
+    def _zip_and_upload_handle(self, function_handle: Callable, name: str, external_id: Optional[str] = None) -> int:
         # / is not allowed in file names
         name = name.replace("/", "-")
 
@@ -371,7 +374,10 @@ class FunctionsAPI(APIClient):
             zf.write(handle_path, arcname=HANDLER_FILE_NAME)
             zf.close()
 
-            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+            overwrite = True if external_id else False
+            file = self._cognite_client.files.upload(
+                zip_path, name=f"{name}.zip", external_id=external_id, overwrite=overwrite
+            )
 
         return file.id
 
