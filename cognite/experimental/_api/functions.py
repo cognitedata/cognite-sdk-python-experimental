@@ -109,10 +109,10 @@ class FunctionsAPI(APIClient):
 
         if folder:
             validate_function_folder(folder, function_path)
-            file_id = self._zip_and_upload_folder(folder, name)
+            file_id = self._zip_and_upload_folder(folder, name, external_id)
         elif function_handle:
             _validate_function_handle(function_handle)
-            file_id = self._zip_and_upload_handle(function_handle, name)
+            file_id = self._zip_and_upload_handle(function_handle, name, external_id)
         utils._auxiliary.assert_type(cpu, "cpu", [Number], allow_none=True)
         utils._auxiliary.assert_type(memory, "memory", [Number], allow_none=True)
 
@@ -332,7 +332,7 @@ class FunctionsAPI(APIClient):
 
         return function_call
 
-    def _zip_and_upload_folder(self, folder, name) -> int:
+    def _zip_and_upload_folder(self, folder: str, name: str, external_id: Optional[str] = None) -> int:
         # / is not allowed in file names
         name = name.replace("/", "-")
 
@@ -349,14 +349,17 @@ class FunctionsAPI(APIClient):
                         zf.write(os.path.join(root, filename))
                 zf.close()
 
-                file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+                overwrite = True if external_id else False
+                file = self._cognite_client.files.upload(
+                    zip_path, name=f"{name}.zip", external_id=external_id, overwrite=overwrite
+                )
 
             return file.id
 
         finally:
             os.chdir(current_dir)
 
-    def _zip_and_upload_handle(self, function_handle, name) -> int:
+    def _zip_and_upload_handle(self, function_handle: Callable, name: str, external_id: Optional[str] = None) -> int:
         # / is not allowed in file names
         name = name.replace("/", "-")
 
@@ -371,7 +374,10 @@ class FunctionsAPI(APIClient):
             zf.write(handle_path, arcname=HANDLER_FILE_NAME)
             zf.close()
 
-            file = self._cognite_client.files.upload(zip_path, name=f"{name}.zip")
+            overwrite = True if external_id else False
+            file = self._cognite_client.files.upload(
+                zip_path, name=f"{name}.zip", external_id=external_id, overwrite=overwrite
+            )
 
         return file.id
 
