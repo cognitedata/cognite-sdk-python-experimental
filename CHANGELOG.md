@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.38]
+
+### Fixed
+- Geospatial: update to reflect API endpoint change for listing CRSes
+
 ## [0.60.37]
 
 ### Changed
