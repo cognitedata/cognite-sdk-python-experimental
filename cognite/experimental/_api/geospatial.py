@@ -511,7 +511,7 @@ class ExperimentalGeospatialAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> crs = c.geospatial.list_coordinate_reference_systems(only_custom=True)
         """
-        res = self._get(url_path=f"{self._RESOURCE_PATH}/crs/list", params={"filterCustom": only_custom})
+        res = self._get(url_path=f"{self._RESOURCE_PATH}/crs", params={"filterCustom": only_custom})
         return CoordinateReferenceSystemList._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def create_coordinate_reference_systems(
