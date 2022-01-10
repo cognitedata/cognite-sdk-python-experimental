@@ -184,11 +184,16 @@ will produce the following output after a few seconds:
 
 ```
 
-## P&ID Parser
-When the file_id is a valid file_id from the project associated with the client, this will print the url for the svg as a string after a few seconds.
+## P&ID Parsing using diagram detect and convert
+If 1234 and 5678 are valid file_ids from the project associated with the client, this will print the url for the 
+svg of the first page of 1234 as a string after a few seconds.
 ```python
-job = client.pnid_parsing.parse(file_id=1234,entities=['string1','string2'])
-svg_url = job.result['svgUrl']
+job = client.diagrams.detect(file_ids=[1234, 5678], entities=[{'name': 'string1'},{'name': 'string2'}])
+result = job.result
+print(result[items])
+# > [{"annotations": [...], "fileId": 1234}, {"annotations": [...], "fileId": 5678}]
+convert_job = job.convert()
+first_file_first_page_svg_url = convert_job.result.items[0].pages.data[0]['svg_url']
 ```
 
 ## Entity Extraction
