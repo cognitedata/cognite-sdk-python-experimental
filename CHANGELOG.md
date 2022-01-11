@@ -12,6 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.60.38]
+
+### Fixed
+- Geospatial: update to reflect API endpoint change for listing CRSes
+
+## [0.60.37]
+
+### Changed
+- When creating a function with `function_handle` or `folder` and with `external_id` specified, the zip file uploaded to the Files API is given an external-id and is overwritten if it already exists.
+
 ## [0.60.36]
 
 ### Changed
