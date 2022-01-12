@@ -2,12 +2,7 @@ from cognite.client.data_classes._base import *
 
 
 class TransformationDestination:
-    """TransformationDestination has static methods to define the target resource type of a transformation
-
-    Args:
-        type (str): Used as data type identifier on transformation creation/retrieval.
-        schema_type (str): Used as data type identifier on schema retrieval (doesn't always coincide with type).
-    """
+    """TransformationDestination has static methods to define the target resource type of a transformation"""
 
     def __init__(self, type: str = None):
         self.type = type
@@ -15,52 +10,52 @@ class TransformationDestination:
     @staticmethod
     def assets():
         """To be used when the transformation is meant to produce assets."""
-        return TransformationDestination(type="assets")
+        return TransformationDestination("assets")
 
     @staticmethod
     def timeseries():
         """To be used when the transformation is meant to produce time series."""
-        return TransformationDestination(type="timeseries")
+        return TransformationDestination("timeseries")
 
     @staticmethod
-    def asset_hierarchy():
+    def assethierarchy():
         """To be used when the transformation is meant to produce asset hierarchies."""
-        return TransformationDestination(type="asset_hierarchy")
+        return TransformationDestination("assethierarchy")
 
     @staticmethod
     def events():
         """To be used when the transformation is meant to produce events."""
-        return TransformationDestination(type="events")
+        return TransformationDestination("events")
 
     @staticmethod
     def datapoints():
         """To be used when the transformation is meant to produce numeric data points."""
-        return TransformationDestination(type="datapoints")
+        return TransformationDestination("datapoints")
 
     @staticmethod
-    def string_datapoints():
+    def stringdatapoints():
         """To be used when the transformation is meant to produce string data points."""
-        return TransformationDestination(type="string_datapoints")
+        return TransformationDestination("stringdatapoints")
 
     @staticmethod
     def sequences():
         """To be used when the transformation is meant to produce sequences."""
-        return TransformationDestination(type="sequences")
+        return TransformationDestination("sequences")
 
     @staticmethod
     def files():
         """To be used when the transformation is meant to produce files."""
-        return TransformationDestination(type="files")
+        return TransformationDestination("files")
 
     @staticmethod
     def labels():
         """To be used when the transformation is meant to produce labels."""
-        return TransformationDestination(type="labels")
+        return TransformationDestination("labels")
 
     @staticmethod
     def relationships():
         """To be used when the transformation is meant to produce relationships."""
-        return TransformationDestination(type="relationships")
+        return TransformationDestination("relationships")
 
     @staticmethod
     def raw(database: str = "", table: str = ""):
