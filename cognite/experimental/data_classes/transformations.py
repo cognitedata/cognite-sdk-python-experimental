@@ -13,12 +13,6 @@ class TransformationDestination:
     def __init__(self, type: str = None):
         self.type = type
 
-    def __hash__(self):
-        return hash(self.type)
-
-    def __eq__(self, obj):
-        return isinstance(obj, TransformationDestination) and hash(obj) == hash(self)
-
     @staticmethod
     def assets():
         """To be used when the transformation is meant to produce assets."""
@@ -80,20 +74,15 @@ class TransformationDestination:
         Returns:
             TransformationDestination pointing to the target table
         """
-        return RawTable(type="raw", database=database, table=table)
+        return RawTable(type="raw_table", raw_type="plain_raw", database=database, table=table)
 
 
 class RawTable(TransformationDestination):
-    def __init__(self, type: str = None, database: str = None, table: str = None):
+    def __init__(self, type: str = None, raw_type: str = None, database: str = None, table: str = None):
         super().__init__(type=type)
+        self.rawType = raw_type
         self.database = database
         self.table = table
-
-    def __hash__(self):
-        return hash((self.type, self.database, self.table))
-
-    def __eq__(self, obj):
-        return isinstance(obj, RawTable) and hash(obj) == hash(self)
 
 
 class OidcCredentials:
@@ -210,7 +199,7 @@ class Transformation(CogniteResource):
         instance = super(Transformation, cls)._load(resource, cognite_client)
         if isinstance(instance.destination, Dict):
             snake_dict = {utils._auxiliary.to_snake_case(key): value for (key, value) in instance.destination.items()}
-            if instance.destination.get("type") == "raw":
+            if instance.destination.get("type") == "raw_table":
                 instance.destination = RawTable(**snake_dict)
             else:
                 instance.destination = TransformationDestination(**snake_dict)
