@@ -1,3 +1,4 @@
+import ast
 import importlib.util
 import os
 import sys
@@ -26,6 +27,8 @@ from cognite.experimental.data_classes import (
     FunctionSchedulesFilter,
     FunctionSchedulesList,
 )
+
+HANDLE_ARGS = ("data", "client", "secrets", "function_call_info")
 
 
 class FunctionsAPI(APIClient):
@@ -450,8 +453,20 @@ def _using_client_credential_flow(cognite_client: CogniteClient):
     )
 
 
-def convert_file_path_to_module_path(file_path: str):
-    return ".".join(Path(file_path).with_suffix("").parts)
+def check_handler(file_path: Path) -> None:
+    with file_path.open() as f:
+        content = f.read()
+
+    for node in ast.parse(content).body:
+        if isinstance(node, ast.FunctionDef) and node.name == "handle":
+            bad_args = set(param.arg for param in node.args.args).difference(HANDLE_ARGS)
+            if not bad_args:
+                return
+            raise TypeError(
+                f"In file '{file_path}', function 'handle' contained illegal args: {list(bad_args)}. "
+                f"The function args must be a subset of: {list(HANDLE_ARGS)} (ordering is not important)"
+            )
+    raise TypeError(f"No function named 'handle' was found in file '{file_path}'. It is required!")
 
 
 def validate_function_folder(root_path, function_path):
@@ -463,33 +478,18 @@ def validate_function_folder(root_path, function_path):
         function_path
     )  # This converts function_path to a Windows path if running on Windows
     if not function_path_full.is_file():
-        raise TypeError(f"No file found at location '{function_path}' in '{root_path}'.")
+        raise FileNotFoundError(f"No file found at location '{function_path}' in '{root_path}'.")
 
-    sys.path.insert(0, root_path)
-
-    # Necessary to clear the cache if you have previously imported the module (this would have precedence over sys.path)
-    cached_handler_module = sys.modules.get("handler")
-    if cached_handler_module:
-        del sys.modules["handler"]
-
-    module_path = convert_file_path_to_module_path(function_path)
-    handler = importlib.import_module(module_path)
-
-    if "handle" not in handler.__dir__():
-        raise TypeError(f"{function_path} must contain a function named 'handle'.")
-
-    _validate_function_handle(handler.handle)
-    sys.path.remove(root_path)
+    check_handler(function_path_full)
 
 
 def _validate_function_handle(function_handle):
     if not function_handle.__code__.co_name == "handle":
         raise TypeError("Function referenced by function_handle must be named handle.")
-    if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(
-        set(["data", "client", "secrets", "function_call_info"])
-    ):
+    if not set(function_handle.__code__.co_varnames[: function_handle.__code__.co_argcount]).issubset(set(HANDLE_ARGS)):
         raise TypeError(
-            "Arguments to function referenced by function_handle must be a subset of (data, client, secrets, function_call_info)"
+            "Arguments to function referenced by function_handle must be a subset of "
+            "(data, client, secrets, function_call_info)"
         )
 
 
