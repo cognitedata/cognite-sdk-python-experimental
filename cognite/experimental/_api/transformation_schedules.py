@@ -10,13 +10,13 @@ from cognite.experimental.data_classes import (
     OidcCredentials,
     Transformation,
     TransformationDestination,
-    TransformationFilter,
     TransformationJobBlockade,
     TransformationList,
     TransformationSchedule,
     TransformationScheduleList,
     TransformationScheduleUpdate,
 )
+from cognite.experimental.data_classes.transformations import TransformationFilter
 
 
 class TransformationSchedulesAPI(APIClient):
@@ -77,9 +77,7 @@ class TransformationSchedulesAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    def list(
-        self, include_public: bool = True, limit: Optional[int] = LIST_LIMIT_DEFAULT,
-    ) -> TransformationScheduleList:
+    def list(self, include_public: bool = True, limit: Optional[int] = LIST_LIMIT_DEFAULT,) -> TransformationList:
         """`List all transformation schedules. <https://docs.cognite.com/api/playground/#operation/transformationSchedules>`_
 
         Args:
@@ -88,15 +86,15 @@ class TransformationSchedulesAPI(APIClient):
             limit (int): Limits the number of results to be returned. To retrieve all results use limit=-1, default limit is 25.
 
         Returns:
-            TransformationScheduleList: List of schedules
+            TransformationList: List of transformations
 
         Example:
 
-            List schedules::
+            List transformations::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
-                >>> schedules_list = c.transformations.schedules.list()
+                >>> transformations_list = c.transformations.list()
         """
         if limit in [float("inf"), -1, None]:
             limit = LIST_LIMIT_CEILING

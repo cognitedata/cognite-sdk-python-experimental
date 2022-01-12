@@ -5,15 +5,10 @@ from cognite.client import utils
 from cognite.client._api_client import APIClient
 from requests import Response
 
-from cognite.experimental._api.transformation_notifications import TransformationNotificationsAPI
 from cognite.experimental._api.transformation_schedules import TransformationSchedulesAPI
 from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
-from cognite.experimental.data_classes import (
-    Transformation,
-    TransformationFilter,
-    TransformationList,
-    TransformationUpdate,
-)
+from cognite.experimental.data_classes import Transformation, TransformationList
+from cognite.experimental.data_classes.transformations import TransformationFilter, TransformationUpdate
 
 
 class TransformationsAPI(APIClient):
@@ -24,7 +19,7 @@ class TransformationsAPI(APIClient):
         super().__init__(*args, **kwargs)
         # self.jobs = TransformationJobsAPI(*args, **kwargs)
         self.schedules = TransformationSchedulesAPI(*args, **kwargs)
-        self.notifications = TransformationNotificationsAPI(*args, **kwargs)
+        # self.notifications = TransformationNotificationsAPI(*args, **kwargs)
 
     def create(
         self, transformation: Union[Transformation, List[Transformation]]
