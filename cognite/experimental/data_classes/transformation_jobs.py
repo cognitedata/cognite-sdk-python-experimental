@@ -20,7 +20,6 @@ class TransformationJob(CogniteResource):
         id (int): A server-generated ID for the object.
         uuid (UUID): A server-generated UUID for the object.
         status (TransformationJobStatus): Status of the job.
-        transformation_id (int): Server-generated ID of the transformation.
         source_project (str): Name of the CDF project the data will be read from.
         destination_project (str): Name of the CDF project the data will be written to.
         destination_type (str): Target resource type of the transformation.
@@ -42,7 +41,6 @@ class TransformationJob(CogniteResource):
         id: int = None,
         uuid: UUID = None,
         status: TransformationJobStatus = None,
-        transformation_id: int = None,
         source_project: str = None,
         destination_project: str = None,
         destination_type: str = None,
@@ -61,7 +59,6 @@ class TransformationJob(CogniteResource):
         self.id = id
         self.uuid = uuid
         self.status = status
-        self.transformation_id = transformation_id
         self.source_project = source_project
         self.destination_project = destination_project
         self.destination_type = destination_type
