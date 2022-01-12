@@ -5,6 +5,7 @@ class TransformationSchedule(CogniteResource):
     """The transformation schedules resource allows running recurrent transformations.
 
     Args:
+        request_scheduler_id: Id of the schedule in request scheduler service.
         id (int): Transformation id.
         external_id (str): Transformation externalId.
         created_time (int): Time when the schedule was created.
@@ -16,6 +17,7 @@ class TransformationSchedule(CogniteResource):
 
     def __init__(
         self,
+        request_scheduler_id: int = None,
         id: int = None,
         external_id: str = None,
         created_time: int = None,
@@ -24,6 +26,7 @@ class TransformationSchedule(CogniteResource):
         is_paused: bool = False,
         cognite_client=None,
     ):
+        self.request_scheduler_id = request_scheduler_id
         self.id = id
         self.external_id = external_id
         self.created_time = created_time
@@ -38,7 +41,7 @@ class TransformationSchedule(CogniteResource):
         return instance
 
     def __hash__(self):
-        return hash(self.id)
+        return hash(self.request_scheduler_id)
 
 
 class TransformationScheduleUpdate(CogniteUpdate):
