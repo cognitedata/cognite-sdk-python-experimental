@@ -62,18 +62,12 @@ class TransformationsAPI(APIClient):
         utils._auxiliary.assert_type(transformation, "transformation", [Transformation, list])
         return self._create_multiple(transformation)
 
-    def delete(
-        self,
-        id: Union[int, List[int]] = None,
-        external_id: Union[str, List[str]] = None,
-        ignore_unknown_ids: bool = False,
-    ) -> None:
+    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
         """`Delete one or more transformations. <https://docs.cognite.com/api/playground/#operation/deleteTransformations>`_
 
         Args:
             id (Union[int, List[int]): Id or list of ids.
             external_id (Union[str, List[str]]): External ID or list of external ids.
-            ignore_unknown_ids (bool): Ignore IDs and external IDs that are not found rather than throw an exception.
 
         Returns:
             None
@@ -86,9 +80,7 @@ class TransformationsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> c.transformations.delete(id=[1,2,3], external_id="function3")
         """
-        self._delete_multiple(
-            ids=id, external_ids=external_id, wrap_ids=True, extra_body_fields={"ignoreUnknownIds": ignore_unknown_ids}
-        )
+        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
     def list(self, include_public: bool = True, limit: Optional[int] = LIST_LIMIT_DEFAULT,) -> TransformationList:
         """`List all transformations. <https://docs.cognite.com/api/playground/#operation/transformations>`_
@@ -143,15 +135,12 @@ class TransformationsAPI(APIClient):
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
-    def retrieve_multiple(
-        self, ids: List[int] = None, external_ids: List[str] = None, ignore_unknown_ids: bool = False
-    ) -> TransformationList:
+    def retrieve_multiple(self, ids: List[int] = None, external_ids: List[str] = None) -> TransformationList:
         """`Retrieve multiple transformations. <https://docs.cognite.com/api/playground/#operation/getTransformation>`_
 
         Args:
-            ids (List[int]): List of ids to retrieve.
-            external_ids (List[str]): List of external ids to retrieve.
-            ignore_unknown_ids (bool): Ignore IDs and external IDs that are not found rather than throw an exception.
+            ids (List[int]): List of ids to retrieve
+            external_ids (List[str]): List of external ids to retrieve
 
         Returns:
             TransformationList: Requested transformation or None if it does not exist.
@@ -164,9 +153,7 @@ class TransformationsAPI(APIClient):
                 >>> c = CogniteClient()
                 >>> res = c.transformations.retrieve_multiple(ids=[1,2,3], external_ids=['transform-1','transform-2'])
         """
-        return self._retrieve_multiple(
-            ids=ids, external_ids=external_ids, wrap_ids=True, ignore_unknown_ids=ignore_unknown_ids
-        )
+        return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
     def update(
         self, item: Union[Transformation, TransformationUpdate, List[Union[Transformation, TransformationUpdate]]]
