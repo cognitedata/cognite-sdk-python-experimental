@@ -321,15 +321,11 @@ class TransformationsAPI(APIClient):
                 >>>
                 >>> df = c.transformations.preview(query="select * from _cdf.assets").to_pandas()
         """
-        request_body = {
-            "query": query,
-            "convertToString": convert_to_string,
-            "limit": limit,
-            "sourceLimit": source_limit,
-            "inferSchemaLimit": infer_schema_limit,
-        }
+        request_body = {"query": query, "convertToString": convert_to_string}
 
-        response = self._post(url_path=self._RESOURCE_PATH + "/query/run", json=request_body)
+        params = {"limit": limit, "sourceLimit": source_limit, "inferSchemaLimit": infer_schema_limit}
+
+        response = self._post(url_path=self._RESOURCE_PATH + "/query/run", json=request_body, params=params)
         result = TransformationPreviewResult._load(response.json(), cognite_client=self._cognite_client)
 
         return result
