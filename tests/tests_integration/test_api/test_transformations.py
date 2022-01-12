@@ -13,11 +13,11 @@ from cognite.experimental.data_classes import (
 )
 
 COGNITE_CLIENT = CogniteClient()
+prefix = "".join(random.choice(string.ascii_letters) for i in range(6))
 
 
 @pytest.fixture
 def new_transformation():
-    prefix = "".join(random.choice(string.ascii_letters) for i in range(6))
     transform = Transformation(
         name="any",
         external_id=f"{prefix}-transformation",
@@ -35,10 +35,6 @@ def new_transformation():
     assert COGNITE_CLIENT.transformations.retrieve(ts.id) is None
 
 
-other_transformation = new_transformation
-
-
-@pytest.mark.skip(reason="This test fails several times.")
 class TestTransformationsAPI:
     def test_create_asset_transformation(self):
         transform = Transformation(name="any", destination=TransformationDestination.assets())
@@ -69,15 +65,6 @@ class TestTransformationsAPI:
             and new_transformation.destination.type == retrieved_transformation.destination.type
             and new_transformation.id == retrieved_transformation.id
         )
-
-    def test_retrieve_multiple(self, new_transformation, other_transformation):
-        retrieved_transformations = COGNITE_CLIENT.transformations.retrieve_multiple(
-            ids=[new_transformation.id, other_transformation.id]
-        )
-        assert len(retrieved_transformations) == 2
-        assert new_transformation.id in [
-            transformation.id for transformation in retrieved_transformations
-        ] and other_transformation.id in [transformation.id for transformation in retrieved_transformations]
 
     def test_update_full(self, new_transformation):
         new_transformation.name = "new name"
@@ -161,7 +148,7 @@ class TestTransformationsAPI:
 
     @pytest.mark.asyncio
     async def test_run_by_external_id_async(self, new_transformation: Transformation):
-        job = await COGNITE_CLIENT.transformations.run_async(transformation_external_id=new_transformation.external_id)
+        job = await COGNITE_CLIENT.transformations.run_async(transformation_external_id=f"{prefix}-transformation")
 
         assert (
             job.id is not None
