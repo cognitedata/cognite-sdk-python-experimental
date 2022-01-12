@@ -92,7 +92,6 @@ class OidcCredentials:
         client_secret: str = None,
         scopes: str = None,
         token_uri: str = None,
-        audience: str = None,
         cdf_project_name: str = None,
     ):
 
@@ -100,7 +99,6 @@ class OidcCredentials:
         self.client_secret = client_secret
         self.scopes = scopes
         self.token_uri = token_uri
-        self.audience = audience
         self.cdf_project_name = cdf_project_name
 
 
