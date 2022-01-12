@@ -132,7 +132,7 @@ class TestTransformationJobsAPI:
         job = longer_transformation.run(timeout=timeout)
         final = time.time()
 
-        assert job.status == TransformationJobStatus.RUNNING and timeout <= final - init <= timeout + 1.5
+        assert job.status == TransformationJobStatus.RUNNING and timeout <= final - init <= timeout + 1
 
     @pytest.mark.asyncio
     async def test_run_async(self, new_transformation: Transformation):
@@ -160,7 +160,7 @@ class TestTransformationJobsAPI:
         job = await longer_transformation.run_async(timeout=timeout)
         final = time.time()
 
-        assert job.status == TransformationJobStatus.RUNNING and timeout <= final - init <= timeout + 1.5
+        assert job.status == TransformationJobStatus.RUNNING and timeout <= final - init <= timeout + 1
 
     @pytest.mark.asyncio
     async def test_run_by_external_id_async(self, new_transformation: Transformation):
