@@ -9,6 +9,7 @@ PNIDAPI = COGNITE_CLIENT.pnid_parsing
 PNID_FILE_ID = 3261066797848581
 
 
+@pytest.mark.skip(reason="This test fails approx 4 out of 5 times")
 class TestPNIDParsingIntegration:
     def test_run_detect_str(self):
         entities = ["YT-96122", "XE-96125"]
@@ -21,7 +22,6 @@ class TestPNIDParsingIntegration:
         assert isinstance(job._repr_html_(), str)
         assert isinstance(job.matches, PNIDDetectionList)
 
-    @pytest.mark.skip(reason="This test fails approx 4 out of 5 times")
     def test_run_detect_entities_dict(self):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
