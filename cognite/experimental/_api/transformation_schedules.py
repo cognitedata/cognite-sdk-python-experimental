@@ -9,9 +9,9 @@ from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILIN
 from cognite.experimental.data_classes import (
     OidcCredentials,
     Transformation,
-    TransformationBlockedInfo,
     TransformationDestination,
     TransformationFilter,
+    TransformationJobBlockade,
     TransformationList,
     TransformationSchedule,
     TransformationScheduleList,

@@ -5,6 +5,8 @@ from uuid import UUID
 
 from cognite.client.data_classes._base import *
 
+from cognite.experimental.data_classes.transformations import *
+
 
 class TransformationJobStatus(str, Enum):
     RUNNING = "Running"
@@ -76,7 +78,7 @@ class TransformationJob(CogniteResource):
         transformation_id: int = None,
         source_project: str = None,
         destination_project: str = None,
-        destination: "TransformationDestination" = None,
+        destination: TransformationDestination = None,
         conflict_mode: str = None,
         raw_query: str = None,
         error: str = None,
@@ -248,6 +250,3 @@ class TransformationJob(CogniteResource):
 class TransformationJobList(CogniteResourceList):
     _RESOURCE = TransformationJob
     _ASSERT_CLASSES = False
-
-
-from cognite.experimental.data_classes.transformations import RawTable, TransformationDestination
