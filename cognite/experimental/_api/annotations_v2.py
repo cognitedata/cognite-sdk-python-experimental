@@ -1,7 +1,8 @@
 from typing import Dict, List, Optional, Tuple, Union
 
 from cognite.client._api_client import APIClient
-from cognite.client.utils._auxiliary import assert_type, to_camel_case
+from cognite.client.data_classes._base import CogniteResource
+from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
 
 from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter, AnnotationV2List, AnnotationV2Update
 
@@ -50,6 +51,16 @@ class AnnotationsV2API(APIClient):
             ]
 
         return self._list(method="POST", limit=limit, filter=filter)
+
+    @staticmethod
+    def _convert_resource_to_patch_object(resource: CogniteResource, update_attributes: List[str]):
+        if not isinstance(resource, AnnotationV2):
+            return APIClient._convert_resource_to_patch_object(resource, update_attributes)
+        annotation: AnnotationV2 = resource
+        annotation_update = AnnotationV2Update(id=annotation.id)
+        for attr in update_attributes:
+            getattr(annotation_update, attr).set(getattr(annotation, attr))
+        return annotation_update.dump()
 
     def update(
         self, item: Union[AnnotationV2, AnnotationV2Update, List[Union[AnnotationV2, AnnotationV2Update]]]
