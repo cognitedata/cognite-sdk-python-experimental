@@ -159,7 +159,7 @@ class AnnotationV2Filter(CogniteFilter):
         # Remove creating_user if it is an empty string
         if self.creating_user == "":
             del result[key]
-        # Readd creating_user if it is None
+        # dump creating_user if it is None
         elif self.creating_user is None:
             result[key] = None
         return result
@@ -209,19 +209,19 @@ class AnnotationV2Update(CogniteUpdate):
 
     @property
     def annotation_type(self) -> "AnnotationV2Update._StrUpdate":
-        return AnnotationV2Update._StrUpdate(self, "annotation_type")
+        return AnnotationV2Update._StrUpdate(self, "annotationType")
 
     @property
     def linked_resource_type(self) -> "AnnotationV2Update._OptionalStrUpdate":
-        return AnnotationV2Update._OptionalStrUpdate(self, "linked_resource_type")
+        return AnnotationV2Update._OptionalStrUpdate(self, "linkedResourceType")
 
     @property
     def linked_resource_id(self) -> "AnnotationV2Update._OptionalIntUpdate":
-        return AnnotationV2Update._OptionalIntUpdate(self, "linked_resource_id")
+        return AnnotationV2Update._OptionalIntUpdate(self, "linkedResourceId")
 
     @property
     def linked_resource_external_id(self) -> "AnnotationV2Update._OptionalStrUpdate":
-        return AnnotationV2Update._OptionalStrUpdate(self, "linked_resource_external_id")
+        return AnnotationV2Update._OptionalStrUpdate(self, "linkedResourceExternalId")
 
 
 class AnnotationV2List(CogniteResourceList):
