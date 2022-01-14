@@ -8,39 +8,6 @@ import pytest
 from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter, AnnotationV2Update, annotations_v2
 
 
-@pytest.fixture
-def annotation() -> AnnotationV2:
-    return AnnotationV2(
-        annotation_type="diagrams.FileLink",
-        data={"fileRef": {"id": 1}, "textRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "xMax": 1.0,}},
-        status="approved",
-        creating_app="UnitTest",
-        creating_app_version="0.0.1",
-        creating_user=None,
-        annotated_resource_type="file",
-        annotated_resource_id=1,
-        annotated_resource_external_id=None,
-        linked_resource_type=None,
-        linked_resource_id=None,
-        linked_resource_external_id=None,
-    )
-
-
-@pytest.fixture
-def annotation_filter() -> AnnotationV2Filter:
-    return AnnotationV2Filter(
-        annotated_resource_type="file",
-        annotated_resource_ids=[{"id": 1234}, {"external_id": "ext_1234"}],
-        annotation_type="diagrams.FileLink",
-        status="approved",
-        creating_app="UnitTest",
-        creating_user="",
-        creating_app_version="0.0.1",
-        linked_resource_type="file",
-        linked_resource_ids=[{"id": 1234}, {"external_id": "ext_1234"}],
-    )
-
-
 class TestAnnotationV2:
     @pytest.mark.parametrize(
         "creating_user, camel_case",
@@ -100,11 +67,11 @@ class TestAnnotationV2Filter:
 class TestAnnotationV2Update:
     def test_set_chain(self):
         update = {
-            "data": {"assetRef": {"id": 1}, "textRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "xMax": 1.0,}},
+            "data": {"assetRef": {"id": 1}, "textRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "yMax": 1.0,}},
             "status": "rejected",
             "annotation_type": "diagrams.AssetLink",
             "linked_resource_type": "asset",
-            "linked_resource_id": "1",
+            "linked_resource_id": 1,
             "linked_resource_external_id": None,
         }
         annotation_update = AnnotationV2Update(id=1)
