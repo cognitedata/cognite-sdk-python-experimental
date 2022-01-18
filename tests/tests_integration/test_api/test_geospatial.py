@@ -181,6 +181,7 @@ def clean_old_custom_crs():
         pass
 
 
+@pytest.mark.skip(reason="Configuration is missing on greenfield python-sdk-test project")
 class TestGeospatialAPI:
     def test_create_features(self, test_feature_type, allow_crs_transformation):
         external_id = f"F_{uuid.uuid4().hex[:10]}"
