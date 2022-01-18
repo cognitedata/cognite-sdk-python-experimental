@@ -26,11 +26,11 @@ class AnnotationsV2API(APIClient):
         assert_type(annotations, "annotations", [AnnotationV2, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
 
-    def list(self, filter: Union[AnnotationV2Filter, Dict], limit: int = 100) -> AnnotationV2List:
+    def list(self, filter: Union[AnnotationV2Filter, Dict], limit: int = 25) -> AnnotationV2List:
         """List annotations.
 
         Args:
-            limit (int): Maximum number of annotations to return. Defaults to 100.
+            limit (int): Maximum number of annotations to return. Defaults to 25.
             filter (AnnotationV2Filter, optional): Return annotations with parameter values that matches what is specified. Note that annotated_resource_type and annotated_resource_ids are always required.
 
         Returns:
@@ -45,9 +45,14 @@ class AnnotationsV2API(APIClient):
         elif isinstance(filter, dict):
             filter = {to_camel_case(k): v for k, v in filter.items()}
 
-        if filter.get("annotatedResourceIds"):
+        if "annotatedResourceIds" in filter:
             filter["annotatedResourceIds"] = [
                 {to_camel_case(k): v for k, v in f.items()} for f in filter["annotatedResourceIds"]
+            ]
+
+        if "linkedResourceIds" in filter:
+            filter["linkedResourceIds"] = [
+                {to_camel_case(k): v for k, v in f.items()} for f in filter["linkedResourceIds"]
             ]
 
         return self._list(method="POST", limit=limit, filter=filter)
