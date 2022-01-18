@@ -1,9 +1,9 @@
 import json
 from copy import deepcopy
-from typing import Any, Dict, Optional
-from unittest.mock import MagicMock, call
+from typing import Optional
 
 import pytest
+from cognite.client.utils._auxiliary import to_snake_case
 
 from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter, AnnotationV2Update, annotations_v2
 
@@ -69,14 +69,15 @@ class TestAnnotationV2Update:
         update = {
             "data": {"assetRef": {"id": 1}, "textRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "yMax": 1.0,}},
             "status": "rejected",
-            "annotation_type": "diagrams.AssetLink",
-            "linked_resource_type": "asset",
-            "linked_resource_id": 1,
-            "linked_resource_external_id": None,
+            "annotationType": "diagrams.AssetLink",
+            "linkedResourceType": "asset",
+            "linkedResourceId": 1,
+            "linkedResourceExternalId": None,
         }
         annotation_update = AnnotationV2Update(id=1)
         for k, v in update.items():
-            getattr(annotation_update, k).set(v)
+            snake_case_key = to_snake_case(k)
+            getattr(annotation_update, snake_case_key).set(v)
             if v is None:
                 update[k] = {"setNull": True}
             else:
