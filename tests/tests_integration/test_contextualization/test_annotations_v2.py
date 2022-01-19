@@ -82,18 +82,8 @@ def _test_list_on_created_annotations(cognite_client: CogniteClient, annotations
     else:
         assert len(annotations_list) == limit
 
-    # TODO can use check_created_vs_base here?
-    for attr in [
-        "annotated_resource_type",
-        "annotated_resource_id",
-        "status",
-        "creating_app",
-        "creating_app_version",
-        "creating_user",
-    ]:
-        base_attr = getattr(annotation, attr)
-        for a in annotations_list:
-            assert getattr(a, attr) == base_attr
+    for a in annotations_list:
+        check_created_vs_base(annotation, a)
 
 
 class TestAnnotationsV2Integration:
