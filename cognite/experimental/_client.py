@@ -18,7 +18,6 @@ from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
-from cognite.experimental._api.transformations import TransformationsAPI
 from cognite.experimental._api.types import TypesAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
@@ -111,8 +110,6 @@ class CogniteClient(Client):
         self.extraction_pipeline_runs = ExtractionPipelinesRunsAPI(
             self._config, api_version="playground", cognite_client=self
         )
-
-        self.transformations = TransformationsAPI(self._config, api_version="playground", cognite_client=self)
 
         self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         # template completion only

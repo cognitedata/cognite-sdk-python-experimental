@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.61]
+
+### Removed
+- Experimental transformations implementation. Transformations is now part of the official python sdk, just need to change your transformations data class imports from `cognite.experimental` to `cognite.client`.
+
 ## [0.60.38]
 
 ### Fixed
