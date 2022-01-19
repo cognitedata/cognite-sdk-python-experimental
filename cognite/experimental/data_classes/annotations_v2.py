@@ -148,9 +148,6 @@ class AnnotationV2Filter(CogniteFilter):
         self.linked_resource_type = linked_resource_type
         self.linked_resource_ids = linked_resource_ids
         self.annotation_type = annotation_type
-        self._cognite_client = (
-            None  # Read only. Will be filled by superclass load. # TODO is this true? Will this ever be used?
-        )
 
     def dump(self, camel_case: bool = False):
         result = super(AnnotationV2Filter, self).dump(camel_case=camel_case)
