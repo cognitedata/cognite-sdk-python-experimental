@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import List, Optional
 
 import pytest
@@ -48,17 +47,8 @@ def file_id(cognite_client: CogniteClient) -> int:
 
 @pytest.fixture
 def base_annotation(annotation: AnnotationV2, file_id: int):
-    base_annotation = deepcopy(annotation)
-    base_annotation.annotated_resource_id = file_id
-    return base_annotation
-
-
-@pytest.fixture
-def base_annotation2(base_annotation: AnnotationV2):
-    base_annotation2 = deepcopy(base_annotation)
-    base_annotation2.status = "rejected"
-    base_annotation2.creating_user = "unit.test@cognite.com"
-    return base_annotation2
+    annotation.annotated_resource_id = file_id
+    return annotation
 
 
 def check_created_vs_base(base_annotation: AnnotationV2, created_annotation: AnnotationV2) -> None:
@@ -113,10 +103,12 @@ class TestAnnotationsV2Integration:
         check_created_vs_base(base_annotation, created_annotation)
         assert created_annotation.creating_user == None
 
-    def test_create_single_annotation2(self, cognite_client: CogniteClient, base_annotation2: AnnotationV2) -> None:
-        created_annotation = cognite_client.annotations_v2.create(base_annotation2)
+    def test_create_single_annotation2(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
+        base_annotation.status = "rejected"
+        base_annotation.creating_user = "unit.test@cognite.com"
+        created_annotation = cognite_client.annotations_v2.create(base_annotation)
         assert isinstance(created_annotation, AnnotationV2)
-        check_created_vs_base(base_annotation2, created_annotation)
+        check_created_vs_base(base_annotation, created_annotation)
         assert created_annotation.creating_user == "unit.test@cognite.com"
 
     def test_create_annotations(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
@@ -132,19 +124,21 @@ class TestAnnotationsV2Integration:
     def test_update_annotation_by_annotation(
         self, cognite_client: CogniteClient, base_annotation: AnnotationV2
     ) -> None:
-        created_annotation = cognite_client.annotations_v2.create(base_annotation)
-        updated = deepcopy(created_annotation)
-        updated.linked_resource_type = "asset"
-        updated.linked_resource_id = 1
-        updated = cognite_client.annotations_v2.update(created_annotation)
-        assert isinstance(updated, AnnotationV2)
-        updated_dump = updated.dump()
-        created_annotation_dump = created_annotation.dump()
-        for k, v in updated_dump.items():
+        # Create annotation, make some local changes and cache a dump
+        annotation = cognite_client.annotations_v2.create(base_annotation)
+        annotation.linked_resource_type = "asset"
+        annotation.linked_resource_id = 1
+        local_dump = annotation.dump()
+        # Update the annotation on remote and make a dump
+        annotation = cognite_client.annotations_v2.update(annotation)
+        assert isinstance(annotation, AnnotationV2)
+        # Check that the local dump matches the remove dump
+        remote_dump = annotation.dump()
+        for k, v in remote_dump.items():
             if k == "last_updated_time":
-                assert v > created_annotation_dump[k]
+                assert v > local_dump[k]
             else:
-                assert v == created_annotation_dump[k]
+                assert v == local_dump[k]
 
     def test_update_annotation_by_annotation_update(
         self, cognite_client: CogniteClient, base_annotation: AnnotationV2
@@ -174,14 +168,12 @@ class TestAnnotationsV2Integration:
         for k, v in update.items():
             assert getattr(updated, k) == v
 
-    def test_list(
-        self, cognite_client: CogniteClient, base_annotation: AnnotationV2, base_annotation2: AnnotationV2
-    ) -> None:
-        created_annotations = cognite_client.annotations_v2.create([base_annotation] * 30 + [base_annotation2] * 30)
-        first_batch = created_annotations[:30]
-        second_batch = created_annotations[30:]
-        _test_list_on_created_annotations(cognite_client, first_batch, limit=-1)
-        _test_list_on_created_annotations(cognite_client, second_batch, limit=-1)
+    def test_list(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
+        created_annotations_1 = cognite_client.annotations_v2.create([base_annotation] * 30)
+        base_annotation.status = "rejected"
+        created_annotations_2 = cognite_client.annotations_v2.create([base_annotation] * 30)
+        _test_list_on_created_annotations(cognite_client, created_annotations_1, limit=-1)
+        _test_list_on_created_annotations(cognite_client, created_annotations_2, limit=-1)
 
     def test_list_limit(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
         created_annotations = cognite_client.annotations_v2.create([base_annotation] * 30)
