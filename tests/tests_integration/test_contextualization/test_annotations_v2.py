@@ -58,6 +58,7 @@ def base_annotation(annotation: AnnotationV2, file_id: int):
 def base_annotation2(base_annotation: AnnotationV2):
     base_annotation2 = deepcopy(base_annotation)
     base_annotation2.status = "rejected"
+    base_annotation2.creating_user = "unit.test@cognite.com"
     return base_annotation2
 
 
@@ -111,6 +112,16 @@ class TestAnnotationsV2Integration:
         try:
             assert isinstance(created_annotation, AnnotationV2)
             check_created_vs_base(base_annotation, created_annotation)
+            assert created_annotation.creating_user == None
+        finally:
+            delete_with_check([created_annotation.id])
+
+    def test_create_single_annotation2(self, base_annotation2: AnnotationV2) -> None:
+        created_annotation = ANNOTATIONSAPI.create(base_annotation2)
+        try:
+            assert isinstance(created_annotation, AnnotationV2)
+            check_created_vs_base(base_annotation2, created_annotation)
+            assert created_annotation.creating_user == "unit.test@cognite.com"
         finally:
             delete_with_check([created_annotation.id])
 
