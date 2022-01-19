@@ -12,6 +12,19 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.62]
+
+### Added
+- Experimental annotations_v2 implementation, providing access to the corresponding [AnnotationsV2 API](https://docs.cognite.com/api/playground/#tag/Annotations). 
+    - Added `AnnotationV2`, `AnnotationV2Filter`, `AnnotationV2Update` dataclasses to `cognite.experimental.data_classes`
+    - Added `annotations_v2` API to `cognite.experimental.CogniteClient`
+    - **Create** annotations with `client.annotations_v2.create` passing `AnnotationV2` instance(s)
+    - **Delete** annotations with `client.annotations_v2.delete` passing the id(s) of annotation(s) to delete
+    - **Filter** annotations with `client.annotations_v2.list` passing a `AnnotationV2Filter `dataclass instance or a filter `dict`
+    - **Update** annotations with `client.annotations_v2.update` passing updated `AnnotationV2` or `AnnotationV2Update` instance(s)
+    - **Get single** annotation with `client.annotations_v2.retrieve` passing the id
+    - **Get multiple** annotations with `client.annotations_v2.retrieve_multiple` passing the ids
+
 ## [0.61]
 
 ### Removed
