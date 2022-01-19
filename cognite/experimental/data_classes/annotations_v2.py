@@ -16,27 +16,27 @@ class AnnotationV2(CogniteResource):
     """Representation of an annotation in CDF.
 
     Args:
-        annotation_type (str): Type name of the annotation type
-        data (dict): The data payload containing the annotation information. Must match to the given annotation_type.
+        annotation_type (str): The type of the annotation. This uniquely decides what the structure of the 'data' block will be.
+        data (dict): The annotation information. The format of this object is decided by and validated against the 'annotation_type' attribute.
         status (str): The status of the annotation, e.g. "suggested", "approved", "rejected".
         
         annotated_resource_type (str): Type name of the CDF resource that is annotated, e.g. "file".
-        annotated_resource_id (int, optional): The server-generated id of the CDF resource that is annotated. Defaults to None.
-        annotated_resource_external_id (str, optional): The user-defined id of the CDF resource that is annotated. Defaults to None.
+        annotated_resource_id (int, optional): The internal ID of the annotated resource. Either this field or the external ID of the linked resource is required (not both).
+        annotated_resource_external_id (str, optional): The external ID of the annotated resource. Either this field or the internal ID of the linked resource is required (not both).
 
         creating_app (str): The name of the app from which this annotation was created.
         creating_app_version (str): The version of the app that created this annotation. Must be a valid semantic versioning (SemVer) string.
-        creating_user: (str, optional): The user that created this annotation. Can be set to None, which means that the annotation was created by a service.[str] = None .
+        creating_user: (str, optional): A username, or email, or name. This is not checked nor enforced. If the value is None, it means the annotation was created by a service.
 
         linked_resource_type (str, optional): The CDF resource type of an optional linked CDF resource. Defaults to None.
-        linked_resource_id (int, optional): The server-generated id of an optional linked CDF resource. Defaults to None.
-        linked_resource_external_id (str, optional): The user-defined id of an optional linked CDF resource. Defaults to None.
+        linked_resource_id (int, optional): The internal ID of the linked resource. Either this field or the external ID of the linked resource can be provided (not both).
+        linked_resource_external_id (str, optional): The external ID of the linked resource. Either this field or the internal ID of the linked resource can be provided (not both).
 
-        id (int, optional): A server-generated id for the object. Read only.
-        created_time (int, optional): Time since this annotation was created in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read only.
-        last_updated_time (int, optional): Time since this annotation was last updated in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read only.
+        id (int, optional): A server-generated id for the object. Read-only.
+        created_time (int, optional): Time when this annotation was created in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read-only.
+        last_updated_time (int, optional): Time when this annotation was last updated in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read-only.
         
-        cognite_client (CogniteClient, optional): The client to associate with this object. Read only.
+        cognite_client (CogniteClient, optional): The client to associate with this object. Read-only.
     """
 
     def __init__(
