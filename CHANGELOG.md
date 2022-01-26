@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Added
 
-- Optional argument `runtime` to `FunctionsAPI.create` which dictates the function runtime. Valid values are `["py37", "py38", "py39", "py310", None]` and `None` translates to the API default.
+- Optional argument `runtime` to `FunctionsAPI.create` which dictates the function runtime. Valid values are `["py37", "py38", "py39", None]` and `None` translates to the API default.
 
 ## [0.62]
 
