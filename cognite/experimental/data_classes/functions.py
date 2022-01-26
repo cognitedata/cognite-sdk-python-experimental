@@ -26,6 +26,7 @@ class Function(CogniteResource):
         env_vars (Dict[str, str]): User specified environment variables on the function ((key, value) pairs).
         cpu (Number): Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
         memory (Number): Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
+        runtime (str): Runtime of the function. Defaults to "py38". Allowed values are ["py37", "py38", "py39", "py310"].
         error(Dict[str, str]): Dictionary with keys "message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
@@ -46,6 +47,7 @@ class Function(CogniteResource):
         env_vars: Dict = None,
         cpu: Number = None,
         memory: Number = None,
+        runtime: str = None,
         error: Dict = None,
         cognite_client=None,
     ):
@@ -63,6 +65,7 @@ class Function(CogniteResource):
         self.env_vars = env_vars
         self.cpu = cpu
         self.memory = memory
+        self.runtime = runtime
         self.error = error
         self._cognite_client = cognite_client
 

@@ -52,6 +52,7 @@ class FunctionsAPI(APIClient):
         env_vars: Optional[Dict] = None,
         cpu: Optional[Number] = None,
         memory: Optional[Number] = None,
+        runtime: Optional[Number] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -81,6 +82,7 @@ class FunctionsAPI(APIClient):
             env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
             cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
             memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
+            runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", py310", `None`], and `None` translates to the API default.
 
         Returns:
             Function: The created function.
@@ -140,6 +142,8 @@ class FunctionsAPI(APIClient):
             function["cpu"] = cpu
         if memory:
             function["memory"] = memory
+        if runtime:
+            function["runtime"] = runtime
         if external_id:
             function["externalId"] = external_id
         if api_key:
