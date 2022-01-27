@@ -12,7 +12,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.types: `Types`_
 * client.model_hosting = `Model Hosting`_
 * client.annotations: `Annotations`_ (Legacy Annotations, soon to be deprecated and replaced with new Annotations API (AnnotationsV2))
-* client.annotations_v2: `AnnotationsV2`_ (New Annotations API)
+* client.annotations_v2: `AnnotationsV2`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
