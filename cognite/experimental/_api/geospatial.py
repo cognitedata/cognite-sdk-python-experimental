@@ -1,7 +1,7 @@
 import functools
 import json
 import types
-from typing import Dict, Any, Generator
+from typing import Any, Dict, Generator
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.exceptions import CogniteConnectionError
@@ -39,26 +39,34 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
         for attr_name in GeospatialAPI.__dict__:
             attr = getattr(self, attr_name)
-            if "coordinate_reference_systems" not in attr_name and "stream_features" not in attr_name and isinstance(
-                    attr, types.MethodType):
+            if (
+                "coordinate_reference_systems" not in attr_name
+                and "stream_features" not in attr_name
+                and isinstance(attr, types.MethodType)
+            ):
                 wrapped = _with_cognite_domain(attr)
                 setattr(self, attr_name, wrapped)
 
     @_with_cognite_domain
     def stream_features(
-            self,
-            feature_type_external_id: str,
-            filter: Dict[str, Any],
-            properties: Dict[str, Any] = None,
-            allow_crs_transformation: bool = False,
+        self,
+        feature_type_external_id: str,
+        filter: Dict[str, Any],
+        properties: Dict[str, Any] = None,
+        allow_crs_transformation: bool = False,
     ) -> Generator[Feature, None, None]:
         resource_path = self._feature_resource_path(feature_type_external_id) + "/search-streaming"
         body = {"filter": filter, "output": {"properties": properties, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
         params = {"allowCrsTransformation": "true"} if allow_crs_transformation else None
 
         res = self._do_request(
-            "POST", url_path=resource_path, json=body, timeout=self._config.timeout, stream=True, params=params,
-            headers={self.X_COGNITE_DOMAIN: self._cognite_domain}
+            "POST",
+            url_path=resource_path,
+            json=body,
+            timeout=self._config.timeout,
+            stream=True,
+            params=params,
+            headers={self.X_COGNITE_DOMAIN: self._cognite_domain},
         )
 
         try:
