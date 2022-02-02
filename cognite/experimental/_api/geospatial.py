@@ -44,8 +44,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 and "stream_features" not in attr_name
                 and isinstance(attr, types.MethodType)
             ):
-                wrapped = _with_cognite_domain(attr)
-                setattr(self, attr_name, wrapped)
+                wrapped = _with_cognite_domain(getattr(GeospatialAPI, attr_name))
+                setattr(ExperimentalGeospatialAPI, attr_name, wrapped)
 
     @_with_cognite_domain
     def stream_features(
