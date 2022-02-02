@@ -12,11 +12,17 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.63]
+## [0.64]
 
 ### Added
 
 - Optional argument `runtime` to `FunctionsAPI.create` which dictates the function runtime. Valid values are `["py37", "py38", "py39", None]` and `None` translates to the API default.
+
+## [0.63]
+
+### Changed
+- GeospatialAPI: create_features, update_features, search_features, stream_features, retrieve_features, 
+aggregate_features and delete_features to use feature_type_external_id
 
 ## [0.62]
 
