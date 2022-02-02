@@ -4,10 +4,9 @@ import types
 from typing import Any, Dict, Generator
 
 from cognite.client._api.geospatial import GeospatialAPI
+from cognite.client.data_classes.geospatial import Feature
 from cognite.client.exceptions import CogniteConnectionError
 from requests.exceptions import ChunkedEncodingError
-
-from cognite.experimental.data_classes import Feature
 
 
 def _with_cognite_domain(func):
