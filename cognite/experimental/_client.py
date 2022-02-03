@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from typing import Callable, Dict, List, Optional, Union
 
 from cognite.client._api_client import APIClient
@@ -20,12 +21,17 @@ from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionA
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 from cognite.experimental._api.types import TypesAPI
+from cognite.experimental._api.vision import VisionAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
     for api in ["types", "labels", "functions", "templates"]
     for endpoint in ["list", "byids", "search"]
 }
+
+
+class APIVersion(str, Enum):
+    PLAYGROUND = "playground"
 
 
 class CogniteClient(Client):
@@ -116,3 +122,5 @@ class CogniteClient(Client):
         self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         # template completion only
         self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
+
+        self.vision = VisionAPI(self.config, api_version=APIVersion.PLAYGROUND, cognite_client=self)
