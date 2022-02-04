@@ -39,11 +39,11 @@ class JobStatus(str, Enum):
 class CreatedDetectAssetsInFilesJob(CogniteResource):
     def __init__(
         self,
-        items: List[AllOfFileId],
         status: JobStatus,
         created_time: int,
         status_time: int,
         job_id: int,
+        items: Optional[List[AllOfFileId]] = None,
         use_cache: Optional[bool] = None,
         partial_match: Optional[bool] = None,
         asset_subtree_ids: Optional[List[InternalId]] = None,
@@ -69,11 +69,7 @@ class CreatedDetectAssetsInFilesJob(CogniteResource):
             return cls._load(json.loads(resource))
         elif isinstance(resource, Dict):
             k = resource_to_snake_case(resource)
-            return cls(
-                items=[
-                    AllOfFileId(file_id=item["file_id"], file_external_id=item.get("file_external_id"))
-                    for item in k["items"]
-                ],
+            instance = cls(
                 status=k["status"],
                 created_time=k["created_time"],
                 status_time=k["status_time"],
@@ -82,6 +78,14 @@ class CreatedDetectAssetsInFilesJob(CogniteResource):
                 partial_match=k.get("partial_match"),
                 asset_subtree_ids=k.get("asset_subtree_ids"),
             )
+            items = k.get("items")
+            if items is not None:
+                instance.items = [
+                    AllOfFileId(file_id=item["file_id"], file_external_id=item.get("file_external_id"))
+                    for item in k["items"]
+                ]
+            return instance
+
         raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
 
 
@@ -182,7 +186,6 @@ class SuccessfulAssetDetectionInFiles(AllOfFileId):
 class DetectAssetsInFilesJob(CogniteResource):
     def __init__(
         self,
-        items: List[SuccessfulAssetDetectionInFiles],
         status: JobStatus,
         created_time: int,
         status_time: int,
@@ -191,6 +194,7 @@ class DetectAssetsInFilesJob(CogniteResource):
         partial_match: Optional[bool] = None,
         asset_subtree_ids: Optional[List[InternalId]] = None,
         start_time: Optional[int] = None,
+        items: Optional[List[SuccessfulAssetDetectionInFiles]] = None,
         failed_items: Optional[List[FailedAssetDetectionInFiles]] = None,
     ) -> None:
         self.status = status
@@ -215,7 +219,6 @@ class DetectAssetsInFilesJob(CogniteResource):
         elif isinstance(resource, Dict):
             k = resource_to_snake_case(resource)
             instance = cls(
-                items=[SuccessfulAssetDetectionInFiles._load(v) for v in k["items"]],
                 status=k["status"],
                 created_time=k["created_time"],
                 status_time=k["status_time"],
@@ -227,5 +230,8 @@ class DetectAssetsInFilesJob(CogniteResource):
             failed_items = k.get("failed_items")
             if failed_items is not None:
                 instance.failed_items = [FailedAssetDetectionInFiles._load(v) for v in failed_items]
+            successful_items = k.get("items")
+            if successful_items is not None:
+                instance.items = [SuccessfulAssetDetectionInFiles._load(v) for v in successful_items]
             return instance
         raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
