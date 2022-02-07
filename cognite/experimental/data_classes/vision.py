@@ -2,8 +2,8 @@ import json
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union
 
-from cognite.client.data_classes import contextualization
 from cognite.client.data_classes._base import CogniteResource
+from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
@@ -27,10 +27,6 @@ EitherFileId = Union[InternalFileId, ExternalFileId]
 @dataclass
 class AllOfFileId(InternalFileId):
     file_external_id: Optional[ExternalId] = None
-
-
-class JobStatus(contextualization.JobStatus):
-    pass
 
 
 class CreatedDetectAssetsInFilesJob(CogniteResource):

@@ -1,8 +1,8 @@
 import pytest
 from cognite.client.data_classes import FileMetadata
+from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.vision import JobStatus
 
 COGNITE_CLIENT = CogniteClient()
 VAPI = COGNITE_CLIENT.vision
