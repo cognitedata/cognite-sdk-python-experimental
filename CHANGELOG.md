@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.65]
+
+### Added
+
+- VisionAPI: playground endpoints:
+  - [Detect external ID or name of assets in files](https://docs.cognite.com/api/playground/#operation/visionTagDetection)
+  - [Retrieve detected external ID or name of assets in files](https://docs.cognite.com/api/playground/#operation/visionTagDetectionRetrieve)
+
 ## [0.64]
 
 ### Added
