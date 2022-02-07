@@ -13,7 +13,7 @@ VAPI = COGNITE_CLIENT.vision
 @pytest.fixture
 def mock_create_job_ok(rsps):
     response_body = {
-        "status": "Queued",
+        "status": JobStatus.QUEUED,
         "createdTime": 934875934785,
         "startTime": 934875934785,
         "statusTime": 934875934785,
@@ -38,7 +38,7 @@ def mock_create_job_ok(rsps):
 @pytest.fixture
 def mock_fetch_job_ok(rsps):
     response_body = {
-        "status": "Completed",
+        "status": JobStatus.COMPLETED,
         "createdTime": 934875934785,
         "startTime": 934875934785,
         "statusTime": 934875934785,
