@@ -24,6 +24,9 @@ def mock_create_job_ok(rsps):
             {"fileId": 4},
             {"fileId": 5, "fileExternalId": "another"},
         ],
+        "useCache": True,
+        "partialMatch": True,
+        "assetSubtreeIds": [39468345],
     }
     rsps.add(
         rsps.POST, re.compile(".*?/context/vision/tagdetection"), status=200, json=response_body,
@@ -40,6 +43,9 @@ def mock_fetch_job_ok(rsps):
         "statusTime": 934875934785,
         "jobId": 1,
         "items": [{"fileId": 1, "annotations": [{"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}],},],
+        "useCache": True,
+        "partialMatch": True,
+        "assetSubtreeIds": [39468345],
     }
     rsps.add(
         rsps.GET, re.compile(".*?/context/vision/tagdetection"), status=200, json=response_body,
@@ -83,10 +89,17 @@ class TestAssetDetection:
         assert contains_file_id(job.items, id=2), job
         assert contains_file_id(job.items, id=3), job
         assert contains_file_id(job.items, external_id="another"), job
+        assert job.use_cache, job
+        assert job.partial_match, job
+        assert 39468345 in job.asset_subtree_ids, job
 
     def test_retrieve_job(self, mock_fetch_job_ok):
         job = VAPI.retrieve_detected_assets_in_files_job(job_id=1)
         assert isinstance(job, DetectAssetsInFilesJob), "wrong instance returned"
         assert job.status == "Completed", job
+        assert job.items is not None, job
         assert job.job_id == 1, job
         assert contains_file_id(job.items, id=1), job
+        assert job.use_cache, job
+        assert job.partial_match, job
+        assert 39468345 in job.asset_subtree_ids, job

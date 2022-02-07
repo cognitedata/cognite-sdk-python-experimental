@@ -1,8 +1,8 @@
 import json
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
+from cognite.client.data_classes import contextualization
 from cognite.client.data_classes._base import CogniteResource
 
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
@@ -29,11 +29,8 @@ class AllOfFileId(InternalFileId):
     file_external_id: Optional[ExternalId] = None
 
 
-class JobStatus(str, Enum):
-    QUEUED = "Queued"
-    RUNNING = "Running"
-    COMPLETED = "Completed"
-    FAILED = "Failed"
+class JobStatus(contextualization.JobStatus):
+    pass
 
 
 class CreatedDetectAssetsInFilesJob(CogniteResource):
@@ -86,7 +83,7 @@ class CreatedDetectAssetsInFilesJob(CogniteResource):
                 ]
             return instance
 
-        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+        raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
 @dataclass
@@ -108,7 +105,7 @@ class FailedAssetDetectionInFiles:
                     AllOfFileId(file_id=v["file_id"], file_external_id=v.get("file_external_id")) for v in k["items"]
                 ],
             )
-        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+        raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
 @dataclass
@@ -131,7 +128,7 @@ class VisionRegion:
         elif isinstance(resource, Dict):
             k = resource_to_snake_case(resource)
             return cls(shape=k["shape"], vertices=[VisionVertex(x=v["x"], y=v["y"]) for v in k["vertices"]],)
-        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+        raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
 @dataclass
@@ -155,7 +152,7 @@ class VisionTagDetectionAnnotation:
                 confidence=k.get("confidence"),
                 region=VisionRegion._load(k.get("region")),
             )
-        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+        raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
 @dataclass
@@ -180,7 +177,7 @@ class SuccessfulAssetDetectionInFiles(AllOfFileId):
             if annotations is not None:
                 instance.annotations = [VisionTagDetectionAnnotation._load(v) for v in annotations]
             return instance
-        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+        raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
 class DetectAssetsInFilesJob(CogniteResource):
@@ -234,4 +231,4 @@ class DetectAssetsInFilesJob(CogniteResource):
             if successful_items is not None:
                 instance.items = [SuccessfulAssetDetectionInFiles._load(v) for v in successful_items]
             return instance
-        raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
+        raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")

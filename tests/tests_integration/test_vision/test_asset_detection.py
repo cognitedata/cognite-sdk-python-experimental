@@ -1,14 +1,7 @@
 import pytest
 from cognite.client.data_classes import FileMetadata
-from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import (
-    EntityMatchingMatchList,
-    EntityMatchingPipeline,
-    EntityMatchingPipelineRunList,
-    EntityMatchingPipelineUpdate,
-)
 from cognite.experimental.data_classes.vision import JobStatus
 
 COGNITE_CLIENT = CogniteClient()

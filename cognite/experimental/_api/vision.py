@@ -13,7 +13,7 @@ from cognite.experimental.utils import resource_to_camel_case
 
 class VisionAPI(APIClient):
     _RESOURCE_PATH = "/context/vision"
-    _TAG_DETECTION_PATH = _RESOURCE_PATH + "/tagdetection"
+    _TAG_DETECTION_PATH = f"{_RESOURCE_PATH}/tagdetection"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
