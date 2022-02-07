@@ -1,6 +1,7 @@
 import re
 
 import pytest
+from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.vision import CreatedDetectAssetsInFilesJob, DetectAssetsInFilesJob
@@ -83,7 +84,7 @@ class TestAssetDetection:
             ]
         )
         assert isinstance(job, CreatedDetectAssetsInFilesJob), "wrong instance returned"
-        assert job.status == "Queued", job
+        assert job.status == JobStatus.QUEUED, job
         assert job.job_id > 0, job
         assert contains_file_id(job.items, external_id="some_external_id"), job
         assert contains_file_id(job.items, id=2), job
@@ -96,7 +97,7 @@ class TestAssetDetection:
     def test_retrieve_job(self, mock_fetch_job_ok):
         job = VAPI.retrieve_detected_assets_in_files_job(job_id=1)
         assert isinstance(job, DetectAssetsInFilesJob), "wrong instance returned"
-        assert job.status == "Completed", job
+        assert job.status == JobStatus.COMPLETED, job
         assert job.items is not None, job
         assert job.job_id == 1, job
         assert contains_file_id(job.items, id=1), job
