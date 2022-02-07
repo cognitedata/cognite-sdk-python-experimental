@@ -40,3 +40,6 @@ class TestAssetDetection:
         assert response.job_id > 0
         assert response.status_time > 0
         assert response.created_time > 0
+
+        if response.status == JobStatus.COMPLETED:
+            assert response.items is not None, response
