@@ -29,7 +29,7 @@ class TestAssetDetection:
         assert response is not None
         assert response.job_id > 0
         assert response.job_id == response.job_id
-        assert response.status == JobStatus.QUEUED
+        assert response.status == JobStatus.QUEUED.value
         assert len(response.items) == 1
         assert response.items[0].file_id == file_id
         assert response.status_time > 0
@@ -41,5 +41,5 @@ class TestAssetDetection:
         assert response.status_time > 0
         assert response.created_time > 0
 
-        if response.status == JobStatus.COMPLETED:
+        if response.status == JobStatus.COMPLETED.value:
             assert response.items is not None, response
