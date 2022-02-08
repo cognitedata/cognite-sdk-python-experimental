@@ -349,13 +349,13 @@ class FunctionsLimits(CogniteResponse):
         cpu_cores: Dict[str, float],
         memory_gb: Dict[str, float],
         runtimes: List[str],
-        response_size: Optional[Dict[str, float]] = None,
+        response_size_mb: Optional[Dict[str, float]] = None,
     ):
         self.timeout_minutes = timeout_minutes
         self.cpu_cores = cpu_cores
         self.memory_gb = memory_gb
         self.runtimes = runtimes
-        self.response_size = response_size
+        self.response_size_mb = response_size_mb
 
     @classmethod
     def _load(cls, api_response):
@@ -364,5 +364,5 @@ class FunctionsLimits(CogniteResponse):
             cpu_cores=api_response["cpuCores"],
             memory_gb=api_response["memoryGb"],
             runtimes=api_response["runtimes"],
-            response_size=api_response.get("responseSizeMb"),
+            response_size_mb=api_response.get("responseSizeMb"),
         )
