@@ -53,6 +53,7 @@ class FunctionsAPI(APIClient):
         cpu: Optional[Number] = None,
         memory: Optional[Number] = None,
         runtime: Optional[Number] = None,
+        extraIndexUrls: Optional[List[str]] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -83,6 +84,7 @@ class FunctionsAPI(APIClient):
             cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
             memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
             runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default.
+            extraIndexUrls (List[str], optional):   Extra Index URLs for Python Package Manager to use.
 
         Returns:
             Function: The created function.
@@ -150,6 +152,8 @@ class FunctionsAPI(APIClient):
             function["apiKey"] = api_key
         if secrets:
             function["secrets"] = secrets
+        if extraIndexUrls:
+            function["extraIndexUrls"] = extraIndexUrls
         body = {"items": [function]}
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)

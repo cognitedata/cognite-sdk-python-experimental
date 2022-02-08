@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.66]
+
+### Added
+
+- Optional argument `extraIndexUrls` to `FunctionsAPI.create` which adds extra index URLs to python package manager.
+  
 ## [0.65]
 
 ### Added
