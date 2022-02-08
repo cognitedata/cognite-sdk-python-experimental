@@ -330,6 +330,8 @@ def mock_functions_limit_response(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/limits"
     rsps.add(rsps.GET, url, status=200, json=response_body)
 
+    yield rsps
+
 
 class TestFunctionsAPI:
     @pytest.mark.parametrize(
@@ -532,6 +534,7 @@ class TestFunctionsAPI:
     def test_functions_limits_endpoint(self, mock_functions_limit_response):
         res = FUNCTIONS_API.limits()
         assert isinstance(res, FunctionsLimits)
+        assert mock_functions_limit_response.calls[0].response.json() == res.dump(camel_case=True)
 
 
 @pytest.fixture
