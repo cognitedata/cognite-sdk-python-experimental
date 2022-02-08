@@ -2,7 +2,7 @@ import time
 from numbers import Number
 from typing import Dict, List, Optional, Union
 
-from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteResponse
 from cognite.client.data_classes.shared import TimestampRange
 
 from cognite.experimental._constants import LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT
@@ -340,3 +340,29 @@ class FunctionCallLogEntry(CogniteResource):
 class FunctionCallLog(CogniteResourceList):
     _RESOURCE = FunctionCallLogEntry
     _ASSERT_CLASSES = False
+
+
+class FunctionsLimits(CogniteResponse):
+    def __init__(
+        self,
+        timeout_minutes: Dict[str, float],
+        cpu_cores: Dict[str, float],
+        memory_gb: Dict[str, float],
+        runtimes: List[str],
+        response_size: Optional[Dict[str, float]] = None,
+    ):
+        self.timeout_minutes = timeout_minutes
+        self.cpu_cores = cpu_cores
+        self.memory_gb = memory_gb
+        self.runtimes = runtimes
+        self.response_size = response_size
+
+    @classmethod
+    def _load(cls, api_response):
+        return cls(
+            timeout_minutes=api_response["timeoutMinutes"],
+            cpu_cores=api_response["cpuCores"],
+            memory_gb=api_response["memoryGb"],
+            runtimes=api_response["runtimes"],
+            response_size=api_response.get("responseSizeMb"),
+        )

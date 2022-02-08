@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.66]
+
+### Added
+
+- Method `FunctionsAPI.limits` which returns information about limits associated with the CDF project the user is logged in to.
+
 ## [0.65]
 
 ### Added
