@@ -352,6 +352,7 @@ class FunctionsLimits(CogniteResponse):
         runtimes (List[str]): Available runtimes. For example, "py37" translates to the latest version of the Python 3.7.x series.
         response_size_mb (Optional[int]): Maximum response size of function calls.
     """
+
     def __init__(
         self,
         timeout_minutes: int,
