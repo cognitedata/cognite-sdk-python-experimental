@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.66]
+
+### Added
+
+- Geospatial:
+  - [Put a raster into a feature raster property](https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster)
+
 ## [0.65]
 
 ### Added
