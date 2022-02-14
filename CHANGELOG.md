@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.66.1]
+
+### Fixed
+- pyproject now allows regex version 2020 - 2022
+
+
 ## [0.66]
 
 ### Added
