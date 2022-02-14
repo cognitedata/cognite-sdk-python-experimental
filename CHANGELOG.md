@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.67]
+
+### Changed
+
+- `cognite-sdk-experimental` now depends on `cognite-sdk-core` instead of `cognite-sdk`.
+
+
 ## [0.66.1]
 
 ### Fixed
