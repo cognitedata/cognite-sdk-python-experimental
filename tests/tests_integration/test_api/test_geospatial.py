@@ -71,6 +71,9 @@ def test_feature(cognite_client, test_feature_type):
     cognite_client.geospatial.delete_features(test_feature_type.external_id, external_id=external_id)
 
 
+# NB: raster tests are for now marked as skip since GCP has GDAL drivers entirely disable.
+# There is no way to enable them yet, so testing can be done manually against azure-dev or bluefield
+# by commenting out the @pytest.mark.skip annotation
 class TestGeospatialAPI:
 
     # This test already exist in the main python sdk

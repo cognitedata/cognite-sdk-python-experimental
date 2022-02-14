@@ -25,6 +25,7 @@ from cognite.experimental.data_classes import (
     FunctionSchedule,
     FunctionSchedulesFilter,
     FunctionSchedulesList,
+    FunctionsLimits,
 )
 
 
@@ -335,6 +336,10 @@ class FunctionsAPI(APIClient):
             function_call.wait()
 
         return function_call
+
+    def limits(self):
+        res = self._get("/functions/limits")
+        return FunctionsLimits._load(res.json())
 
     def _zip_and_upload_folder(self, folder: str, name: str, external_id: Optional[str] = None) -> int:
         # / is not allowed in file names

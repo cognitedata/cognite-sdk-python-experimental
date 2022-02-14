@@ -16,6 +16,7 @@ from cognite.experimental.data_classes import (
     FunctionList,
     FunctionSchedule,
     FunctionSchedulesList,
+    FunctionsLimits,
 )
 from tests.utils import jsgz_load
 
@@ -317,6 +318,21 @@ def mock_function_calls_filter_response_with_limit(rsps):
     yield rsps
 
 
+@pytest.fixture
+def mock_functions_limit_response(rsps):
+    response_body = {
+        "timeoutMinutes": 10,
+        "cpuCores": {"min": 0.1, "max": 0.6, "default": 0.25},
+        "memoryGb": {"min": 0.1, "max": 2.5, "default": 1.0},
+        "responseSizeMb": 1,
+        "runtimes": ["py37", "py38", "py39"],
+    }
+    url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/limits"
+    rsps.add(rsps.GET, url, status=200, json=response_body)
+
+    yield rsps
+
+
 class TestFunctionsAPI:
     @pytest.mark.parametrize(
         "function_folder, function_path, exception",
@@ -514,6 +530,11 @@ class TestFunctionsAPI:
             assert _using_client_credential_flow(cognite_client_with_client_credentials)
             cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
         assert "Failed to create session using client credentials flow." in str(excinfo.value)
+
+    def test_functions_limits_endpoint(self, mock_functions_limit_response):
+        res = FUNCTIONS_API.limits()
+        assert isinstance(res, FunctionsLimits)
+        assert mock_functions_limit_response.calls[0].response.json() == res.dump(camel_case=True)
 
 
 @pytest.fixture

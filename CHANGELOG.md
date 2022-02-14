@@ -12,12 +12,24 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.66]
+## [0.67]
 
 ### Added
 
 - Geospatial:
   - [Put a raster into a feature raster property](https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster)
+
+## [0.66.1]
+
+### Fixed
+- pyproject now allows regex version 2020 - 2022
+
+
+## [0.66]
+
+### Added
+
+- Method `FunctionsAPI.limits` which returns information about limits associated with the CDF project the user is logged in to.
 
 ## [0.65]
 

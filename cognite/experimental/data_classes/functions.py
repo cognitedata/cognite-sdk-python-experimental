@@ -2,7 +2,7 @@ import time
 from numbers import Number
 from typing import Dict, List, Optional, Union
 
-from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteResponse
 from cognite.client.data_classes.shared import TimestampRange
 
 from cognite.experimental._constants import LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT
@@ -340,3 +340,39 @@ class FunctionCallLogEntry(CogniteResource):
 class FunctionCallLog(CogniteResourceList):
     _RESOURCE = FunctionCallLogEntry
     _ASSERT_CLASSES = False
+
+
+class FunctionsLimits(CogniteResponse):
+    """Service limits for the associated project.
+
+    Args:
+        timeout_minutes (int): Timeout of each function call.
+        cpu_cores (Dict[str, float]): The number of CPU cores per function exectuion (i.e. function call).
+        memory_gb (Dict[str, float]): The amount of available memory in GB per function execution (i.e. function call).
+        runtimes (List[str]): Available runtimes. For example, "py37" translates to the latest version of the Python 3.7.x series.
+        response_size_mb (Optional[int]): Maximum response size of function calls.
+    """
+
+    def __init__(
+        self,
+        timeout_minutes: int,
+        cpu_cores: Dict[str, float],
+        memory_gb: Dict[str, float],
+        runtimes: List[str],
+        response_size_mb: Optional[int] = None,
+    ):
+        self.timeout_minutes = timeout_minutes
+        self.cpu_cores = cpu_cores
+        self.memory_gb = memory_gb
+        self.runtimes = runtimes
+        self.response_size_mb = response_size_mb
+
+    @classmethod
+    def _load(cls, api_response):
+        return cls(
+            timeout_minutes=api_response["timeoutMinutes"],
+            cpu_cores=api_response["cpuCores"],
+            memory_gb=api_response["memoryGb"],
+            runtimes=api_response["runtimes"],
+            response_size_mb=api_response.get("responseSizeMb"),
+        )
