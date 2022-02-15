@@ -154,6 +154,6 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}/delete"
         )
 
-        res = self._do_request("POST", url_path, timeout=self._config.timeout,)
-
-        return None
+        self._do_request(
+            "POST", url_path, timeout=self._config.timeout,
+        )
