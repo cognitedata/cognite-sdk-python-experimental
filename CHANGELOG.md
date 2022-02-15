@@ -12,12 +12,20 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.67]
+## [0.68.0]
 
 ### Added
 
 - Geospatial:
   - [Put a raster into a feature raster property](https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster)
+
+
+## [0.67]
+
+### Changed
+
+- `cognite-sdk-experimental` now depends on `cognite-sdk-core` instead of `cognite-sdk`.
+
 
 ## [0.66.1]
 
