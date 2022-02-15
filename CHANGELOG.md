@@ -27,7 +27,6 @@ Changes are grouped as follows
 - `cognite-sdk-experimental` now depends on `cognite-sdk-core` instead of `cognite-sdk`.
 
 
->>>>>>> origin/master
 ## [0.66.1]
 
 ### Fixed
