@@ -1,7 +1,7 @@
 import uuid
 
 import pytest
-from cognite.client.data_classes.geospatial import Feature, FeatureType
+from cognite.client.data_classes.geospatial import Feature, FeatureList, FeatureType
 
 from cognite.experimental import CogniteClient
 
@@ -87,6 +87,13 @@ class TestGeospatialAPI:
             ),
         )
         cognite_client.geospatial.delete_features(test_feature_type.external_id, external_id=external_id)
+
+    def test_stream_features(self, cognite_client, test_feature_type, test_feature):
+        features = cognite_client.geospatial.stream_features(
+            feature_type_external_id=test_feature_type.external_id, filter={}
+        )
+        feature_list = FeatureList(list(features))
+        assert len(feature_list) == 1
 
     @pytest.mark.skip(reason="only runs on azure flexible postgres servers")
     def test_put_raster(self, cognite_client, test_feature_type, test_feature):
