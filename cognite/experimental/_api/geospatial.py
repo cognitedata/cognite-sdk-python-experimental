@@ -102,7 +102,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
         Examples:
 
-            Put a raster in a feature raster attribute:
+            Put a raster in a feature raster property:
 
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
@@ -125,3 +125,35 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         )
 
         return RasterMetadata._load(res.json(), cognite_client=self._cognite_client)
+
+    @_with_cognite_domain
+    def delete_raster(self, feature_type_external_id: str, feature_external_id: str, raster_id: str,) -> None:
+        """`Delete raster`
+        <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster>
+
+        Args:
+            feature_type_external_id : Feature type definition for the features to create.
+            feature_external_id: one feature or a list of features to create
+            raster_id: the raster id
+
+        Returns:
+            None
+
+        Examples:
+
+            Delete a raster in a feature raster property:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_type = ...
+                >>> feature = ...
+                >>> rasterId = ...
+                >>> c.geospatial.delete_raster(feature_type, feature, rasterId)
+        """
+        url_path = (
+            self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}/delete"
+        )
+
+        res = self._do_request("POST", url_path, timeout=self._config.timeout,)
+
+        return None
