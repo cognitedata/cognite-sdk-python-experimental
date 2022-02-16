@@ -135,3 +135,17 @@ class TestGeospatialAPI:
             "upperleftx": -0.5,
             "upperlefty": -0.5,
         }
+
+    @pytest.mark.skip(reason="only runs on azure flexible postgres servers")
+    def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
+        res = cognite_client.geospatial.delete_raster(
+            feature_type_external_id=test_feature_type.external_id,
+            feature_external_id=test_feature_with_raster.external_id,
+            raster_id="raster",
+        )
+        assert res is None
+        res = cognite_client.geospatial.retrieve_features(
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+        )
+        assert res[0].external_id == test_feature_with_raster.external_id
+        assert hasattr(res[0], "raster") is False
