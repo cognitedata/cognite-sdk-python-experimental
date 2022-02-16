@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.68.1]
+
+### Fixed
+
+- Widen typing-extension version to allow v4.
+
 ## [0.68.0]
 
 ### Added
