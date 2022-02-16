@@ -1,7 +1,7 @@
 import uuid
 
 import pytest
-from cognite.client.data_classes.geospatial import Feature, FeatureType
+from cognite.client.data_classes.geospatial import Feature, FeatureList, FeatureType
 
 from cognite.experimental import CogniteClient
 
@@ -55,20 +55,16 @@ def test_feature(cognite_client, test_feature_type):
 
 
 @pytest.fixture
-def test_feature(cognite_client, test_feature_type):
-    external_id = f"F_{uuid.uuid4().hex[:10]}"
-    feature = cognite_client.geospatial.create_features(
-        test_feature_type.external_id,
-        Feature(
-            external_id=external_id,
-            position={"wkt": "POINT(2.2768485 48.8589506)"},
-            temperature=12.4,
-            volume=1212.0,
-            pressure=2121.0,
-        ),
+def test_feature_with_raster(cognite_client, test_feature_type, test_feature):
+    cognite_client.geospatial.put_raster(
+        feature_type_external_id=test_feature_type.external_id,
+        feature_external_id=test_feature.external_id,
+        raster_id="raster",
+        raster_format="XYZ",
+        raster_srid=3857,
+        file="tests/tests_integration/test_api/geospatial_data/raster-grid-example.xyz",
     )
-    yield feature
-    cognite_client.geospatial.delete_features(test_feature_type.external_id, external_id=external_id)
+    yield test_feature
 
 
 # NB: raster tests are for now marked as skip since GCP has GDAL drivers entirely disable.
@@ -92,6 +88,13 @@ class TestGeospatialAPI:
         )
         cognite_client.geospatial.delete_features(test_feature_type.external_id, external_id=external_id)
 
+    def test_stream_features(self, cognite_client, test_feature_type, test_feature):
+        features = cognite_client.geospatial.stream_features(
+            feature_type_external_id=test_feature_type.external_id, filter={}
+        )
+        feature_list = FeatureList(list(features))
+        assert len(feature_list) == 1
+
     @pytest.mark.skip(reason="only runs on azure flexible postgres servers")
     def test_put_raster(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.put_raster(
@@ -112,3 +115,37 @@ class TestGeospatialAPI:
         assert res.srid == 3857
         assert res.upperleftx == -0.5
         assert res.upperlefty == -0.5
+
+    @pytest.mark.skip(reason="only runs on azure flexible postgres servers")
+    def test_retrieve_features_with_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
+        res = cognite_client.geospatial.retrieve_features(
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+        )
+        assert res[0].external_id == test_feature_with_raster.external_id
+        raster_metadata = res[0].raster
+        assert raster_metadata == {
+            "width": 4,
+            "height": 5,
+            "numbands": 1,
+            "scalex": 1.0,
+            "scaley": 1.0,
+            "skewx": 0.0,
+            "skewy": 0.0,
+            "srid": 3857,
+            "upperleftx": -0.5,
+            "upperlefty": -0.5,
+        }
+
+    @pytest.mark.skip(reason="only runs on azure flexible postgres servers")
+    def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
+        res = cognite_client.geospatial.delete_raster(
+            feature_type_external_id=test_feature_type.external_id,
+            feature_external_id=test_feature_with_raster.external_id,
+            raster_id="raster",
+        )
+        assert res is None
+        res = cognite_client.geospatial.retrieve_features(
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+        )
+        assert res[0].external_id == test_feature_with_raster.external_id
+        assert hasattr(res[0], "raster") is False
