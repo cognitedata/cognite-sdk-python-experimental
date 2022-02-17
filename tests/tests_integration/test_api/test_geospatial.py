@@ -1,7 +1,7 @@
 import uuid
 
 import pytest
-from cognite.client.data_classes.geospatial import Feature, FeatureList, FeatureType
+from cognite.client.data_classes.geospatial import *
 
 from cognite.experimental import CogniteClient
 
@@ -144,6 +144,30 @@ class TestGeospatialAPI:
             raster_id="raster",
         )
         assert res is None
+        res = cognite_client.geospatial.retrieve_features(
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+        )
+        assert res[0].external_id == test_feature_with_raster.external_id
+        assert hasattr(res[0], "raster") is False
+
+    @pytest.mark.skip(reason="only runs on azure flexible postgres servers")
+    def test_delete_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
+        feature_type_updated = cognite_client.geospatial.update_feature_types(
+            update=FeatureTypeUpdate(
+                external_id=test_feature_type.external_id,
+                add=PropertyAndSearchSpec(properties={}, search_spec={}),
+                remove=PropertyAndSearchSpec(properties=["raster"], search_spec=[]),
+            )
+        )
+        assert feature_type_updated[0].properties.keys() == {
+            "pressure",
+            "externalId",
+            "lastUpdatedTime",
+            "createdTime",
+            "volume",
+            "temperature",
+            "position",
+        }
         res = cognite_client.geospatial.retrieve_features(
             feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
         )
