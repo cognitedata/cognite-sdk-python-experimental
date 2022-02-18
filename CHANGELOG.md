@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.68.3]
+
+### Fixed
+- Vision:
+  - Raise when dump() or dump(camel_case=False) was called on vision related CogniteResource's
+
+
 ## [0.68.2]
 
 ### Added

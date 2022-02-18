@@ -53,8 +53,10 @@ class CreatedDetectAssetsInFilesJob(CogniteResource):
         self.items = items
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
-        assert camel_case
-        return resource_to_camel_case(self)
+        if camel_case:
+            return resource_to_camel_case(self)
+        else:
+            return super().dump(camel_case=camel_case)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
@@ -202,8 +204,10 @@ class DetectAssetsInFilesJob(CogniteResource):
         self.failed_items = failed_items
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
-        assert camel_case
-        return resource_to_camel_case(self)
+        if camel_case:
+            return resource_to_camel_case(self)
+        else:
+            return super().dump(camel_case=camel_case)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):

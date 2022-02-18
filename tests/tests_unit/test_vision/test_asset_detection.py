@@ -104,3 +104,7 @@ class TestAssetDetection:
         assert job.use_cache, job
         assert job.partial_match, job
         assert 39468345 in job.asset_subtree_ids, job
+
+    def test_dump(self):
+        # check that dump does not raise any exceptions
+        str(DetectAssetsInFilesJob(status_time=3456, job_id=1, status=JobStatus.COMPLETED, created_time=23))
