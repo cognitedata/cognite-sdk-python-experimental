@@ -12,7 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.68.2]
+
+### Changed
+
+- Fixed typehint for argument `runtime` in `FunctionsAPI.create().`
+
 ## [0.68.1]
+
+### Added
+
+- Geospatial:
+  - [Delete a raster from a feature raster property](https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster)
 
 ### Fixed
 
