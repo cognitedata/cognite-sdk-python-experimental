@@ -56,7 +56,7 @@ class CreatedDetectAssetsInFilesJob(CogniteResource):
         if camel_case:
             return resource_to_camel_case(self)
         else:
-            return super().dump(camel_case=camel_case)
+            return super().dump(camel_case=False)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
@@ -207,7 +207,7 @@ class DetectAssetsInFilesJob(CogniteResource):
         if camel_case:
             return resource_to_camel_case(self)
         else:
-            return super().dump(camel_case=camel_case)
+            return super().dump(camel_case=False)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
