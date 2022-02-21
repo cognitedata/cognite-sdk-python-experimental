@@ -84,7 +84,7 @@ class FunctionsAPI(APIClient):
             cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
             memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
             runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default.
-            extraIndexUrls (List[str], optional):   Extra Index URLs for Python Package Manager to use. Please do not use any extra indices you don't trust. Please do not include a user with write access to indices you provide.  
+            extraIndexUrls (List[str], optional):   Extra Index URLs for Python Package Manager to use. Please do not use any extra indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
 
         Returns:
             Function: The created function.
