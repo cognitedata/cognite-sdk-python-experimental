@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Added
 
-- Optional argument `extraIndexUrls` to `FunctionsAPI.create` which adds extra index URLs to python package manager.
+- Optional argument `extraIndexUrls` to `FunctionsAPI.create` which enables the users to install pip packages from private repositories via adding extra index URLs to Python package manager.
   
 ## [0.65]
 
