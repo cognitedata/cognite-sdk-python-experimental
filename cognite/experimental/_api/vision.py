@@ -36,6 +36,18 @@ class VisionAPI(APIClient):
         Returns:
             DetectAssetsInFilesJob: job information
         """
+        request = self._prepare_detect_assets_in_files_request(files, use_cache, partial_match, asset_subtree_ids)
+        response = self._post(url_path=self._TAG_DETECTION_PATH, json=request)
+        return CreatedDetectAssetsInFilesJob._load(response.json(), cognite_client=self._cognite_client)
+
+    @classmethod
+    def _prepare_detect_assets_in_files_request(
+        cls,
+        files: List[EitherFileId],
+        use_cache: Optional[bool] = None,
+        partial_match: Optional[bool] = None,
+        asset_subtree_ids: Optional[List[InternalId]] = None,
+    ) -> dict:
         request = {
             "items": files,
             "use_cache": use_cache,
@@ -43,8 +55,7 @@ class VisionAPI(APIClient):
             "asset_subtree_ids": asset_subtree_ids,
         }
         request = resource_to_camel_case(request)
-        response = self._post(url_path=self._TAG_DETECTION_PATH, json=request)
-        return CreatedDetectAssetsInFilesJob._load(response.json(), cognite_client=self._cognite_client)
+        return request
 
     def retrieve_detected_assets_in_files_job(self, job_id: InternalId) -> DetectAssetsInFilesJob:
         """Retrieve detected external ID or name of assets with bounding boxes in images or single-page pdf files.

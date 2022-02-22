@@ -1,18 +1,26 @@
+import json
 import re
+from unittest.mock import MagicMock
 
 import pytest
 from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.vision import CreatedDetectAssetsInFilesJob, DetectAssetsInFilesJob
+from cognite.experimental._api.vision import VisionAPI
+from cognite.experimental.data_classes.vision import (
+    CreatedDetectAssetsInFilesJob,
+    DetectAssetsInFilesJob,
+    ExternalFileId,
+    InternalFileId,
+)
 
 COGNITE_CLIENT = CogniteClient()
 VAPI = COGNITE_CLIENT.vision
 
 
 @pytest.fixture
-def mock_create_job_ok(rsps):
-    response_body = {
+def create_job_response_ok():
+    return {
         "status": JobStatus.QUEUED.value,
         "createdTime": 934875934785,
         "startTime": 934875934785,
@@ -29,15 +37,11 @@ def mock_create_job_ok(rsps):
         "partialMatch": True,
         "assetSubtreeIds": [39468345],
     }
-    rsps.add(
-        rsps.POST, re.compile(".*?/context/vision/tagdetection"), status=200, json=response_body,
-    )
-    yield rsps
 
 
 @pytest.fixture
-def mock_fetch_job_ok(rsps):
-    response_body = {
+def fetch_job_response_ok():
+    return {
         "status": JobStatus.COMPLETED.value,
         "createdTime": 934875934785,
         "startTime": 934875934785,
@@ -48,8 +52,20 @@ def mock_fetch_job_ok(rsps):
         "partialMatch": True,
         "assetSubtreeIds": [39468345],
     }
+
+
+@pytest.fixture
+def mock_create_job_ok(rsps, create_job_response_ok):
     rsps.add(
-        rsps.GET, re.compile(".*?/context/vision/tagdetection"), status=200, json=response_body,
+        rsps.POST, re.compile(".*?/context/vision/tagdetection"), status=200, json=create_job_response_ok,
+    )
+    yield rsps
+
+
+@pytest.fixture
+def mock_fetch_job_ok(rsps, fetch_job_response_ok):
+    rsps.add(
+        rsps.GET, re.compile(".*?/context/vision/tagdetection"), status=200, json=fetch_job_response_ok,
     )
     yield rsps
 
@@ -104,3 +120,16 @@ class TestAssetDetection:
         assert job.use_cache, job
         assert job.partial_match, job
         assert 39468345 in job.asset_subtree_ids, job
+
+    def test_request_to_camel_case(self):
+        expected_request = {"items": [{"fileId": 1}, {"fileExternalId": "abc_test"}]}
+
+        request = VisionAPI._prepare_detect_assets_in_files_request(
+            files=[{"file_id": 1}, {"file_external_id": "abc_test"}]  # type: ignore
+        )
+        assert request == expected_request
+
+        request = VisionAPI._prepare_detect_assets_in_files_request(
+            files=[InternalFileId(file_id=1), ExternalFileId(file_external_id="abc_test")]
+        )
+        assert request == expected_request
