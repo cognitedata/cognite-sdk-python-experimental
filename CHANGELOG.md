@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.68.3]
+
+### Fixed
+
+- Vision:
+  - [certain types are not correctly converted to camelcase, causing a 400 bad request](https://github.com/cognitedata/cognite-sdk-python-experimental/pull/287)
+
+
 ## [0.68.2]
 
 ### Added
