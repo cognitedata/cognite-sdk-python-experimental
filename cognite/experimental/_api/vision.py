@@ -34,7 +34,7 @@ class VisionAPI(APIClient):
             asset_subtree_ids (List[int]): Search for external ID or name of assets that are in a subtree rooted at one of the assetSubtreeIds
 
         Returns:
-            DetectAssetsInFilesJob: job information
+            CreatedDetectAssetsInFilesJob: job information
         """
         request = self._prepare_detect_assets_in_files_request(files, use_cache, partial_match, asset_subtree_ids)
         response = self._post(url_path=self._TAG_DETECTION_PATH, json=request)
