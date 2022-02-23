@@ -138,6 +138,7 @@ class FunctionsAPI(APIClient):
             "fileId": file_id,
             "functionPath": function_path,
             "envVars": env_vars,
+            "metadata": metadata,
         }
         if cpu:
             function["cpu"] = cpu
@@ -151,8 +152,6 @@ class FunctionsAPI(APIClient):
             function["apiKey"] = api_key
         if secrets:
             function["secrets"] = secrets
-        if metadata:
-            function["metadata"] = metadata
         body = {"items": [function]}
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
