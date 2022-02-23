@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Added
 
-- Optional argument `metadata` to `FunctionsAPI.create` which allows metadata in the form of key:value pairs to be added to each function.
+- Optional argument `metadata` to `FunctionsAPI.create` which allows metadata in the form of key:value pairs of strings to be added to each function.
 
 ## [0.68.3]
 
