@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.69.0]
+
+### Added
+
+- Optional argument `metadata` to `FunctionsAPI.create` which allows metadata in the form of key:value pairs of strings to be added to each function.
+
 ## [0.68.3]
 
 ### Fixed
