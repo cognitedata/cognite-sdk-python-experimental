@@ -186,7 +186,8 @@ class EntityMatchingPipelineRunList(CogniteResourceList):
 
 
 class EntityMatchingPipeline(CogniteResource):
-    """Entity matching pipeline, used to continuously iterate and improve an entity matching model.
+    """Rerunnable entity matching pipeline, used to continuously iterate and improve.
+       Entity matching pipelines supports expert knowledge (confirmed and/or rejected matches), regex rules (match rules) and entity matching models.
        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
 
     Args:
@@ -197,7 +198,7 @@ class EntityMatchingPipeline(CogniteResource):
         sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
         confirmed_matches: user-confirmed certain matches which will be used to override any other results.
         rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
-        use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
+        use_existing_matches: If set, uses existing matches on resources as additional training data when the entity matching model is fit.
         replacements: Expects a list of {'field':.., 'string':.. ,'replacement': ..} which will be used to replace substrings in a field with a synonym, such as "Pressure Transmitter" -> "PT", or "Æ" -> AE. Field can be '*' for all.
         rules: list of matching rules (either old or new format)
     """
