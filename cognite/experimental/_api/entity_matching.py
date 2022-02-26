@@ -103,8 +103,8 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         """Retrieve models
 
         Args:
-            ids: ids of the pipelines retrieve.
-            external_ids: external ids of the pipelines to retrieve.
+            ids (Union[int, List[int]): List of ids of the pipelines to retrieve.
+            external_ids (Union[str, List[str]]): List of external ids of the pipelines to retrieve.
 
         Returns:
             EntityMatchingModelList: Models requested."""
@@ -113,9 +113,10 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
     def list(self, limit=100) -> EntityMatchingPipelineList:
-        """List pipelines
+        """List entity matching pipelines
+
         Args:
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to None to return all items.
 
         Returns:
             EntityMatchingModelList: List of pipelines."""
