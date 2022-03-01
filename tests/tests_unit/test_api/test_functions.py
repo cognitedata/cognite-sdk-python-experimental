@@ -286,21 +286,32 @@ def mock_function_calls_filter_response(rsps):
 
 
 @pytest.fixture
+def cognite_client_with_api_key():
+    client = CogniteClient(
+        api_key="caner_was_here_but_not_for_long_because_api_keys_will_be_removed",
+        disable_pypi_version_check=True,
+    )
+    client.config.token_client_id = None # Disables Client Credentials coming from the ENV
+    
+    return client
+
+
+@pytest.fixture
 def cognite_client_with_client_credentials():
     client = CogniteClient(
         token_client_id="test-client-id",
         token_client_secret="test-client-secret",
-        token_url="https://param-test.com/token",
+        token_url="https://login.microsoftonline.com/token",
         token_scopes=["test-scope", "second-test-scope"],
         disable_pypi_version_check=True,
     )
 
     return client
 
-
 @pytest.fixture
 def cognite_client_with_token():
     client = CogniteClient(token="aabbccddeeffgg", disable_pypi_version_check=True,)
+    client.config.token_client_id = None # Disables Client Credentials coming from the ENV
 
     return client
 
