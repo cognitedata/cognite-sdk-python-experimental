@@ -105,6 +105,27 @@ CALL_SCHEDULED = {
     "functionId": FUNCTION_ID,
 }
 
+def patch_in_oidc_and_token_flows(rsps):
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(
+        rsps.POST,
+        url=url,
+        status=200,
+        json={"items": [{"nonce": "aabbccdd"}]},
+        match=[post_body_matcher({"items": [{"clientId": "test-client-id", "clientSecret": "test-client-secret"}]})],
+    )
+    
+    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    rsps.add(
+        rsps.POST,
+        url=url,
+        status=200,
+        json={"items": [{"nonce": "aabbccdd"}]},
+        match=[post_body_matcher({"items": [{"tokenExchange": True}]})],
+    )
+    
+    return rsps
+
 
 @pytest.fixture
 def mock_functions_filter_response(rsps):
@@ -177,44 +198,14 @@ def mock_functions_delete_response(rsps):
 
 
 @pytest.fixture
-def mock_functions_call_responses(rsps):
+def mock_functions_call_responses(rsps):    
+    rsps = patch_in_oidc_and_token_flows(rsps)
+    
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/calls/byids"
     rsps.add(rsps.POST, url, status=200, json={"items": [CALL_COMPLETED]})
-
-    yield rsps
-
-
-@pytest.fixture
-def mock_sessions_response_with_oidc_token_exchange(mock_functions_call_responses):
-    rsps = mock_functions_call_responses
-
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
-    rsps.add(
-        rsps.POST,
-        url=url,
-        status=200,
-        json={"items": [{"nonce": "aabbccdd"}]},
-        match=[post_body_matcher({"items": [{"tokenExchange": True}]})],
-    )
-
-    yield rsps
-
-
-@pytest.fixture
-def mock_sessions_response_with_oidc_client_credentials(mock_functions_call_responses):
-    rsps = mock_functions_call_responses
-
-    url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
-    rsps.add(
-        rsps.POST,
-        url=url,
-        status=200,
-        json={"items": [{"nonce": "aabbccdd"}]},
-        match=[post_body_matcher({"items": [{"clientId": "test-client-id", "clientSecret": "test-client-secret"}]})],
-    )
 
     yield rsps
 
@@ -230,7 +221,8 @@ def mock_sessions_bad_request_response(rsps):
 @pytest.fixture
 def mock_functions_call_by_external_id_responses(mock_functions_retrieve_response):
     rsps = mock_functions_retrieve_response
-
+    rsps = patch_in_oidc_and_token_flows(rsps)
+    
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
@@ -242,6 +234,8 @@ def mock_functions_call_by_external_id_responses(mock_functions_retrieve_respons
 
 @pytest.fixture
 def mock_functions_call_failed_response(rsps):
+    rsps = patch_in_oidc_and_token_flows(rsps)
+    
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_FAILED)
 
@@ -250,6 +244,8 @@ def mock_functions_call_failed_response(rsps):
 
 @pytest.fixture
 def mock_functions_call_timeout_response(rsps):
+    rsps = patch_in_oidc_and_token_flows(rsps)
+    
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_TIMEOUT)
 
