@@ -105,7 +105,8 @@ CALL_SCHEDULED = {
     "functionId": FUNCTION_ID,
 }
 
-def patch_in_oidc_and_token_flows(rsps):
+
+def patch_in_client_credentials_and_token_flows(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
     rsps.add(
         rsps.POST,
@@ -114,7 +115,7 @@ def patch_in_oidc_and_token_flows(rsps):
         json={"items": [{"nonce": "aabbccdd"}]},
         match=[post_body_matcher({"items": [{"clientId": "test-client-id", "clientSecret": "test-client-secret"}]})],
     )
-    
+
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
     rsps.add(
         rsps.POST,
@@ -123,7 +124,7 @@ def patch_in_oidc_and_token_flows(rsps):
         json={"items": [{"nonce": "aabbccdd"}]},
         match=[post_body_matcher({"items": [{"tokenExchange": True}]})],
     )
-    
+
     return rsps
 
 
@@ -198,9 +199,9 @@ def mock_functions_delete_response(rsps):
 
 
 @pytest.fixture
-def mock_functions_call_responses(rsps):    
-    rsps = patch_in_oidc_and_token_flows(rsps)
-    
+def mock_functions_call_responses(rsps):
+    rsps = patch_in_client_credentials_and_token_flows(rsps)
+
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
@@ -221,8 +222,8 @@ def mock_sessions_bad_request_response(rsps):
 @pytest.fixture
 def mock_functions_call_by_external_id_responses(mock_functions_retrieve_response):
     rsps = mock_functions_retrieve_response
-    rsps = patch_in_oidc_and_token_flows(rsps)
-    
+    rsps = patch_in_client_credentials_and_token_flows(rsps)
+
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_RUNNING)
 
@@ -234,8 +235,8 @@ def mock_functions_call_by_external_id_responses(mock_functions_retrieve_respons
 
 @pytest.fixture
 def mock_functions_call_failed_response(rsps):
-    rsps = patch_in_oidc_and_token_flows(rsps)
-    
+    rsps = patch_in_client_credentials_and_token_flows(rsps)
+
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_FAILED)
 
@@ -244,8 +245,8 @@ def mock_functions_call_failed_response(rsps):
 
 @pytest.fixture
 def mock_functions_call_timeout_response(rsps):
-    rsps = patch_in_oidc_and_token_flows(rsps)
-    
+    rsps = patch_in_client_credentials_and_token_flows(rsps)
+
     url = FUNCTIONS_API._get_base_url_with_base_path() + f"/functions/{FUNCTION_ID}/call"
     rsps.add(rsps.POST, url, status=201, json=CALL_TIMEOUT)
 
@@ -288,11 +289,10 @@ def mock_function_calls_filter_response(rsps):
 @pytest.fixture
 def cognite_client_with_api_key():
     client = CogniteClient(
-        api_key="caner_was_here_but_not_for_long_because_api_keys_will_be_removed",
-        disable_pypi_version_check=True,
+        api_key="caner_was_here_but_not_for_long_because_api_keys_will_be_removed", disable_pypi_version_check=True,
     )
-    client.config.token_client_id = None # Disables Client Credentials coming from the ENV
-    
+    client.config.token_client_id = None  # Disables Client Credentials coming from the ENV
+
     return client
 
 
@@ -308,10 +308,11 @@ def cognite_client_with_client_credentials():
 
     return client
 
+
 @pytest.fixture
 def cognite_client_with_token():
     client = CogniteClient(token="aabbccddeeffgg", disable_pypi_version_check=True,)
-    client.config.token_client_id = None # Disables Client Credentials coming from the ENV
+    client.config.token_client_id = None  # Disables Client Credentials coming from the ENV
 
     return client
 
@@ -475,8 +476,10 @@ class TestFunctionsAPI:
         res = cognite_client_with_api_key.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_responses.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
-    
-    def test_function_call_by_external_id_from_api_key_flow(self, mock_functions_call_by_external_id_responses,cognite_client_with_api_key):
+
+    def test_function_call_by_external_id_from_api_key_flow(
+        self, mock_functions_call_by_external_id_responses, cognite_client_with_api_key
+    ):
         res = cognite_client_with_api_key.functions.call(external_id=f"func-no-{FUNCTION_ID}")
 
         assert isinstance(res, FunctionCall)
@@ -484,16 +487,20 @@ class TestFunctionsAPI:
             camel_case=True
         )
 
-    def test_function_call_failed_from_api_key_flow(self, mock_functions_call_failed_response, cognite_client_with_api_key):
+    def test_function_call_failed_from_api_key_flow(
+        self, mock_functions_call_failed_response, cognite_client_with_api_key
+    ):
         res = cognite_client_with_api_key.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_failed_response.calls[0].response.json() == res.dump(camel_case=True)
-        
-    def test_function_call_timeout_from_api_key_flow(self, mock_functions_call_timeout_response,cognite_client_with_api_key):
+
+    def test_function_call_timeout_from_api_key_flow(
+        self, mock_functions_call_timeout_response, cognite_client_with_api_key
+    ):
         res = cognite_client_with_api_key.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
-        
+
     def test_function_call_from_oidc_client_credentials_flow(
         self, mock_functions_call_responses, cognite_client_with_client_credentials
     ):
@@ -501,11 +508,11 @@ class TestFunctionsAPI:
         res = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
 
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_responses.calls[3].response.json()["items"][0] == res.dump(
-            camel_case=True
-        )
-            
-    def test_function_call_by_external_id_from_oidc_client_credentials_flow(self, mock_functions_call_by_external_id_responses, cognite_client_with_client_credentials):
+        assert mock_functions_call_responses.calls[3].response.json()["items"][0] == res.dump(camel_case=True)
+
+    def test_function_call_by_external_id_from_oidc_client_credentials_flow(
+        self, mock_functions_call_by_external_id_responses, cognite_client_with_client_credentials
+    ):
         assert _using_client_credential_flow(cognite_client_with_client_credentials)
         res = cognite_client_with_client_credentials.functions.call(external_id=f"func-no-{FUNCTION_ID}")
 
@@ -514,20 +521,20 @@ class TestFunctionsAPI:
             camel_case=True
         )
 
-
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_client_credentials_flow(self, cognite_client_with_client_credentials):
         assert _using_client_credential_flow(cognite_client_with_client_credentials)
-       
+
         with pytest.raises(CogniteAPIError) as excinfo:
             assert _using_client_credential_flow(cognite_client_with_client_credentials)
             cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
         assert "Failed to create session using client credentials flow." in str(excinfo.value)
 
-        
-    def test_function_call_timeout_from_oidc_client_credentials_flow(self, mock_functions_call_timeout_response,cognite_client_with_client_credentials):
+    def test_function_call_timeout_from_oidc_client_credentials_flow(
+        self, mock_functions_call_timeout_response, cognite_client_with_client_credentials
+    ):
         assert _using_client_credential_flow(cognite_client_with_client_credentials)
-        
+
         res = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[2].response.json() == res.dump(camel_case=True)
@@ -539,32 +546,34 @@ class TestFunctionsAPI:
         res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
 
         assert isinstance(res, FunctionCall)
-        assert mock_functions_call_responses.calls[2].response.json()["items"][0] == res.dump(
-            camel_case=True
-        )
+        assert mock_functions_call_responses.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
 
-    def test_function_call_by_external_id_from_oidc_token_exchange_flow(self, mock_functions_call_by_external_id_responses, cognite_client_with_token):
+    def test_function_call_by_external_id_from_oidc_token_exchange_flow(
+        self, mock_functions_call_by_external_id_responses, cognite_client_with_token
+    ):
         assert not _using_client_credential_flow(cognite_client_with_token)
-        
+
         res = cognite_client_with_token.functions.call(external_id=f"func-no-{FUNCTION_ID}")
 
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_by_external_id_responses.calls[3].response.json()["items"][0] == res.dump(
             camel_case=True
         )
-        
+
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_token_exchange_flow(self, cognite_client_with_token):
         assert not _using_client_credential_flow(cognite_client_with_token)
-        
+
         with pytest.raises(CogniteAPIError) as excinfo:
             assert not _using_client_credential_flow(cognite_client_with_token)
             cognite_client_with_token.functions.call(id=FUNCTION_ID)
         assert "Failed to create session using token exchange flow." in str(excinfo.value)
-        
-    def test_function_call_timeout_from_from_oidc_token_exchange_flow(self, mock_functions_call_timeout_response,cognite_client_with_token):
+
+    def test_function_call_timeout_from_from_oidc_token_exchange_flow(
+        self, mock_functions_call_timeout_response, cognite_client_with_token
+    ):
         assert not _using_client_credential_flow(cognite_client_with_token)
-        
+
         res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[1].response.json() == res.dump(camel_case=True)
@@ -886,7 +895,9 @@ class TestFunctionCallsAPI:
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_call_responses")
-    def test_get_logs_on_created_call_object(self, mock_function_call_logs_response, cognite_client_with_client_credentials):
+    def test_get_logs_on_created_call_object(
+        self, mock_function_call_logs_response, cognite_client_with_client_credentials
+    ):
         call = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
