@@ -471,64 +471,103 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionList)
         assert mock_functions_retrieve_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
 
-    def test_function_call(self, mock_functions_call_responses):
-        res = FUNCTIONS_API.call(id=FUNCTION_ID)
+    def test_function_call_from_api_key_flow(self, mock_functions_call_responses, cognite_client_with_api_key):
+        res = cognite_client_with_api_key.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_responses.calls[1].response.json()["items"][0] == res.dump(camel_case=True)
-
-    def test_function_call_by_external_id(self, mock_functions_call_by_external_id_responses):
-        res = FUNCTIONS_API.call(external_id=f"func-no-{FUNCTION_ID}")
+    
+    def test_function_call_by_external_id_from_api_key_flow(self, mock_functions_call_by_external_id_responses,cognite_client_with_api_key):
+        res = cognite_client_with_api_key.functions.call(external_id=f"func-no-{FUNCTION_ID}")
 
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_by_external_id_responses.calls[2].response.json()["items"][0] == res.dump(
             camel_case=True
         )
 
-    def test_function_call_failed(self, mock_functions_call_failed_response):
-        res = FUNCTIONS_API.call(id=FUNCTION_ID)
+    def test_function_call_failed_from_api_key_flow(self, mock_functions_call_failed_response, cognite_client_with_api_key):
+        res = cognite_client_with_api_key.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_failed_response.calls[0].response.json() == res.dump(camel_case=True)
-
-    def test_function_call_timeout(self, mock_functions_call_timeout_response):
-        res = FUNCTIONS_API.call(id=FUNCTION_ID)
+        
+    def test_function_call_timeout_from_api_key_flow(self, mock_functions_call_timeout_response,cognite_client_with_api_key):
+        res = cognite_client_with_api_key.functions.call(id=FUNCTION_ID)
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
-
-    def test_function_call_from_oidc_token_exchange_flow(
-        self, mock_sessions_response_with_oidc_token_exchange, cognite_client_with_token
-    ):
-        assert not _using_client_credential_flow(cognite_client_with_token)
-        res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
-
-        assert isinstance(res, FunctionCall)
-        assert mock_sessions_response_with_oidc_token_exchange.calls[2].response.json()["items"][0] == res.dump(
-            camel_case=True
-        )
-
+        
     def test_function_call_from_oidc_client_credentials_flow(
-        self, mock_sessions_response_with_oidc_client_credentials, cognite_client_with_client_credentials
+        self, mock_functions_call_responses, cognite_client_with_client_credentials
     ):
         assert _using_client_credential_flow(cognite_client_with_client_credentials)
         res = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
 
         assert isinstance(res, FunctionCall)
-        assert mock_sessions_response_with_oidc_client_credentials.calls[2].response.json()["items"][0] == res.dump(
+        assert mock_functions_call_responses.calls[3].response.json()["items"][0] == res.dump(
+            camel_case=True
+        )
+            
+    def test_function_call_by_external_id_from_oidc_client_credentials_flow(self, mock_functions_call_by_external_id_responses, cognite_client_with_client_credentials):
+        assert _using_client_credential_flow(cognite_client_with_client_credentials)
+        res = cognite_client_with_client_credentials.functions.call(external_id=f"func-no-{FUNCTION_ID}")
+
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_by_external_id_responses.calls[4].response.json()["items"][0] == res.dump(
             camel_case=True
         )
 
-    @pytest.mark.usefixtures("mock_sessions_bad_request_response")
-    def test_function_call_with_failing_token_exchange_flow(self, cognite_client_with_token):
-        with pytest.raises(CogniteAPIError) as excinfo:
-            assert not _using_client_credential_flow(cognite_client_with_token)
-            cognite_client_with_token.functions.call(id=FUNCTION_ID)
-        assert "Failed to create session using token exchange flow." in str(excinfo.value)
 
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_client_credentials_flow(self, cognite_client_with_client_credentials):
+        assert _using_client_credential_flow(cognite_client_with_client_credentials)
+       
         with pytest.raises(CogniteAPIError) as excinfo:
             assert _using_client_credential_flow(cognite_client_with_client_credentials)
             cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
         assert "Failed to create session using client credentials flow." in str(excinfo.value)
+
+        
+    def test_function_call_timeout_from_oidc_client_credentials_flow(self, mock_functions_call_timeout_response,cognite_client_with_client_credentials):
+        assert _using_client_credential_flow(cognite_client_with_client_credentials)
+        
+        res = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_timeout_response.calls[2].response.json() == res.dump(camel_case=True)
+
+    def test_function_call_from_oidc_token_exchange_flow(
+        self, mock_functions_call_responses, cognite_client_with_token
+    ):
+        assert not _using_client_credential_flow(cognite_client_with_token)
+        res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
+
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_responses.calls[2].response.json()["items"][0] == res.dump(
+            camel_case=True
+        )
+
+    def test_function_call_by_external_id_from_oidc_token_exchange_flow(self, mock_functions_call_by_external_id_responses, cognite_client_with_token):
+        assert not _using_client_credential_flow(cognite_client_with_token)
+        
+        res = cognite_client_with_token.functions.call(external_id=f"func-no-{FUNCTION_ID}")
+
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_by_external_id_responses.calls[3].response.json()["items"][0] == res.dump(
+            camel_case=True
+        )
+        
+    @pytest.mark.usefixtures("mock_sessions_bad_request_response")
+    def test_function_call_with_failing_token_exchange_flow(self, cognite_client_with_token):
+        assert not _using_client_credential_flow(cognite_client_with_token)
+        
+        with pytest.raises(CogniteAPIError) as excinfo:
+            assert not _using_client_credential_flow(cognite_client_with_token)
+            cognite_client_with_token.functions.call(id=FUNCTION_ID)
+        assert "Failed to create session using token exchange flow." in str(excinfo.value)
+        
+    def test_function_call_timeout_from_from_oidc_token_exchange_flow(self, mock_functions_call_timeout_response,cognite_client_with_token):
+        assert not _using_client_credential_flow(cognite_client_with_token)
+        
+        res = cognite_client_with_token.functions.call(id=FUNCTION_ID)
+        assert isinstance(res, FunctionCall)
+        assert mock_functions_call_timeout_response.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_functions_limits_endpoint(self, mock_functions_limit_response):
         res = FUNCTIONS_API.limits()
@@ -847,11 +886,11 @@ class TestFunctionCallsAPI:
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
     @pytest.mark.usefixtures("mock_functions_call_responses")
-    def test_get_logs_on_created_call_object(self, mock_function_call_logs_response):
-        call = FUNCTIONS_API.call(id=FUNCTION_ID)
+    def test_get_logs_on_created_call_object(self, mock_function_call_logs_response, cognite_client_with_client_credentials):
+        call = cognite_client_with_client_credentials.functions.call(id=FUNCTION_ID)
         logs = call.get_logs()
         assert isinstance(logs, FunctionCallLog)
-        assert mock_function_call_logs_response.calls[2].response.json()["items"] == logs.dump(camel_case=True)
+        assert mock_function_call_logs_response.calls[4].response.json()["items"] == logs.dump(camel_case=True)
 
     def test_function_call_response_by_function_id(self, mock_function_call_response_response):
         res = FUNCTION_CALLS_API.get_response(call_id=CALL_ID, function_id=FUNCTION_ID)
