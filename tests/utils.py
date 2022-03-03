@@ -2,7 +2,7 @@ import gzip
 import json
 import os
 from contextlib import contextmanager
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 BASE_URL = "https://greenfield.cognitedata.com"
 
@@ -60,3 +60,13 @@ def set_env_var(name: str, value: str):
         os.environ[name] = tmp
     else:
         del os.environ[name]
+
+
+def remove_None_from_nested_dict(d: Dict[str, Any]) -> Dict[str, Any]:
+    new_dict = {}
+    for key, val in d.items():
+        if isinstance(val, dict):
+            val = remove_None_from_nested_dict(val)
+        if val is not None:
+            new_dict[key] = val
+    return new_dict
