@@ -157,3 +157,42 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         self._do_request(
             "POST", url_path, timeout=self._config.timeout,
         )
+
+    @_with_cognite_domain
+    def get_raster(
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_id: str,
+        raster_format: str,
+        raster_options: Dict[str, Any] = None,
+    ) -> bytes:
+        """`Put raster`
+        <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/getRaster>
+
+        Args:
+            feature_type_external_id : Feature type definition for the features to create.
+            feature_external_id: one feature or a list of features to create
+            raster_id: the raster id
+            raster_format: the raster output format
+            raster_options: GDAL raster creation key-value options
+
+        Returns:
+            bytes: the raster data
+
+        Examples:
+
+            Get a raster from a feature raster property:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_type = ...
+                >>> feature = ...
+                >>> rasterId = ...
+                >>> raster_data = c.geospatial.get_raster(feature_type, feature, rasterId, "XYZ", {"ADD_HEADER_LINE": "YES"})
+        """
+        url_path = self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}"
+        res = self._do_request(
+            "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
+        )
+        return res.content
