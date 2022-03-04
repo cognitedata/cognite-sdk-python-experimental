@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.70.0]
+
+### Added
+
+- Geospatial: Get raster data
+
 ## [0.69.0]
 
 ### Added
