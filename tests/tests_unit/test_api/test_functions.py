@@ -107,7 +107,7 @@ CALL_SCHEDULED = {
 
 
 @pytest.fixture
-def mock_client_credentials(rsps):
+def mock_sessions_with_client_credentials(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
     rsps.add(
         rsps.POST,
@@ -132,7 +132,7 @@ def mock_client_credentials(rsps):
 
 
 @pytest.fixture
-def mock_token_exchange(rsps):
+def mock_sessions_with_token_exchange(rsps):
     url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
     rsps.add(
         rsps.POST,
@@ -498,7 +498,7 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_client_credentials")
+    @pytest.mark.usefixtures("mock_sessions_with_client_credentials")
     def test_function_call_from_oidc_client_credentials_flow(self, mock_functions_call_responses):
         assert _using_client_credential_flow(COGNITE_CLIENT)
         res = FUNCTIONS_API.call(id=FUNCTION_ID)
@@ -506,7 +506,7 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_responses.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_client_credentials")
+    @pytest.mark.usefixtures("mock_sessions_with_client_credentials")
     def test_function_call_by_external_id_from_oidc_client_credentials_flow(
         self, mock_functions_call_by_external_id_responses
     ):
@@ -518,7 +518,7 @@ class TestFunctionsAPI:
             camel_case=True
         )
 
-    @pytest.mark.usefixtures("mock_client_credentials")
+    @pytest.mark.usefixtures("mock_sessions_with_client_credentials")
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_client_credentials_flow(self):
         with pytest.raises(CogniteAPIError) as excinfo:
@@ -526,7 +526,7 @@ class TestFunctionsAPI:
             FUNCTIONS_API.call(id=FUNCTION_ID)
         assert "Failed to create session using client credentials flow." in str(excinfo.value)
 
-    @pytest.mark.usefixtures("mock_client_credentials")
+    @pytest.mark.usefixtures("mock_sessions_with_client_credentials")
     def test_function_call_timeout_from_oidc_client_credentials_flow(self, mock_functions_call_timeout_response):
         assert _using_client_credential_flow(COGNITE_CLIENT)
 
@@ -534,7 +534,7 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_timeout_response.calls[1].response.json() == res.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_token_exchange")
+    @pytest.mark.usefixtures("mock_sessions_with_token_exchange")
     def test_function_call_from_oidc_token_exchange_flow(
         self, mock_functions_call_responses, cognite_client_with_token
     ):
@@ -544,7 +544,7 @@ class TestFunctionsAPI:
         assert isinstance(res, FunctionCall)
         assert mock_functions_call_responses.calls[2].response.json()["items"][0] == res.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_token_exchange")
+    @pytest.mark.usefixtures("mock_sessions_with_token_exchange")
     def test_function_call_by_external_id_from_oidc_token_exchange_flow(
         self, mock_functions_call_by_external_id_responses, cognite_client_with_token
     ):
@@ -557,7 +557,7 @@ class TestFunctionsAPI:
             camel_case=True
         )
 
-    @pytest.mark.usefixtures("mock_token_exchange")
+    @pytest.mark.usefixtures("mock_sessions_with_token_exchange")
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_token_exchange_flow(self, cognite_client_with_token):
         assert not _using_client_credential_flow(cognite_client_with_token)
@@ -567,7 +567,7 @@ class TestFunctionsAPI:
             cognite_client_with_token.functions.call(id=FUNCTION_ID)
         assert "Failed to create session using token exchange flow." in str(excinfo.value)
 
-    @pytest.mark.usefixtures("mock_token_exchange")
+    @pytest.mark.usefixtures("mock_sessions_with_token_exchange")
     def test_function_call_timeout_from_from_oidc_token_exchange_flow(
         self, mock_functions_call_timeout_response, cognite_client_with_token
     ):
@@ -893,7 +893,7 @@ class TestFunctionCallsAPI:
         assert isinstance(logs, FunctionCallLog)
         assert mock_function_call_logs_response.calls[1].response.json()["items"] == logs.dump(camel_case=True)
 
-    @pytest.mark.usefixtures("mock_client_credentials")
+    @pytest.mark.usefixtures("mock_sessions_with_client_credentials")
     @pytest.mark.usefixtures("mock_functions_call_responses")
     def test_get_logs_on_created_call_object(self, mock_function_call_logs_response):
         call = FUNCTIONS_API.call(id=FUNCTION_ID)
