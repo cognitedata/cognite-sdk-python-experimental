@@ -518,7 +518,6 @@ class TestFunctionsAPI:
             camel_case=True
         )
 
-    @pytest.mark.usefixtures("mock_sessions_with_client_credentials")
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_client_credentials_flow(self):
         with pytest.raises(CogniteAPIError) as excinfo:
@@ -557,7 +556,6 @@ class TestFunctionsAPI:
             camel_case=True
         )
 
-    @pytest.mark.usefixtures("mock_sessions_with_token_exchange")
     @pytest.mark.usefixtures("mock_sessions_bad_request_response")
     def test_function_call_with_failing_token_exchange_flow(self, cognite_client_with_token):
         assert not _using_client_credential_flow(cognite_client_with_token)
