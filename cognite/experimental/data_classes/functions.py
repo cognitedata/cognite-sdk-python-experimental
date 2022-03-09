@@ -2,7 +2,7 @@ import time
 from numbers import Number
 from typing import Dict, List, Optional, Union
 
-from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList, CogniteResponse
 from cognite.client.data_classes.shared import TimestampRange
 
 from cognite.experimental._constants import LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT
@@ -26,7 +26,8 @@ class Function(CogniteResource):
         env_vars (Dict[str, str]): User specified environment variables on the function ((key, value) pairs).
         cpu (Number): Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
         memory (Number): Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
-        runtime (str): Runtime of the function. Defaults to "py38". Allowed values are ["py37", "py38", "py39"].
+        runtime (str): Runtime of the function. Allowed values are ["py37", "py38", "py39"]. The runtime "py3x" resolves to the latest version of the Python 3.x.y series. Will default to "py38" if not specified.
+        metadata(Dict[str, str): Metadata associated with a function as a set of key:value pairs.
         error(Dict[str, str]): Dictionary with keys "message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
@@ -48,6 +49,7 @@ class Function(CogniteResource):
         cpu: Number = None,
         memory: Number = None,
         runtime: str = None,
+        metadata: Dict = None,
         error: Dict = None,
         cognite_client=None,
     ):
@@ -66,6 +68,7 @@ class Function(CogniteResource):
         self.cpu = cpu
         self.memory = memory
         self.runtime = runtime
+        self.metadata = metadata
         self.error = error
         self._cognite_client = cognite_client
 
@@ -340,3 +343,39 @@ class FunctionCallLogEntry(CogniteResource):
 class FunctionCallLog(CogniteResourceList):
     _RESOURCE = FunctionCallLogEntry
     _ASSERT_CLASSES = False
+
+
+class FunctionsLimits(CogniteResponse):
+    """Service limits for the associated project.
+
+    Args:
+        timeout_minutes (int): Timeout of each function call.
+        cpu_cores (Dict[str, float]): The number of CPU cores per function exectuion (i.e. function call).
+        memory_gb (Dict[str, float]): The amount of available memory in GB per function execution (i.e. function call).
+        runtimes (List[str]): Available runtimes. For example, "py37" translates to the latest version of the Python 3.7.x series.
+        response_size_mb (Optional[int]): Maximum response size of function calls.
+    """
+
+    def __init__(
+        self,
+        timeout_minutes: int,
+        cpu_cores: Dict[str, float],
+        memory_gb: Dict[str, float],
+        runtimes: List[str],
+        response_size_mb: Optional[int] = None,
+    ):
+        self.timeout_minutes = timeout_minutes
+        self.cpu_cores = cpu_cores
+        self.memory_gb = memory_gb
+        self.runtimes = runtimes
+        self.response_size_mb = response_size_mb
+
+    @classmethod
+    def _load(cls, api_response):
+        return cls(
+            timeout_minutes=api_response["timeoutMinutes"],
+            cpu_cores=api_response["cpuCores"],
+            memory_gb=api_response["memoryGb"],
+            runtimes=api_response["runtimes"],
+            response_size_mb=api_response.get("responseSizeMb"),
+        )

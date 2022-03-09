@@ -25,6 +25,7 @@ from cognite.experimental.data_classes import (
     FunctionSchedule,
     FunctionSchedulesFilter,
     FunctionSchedulesList,
+    FunctionsLimits,
 )
 
 
@@ -52,7 +53,8 @@ class FunctionsAPI(APIClient):
         env_vars: Optional[Dict] = None,
         cpu: Optional[Number] = None,
         memory: Optional[Number] = None,
-        runtime: Optional[Number] = None,
+        runtime: Optional[str] = None,
+        metadata: Optional[Dict] = None,
         extraIndexUrls: Optional[List[str]] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
@@ -66,8 +68,6 @@ class FunctionsAPI(APIClient):
         - If the user gives an `api_key` when creating the function, a pre instantiated CogniteClient is passed through the `client` argument.\n
         - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
         - Data about the function call can be accessed via the argument `function_call_info`, which is a dictionary with keys `function_id` and, if the call is scheduled, `schedule_id` and `scheduled_time`.\n
-
-        The Python runtime version is 3.8.3.
 
         Args:
             name (str):                             The name of the function.
@@ -83,7 +83,8 @@ class FunctionsAPI(APIClient):
             env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
             cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
             memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
-            runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default.
+            runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default which currently is "py38". The runtime "py3x" resolves to the latest version of the Python 3.x.y series.
+            metadata (Dict[str, str], optional):    Metadata for the function as key/value pairs. Key & values can be at most 32, 512 characters long respectively. You can have at the most 16 key-value pairs, with a maximum size of 512 bytes.
             extraIndexUrls (List[str], optional):   Extra Index URLs for Python Package Manager to use. Please do not use any extra indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
 
         Returns:
@@ -139,6 +140,7 @@ class FunctionsAPI(APIClient):
             "fileId": file_id,
             "functionPath": function_path,
             "envVars": env_vars,
+            "metadata": metadata,
         }
         if cpu:
             function["cpu"] = cpu
@@ -339,6 +341,10 @@ class FunctionsAPI(APIClient):
             function_call.wait()
 
         return function_call
+
+    def limits(self):
+        res = self._get("/functions/limits")
+        return FunctionsLimits._load(res.json())
 
     def _zip_and_upload_folder(self, folder: str, name: str, external_id: Optional[str] = None) -> int:
         # / is not allowed in file names

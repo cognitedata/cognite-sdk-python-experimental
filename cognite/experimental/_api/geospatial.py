@@ -8,6 +8,8 @@ from cognite.client.data_classes.geospatial import Feature
 from cognite.client.exceptions import CogniteConnectionError
 from requests.exceptions import ChunkedEncodingError
 
+from cognite.experimental.data_classes.geospatial import RasterMetadata
+
 
 def _with_cognite_domain(func):
     @functools.wraps(func)
@@ -73,3 +75,124 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 yield Feature._load(json.loads(line))
         except (ChunkedEncodingError, ConnectionError) as e:
             raise CogniteConnectionError(e)
+
+    @_with_cognite_domain
+    def put_raster(
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_id: str,
+        raster_format: str,
+        raster_srid: int,
+        file: str,
+    ) -> RasterMetadata:
+        """`Put raster`
+        <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster>
+
+        Args:
+            feature_type_external_id : Feature type definition for the features to create.
+            feature_external_id: one feature or a list of features to create
+            raster_id: the raster id
+            raster_format: the raster input format
+            raster_srid: the associated SRID for the raster
+            file: the path to the file of the raster
+
+        Returns:
+            RasterMetadata: the raster metadata if it was ingested succesfully
+
+        Examples:
+
+            Put a raster in a feature raster property:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_type = ...
+                >>> feature = ...
+                >>> rasterId = ...
+                >>> metadata = c.geospatial.put_raster(feature_type, feature, rasterId, "XYZ", 3857, file)
+        """
+        url_path = (
+            self._feature_resource_path(feature_type_external_id)
+            + f"/{feature_external_id}/rasters/{raster_id}?format={raster_format}&srid={raster_srid}"
+        )
+
+        res = self._do_request(
+            "PUT",
+            url_path,
+            data=open(file, "rb").read(),
+            headers={"Content-Type": "application/binary"},
+            timeout=self._config.timeout,
+        )
+
+        return RasterMetadata._load(res.json(), cognite_client=self._cognite_client)
+
+    @_with_cognite_domain
+    def delete_raster(self, feature_type_external_id: str, feature_external_id: str, raster_id: str,) -> None:
+        """`Delete raster`
+        <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster>
+
+        Args:
+            feature_type_external_id : Feature type definition for the features to create.
+            feature_external_id: one feature or a list of features to create
+            raster_id: the raster id
+
+        Returns:
+            None
+
+        Examples:
+
+            Delete a raster in a feature raster property:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_type = ...
+                >>> feature = ...
+                >>> rasterId = ...
+                >>> c.geospatial.delete_raster(feature_type, feature, rasterId)
+        """
+        url_path = (
+            self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}/delete"
+        )
+
+        self._do_request(
+            "POST", url_path, timeout=self._config.timeout,
+        )
+
+    @_with_cognite_domain
+    def get_raster(
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_id: str,
+        raster_format: str,
+        raster_options: Dict[str, Any] = None,
+    ) -> bytes:
+        """`Put raster`
+        <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/getRaster>
+
+        Args:
+            feature_type_external_id : Feature type definition for the features to create.
+            feature_external_id: one feature or a list of features to create
+            raster_id: the raster id
+            raster_format: the raster output format
+            raster_options: GDAL raster creation key-value options
+
+        Returns:
+            bytes: the raster data
+
+        Examples:
+
+            Get a raster from a feature raster property:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_type = ...
+                >>> feature = ...
+                >>> rasterId = ...
+                >>> raster_data = c.geospatial.get_raster(feature_type, feature, rasterId, "XYZ", {"ADD_HEADER_LINE": "YES"})
+        """
+        url_path = self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}"
+        res = self._do_request(
+            "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
+        )
+        return res.content

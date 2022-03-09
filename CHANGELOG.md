@@ -12,12 +12,74 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.66]
+## [0.71.0]
+
+### Added
+- Optional argument `extraIndexUrls` to `FunctionsAPI.create` which enables the users to install pip packages from private repositories via adding extra index URLs to Python package manager.
+  
+## [0.70.0]
 
 ### Added
 
-- Optional argument `extraIndexUrls` to `FunctionsAPI.create` which enables the users to install pip packages from private repositories via adding extra index URLs to Python package manager.
-  
+- Geospatial: Get raster data
+
+## [0.69.0]
+
+### Added
+
+- Optional argument `metadata` to `FunctionsAPI.create` which allows metadata in the form of key:value pairs of strings to be added to each function.
+
+## [0.68.3]
+
+### Fixed
+
+- Vision:
+  - [certain types are not correctly converted to camelcase, causing a 400 bad request](https://github.com/cognitedata/cognite-sdk-python-experimental/pull/287)
+
+
+## [0.68.2]
+
+### Added
+
+- Geospatial:
+  - [Delete a raster from a feature raster property](https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster)
+
+### Changed
+
+- Fixed typehint for argument `runtime` in `FunctionsAPI.create().`
+
+## [0.68.1]
+
+### Fixed
+
+- Widen typing-extension version to allow v4.
+
+## [0.68.0]
+
+### Added
+
+- Geospatial:
+  - [Put a raster into a feature raster property](https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster)
+
+
+## [0.67]
+
+### Changed
+
+- `cognite-sdk-experimental` now depends on `cognite-sdk-core` instead of `cognite-sdk`.
+
+
+## [0.66.1]
+
+### Fixed
+- pyproject now allows regex version 2020 - 2022
+
+
+## [0.66]
+
+### Added
+- Method `FunctionsAPI.limits` which returns information about limits associated with the CDF project the user is logged in to.
+
 ## [0.65]
 
 ### Added

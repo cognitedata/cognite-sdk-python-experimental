@@ -6,6 +6,7 @@ from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter, AnnotationV2List, AnnotationV2Update
+from tests.utils import remove_None_from_nested_dict
 
 
 def delete_with_check(
@@ -54,7 +55,7 @@ def base_annotation(annotation: AnnotationV2, file_id: int):
 def check_created_vs_base(base_annotation: AnnotationV2, created_annotation: AnnotationV2) -> None:
     base_dump = base_annotation.dump()
     created_dump = created_annotation.dump()
-    special_keys = ["id", "created_time", "last_updated_time"]
+    special_keys = ["id", "created_time", "last_updated_time", "data"]
     found_special_keys = 0
     for k, v in created_dump.items():
         if k in special_keys:
@@ -63,6 +64,10 @@ def check_created_vs_base(base_annotation: AnnotationV2, created_annotation: Ann
         else:
             assert v == base_dump[k]
     assert found_special_keys == len(special_keys)
+    # assert data is equal, except None fields
+    created_dump_data = remove_None_from_nested_dict(created_dump["data"])
+    base_dump_data = remove_None_from_nested_dict(base_dump["data"])
+    assert created_dump_data == base_dump_data
 
 
 def _test_list_on_created_annotations(cognite_client: CogniteClient, annotations: AnnotationV2List, limit: int = 25):
@@ -137,8 +142,10 @@ class TestAnnotationsV2Integration:
             "data": {
                 "pageNumber": 1,
                 "assetRef": {"id": 1, "externalId": None},
-                "textRegion": {"xMin": 0.5, "xMax": 1.0, "yMin": 0.5, "yMax": 1.0},
-                "symbolRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "yMax": 1.0},
+                "textRegion": {"xMin": 0.5, "xMax": 1.0, "yMin": 0.5, "yMax": 1.0, "confidence": None},
+                "text": "AB-CX-DE",
+                "symbolRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "yMax": 1.0, "confidence": None},
+                "symbol": "pump",
             },
             "status": "rejected",
             "annotation_type": "diagrams.AssetLink",

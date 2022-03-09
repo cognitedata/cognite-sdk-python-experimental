@@ -20,8 +20,9 @@ def resource_to_camel_case(resource):
         return [resource_to_camel_case(element) for element in resource]
     elif isinstance(resource, dict):
         return {to_camel_case(k): resource_to_camel_case(v) for k, v in resource.items() if v is not None}
-    else:
-        return resource
+    elif hasattr(resource, "__dict__"):
+        return resource_to_camel_case(resource.__dict__)
+    return resource
 
 
 def resource_to_snake_case(resource):
@@ -29,5 +30,6 @@ def resource_to_snake_case(resource):
         return [resource_to_snake_case(element) for element in resource]
     elif isinstance(resource, dict):
         return {to_snake_case(k): resource_to_snake_case(v) for k, v in resource.items() if v is not None}
-    else:
-        return resource
+    elif hasattr(resource, "__dict__"):
+        return resource_to_snake_case(resource.__dict__)
+    return resource
