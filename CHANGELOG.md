@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.70.1]
+
+### Fixed
+
+- Geospatial rasters: url encode the feature external id and the raster id
+
 ## [0.70.0]
 
 ### Added
