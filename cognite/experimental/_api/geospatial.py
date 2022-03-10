@@ -1,6 +1,7 @@
 import functools
 import json
 import types
+import urllib.parse
 from typing import Any, Dict, Generator
 
 from cognite.client._api.geospatial import GeospatialAPI
@@ -28,6 +29,15 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     X_COGNITE_DOMAIN = "x-cognite-domain"
 
     _cognite_domain = None
+
+    @staticmethod
+    def _raster_resource_path(feature_type_external_id: str, feature_external_id: str, raster_id: str):
+        encoded_feature_external_id = urllib.parse.quote(feature_external_id, safe="")
+        encoded_raster_id = urllib.parse.quote(raster_id, safe="")
+        return (
+            ExperimentalGeospatialAPI._feature_resource_path(feature_type_external_id)
+            + f"/{encoded_feature_external_id}/rasters/{encoded_raster_id}"
+        )
 
     def set_current_cognite_domain(self, cognite_domain: str):
         self._cognite_domain = cognite_domain
@@ -112,10 +122,9 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> metadata = c.geospatial.put_raster(feature_type, feature, rasterId, "XYZ", 3857, file)
         """
         url_path = (
-            self._feature_resource_path(feature_type_external_id)
-            + f"/{feature_external_id}/rasters/{raster_id}?format={raster_format}&srid={raster_srid}"
+            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id)
+            + f"?format={raster_format}&srid={raster_srid}"
         )
-
         res = self._do_request(
             "PUT",
             url_path,
@@ -123,7 +132,6 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             headers={"Content-Type": "application/binary"},
             timeout=self._config.timeout,
         )
-
         return RasterMetadata._load(res.json(), cognite_client=self._cognite_client)
 
     @_with_cognite_domain
@@ -150,10 +158,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> rasterId = ...
                 >>> c.geospatial.delete_raster(feature_type, feature, rasterId)
         """
-        url_path = (
-            self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}/delete"
-        )
-
+        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id) + "/delete"
         self._do_request(
             "POST", url_path, timeout=self._config.timeout,
         )
@@ -191,7 +196,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> rasterId = ...
                 >>> raster_data = c.geospatial.get_raster(feature_type, feature, rasterId, "XYZ", {"ADD_HEADER_LINE": "YES"})
         """
-        url_path = self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}"
+        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id)
         res = self._do_request(
             "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
         )
