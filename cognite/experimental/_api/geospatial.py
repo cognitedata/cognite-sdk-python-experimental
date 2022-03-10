@@ -32,11 +32,11 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
     @staticmethod
     def _raster_resource_path(feature_type_external_id: str, feature_external_id: str, raster_id: str):
-        encoded_feature_external_id = urllib.parse.quote(feature_external_id, safe='')
-        encoded_raster_id = urllib.parse.quote(raster_id, safe='')
+        encoded_feature_external_id = urllib.parse.quote(feature_external_id, safe="")
+        encoded_raster_id = urllib.parse.quote(raster_id, safe="")
         return (
-                ExperimentalGeospatialAPI._feature_resource_path(feature_type_external_id) +
-                f"/{encoded_feature_external_id}/rasters/{encoded_raster_id}"
+            ExperimentalGeospatialAPI._feature_resource_path(feature_type_external_id)
+            + f"/{encoded_feature_external_id}/rasters/{encoded_raster_id}"
         )
 
     def set_current_cognite_domain(self, cognite_domain: str):
@@ -51,20 +51,20 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         for attr_name in GeospatialAPI.__dict__:
             attr = getattr(self, attr_name)
             if (
-                    "coordinate_reference_systems" not in attr_name
-                    and "stream_features" not in attr_name
-                    and isinstance(attr, types.MethodType)
+                "coordinate_reference_systems" not in attr_name
+                and "stream_features" not in attr_name
+                and isinstance(attr, types.MethodType)
             ):
                 wrapped = _with_cognite_domain(getattr(GeospatialAPI, attr_name))
                 setattr(ExperimentalGeospatialAPI, attr_name, wrapped)
 
     @_with_cognite_domain
     def stream_features(
-            self,
-            feature_type_external_id: str,
-            filter: Dict[str, Any],
-            properties: Dict[str, Any] = None,
-            allow_crs_transformation: bool = False,
+        self,
+        feature_type_external_id: str,
+        filter: Dict[str, Any],
+        properties: Dict[str, Any] = None,
+        allow_crs_transformation: bool = False,
     ) -> Generator[Feature, None, None]:
         resource_path = self._feature_resource_path(feature_type_external_id) + "/search-streaming"
         body = {"filter": filter, "output": {"properties": properties, "jsonStreamFormat": "NEW_LINE_DELIMITED"}}
@@ -88,13 +88,13 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
     @_with_cognite_domain
     def put_raster(
-            self,
-            feature_type_external_id: str,
-            feature_external_id: str,
-            raster_id: str,
-            raster_format: str,
-            raster_srid: int,
-            file: str,
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_id: str,
+        raster_format: str,
+        raster_srid: int,
+        file: str,
     ) -> RasterMetadata:
         """`Put raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster>
@@ -122,8 +122,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> metadata = c.geospatial.put_raster(feature_type, feature, rasterId, "XYZ", 3857, file)
         """
         url_path = (
-                self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id)
-                + f"?format={raster_format}&srid={raster_srid}"
+            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id)
+            + f"?format={raster_format}&srid={raster_srid}"
         )
         res = self._do_request(
             "PUT",
@@ -135,7 +135,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         return RasterMetadata._load(res.json(), cognite_client=self._cognite_client)
 
     @_with_cognite_domain
-    def delete_raster(self, feature_type_external_id: str, feature_external_id: str, raster_id: str, ) -> None:
+    def delete_raster(self, feature_type_external_id: str, feature_external_id: str, raster_id: str,) -> None:
         """`Delete raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster>
 
@@ -158,21 +158,19 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> rasterId = ...
                 >>> c.geospatial.delete_raster(feature_type, feature, rasterId)
         """
-        url_path = (
-                self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id) + "/delete"
-        )
+        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id) + "/delete"
         self._do_request(
             "POST", url_path, timeout=self._config.timeout,
         )
 
     @_with_cognite_domain
     def get_raster(
-            self,
-            feature_type_external_id: str,
-            feature_external_id: str,
-            raster_id: str,
-            raster_format: str,
-            raster_options: Dict[str, Any] = None,
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_id: str,
+        raster_format: str,
+        raster_options: Dict[str, Any] = None,
     ) -> bytes:
         """`Put raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/getRaster>
