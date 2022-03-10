@@ -39,7 +39,7 @@ def test_feature_type(cognite_client, cognite_domain):
 
 @pytest.fixture
 def test_feature(cognite_client, test_feature_type):
-    external_id = f"F_{uuid.uuid4().hex[:10]}"
+    external_id = f"F/O@ö_{uuid.uuid4().hex[:10]}"
     feature = cognite_client.geospatial.create_features(
         test_feature_type.external_id,
         Feature(
