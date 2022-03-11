@@ -2,14 +2,14 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Any, Dict, Generator
+from typing import Dict, Generator, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature
 from cognite.client.exceptions import CogniteConnectionError
 from requests.exceptions import ChunkedEncodingError
 
-from cognite.experimental.data_classes.geospatial import RasterMetadata
+from cognite.experimental.data_classes.geospatial import *
 
 
 def _with_cognite_domain(func):
@@ -27,6 +27,7 @@ def _with_cognite_domain(func):
 
 class ExperimentalGeospatialAPI(GeospatialAPI):
     X_COGNITE_DOMAIN = "x-cognite-domain"
+    _MVT_RESOURCE_PATH = GeospatialAPI._RESOURCE_PATH + "/mvts"
 
     _cognite_domain = None
 
@@ -201,3 +202,93 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
         )
         return res.content
+
+    @_with_cognite_domain
+    def create_mvt_mappings_definitions(
+        self, mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
+    ) -> MvpMappingsDefinitionList:
+        """`Creates MVP mappings`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialCreateMvtMappings>
+
+        Args:
+            mappings_definitions: list of MVT mappings definitions
+
+        Returns:
+            Union[List[Dict[str, Any]]]: list of created MVT mappings definitions
+
+        Examples:
+
+            Create MVT mappings, assuming the feature types `aggregated_seismic_surveys` and `seismic_surveys`:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> mvp_mappings_def = MvpMappingsDefinition(
+                >>>                        external_id="surveys",
+                >>>                        mappings_definitions=[
+                ...                            {
+                ...                                "featureTypeExternalId": "aggregated_seismic_surveys",
+                ...                                "levels": [0,1,2,3,4,5],
+                ...                                "geometryProperty": "agg_geom",
+                ...                                "featureProperties": ["survey_type"]
+                ...                            },
+                ...                            {
+                ...                                "featureTypeExternalId": "seismic_surveys",
+                ...                                "levels": [6,7,8,9,10,11,12,13,14,15],
+                ...                                "geometryProperty": "geom",
+                ...                                "featureProperties": ["survey_type", "sample_rate"]
+                ...                            ),
+                ...                        ]
+                ...                    )
+                >>> res = c.geospatial.create_mvt_mappings_definitions(mvp_mappings_def)
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._create_multiple(
+            items=mappings_definitions, resource_path=resource_path, cls=MvpMappingsDefinitionList
+        )
+
+    @_with_cognite_domain
+    def delete_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> None:
+        """`Deletes MVP mappings definitions`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialDeleteMvtMappings>
+
+        Args:
+            external_id (Union[str, List[str]]): the mappings external ids
+
+        Returns:
+            None
+
+        Examples:
+
+            Deletes MVT mappings definitions:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.delete_mvt_mappings_definitions(external_id="surveys")
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
+
+    @_with_cognite_domain
+    def retrieve_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> MvpMappingsDefinitionList:
+        """`Retrieve features`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialGetByIdsMvtMappings>
+
+        Args:
+            external_id : the mappings external ids
+            external_id (Union[str, List[str]]): External ID or list of external ids
+
+        Returns:
+            MvpMappingsDefinitionList: the requested mappings or None if it does not exist.
+
+        Examples:
+
+            Retrieve one feature by its external id:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.geospatial.retrieve_mvt_mappings_definitions(external_id="surveys")
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._retrieve_multiple(
+            wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=MvpMappingsDefinitionList
+        )
