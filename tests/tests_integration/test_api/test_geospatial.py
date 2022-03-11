@@ -3,8 +3,8 @@ import uuid
 import pytest
 from cognite.client.data_classes.geospatial import *
 
-from cognite.experimental.data_classes.geospatial import *
 from cognite.experimental import CogniteClient
+from cognite.experimental.data_classes.geospatial import *
 
 
 @pytest.fixture(scope="class")
@@ -81,7 +81,7 @@ def test_mvt_mappings_def(cognite_client, test_feature_type):
                     "geometryProperty": "position",
                     "featureProperties": ["volume", "temperature"],
                 }
-            ]
+            ],
         )
     )
     yield mvt_mappings_def
@@ -157,8 +157,7 @@ class TestExperimentalGeospatialAPI:
 
     def test_retrieve_features_with_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id,
-            external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         raster_metadata = res[0].raster
@@ -183,8 +182,7 @@ class TestExperimentalGeospatialAPI:
         )
         assert res is None
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id,
-            external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
@@ -207,8 +205,7 @@ class TestExperimentalGeospatialAPI:
             "position",
         }
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id,
-            external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False

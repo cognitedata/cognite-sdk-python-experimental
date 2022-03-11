@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
@@ -24,10 +24,7 @@ class MvpMappingsDefinition(CogniteResource):
     """MVT mappings definition"""
 
     def __init__(
-            self,
-            external_id: str = None,
-            mappings: List[Dict[str, Any]] = None,
-            cognite_client=None,
+        self, external_id: str = None, mappings: List[Dict[str, Any]] = None, cognite_client=None,
     ):
         self.external_id = external_id
         self.mappings = mappings

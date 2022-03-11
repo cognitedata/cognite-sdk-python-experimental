@@ -2,7 +2,7 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Union, Dict, Generator
+from typing import Dict, Generator, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature
@@ -205,8 +205,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
     @_with_cognite_domain
     def create_mvt_mappings_definitions(
-            self,
-            mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
+        self, mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
     ) -> MvpMappingsDefinitionList:
         """`Creates MVP mappings`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialCreateMvtMappings>
