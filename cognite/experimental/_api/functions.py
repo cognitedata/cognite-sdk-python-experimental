@@ -55,8 +55,8 @@ class FunctionsAPI(APIClient):
         memory: Optional[Number] = None,
         runtime: Optional[str] = None,
         metadata: Optional[Dict] = None,
-        extraIndexUrls: Optional[List[str]] = None,
-        indexUrl: Optional[str] = None,
+        extra_index_urls: Optional[List[str]] = None,
+        index_url: Optional[str] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -86,8 +86,8 @@ class FunctionsAPI(APIClient):
             memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
             runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default which currently is "py38". The runtime "py3x" resolves to the latest version of the Python 3.x.y series.
             metadata (Dict[str, str], optional):    Metadata for the function as key/value pairs. Key & values can be at most 32, 512 characters long respectively. You can have at the most 16 key-value pairs, with a maximum size of 512 bytes.
-            extraIndexUrls (List[str], optional):   Extra Index URLs for Python Package Manager to use. Please do not use any extra indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
-            indexUrl (str, optional):               Index URL for Python Package Manager to use. Please do not use any indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
+            extra_index_urls (List[str], optional):   Extra Index URLs for Python Package Manager to use. Please do not use any extra indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
+            index_url (str, optional):               Index URL for Python Package Manager to use. Please do not use any indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
         Returns:
             Function: The created function.
 
@@ -155,10 +155,10 @@ class FunctionsAPI(APIClient):
             function["apiKey"] = api_key
         if secrets:
             function["secrets"] = secrets
-        if extraIndexUrls:
-            function["extraIndexUrls"] = extraIndexUrls
-        if indexUrl:
-            function["indexUrl"] = indexUrl
+        if extra_index_urls:
+            function["extraIndexUrls"] = extra_index_urls
+        if index_url:
+            function["indexUrl"] = index_url
 
         body = {"items": [function]}
         res = self._post(url, json=body)
