@@ -3,6 +3,7 @@ import uuid
 import pytest
 from cognite.client.data_classes.geospatial import *
 
+from cognite.experimental.data_classes.geospatial import *
 from cognite.experimental import CogniteClient
 
 
@@ -67,10 +68,27 @@ def test_feature_with_raster(cognite_client, test_feature_type, test_feature):
     yield test_feature
 
 
-# NB: raster tests are for now marked as skip since GCP has GDAL drivers entirely disable.
-# There is no way to enable them yet, so testing can be done manually against azure-dev or bluefield
-# by commenting out the @pytest.mark.skip annotation
-class TestGeospatialAPI:
+@pytest.fixture
+def test_mvt_mappings_def(cognite_client, test_feature_type):
+    external_id = f"MVT/O@ö_{uuid.uuid4().hex[:10]}"
+    mvt_mappings_def = cognite_client.geospatial.create_mvt_mappings_definitions(
+        MvpMappingsDefinition(
+            external_id=external_id,
+            mappings=[
+                {
+                    "featureTypeExternalId": test_feature_type.external_id,
+                    "levels": [0, 1, 2, 3, 4, 5],
+                    "geometryProperty": "position",
+                    "featureProperties": ["volume", "temperature"],
+                }
+            ]
+        )
+    )
+    yield mvt_mappings_def
+    cognite_client.geospatial.delete_mvt_mappings_definitions(external_id=external_id)
+
+
+class TestExperimentalGeospatialAPI:
 
     # This test already exist in the main python sdk
     # It is repeated here to test the geospatial domain part.
@@ -139,7 +157,8 @@ class TestGeospatialAPI:
 
     def test_retrieve_features_with_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id,
+            external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         raster_metadata = res[0].raster
@@ -164,7 +183,8 @@ class TestGeospatialAPI:
         )
         assert res is None
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id,
+            external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
@@ -187,7 +207,15 @@ class TestGeospatialAPI:
             "position",
         }
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id,
+            external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
+
+    def test_get_mvt_mappings_definitions(self, cognite_client, test_mvt_mappings_def):
+        res = cognite_client.geospatial.retrieve_mvt_mappings_definitions(external_id=test_mvt_mappings_def.external_id)
+        assert res.external_id == test_mvt_mappings_def.external_id
+        assert res.mappings[0]["levels"] == test_mvt_mappings_def.mappings[0]["levels"]
+        assert res.mappings[0]["geometryProperty"] == test_mvt_mappings_def.mappings[0]["geometryProperty"]
+        assert res.mappings[0]["featureProperties"] == test_mvt_mappings_def.mappings[0]["featureProperties"]
