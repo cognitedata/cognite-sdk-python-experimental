@@ -60,7 +60,7 @@ def test_feature_with_raster(cognite_client, test_feature_type, test_feature):
     cognite_client.geospatial.put_raster(
         feature_type_external_id=test_feature_type.external_id,
         feature_external_id=test_feature.external_id,
-        raster_id="raster",
+        raster_property_name="raster",
         raster_format="XYZ",
         raster_srid=3857,
         file="tests/tests_integration/test_api/geospatial_data/raster-grid-example.xyz",
@@ -117,7 +117,7 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.put_raster(
             feature_type_external_id=test_feature_type.external_id,
             feature_external_id=test_feature.external_id,
-            raster_id="raster",
+            raster_property_name="raster",
             raster_format="XYZ",
             raster_srid=3857,
             file="tests/tests_integration/test_api/geospatial_data/raster-grid-example.xyz",
@@ -137,7 +137,7 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.get_raster(
             feature_type_external_id=test_feature_type.external_id,
             feature_external_id=test_feature_with_raster.external_id,
-            raster_id="raster",
+            raster_property_name="raster",
             raster_format="XYZ",
         )
         raster_content = open("tests/tests_integration/test_api/geospatial_data/raster-grid-example.xyz", "rb").read()
@@ -146,7 +146,7 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.get_raster(
             feature_type_external_id=test_feature_type.external_id,
             feature_external_id=test_feature_with_raster.external_id,
-            raster_id="raster",
+            raster_property_name="raster",
             raster_format="XYZ",
             raster_options={"ADD_HEADER_LINE": "YES"},
         )
@@ -178,7 +178,7 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.delete_raster(
             feature_type_external_id=test_feature_type.external_id,
             feature_external_id=test_feature_with_raster.external_id,
-            raster_id="raster",
+            raster_property_name="raster",
         )
         assert res is None
         res = cognite_client.geospatial.retrieve_features(
