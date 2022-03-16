@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.71.1]
+
+### Fixed
+
+- Geospatial: follow api raster id renaming into rasterPropertyName
+
 ## [0.71.0]
 
 ### Added

@@ -32,12 +32,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     _cognite_domain = None
 
     @staticmethod
-    def _raster_resource_path(feature_type_external_id: str, feature_external_id: str, raster_id: str):
+    def _raster_resource_path(feature_type_external_id: str, feature_external_id: str, raster_property_name: str):
         encoded_feature_external_id = urllib.parse.quote(feature_external_id, safe="")
-        encoded_raster_id = urllib.parse.quote(raster_id, safe="")
+        encoded_raster_property_name = urllib.parse.quote(raster_property_name, safe="")
         return (
             ExperimentalGeospatialAPI._feature_resource_path(feature_type_external_id)
-            + f"/{encoded_feature_external_id}/rasters/{encoded_raster_id}"
+            + f"/{encoded_feature_external_id}/rasters/{encoded_raster_property_name}"
         )
 
     def set_current_cognite_domain(self, cognite_domain: str):
@@ -92,7 +92,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         self,
         feature_type_external_id: str,
         feature_external_id: str,
-        raster_id: str,
+        raster_property_name: str,
         raster_format: str,
         raster_srid: int,
         file: str,
@@ -103,7 +103,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         Args:
             feature_type_external_id : Feature type definition for the features to create.
             feature_external_id: one feature or a list of features to create
-            raster_id: the raster id
+            raster_property_name: the raster property name
             raster_format: the raster input format
             raster_srid: the associated SRID for the raster
             file: the path to the file of the raster
@@ -119,11 +119,11 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> feature_type = ...
                 >>> feature = ...
-                >>> rasterId = ...
-                >>> metadata = c.geospatial.put_raster(feature_type, feature, rasterId, "XYZ", 3857, file)
+                >>> raster_property_name = ...
+                >>> metadata = c.geospatial.put_raster(feature_type, feature, raster_property_name, "XYZ", 3857, file)
         """
         url_path = (
-            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id)
+            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
             + f"?format={raster_format}&srid={raster_srid}"
         )
         res = self._do_request(
@@ -136,14 +136,16 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         return RasterMetadata._load(res.json(), cognite_client=self._cognite_client)
 
     @_with_cognite_domain
-    def delete_raster(self, feature_type_external_id: str, feature_external_id: str, raster_id: str,) -> None:
+    def delete_raster(
+        self, feature_type_external_id: str, feature_external_id: str, raster_property_name: str,
+    ) -> None:
         """`Delete raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster>
 
         Args:
             feature_type_external_id : Feature type definition for the features to create.
             feature_external_id: one feature or a list of features to create
-            raster_id: the raster id
+            raster_property_name: the raster property name
 
         Returns:
             None
@@ -156,10 +158,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> feature_type = ...
                 >>> feature = ...
-                >>> rasterId = ...
-                >>> c.geospatial.delete_raster(feature_type, feature, rasterId)
+                >>> raster_property_name = ...
+                >>> c.geospatial.delete_raster(feature_type, feature, raster_property_name)
         """
-        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id) + "/delete"
+        url_path = (
+            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name) + "/delete"
+        )
         self._do_request(
             "POST", url_path, timeout=self._config.timeout,
         )
@@ -169,7 +173,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         self,
         feature_type_external_id: str,
         feature_external_id: str,
-        raster_id: str,
+        raster_property_name: str,
         raster_format: str,
         raster_options: Dict[str, Any] = None,
     ) -> bytes:
@@ -179,7 +183,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         Args:
             feature_type_external_id : Feature type definition for the features to create.
             feature_external_id: one feature or a list of features to create
-            raster_id: the raster id
+            raster_property_name: the raster property name
             raster_format: the raster output format
             raster_options: GDAL raster creation key-value options
 
@@ -194,10 +198,11 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> feature_type = ...
                 >>> feature = ...
-                >>> rasterId = ...
-                >>> raster_data = c.geospatial.get_raster(feature_type, feature, rasterId, "XYZ", {"ADD_HEADER_LINE": "YES"})
+                >>> raster_property_name = ...
+                >>> raster_data = c.geospatial.get_raster(feature_type, feature, raster_property_name,
+                >>>                                       "XYZ", {"SIGNIFICANT_DIGITS": "4"})
         """
-        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_id)
+        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
         res = self._do_request(
             "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
         )
