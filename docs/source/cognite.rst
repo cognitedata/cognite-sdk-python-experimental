@@ -543,49 +543,35 @@ Delete Feature Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_feature_types
 
-Features
+Rasters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create Features
+Put Raster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_features
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.put_raster
 
-Retrieve Features
+Delete Raster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_features
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_raster
 
-Update Features
+Get Raster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_features
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.get_raster
 
-Search Features
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.search_features
-
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.stream_features
-
-Delete Features
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_features
-
-Coordinate Reference Systems (CRS)
+Mapbox Vector Tiles (MVTs)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create Custom CRS
+Create MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_coordinate_reference_systems
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_mvt_mappings_definitions
 
-Get CRS
+Delete MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.get_coordinate_reference_systems
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_mvt_mappings_definitions
 
-List CRSs
+Retrieve MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_coordinate_reference_systems
-
-Delete Custom CRS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_coordinate_reference_systems
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_mvt_mappings_definitions
 
 Data classes
 ^^^^^^^^^^^^
