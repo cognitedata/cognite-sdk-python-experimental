@@ -304,7 +304,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialListMvtMappings>
 
         Returns:
-            MvpMappingsDefinitionList: the requested mappings or None if it does not exist.
+            MvpMappingsDefinitionList: the requested mappings or EmptyList if it does not exist.
 
         Examples:
 
