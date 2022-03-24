@@ -314,5 +314,5 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> c.geospatial.list_mvt_mappings_definitions()
         """
-        resource_path = f"{ExperimentalGeospatialAPI._MVT_RESOURCE_PATH}/list"
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)
