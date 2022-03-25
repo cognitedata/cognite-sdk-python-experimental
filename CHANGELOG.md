@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.72.1]
+
+- Update packages
+
 ## [0.72.0]
 
 ### Added
