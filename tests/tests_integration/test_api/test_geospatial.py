@@ -216,3 +216,8 @@ class TestExperimentalGeospatialAPI:
         assert res.mappings[0]["levels"] == test_mvt_mappings_def.mappings[0]["levels"]
         assert res.mappings[0]["geometryProperty"] == test_mvt_mappings_def.mappings[0]["geometryProperty"]
         assert res.mappings[0]["featureProperties"] == test_mvt_mappings_def.mappings[0]["featureProperties"]
+
+    def test_list_mvt_mappings_definitions(self, cognite_client, test_mvt_mappings_def):
+        res = cognite_client.geospatial.list_mvt_mappings_definitions()
+        assert len(res) == 1
+        assert res[0].external_id == test_mvt_mappings_def.external_id
