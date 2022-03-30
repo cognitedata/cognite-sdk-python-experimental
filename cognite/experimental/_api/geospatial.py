@@ -2,7 +2,7 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Dict, Generator, Union
+from typing import Dict, Generator, Optional, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature
@@ -96,6 +96,9 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         raster_format: str,
         raster_srid: int,
         file: str,
+        allow_crs_transformation: bool = False,
+        raster_scale_x: Optional[float] = None,
+        raster_scale_y: Optional[float] = None,
     ) -> RasterMetadata:
         """`Put raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster>
@@ -107,6 +110,10 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             raster_format: the raster input format
             raster_srid: the associated SRID for the raster
             file: the path to the file of the raster
+            allow_crs_transformation: When the parameter is false, requests with rasters in Coordinate Reference
+                System different from the ones defined in the feature type will result in bad request response code.
+            raster_scale_x: the X component of the pixel width in units of coordinate reference system
+            raster_scale_y: the Y component of the pixel height in units of coordinate reference system
 
         Returns:
             RasterMetadata: the raster metadata if it was ingested succesfully
@@ -122,9 +129,16 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> raster_property_name = ...
                 >>> metadata = c.geospatial.put_raster(feature_type, feature, raster_property_name, "XYZ", 3857, file)
         """
+        query_params = f"format={raster_format}&srid={raster_srid}"
+        if allow_crs_transformation:
+            query_params += "&allowCrsTransformation=true"
+        if raster_scale_x:
+            query_params += f"&scalex={raster_scale_x}"
+        if raster_scale_y:
+            query_params += f"&scaley={raster_scale_y}"
         url_path = (
             self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
-            + f"?format={raster_format}&srid={raster_srid}"
+            + f"?{query_params}"
         )
         res = self._do_request(
             "PUT",
@@ -176,8 +190,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         raster_property_name: str,
         raster_format: str,
         raster_options: Dict[str, Any] = None,
+        raster_srid: Optional[int] = None,
+        raster_scale_x: Optional[float] = None,
+        raster_scale_y: Optional[float] = None,
+        allow_crs_transformation: bool = False,
     ) -> bytes:
-        """`Put raster`
+        """`Get raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/getRaster>
 
         Args:
@@ -186,6 +204,11 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             raster_property_name: the raster property name
             raster_format: the raster output format
             raster_options: GDAL raster creation key-value options
+            raster_srid: the SRID for the output raster
+            raster_scale_x: the X component of the output pixel width in units of coordinate reference system
+            raster_scale_y: the Y component of the output pixel height in units of coordinate reference system
+            allow_crs_transformation: When the parameter is false, requests with output rasters in Coordinate Reference
+                System different from the ones defined in the feature type will result in bad request response code.
 
         Returns:
             bytes: the raster data
@@ -204,7 +227,17 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
         res = self._do_request(
-            "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
+            "POST",
+            url_path,
+            timeout=self._config.timeout,
+            json={
+                "format": raster_format,
+                "options": raster_options,
+                "allowCrsTransformation": (True if allow_crs_transformation else None),
+                "srid": raster_srid,
+                "scalex": raster_scale_x,
+                "scaley": raster_scale_y,
+            },
         )
         return res.content
 
