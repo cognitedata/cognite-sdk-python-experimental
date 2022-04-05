@@ -111,7 +111,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             raster_srid: the associated SRID for the raster
             file: the path to the file of the raster
             allow_crs_transformation: When the parameter is false, requests with rasters in Coordinate Reference
-                System different from the ones defined in the feature type will result in bad request response code.
+                System different from the one defined in the feature type will result in bad request response code.
             raster_scale_x: the X component of the pixel width in units of coordinate reference system
             raster_scale_y: the Y component of the pixel height in units of coordinate reference system
 
@@ -208,7 +208,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             raster_scale_x: the X component of the output pixel width in units of coordinate reference system
             raster_scale_y: the Y component of the output pixel height in units of coordinate reference system
             allow_crs_transformation: When the parameter is false, requests with output rasters in Coordinate Reference
-                System different from the ones defined in the feature type will result in bad request response code.
+                System different from the one defined in the feature type will result in bad request response code.
 
         Returns:
             bytes: the raster data
