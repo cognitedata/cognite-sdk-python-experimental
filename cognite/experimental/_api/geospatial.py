@@ -133,9 +133,9 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         if allow_crs_transformation:
             query_params += "&allowCrsTransformation=true"
         if raster_scale_x:
-            query_params += f"&scalex={raster_scale_x}"
+            query_params += f"&scaleX={raster_scale_x}"
         if raster_scale_y:
-            query_params += f"&scaley={raster_scale_y}"
+            query_params += f"&scaleY={raster_scale_y}"
         url_path = (
             self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
             + f"?{query_params}"
@@ -240,8 +240,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 "options": raster_options,
                 "allowCrsTransformation": (True if allow_crs_transformation else None),
                 "srid": raster_srid,
-                "scalex": raster_scale_x,
-                "scaley": raster_scale_y,
+                "scaleX": raster_scale_x,
+                "scaleY": raster_scale_y,
             },
         )
         return res.content
