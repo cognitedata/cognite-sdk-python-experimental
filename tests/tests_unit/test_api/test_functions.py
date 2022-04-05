@@ -299,7 +299,8 @@ def mock_function_calls_filter_response(rsps):
 @pytest.fixture
 def cognite_client_with_api_key():
     client = CogniteClient(
-        api_key="caner_was_here_but_not_for_long_because_api_keys_will_be_removed", disable_pypi_version_check=True,
+        api_key="caner_was_here_but_not_for_long_because_api_keys_will_be_removed",
+        disable_pypi_version_check=True,
     )
     client.config.token_client_id = None  # Disables Client Credentials coming from the ENV
 
@@ -308,7 +309,10 @@ def cognite_client_with_api_key():
 
 @pytest.fixture
 def cognite_client_with_token():
-    client = CogniteClient(token="aabbccddeeffgg", disable_pypi_version_check=True,)
+    client = CogniteClient(
+        token="aabbccddeeffgg",
+        disable_pypi_version_check=True,
+    )
     client.config.token_client_id = None  # Disables Client Credentials coming from the ENV
 
     return client

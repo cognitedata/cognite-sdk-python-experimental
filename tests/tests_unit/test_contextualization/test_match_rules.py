@@ -13,12 +13,30 @@ RULES_API = COGNITE_CLIENT.match_rules
 
 @pytest.fixture
 def sources():
-    return [{"id": 1, "name": "prefix_12_AB_0001/suffix",}, {"id": 2, "name": "prefix_12_AB_0002/suffix",}]
+    return [
+        {
+            "id": 1,
+            "name": "prefix_12_AB_0001/suffix",
+        },
+        {
+            "id": 2,
+            "name": "prefix_12_AB_0002/suffix",
+        },
+    ]
 
 
 @pytest.fixture
 def targets():
-    return [{"id": 1, "name": "12_AB_0001",}, {"id": 2, "name": "12_AB_0002",}]
+    return [
+        {
+            "id": 1,
+            "name": "12_AB_0001",
+        },
+        {
+            "id": 2,
+            "name": "12_AB_0002",
+        },
+    ]
 
 
 @pytest.fixture

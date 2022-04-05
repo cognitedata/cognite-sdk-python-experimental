@@ -47,7 +47,8 @@ class StringFilter(CogniteFilter):
     """
 
     def __init__(
-        self, substring: str = None,
+        self,
+        substring: str = None,
     ):
         self.substring = substring
 

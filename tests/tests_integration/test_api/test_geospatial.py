@@ -124,14 +124,14 @@ class TestExperimentalGeospatialAPI:
         )
         assert res.width == 4
         assert res.height == 5
-        assert res.numbands == 1
-        assert res.scalex == 1.0
-        assert res.scaley == 1.0
-        assert res.skewx == 0.0
-        assert res.skewy == 0.0
+        assert res.num_bands == 1
+        assert res.scale_x == 1.0
+        assert res.scale_y == 1.0
+        assert res.skew_x == 0.0
+        assert res.skew_y == 0.0
         assert res.srid == 3857
-        assert res.upperleftx == -0.5
-        assert res.upperlefty == -0.5
+        assert res.upper_left_x == -0.5
+        assert res.upper_left_y == -0.5
 
     def test_get_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.get_raster(
@@ -155,24 +155,60 @@ class TestExperimentalGeospatialAPI:
         ).read()
         assert res == raster_content
 
+    def test_get_raster_with_transformation(self, cognite_client, test_feature_type, test_feature_with_raster):
+        res = cognite_client.geospatial.get_raster(
+            feature_type_external_id=test_feature_type.external_id,
+            feature_external_id=test_feature_with_raster.external_id,
+            raster_property_name="raster",
+            raster_format="XYZ",
+            raster_srid=54030,
+            allow_crs_transformation=True,
+        )
+        raster_content = open(
+            "tests/tests_integration/test_api/geospatial_data/raster-grid-54030-example.xyz", "rb"
+        ).read()
+        assert res == raster_content
+
     def test_retrieve_features_with_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id,
+            external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         raster_metadata = res[0].raster
         assert raster_metadata == {
             "width": 4,
             "height": 5,
-            "numbands": 1,
-            "scalex": 1.0,
-            "scaley": 1.0,
-            "skewx": 0.0,
-            "skewy": 0.0,
+            "numBands": 1,
+            "scaleX": 1.0,
+            "scaleY": 1.0,
+            "skewX": 0.0,
+            "skewY": 0.0,
             "srid": 3857,
-            "upperleftx": -0.5,
-            "upperlefty": -0.5,
+            "upperLeftX": -0.5,
+            "upperLeftY": -0.5,
         }
+
+    def test_put_raster_custom_crs(self, cognite_client, test_feature_type, test_feature):
+        res = cognite_client.geospatial.put_raster(
+            feature_type_external_id=test_feature_type.external_id,
+            feature_external_id=test_feature.external_id,
+            raster_property_name="raster",
+            raster_format="XYZ",
+            raster_srid=54030,
+            file="tests/tests_integration/test_api/geospatial_data/raster-grid-example.xyz",
+            allow_crs_transformation=True,
+        )
+        assert res.width == 4
+        assert res.height == 5
+        assert res.num_bands == 1
+        assert res.scale_x == 1.0
+        assert res.scale_y == 1.0
+        assert res.skew_x == 0.0
+        assert res.skew_y == 0.0
+        assert res.srid == 3857
+        assert res.upper_left_x == -0.5891363261459447
+        assert res.upper_left_y == -0.31623471547260973
 
     def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.delete_raster(
@@ -182,7 +218,8 @@ class TestExperimentalGeospatialAPI:
         )
         assert res is None
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id,
+            external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
@@ -205,7 +242,8 @@ class TestExperimentalGeospatialAPI:
             "position",
         }
         res = cognite_client.geospatial.retrieve_features(
-            feature_type_external_id=test_feature_type.external_id, external_id=[test_feature_with_raster.external_id],
+            feature_type_external_id=test_feature_type.external_id,
+            external_id=[test_feature_with_raster.external_id],
         )
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False

@@ -47,7 +47,12 @@ def fetch_job_response_ok():
         "startTime": 934875934785,
         "statusTime": 934875934785,
         "jobId": 1,
-        "items": [{"fileId": 1, "annotations": [{"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}],},],
+        "items": [
+            {
+                "fileId": 1,
+                "annotations": [{"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}],
+            },
+        ],
         "useCache": True,
         "partialMatch": True,
         "assetSubtreeIds": [39468345],
@@ -57,7 +62,10 @@ def fetch_job_response_ok():
 @pytest.fixture
 def mock_create_job_ok(rsps, create_job_response_ok):
     rsps.add(
-        rsps.POST, re.compile(".*?/context/vision/tagdetection"), status=200, json=create_job_response_ok,
+        rsps.POST,
+        re.compile(".*?/context/vision/tagdetection"),
+        status=200,
+        json=create_job_response_ok,
     )
     yield rsps
 
@@ -65,13 +73,18 @@ def mock_create_job_ok(rsps, create_job_response_ok):
 @pytest.fixture
 def mock_fetch_job_ok(rsps, fetch_job_response_ok):
     rsps.add(
-        rsps.GET, re.compile(".*?/context/vision/tagdetection"), status=200, json=fetch_job_response_ok,
+        rsps.GET,
+        re.compile(".*?/context/vision/tagdetection"),
+        status=200,
+        json=fetch_job_response_ok,
     )
     yield rsps
 
 
 def contains_file_id(
-    files, id=None, external_id=None,
+    files,
+    id=None,
+    external_id=None,
 ):
     if id is None and external_id is None:
         raise ValueError("id or external_id must be specified")

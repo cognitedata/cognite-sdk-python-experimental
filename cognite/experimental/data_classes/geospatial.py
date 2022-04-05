@@ -24,7 +24,10 @@ class MvpMappingsDefinition(CogniteResource):
     """MVT mappings definition"""
 
     def __init__(
-        self, external_id: str = None, mappings: List[Dict[str, Any]] = None, cognite_client=None,
+        self,
+        external_id: str = None,
+        mappings: List[Dict[str, Any]] = None,
+        cognite_client=None,
     ):
         self.external_id = external_id
         self.mappings = mappings

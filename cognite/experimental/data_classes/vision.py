@@ -125,7 +125,10 @@ class VisionRegion:
             return cls._load(json.loads(resource))
         elif isinstance(resource, Dict):
             k = resource_to_snake_case(resource)
-            return cls(shape=k["shape"], vertices=[VisionVertex(x=v["x"], y=v["y"]) for v in k["vertices"]],)
+            return cls(
+                shape=k["shape"],
+                vertices=[VisionVertex(x=v["x"], y=v["y"]) for v in k["vertices"]],
+            )
         raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 

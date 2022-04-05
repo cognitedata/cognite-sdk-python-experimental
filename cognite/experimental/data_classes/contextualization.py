@@ -481,7 +481,10 @@ class PNIDDetectResults(ContextualizationJob):
     @property
     def matches(self) -> PNIDDetectionList:
         """Returns detected items"""
-        return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client,)
+        return PNIDDetectionList._load(
+            self.result["items"],
+            cognite_client=self._cognite_client,
+        )
 
     def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)

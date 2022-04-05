@@ -37,7 +37,9 @@ def file_id(cognite_client: CogniteClient) -> int:
     yield file.id
     # Teardown all annotations to the file
     filter = AnnotationV2Filter(
-        annotated_resource_type="file", annotated_resource_ids=[{"id": file.id}], creating_app="UnitTest",
+        annotated_resource_type="file",
+        annotated_resource_ids=[{"id": file.id}],
+        creating_app="UnitTest",
     )
     annotation_ids = [a.id for a in cognite_client.annotations_v2.list(filter=filter)]
     if annotation_ids:

@@ -15,4 +15,8 @@ class PNIDObjectDetectionAPI(ContextAPI):
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
         """
-        return self._run_job(job_path="/findobjects", status_path="/findobjects/", file_id=file_id,)
+        return self._run_job(
+            job_path="/findobjects",
+            status_path="/findobjects/",
+            file_id=file_id,
+        )
