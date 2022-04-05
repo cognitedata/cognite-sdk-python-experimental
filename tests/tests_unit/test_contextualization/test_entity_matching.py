@@ -38,7 +38,10 @@ def mock_status_rules_ok(rsps):
 def mock_suggest_ok(rsps):
     response_body = {"items": []}
     rsps.add(
-        rsps.POST, re.compile(".*?/suggestfields"), status=200, json=response_body,
+        rsps.POST,
+        re.compile(".*?/suggestfields"),
+        status=200,
+        json=response_body,
     )
     yield rsps
 

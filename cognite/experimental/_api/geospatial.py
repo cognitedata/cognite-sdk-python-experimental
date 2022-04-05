@@ -151,7 +151,10 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
     @_with_cognite_domain
     def delete_raster(
-        self, feature_type_external_id: str, feature_external_id: str, raster_property_name: str,
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_property_name: str,
     ) -> None:
         """`Delete raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster>
@@ -179,7 +182,9 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name) + "/delete"
         )
         self._do_request(
-            "POST", url_path, timeout=self._config.timeout,
+            "POST",
+            url_path,
+            timeout=self._config.timeout,
         )
 
     @_with_cognite_domain
@@ -243,7 +248,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
     @_with_cognite_domain
     def create_mvt_mappings_definitions(
-        self, mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
+        self,
+        mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
     ) -> MvpMappingsDefinitionList:
         """`Creates MVP mappings`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialCreateMvtMappings>

@@ -10,7 +10,12 @@ from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter, 
 class TestAnnotationV2:
     @pytest.mark.parametrize(
         "creating_user, camel_case",
-        [("john.doe@cognite.com", False), ("john.doe@cognite.com", True), (None, False), (None, True),],
+        [
+            ("john.doe@cognite.com", False),
+            ("john.doe@cognite.com", True),
+            (None, False),
+            (None, True),
+        ],
         ids=["snake_case", "camel_case", "snake_case_None", "camel_case_None"],
     )
     def test_dump(self, annotation: AnnotationV2, creating_user: Optional[str], camel_case: bool) -> None:
@@ -64,7 +69,15 @@ class TestAnnotationV2Filter:
 class TestAnnotationV2Update:
     def test_set_chain(self):
         update = {
-            "data": {"assetRef": {"id": 1}, "textRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "yMax": 1.0,}},
+            "data": {
+                "assetRef": {"id": 1},
+                "textRegion": {
+                    "xMin": 0.0,
+                    "xMax": 0.5,
+                    "yMin": 0.5,
+                    "yMax": 1.0,
+                },
+            },
             "status": "rejected",
             "annotationType": "diagrams.AssetLink",
             "linkedResourceType": "asset",

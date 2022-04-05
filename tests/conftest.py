@@ -14,7 +14,12 @@ def annotation() -> AnnotationV2:
         data={
             "fileRef": {"id": 1, "externalId": None},
             "pageNumber": 1,
-            "textRegion": {"xMin": 0.0, "xMax": 0.5, "yMin": 0.5, "yMax": 1.0,},
+            "textRegion": {
+                "xMin": 0.0,
+                "xMax": 0.5,
+                "yMin": 0.5,
+                "yMax": 1.0,
+            },
         },
         status="approved",
         creating_app="UnitTest",

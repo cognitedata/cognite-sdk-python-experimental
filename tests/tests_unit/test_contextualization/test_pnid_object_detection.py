@@ -72,7 +72,9 @@ class TestPNIDObjectDetection:
         for call in mock_find_objects.calls:
             if "findobjects" in call.request.url and call.request.method == "POST":
                 n_find_objects_calls += 1
-                assert {"fileId": file_id,} == jsgz_load(call.request.body)
+                assert {
+                    "fileId": file_id,
+                } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/789" in call.request.url

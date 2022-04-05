@@ -51,5 +51,10 @@ class TestPNIDParsingIntegration:
         file_id = PNID_FILE_ID
         job = PNIDAPI.convert(file_id=file_id, items=items, grayscale=True)
         assert isinstance(job, ContextualizationJob)
-        assert {"pngUrl", "svgUrl", "fileId", "fileExternalId",} == set(job.result.keys())
+        assert {
+            "pngUrl",
+            "svgUrl",
+            "fileId",
+            "fileExternalId",
+        } == set(job.result.keys())
         assert "Completed" == job.status
