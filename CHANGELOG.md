@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.74.0]
+
+### Added
+
+- Optional argument `extra_index_urls` and `index_url` to `FunctionsAPI.create` which enables the users to install pip packages from private repositories via adding extra index URLs to Python package manager.
+
 ## [0.73.0]
 
 ### Changed
@@ -103,7 +109,6 @@ Changes are grouped as follows
 ## [0.66]
 
 ### Added
-
 - Method `FunctionsAPI.limits` which returns information about limits associated with the CDF project the user is logged in to.
 
 ## [0.65]
