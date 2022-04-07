@@ -12,10 +12,6 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.71.0]
-
-### Added
-- Optional argument `extra_index_urls` and `index_url` to `FunctionsAPI.create` which enables the users to install pip packages from private repositories via adding extra index URLs to Python package manager.
   
 ## [0.70.0]
 
