@@ -300,7 +300,7 @@ class FunctionsAPI(APIClient):
         Args:
             id (int, optional): ID
             external_id (str, optional): External ID
-            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data. **WARNING:** Secrets or other confidential information should not be passed via this argument. There is a dedicated `secrets` argument in FunctionsAPI.create() for this purpose.'
             wait (bool): Wait until the function call is finished. Defaults to True.
 
         Returns:
@@ -790,7 +790,7 @@ class FunctionSchedulesAPI(APIClient):
             client_credentials: (optional, Dict): Dictionary containing client credentials:
                 client_id
                 client_secret
-            data (optional, Dict): Data to be passed to the scheduled run.
+            data (optional, Dict): Data to be passed to the scheduled run. **WARNING:** Secrets or other confidential information should not be passed via this argument. There is a dedicated `secrets` argument in FunctionsAPI.create() for this purpose.
 
         Returns:
             FunctionSchedule: Created function schedule.

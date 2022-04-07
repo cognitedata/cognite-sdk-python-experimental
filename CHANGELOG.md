@@ -12,7 +12,42 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-  
+## [0.74.0]
+
+### Added
+
+- Optional argument `extra_index_urls` and `index_url` to `FunctionsAPI.create` which enables the users to install pip packages from private repositories via adding extra index URLs to Python package manager.
+
+## [0.73.0]
+
+### Changed
+
+- Geospatial: Support pushing and getting raster with crs conversion
+
+## [0.72.0]
+
+### Added
+
+- Geospatial: list MVT mappings definitions
+
+## [0.71.1]
+
+### Fixed
+
+- Geospatial: follow api raster id renaming into rasterPropertyName
+
+## [0.71.0]
+
+### Added
+
+- Geospatial: create, delete and retrieve MVT mappings definitions
+
+## [0.70.1]
+
+### Fixed
+
+- Geospatial rasters: url encode the feature external id and the raster id
+
 ## [0.70.0]
 
 ### Added

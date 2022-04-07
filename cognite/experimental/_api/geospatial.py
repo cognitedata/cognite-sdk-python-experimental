@@ -1,14 +1,15 @@
 import functools
 import json
 import types
-from typing import Any, Dict, Generator
+import urllib.parse
+from typing import Dict, Generator, Optional, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature
 from cognite.client.exceptions import CogniteConnectionError
 from requests.exceptions import ChunkedEncodingError
 
-from cognite.experimental.data_classes.geospatial import RasterMetadata
+from cognite.experimental.data_classes.geospatial import *
 
 
 def _with_cognite_domain(func):
@@ -26,8 +27,18 @@ def _with_cognite_domain(func):
 
 class ExperimentalGeospatialAPI(GeospatialAPI):
     X_COGNITE_DOMAIN = "x-cognite-domain"
+    _MVT_RESOURCE_PATH = GeospatialAPI._RESOURCE_PATH + "/mvts"
 
     _cognite_domain = None
+
+    @staticmethod
+    def _raster_resource_path(feature_type_external_id: str, feature_external_id: str, raster_property_name: str):
+        encoded_feature_external_id = urllib.parse.quote(feature_external_id, safe="")
+        encoded_raster_property_name = urllib.parse.quote(raster_property_name, safe="")
+        return (
+            ExperimentalGeospatialAPI._feature_resource_path(feature_type_external_id)
+            + f"/{encoded_feature_external_id}/rasters/{encoded_raster_property_name}"
+        )
 
     def set_current_cognite_domain(self, cognite_domain: str):
         self._cognite_domain = cognite_domain
@@ -81,10 +92,13 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         self,
         feature_type_external_id: str,
         feature_external_id: str,
-        raster_id: str,
+        raster_property_name: str,
         raster_format: str,
         raster_srid: int,
         file: str,
+        allow_crs_transformation: bool = False,
+        raster_scale_x: Optional[float] = None,
+        raster_scale_y: Optional[float] = None,
     ) -> RasterMetadata:
         """`Put raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/putRaster>
@@ -92,10 +106,14 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         Args:
             feature_type_external_id : Feature type definition for the features to create.
             feature_external_id: one feature or a list of features to create
-            raster_id: the raster id
+            raster_property_name: the raster property name
             raster_format: the raster input format
             raster_srid: the associated SRID for the raster
             file: the path to the file of the raster
+            allow_crs_transformation: When the parameter is false, requests with rasters in Coordinate Reference
+                System different from the one defined in the feature type will result in bad request response code.
+            raster_scale_x: the X component of the pixel width in units of coordinate reference system
+            raster_scale_y: the Y component of the pixel height in units of coordinate reference system
 
         Returns:
             RasterMetadata: the raster metadata if it was ingested succesfully
@@ -108,14 +126,20 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> feature_type = ...
                 >>> feature = ...
-                >>> rasterId = ...
-                >>> metadata = c.geospatial.put_raster(feature_type, feature, rasterId, "XYZ", 3857, file)
+                >>> raster_property_name = ...
+                >>> metadata = c.geospatial.put_raster(feature_type, feature, raster_property_name, "XYZ", 3857, file)
         """
+        query_params = f"format={raster_format}&srid={raster_srid}"
+        if allow_crs_transformation:
+            query_params += "&allowCrsTransformation=true"
+        if raster_scale_x:
+            query_params += f"&scaleX={raster_scale_x}"
+        if raster_scale_y:
+            query_params += f"&scaleY={raster_scale_y}"
         url_path = (
-            self._feature_resource_path(feature_type_external_id)
-            + f"/{feature_external_id}/rasters/{raster_id}?format={raster_format}&srid={raster_srid}"
+            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
+            + f"?{query_params}"
         )
-
         res = self._do_request(
             "PUT",
             url_path,
@@ -123,18 +147,22 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             headers={"Content-Type": "application/binary"},
             timeout=self._config.timeout,
         )
-
         return RasterMetadata._load(res.json(), cognite_client=self._cognite_client)
 
     @_with_cognite_domain
-    def delete_raster(self, feature_type_external_id: str, feature_external_id: str, raster_id: str,) -> None:
+    def delete_raster(
+        self,
+        feature_type_external_id: str,
+        feature_external_id: str,
+        raster_property_name: str,
+    ) -> None:
         """`Delete raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/deleteRaster>
 
         Args:
             feature_type_external_id : Feature type definition for the features to create.
             feature_external_id: one feature or a list of features to create
-            raster_id: the raster id
+            raster_property_name: the raster property name
 
         Returns:
             None
@@ -147,15 +175,16 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> feature_type = ...
                 >>> feature = ...
-                >>> rasterId = ...
-                >>> c.geospatial.delete_raster(feature_type, feature, rasterId)
+                >>> raster_property_name = ...
+                >>> c.geospatial.delete_raster(feature_type, feature, raster_property_name)
         """
         url_path = (
-            self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}/delete"
+            self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name) + "/delete"
         )
-
         self._do_request(
-            "POST", url_path, timeout=self._config.timeout,
+            "POST",
+            url_path,
+            timeout=self._config.timeout,
         )
 
     @_with_cognite_domain
@@ -163,19 +192,28 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         self,
         feature_type_external_id: str,
         feature_external_id: str,
-        raster_id: str,
+        raster_property_name: str,
         raster_format: str,
         raster_options: Dict[str, Any] = None,
+        raster_srid: Optional[int] = None,
+        raster_scale_x: Optional[float] = None,
+        raster_scale_y: Optional[float] = None,
+        allow_crs_transformation: bool = False,
     ) -> bytes:
-        """`Put raster`
+        """`Get raster`
         <https://pr-1632.specs.preview.cogniteapp.com/v1.json.html#operation/getRaster>
 
         Args:
             feature_type_external_id : Feature type definition for the features to create.
             feature_external_id: one feature or a list of features to create
-            raster_id: the raster id
+            raster_property_name: the raster property name
             raster_format: the raster output format
             raster_options: GDAL raster creation key-value options
+            raster_srid: the SRID for the output raster
+            raster_scale_x: the X component of the output pixel width in units of coordinate reference system
+            raster_scale_y: the Y component of the output pixel height in units of coordinate reference system
+            allow_crs_transformation: When the parameter is false, requests with output rasters in Coordinate Reference
+                System different from the one defined in the feature type will result in bad request response code.
 
         Returns:
             bytes: the raster data
@@ -188,11 +226,132 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c = CogniteClient()
                 >>> feature_type = ...
                 >>> feature = ...
-                >>> rasterId = ...
-                >>> raster_data = c.geospatial.get_raster(feature_type, feature, rasterId, "XYZ", {"ADD_HEADER_LINE": "YES"})
+                >>> raster_property_name = ...
+                >>> raster_data = c.geospatial.get_raster(feature_type, feature, raster_property_name,
+                >>>                                       "XYZ", {"SIGNIFICANT_DIGITS": "4"})
         """
-        url_path = self._feature_resource_path(feature_type_external_id) + f"/{feature_external_id}/rasters/{raster_id}"
+        url_path = self._raster_resource_path(feature_type_external_id, feature_external_id, raster_property_name)
         res = self._do_request(
-            "POST", url_path, timeout=self._config.timeout, json={"format": raster_format, "options": raster_options}
+            "POST",
+            url_path,
+            timeout=self._config.timeout,
+            json={
+                "format": raster_format,
+                "options": raster_options,
+                "allowCrsTransformation": (True if allow_crs_transformation else None),
+                "srid": raster_srid,
+                "scaleX": raster_scale_x,
+                "scaleY": raster_scale_y,
+            },
         )
         return res.content
+
+    @_with_cognite_domain
+    def create_mvt_mappings_definitions(
+        self,
+        mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
+    ) -> MvpMappingsDefinitionList:
+        """`Creates MVP mappings`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialCreateMvtMappings>
+
+        Args:
+            mappings_definitions: list of MVT mappings definitions
+
+        Returns:
+            Union[List[Dict[str, Any]]]: list of created MVT mappings definitions
+
+        Examples:
+
+            Create MVT mappings, assuming the feature types `aggregated_seismic_surveys` and `seismic_surveys`:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> mvp_mappings_def = MvpMappingsDefinition(
+                >>>                        external_id="surveys",
+                >>>                        mappings_definitions=[
+                ...                            {
+                ...                                "featureTypeExternalId": "aggregated_seismic_surveys",
+                ...                                "levels": [0,1,2,3,4,5],
+                ...                                "geometryProperty": "agg_geom",
+                ...                                "featureProperties": ["survey_type"]
+                ...                            },
+                ...                            {
+                ...                                "featureTypeExternalId": "seismic_surveys",
+                ...                                "levels": [6,7,8,9,10,11,12,13,14,15],
+                ...                                "geometryProperty": "geom",
+                ...                                "featureProperties": ["survey_type", "sample_rate"]
+                ...                            ),
+                ...                        ]
+                ...                    )
+                >>> res = c.geospatial.create_mvt_mappings_definitions(mvp_mappings_def)
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._create_multiple(
+            items=mappings_definitions, resource_path=resource_path, cls=MvpMappingsDefinitionList
+        )
+
+    @_with_cognite_domain
+    def delete_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> None:
+        """`Deletes MVP mappings definitions`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialDeleteMvtMappings>
+
+        Args:
+            external_id (Union[str, List[str]]): the mappings external ids
+
+        Returns:
+            None
+
+        Examples:
+
+            Deletes MVT mappings definitions:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.delete_mvt_mappings_definitions(external_id="surveys")
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
+
+    @_with_cognite_domain
+    def retrieve_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> MvpMappingsDefinitionList:
+        """`Retrieve MVP mappings definitions`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialGetByIdsMvtMappings>
+
+        Args:
+            external_id : the mappings external ids
+            external_id (Union[str, List[str]]): External ID or list of external ids
+
+        Returns:
+            MvpMappingsDefinitionList: the requested mappings or None if it does not exist.
+
+        Examples:
+
+            Retrieve one MVT mapping by its external id:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.geospatial.retrieve_mvt_mappings_definitions(external_id="surveys")
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._retrieve_multiple(
+            wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=MvpMappingsDefinitionList
+        )
+
+    @_with_cognite_domain
+    def list_mvt_mappings_definitions(self) -> MvpMappingsDefinitionList:
+        """`List MVP mappings definitions`
+        <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialListMvtMappings>
+
+        Returns:
+            MvpMappingsDefinitionList: the requested mappings or EmptyList if it does not exist.
+
+        Examples:
+
+            List MVT mappings:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.geospatial.list_mvt_mappings_definitions()
+        """
+        resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)

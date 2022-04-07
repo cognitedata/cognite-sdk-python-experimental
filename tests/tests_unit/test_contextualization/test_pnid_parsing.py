@@ -230,7 +230,11 @@ class TestPNIDParsing:
         for call in mock_convert.calls:
             if "convert" in call.request.url and call.request.method == "POST":
                 n_convert_calls += 1
-                assert {"fileId": file_id, "items": items, "grayscale": True,} == jsgz_load(call.request.body)
+                assert {
+                    "fileId": file_id,
+                    "items": items,
+                    "grayscale": True,
+                } == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/345" in call.request.url

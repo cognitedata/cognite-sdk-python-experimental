@@ -93,7 +93,10 @@ class ExtractionPipelinesAPI(APIClient):
                 >>> ep_list = c.extraction_pipelines.list(limit=5)
         """
 
-        return self._list(method="GET", limit=limit,)
+        return self._list(
+            method="GET",
+            limit=limit,
+        )
 
     def create(
         self, extractionPipeline: Union[ExtractionPipeline, List[ExtractionPipeline]]
@@ -121,26 +124,33 @@ class ExtractionPipelinesAPI(APIClient):
         utils._auxiliary.assert_type(extractionPipeline, "extraction_pipeline", [ExtractionPipeline, list])
         return self._create_multiple(extractionPipeline)
 
-    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None,) -> None:
+    def delete(
+        self,
+        id: Union[int, List[int]] = None,
+        external_id: Union[str, List[str]] = None,
+    ) -> None:
         """`Delete one or more ExtractionPipelines <>`_
 
-            Args:
-                id (Union[int, List[int]): Id or list of ids
-                external_id (Union[str, List[str]]): External ID or list of exgernal ids
+        Args:
+            id (Union[int, List[int]): Id or list of ids
+            external_id (Union[str, List[str]]): External ID or list of exgernal ids
 
-            Returns:
-                None
+        Returns:
+            None
 
-            Examples:
+        Examples:
 
-                Delete ExtractionPipelines by id or external id::
+            Delete ExtractionPipelines by id or external id::
 
-                    >>> from cognite.experimental import CogniteClient
-                    >>> c = CogniteClient()
-                    >>> c.extraction_pipelines.delete(id=[1,2,3], external_id="3")
-            """
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> c.extraction_pipelines.delete(id=[1,2,3], external_id="3")
+        """
         self._delete_multiple(
-            ids=id, external_ids=external_id, wrap_ids=True, extra_body_fields={},
+            ids=id,
+            external_ids=external_id,
+            wrap_ids=True,
+            extra_body_fields={},
         )
 
     def update(

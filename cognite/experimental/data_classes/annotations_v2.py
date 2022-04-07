@@ -19,7 +19,7 @@ class AnnotationV2(CogniteResource):
         annotation_type (str): The type of the annotation. This uniquely decides what the structure of the 'data' block will be.
         data (dict): The annotation information. The format of this object is decided by and validated against the 'annotation_type' attribute.
         status (str): The status of the annotation, e.g. "suggested", "approved", "rejected".
-        
+
         annotated_resource_type (str): Type name of the CDF resource that is annotated, e.g. "file".
         annotated_resource_id (int, optional): The internal ID of the annotated resource. Either this field or the external ID of the linked resource is required (not both).
         annotated_resource_external_id (str, optional): The external ID of the annotated resource. Either this field or the internal ID of the linked resource is required (not both).
@@ -35,7 +35,7 @@ class AnnotationV2(CogniteResource):
         id (int, optional): A server-generated id for the object. Read-only.
         created_time (int, optional): Time when this annotation was created in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read-only.
         last_updated_time (int, optional): Time when this annotation was last updated in CDF. The time is measured in milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds. Read-only.
-        
+
         cognite_client (CogniteClient, optional): The client to associate with this object. Read-only.
     """
 
@@ -120,7 +120,7 @@ class AnnotationV2Filter(CogniteFilter):
         annotated_resource_ids (List[Dict[str, Any]]): List of ids and external ids of the annotated CDF resources to filter in. Example format: [{"id": 1234}, {"external_id": "ext_1234"}]. Must contain at least one item.
         status (str, optional): Status of annotations to filter for, e.g. "suggested", "approved", "rejected".
         creating_user (str, optional): Name of the user who created the annotations to filter for. Can be set explicitly to "None" to filter for annotations created by a service.
-        creating_app (str, optional): Name of the app from which the annotations to filter for where created. 
+        creating_app (str, optional): Name of the app from which the annotations to filter for where created.
         creating_app_version (str, optional): Version of the app from which the annotations to filter for were created.
         linked_resource_type(str, optional): Type of the CDF resource the annotations to filter for are linked to, if any.
         linked_resource_ids(List[Dict[str, Any]], optional): List of ids or external ids the annotations are linked to. Example format: [{"id": 1234}, {"external_id": "ext_1234"}] .
@@ -173,25 +173,25 @@ class AnnotationV2Update(CogniteUpdate):
         super().__init__(id=id)
 
     class _StrUpdate(CognitePrimitiveUpdate):
-        """ Only set, no set_null """
+        """Only set, no set_null"""
 
         def set(self, value: str) -> "AnnotationV2Update":
             return self._set(value)
 
     class _OptionalStrUpdate(CognitePrimitiveUpdate):
-        """ Set and set_null """
+        """Set and set_null"""
 
         def set(self, value: Optional[str]) -> "AnnotationV2Update":
             return self._set(value)
 
     class _DictUpdate(CogniteObjectUpdate):
-        """ Only set, no set_null """
+        """Only set, no set_null"""
 
         def set(self, value: Dict[str, Any]) -> "AnnotationV2Update":
             return self._set(value)
 
     class _OptionalIntUpdate(CognitePrimitiveUpdate):
-        """ Set and set_null """
+        """Set and set_null"""
 
         def set(self, value: Optional[int]) -> "AnnotationV2Update":
             return self._set(value)
