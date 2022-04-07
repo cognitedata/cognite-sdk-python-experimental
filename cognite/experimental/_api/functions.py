@@ -55,8 +55,8 @@ class FunctionsAPI(APIClient):
         memory: Optional[Number] = None,
         runtime: Optional[str] = None,
         metadata: Optional[Dict] = None,
-        extra_index_urls: Optional[List[str]] = None,
         index_url: Optional[str] = None,
+        extra_index_urls: Optional[List[str]] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -71,23 +71,23 @@ class FunctionsAPI(APIClient):
         - Data about the function call can be accessed via the argument `function_call_info`, which is a dictionary with keys `function_id` and, if the call is scheduled, `schedule_id` and `scheduled_time`.\n
 
         Args:
-            name (str):                             The name of the function.
-            folder (str, optional):                 Path to the folder where the function source code is located.
-            file_id (int, optional):                File ID of the code uploaded to the Files API.
-            function_path (str, optional):          Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
-            function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
-            external_id (str, optional):            External id of the function.
-            description (str, optional):            Description of the function.
-            owner (str, optional):                  Owner of this function. Typically used to know who created it.
-            api_key (str, optional):                API key that can be used inside the function to access data in CDF.
-            secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 30 secrets, all keys must be unique, and cannot be apikey.
-            env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
-            cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
-            memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
-            runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default which currently is "py38". The runtime "py3x" resolves to the latest version of the Python 3.x.y series.
-            metadata (Dict[str, str], optional):    Metadata for the function as key/value pairs. Key & values can be at most 32, 512 characters long respectively. You can have at the most 16 key-value pairs, with a maximum size of 512 bytes.
-            extra_index_urls (List[str], optional):   Extra Index URLs for Python Package Manager to use. Please do not use any extra indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
-            index_url (str, optional):               Index URL for Python Package Manager to use. Please do not use any indices you don't trust. The authentication provided in the URL should not have right access. If you are not careful, these can cause [supply chain attack](https://en.wikipedia.org/wiki/Supply_chain_attack)
+            name (str):                              The name of the function.
+            folder (str, optional):                  Path to the folder where the function source code is located.
+            file_id (int, optional):                 File ID of the code uploaded to the Files API.
+            function_path (str, optional):           Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
+            function_handle (Callable, optional):    Reference to a function object, which must be named `handle`.
+            external_id (str, optional):             External id of the function.
+            description (str, optional):             Description of the function.
+            owner (str, optional):                   Owner of this function. Typically used to know who created it.
+            api_key (str, optional):                 API key that can be used inside the function to access data in CDF.
+            secrets (Dict[str, str]):                Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 30 secrets, all keys must be unique, and cannot be apikey.
+            env_vars (Dict[str, str]):               Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
+            cpu (Number, optional):                  Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
+            memory (Number, optional):               Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
+            runtime (str, optional):                 The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default which currently is "py38". The runtime "py3x" resolves to the latest version of the Python 3.x.y series.
+            metadata (Dict[str, str], optional):     Metadata for the function as key/value pairs. Key & values can be at most 32, 512 characters long respectively. You can have at the most 16 key-value pairs, with a maximum size of 512 bytes.
+            index_url (str, optional):               Index URL for Python Package Manager to use. Be aware of the intrinsic security implications of using the `index_url` option. [More information can be found on official docs](https://docs.cognite.com/cdf/functions/#additional-arguments)
+            extra_index_urls (List[str], optional):  Extra Index URLs for Python Package Manager to use. Be aware of the intrinsic security implications of using the `extra_index_urls` option. [More information can be found on official docs](https://docs.cognite.com/cdf/functions/#additional-arguments)
         Returns:
             Function: The created function.
 
