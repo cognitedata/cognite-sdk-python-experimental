@@ -519,29 +519,8 @@ Get suggestions for missing entries
 
 Geospatial
 ------------------------
-
-Feature Types
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Create Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_feature_types
-
-Retrieve Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_feature_types
-
-Update Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_feature_types
-
-List Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_feature_types
-
-Delete Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_feature_types
+.. note::
+    Check https://github.com/cognitedata/geospatial-examples for some complete examples.
 
 Rasters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
