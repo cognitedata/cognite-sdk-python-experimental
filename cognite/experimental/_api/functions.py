@@ -86,8 +86,8 @@ class FunctionsAPI(APIClient):
             memory (Number, optional):               Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
             runtime (str, optional):                 The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default which currently is "py38". The runtime "py3x" resolves to the latest version of the Python 3.x.y series.
             metadata (Dict[str, str], optional):     Metadata for the function as key/value pairs. Key & values can be at most 32, 512 characters long respectively. You can have at the most 16 key-value pairs, with a maximum size of 512 bytes.
-            index_url (str, optional):               Index URL for Python Package Manager to use. Be aware of the intrinsic security implications of using the `index_url` option. [More information can be found on official docs](https://docs.cognite.com/cdf/functions/#additional-arguments)
-            extra_index_urls (List[str], optional):  Extra Index URLs for Python Package Manager to use. Be aware of the intrinsic security implications of using the `extra_index_urls` option. [More information can be found on official docs](https://docs.cognite.com/cdf/functions/#additional-arguments)
+            index_url (str, optional):               Index URL for Python Package Manager to use. Be aware of the intrinsic security implications of using the `index_url` option. `More information can be found on official docs, <https://docs.cognite.com/cdf/functions/#additional-arguments>`_
+            extra_index_urls (List[str], optional):  Extra Index URLs for Python Package Manager to use. Be aware of the intrinsic security implications of using the `extra_index_urls` option. `More information can be found on official docs, <https://docs.cognite.com/cdf/functions/#additional-arguments>`_
         Returns:
             Function: The created function.
 
