@@ -434,7 +434,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         client_id = cognite_client.config.token_client_id
         client_secret = cognite_client.config.token_client_secret
 
-    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    session_url = f"/api/V1/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"clientId": client_id, "clientSecret": client_secret}]}
     try:
         res = cognite_client.post(session_url, json=payload)
@@ -445,7 +445,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
 
 
 def _use_token_exchange(cognite_client: CogniteClient) -> str:
-    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    session_url = f"/api/V1/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"tokenExchange": True}]}
     try:
         res = cognite_client.post(url=session_url, json=payload)
