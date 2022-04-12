@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.74.1]
+
+### Changed
+
+- Use v1 sessions api instead of the playground endpoint.
+
 ## [0.74.0]
 
 ### Added
