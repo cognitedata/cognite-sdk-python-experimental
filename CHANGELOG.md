@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Changed
 
-- Use v1 sessions api instead of the playground endpoint.
+- Use `v1` sessions endpoint instead of `playground` in functions api.
 
 ## [0.74.0]
 
