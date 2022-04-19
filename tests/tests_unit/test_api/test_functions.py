@@ -665,6 +665,7 @@ def mock_function_schedules_response(rsps):
 @pytest.fixture
 def mock_function_schedules_response_oidc_client_credentials(rsps):
     session_url = FUNCTIONS_API._get_base_url_with_base_path() + "/sessions"
+    session_url = session_url.replace("playground", "v1")
     rsps.add(
         rsps.POST,
         session_url,
