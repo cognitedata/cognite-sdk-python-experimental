@@ -519,73 +519,38 @@ Get suggestions for missing entries
 
 Geospatial
 ------------------------
+.. note::
+    Check https://github.com/cognitedata/geospatial-examples for some complete examples.
 
-Feature Types
+Rasters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_feature_types
+Put Raster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.put_raster
 
-Retrieve Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_feature_types
+Delete Raster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_raster
 
-Update Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_feature_types
+Get Raster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.get_raster
 
-List Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_feature_types
-
-Delete Feature Types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_feature_types
-
-Features
+Mapbox Vector Tiles (MVTs)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create Features
+Create MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_features
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_mvt_mappings_definitions
 
-Retrieve Features
+Delete MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_features
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_mvt_mappings_definitions
 
-Update Features
+Retrieve MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.update_features
-
-Search Features
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.search_features
-
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.stream_features
-
-Delete Features
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_features
-
-Coordinate Reference Systems (CRS)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Create Custom CRS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.create_coordinate_reference_systems
-
-Get CRS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.get_coordinate_reference_systems
-
-List CRSs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_coordinate_reference_systems
-
-Delete Custom CRS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_coordinate_reference_systems
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_mvt_mappings_definitions
 
 Data classes
 ^^^^^^^^^^^^

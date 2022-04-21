@@ -77,8 +77,9 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
     def create(self, pipeline: EntityMatchingPipeline) -> EntityMatchingPipeline:
         """Create an Entity Matching Pipeline.
+
         Args:
-            pipeline (EntityMatchingPipeline): pipeline to create.
+            pipeline (EntityMatchingPipeline): Pipeline to create.
 
         Returns:
             EntityMatchingPipeline: created pipeline."""
@@ -93,7 +94,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             external_id: external id of the pipeline to retrieve.
 
         Returns:
-            EntityMatchingPipeline: Model requested."""
+            EntityMatchingPipeline: Pipeline requested."""
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
         return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
 
@@ -103,22 +104,23 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         """Retrieve models
 
         Args:
-            ids: ids of the pipelines retrieve.
-            external_ids: external ids of the pipelines to retrieve.
+            ids (Union[int, List[int]): List of ids of the pipelines to retrieve.
+            external_ids (Union[str, List[str]]): List of external ids of the pipelines to retrieve.
 
         Returns:
-            EntityMatchingModelList: Models requested."""
+            EntityMatchingPipelineList: Pipelines requested."""
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
         return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
 
     def list(self, limit=100) -> EntityMatchingPipelineList:
-        """List pipelines
+        """List entity matching pipelines
+
         Args:
-            limit (int, optional): Maximum number of items to return. Defaults to 25. Set to -1, float("inf") or None to return all items.
+            limit (int, optional): Maximum number of items to return. Defaults to 100. Set to None to return all items.
 
         Returns:
-            EntityMatchingModelList: List of pipelines."""
+            EntityMatchingPipelineList: List of pipelines."""
         pipelines = self._camel_post("/list", json={"limit": limit}).json()["items"]
         return EntityMatchingPipelineList._load(pipelines, cognite_client=self._cognite_client)
 

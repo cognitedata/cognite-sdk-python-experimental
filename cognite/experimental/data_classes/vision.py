@@ -53,8 +53,10 @@ class CreatedDetectAssetsInFilesJob(CogniteResource):
         self.items = items
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
-        assert camel_case
-        return resource_to_camel_case(self)
+        if camel_case:
+            return resource_to_camel_case(self)
+        else:
+            return resource_to_snake_case(self)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):
@@ -123,7 +125,10 @@ class VisionRegion:
             return cls._load(json.loads(resource))
         elif isinstance(resource, Dict):
             k = resource_to_snake_case(resource)
-            return cls(shape=k["shape"], vertices=[VisionVertex(x=v["x"], y=v["y"]) for v in k["vertices"]],)
+            return cls(
+                shape=k["shape"],
+                vertices=[VisionVertex(x=v["x"], y=v["y"]) for v in k["vertices"]],
+            )
         raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
@@ -202,8 +207,10 @@ class DetectAssetsInFilesJob(CogniteResource):
         self.failed_items = failed_items
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
-        assert camel_case
-        return resource_to_camel_case(self)
+        if camel_case:
+            return resource_to_camel_case(self)
+        else:
+            return resource_to_snake_case(self)
 
     @classmethod
     def _load(cls, resource: Union[Dict, str], cognite_client=None):

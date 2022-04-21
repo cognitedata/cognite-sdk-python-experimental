@@ -26,7 +26,8 @@ class Function(CogniteResource):
         env_vars (Dict[str, str]): User specified environment variables on the function ((key, value) pairs).
         cpu (Number): Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
         memory (Number): Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
-        runtime (str): Runtime of the function. Defaults to "py38". Allowed values are ["py37", "py38", "py39"].
+        runtime (str): Runtime of the function. Allowed values are ["py37", "py38", "py39"]. The runtime "py3x" resolves to the latest version of the Python 3.x.y series. Will default to "py38" if not specified.
+        metadata(Dict[str, str): Metadata associated with a function as a set of key:value pairs.
         error(Dict[str, str]): Dictionary with keys "message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
@@ -48,6 +49,7 @@ class Function(CogniteResource):
         cpu: Number = None,
         memory: Number = None,
         runtime: str = None,
+        metadata: Dict = None,
         error: Dict = None,
         cognite_client=None,
     ):
@@ -66,6 +68,7 @@ class Function(CogniteResource):
         self.cpu = cpu
         self.memory = memory
         self.runtime = runtime
+        self.metadata = metadata
         self.error = error
         self._cognite_client = cognite_client
 
@@ -73,7 +76,7 @@ class Function(CogniteResource):
         """`Call this particular function. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_
 
         Args:
-            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data. **WARNING:** Secrets or other confidential information should not be passed via this argument. There is a dedicated `secrets` argument in FunctionsAPI.create() for this purpose.
             wait (bool): Wait until the function call is finished. Defaults to True.
 
         Returns:

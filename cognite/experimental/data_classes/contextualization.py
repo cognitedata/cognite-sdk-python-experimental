@@ -186,21 +186,21 @@ class EntityMatchingPipelineRunList(CogniteResourceList):
 
 
 class EntityMatchingPipeline(CogniteResource):
-    """Entity matching pipeline, used to continuously iterate and improve an entity matching model.
+    """Rerunnable entity matching pipeline, used to continuously iterate and improve.
+       Entity matching pipelines supports expert knowledge (confirmed and/or rejected matches), regex rules (match rules) and entity matching models.
        The fields below can be filled when creating a pipeline. Other fields should be left empty, and return status information on successful creation and retrieval.
 
     Args:
-        external_id, name, description: standard fields for a resource.
-        model_parameters: a dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
+        external_id (str): External Id provided by user. Should be unique within a given project/resource combination.
+        name (str): User defined name of the pipeline.
+        description (str): User defined description of the pipeline.
+        model_parameters: A dictionary with fields `match_fields`, `feature_type`, `classifier`, as in the `fit` method for entity matching.
         sources, targets: a dictionary of the format {'resource': ..., 'dataSetIds': [{'id':...},{'externalId':...}]}
-        true_matches: existing matches with reasonable certainty to use in training.
         confirmed_matches: user-confirmed certain matches which will be used to override any other results.
         rejected_matches: user-confirmed wrong results which will be used to blank output for a match result if it is one of these.
-        use_existing_matches: If set, uses existing matches on resources as additional true_matches (but not confirmed_matches).
+        use_existing_matches: If set, uses existing matches on resources as additional training data when the entity matching model is fit.
         replacements: Expects a list of {'field':.., 'string':.. ,'replacement': ..} which will be used to replace substrings in a field with a synonym, such as "Pressure Transmitter" -> "PT", or "Æ" -> AE. Field can be '*' for all.
-        relationships_label: If set, writes relationships with this label to the tenant (along with a pipeline-specific and general entity matching label). Requires whitelisting by auth.
         rules: list of matching rules (either old or new format)
-        schedule_interval: automatically schedule pipeline to be run every this many seconds.
     """
 
     _RESOURCE_PATH = "/context/entitymatching/pipelines"
@@ -220,9 +220,7 @@ class EntityMatchingPipeline(CogniteResource):
         confirmed_matches: List = None,
         use_existing_matches: bool = None,
         replacements: List[Dict] = None,
-        relationships_label: str = None,
         score_threshold: float = None,
-        schedule_interval: int = None,
         rules: List = None,
         status=None,
         error_message=None,
@@ -244,10 +242,8 @@ class EntityMatchingPipeline(CogniteResource):
         self.rejected_matches = rejected_matches
         self.use_existing_matches = use_existing_matches
         self.replacements = replacements
-        self.relationships_label = relationships_label
         self.score_threshold = score_threshold
         self.rules = rules
-        self.schedule_interval = schedule_interval
 
         self.status = status
         self.created_time = created_time
@@ -341,10 +337,6 @@ class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
     @property
     def score_threshold(self):
         return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "scoreThreshold")
-
-    @property
-    def schedule_interval(self):
-        return EntityMatchingPipelineUpdate._PrimitiveUpdate(self, "scheduleInterval")
 
 
 class EntityMatchingPipelineList(CogniteResourceList):
@@ -489,7 +481,10 @@ class PNIDDetectResults(ContextualizationJob):
     @property
     def matches(self) -> PNIDDetectionList:
         """Returns detected items"""
-        return PNIDDetectionList._load(self.result["items"], cognite_client=self._cognite_client,)
+        return PNIDDetectionList._load(
+            self.result["items"],
+            cognite_client=self._cognite_client,
+        )
 
     def to_pandas(self, camel_case: bool = False):
         df = super().to_pandas(camel_case=camel_case)

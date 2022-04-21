@@ -53,7 +53,10 @@ class FunctionsAPI(APIClient):
         env_vars: Optional[Dict] = None,
         cpu: Optional[Number] = None,
         memory: Optional[Number] = None,
-        runtime: Optional[Number] = None,
+        runtime: Optional[str] = None,
+        metadata: Optional[Dict] = None,
+        index_url: Optional[str] = None,
+        extra_index_urls: Optional[List[str]] = None,
     ) -> Function:
         """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
         the source code can be specified in one of three ways:\n
@@ -67,24 +70,24 @@ class FunctionsAPI(APIClient):
         - If the user gives one ore more secrets when creating the function, these are passed through the `secrets` argument. The API key can be access through `secrets["apikey"]`.\n
         - Data about the function call can be accessed via the argument `function_call_info`, which is a dictionary with keys `function_id` and, if the call is scheduled, `schedule_id` and `scheduled_time`.\n
 
-        The Python runtime version is 3.8.3.
-
         Args:
-            name (str):                             The name of the function.
-            folder (str, optional):                 Path to the folder where the function source code is located.
-            file_id (int, optional):                File ID of the code uploaded to the Files API.
-            function_path (str, optional):          Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
-            function_handle (Callable, optional):   Reference to a function object, which must be named `handle`.
-            external_id (str, optional):            External id of the function.
-            description (str, optional):            Description of the function.
-            owner (str, optional):                  Owner of this function. Typically used to know who created it.
-            api_key (str, optional):                API key that can be used inside the function to access data in CDF.
-            secrets (Dict[str, str]):               Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 30 secrets, all keys must be unique, and cannot be apikey.
-            env_vars (Dict[str, str]):              Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
-            cpu (Number, optional):                 Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
-            memory (Number, optional):              Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
-            runtime (str, optional):                The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default.
-
+            name (str):                              The name of the function.
+            folder (str, optional):                  Path to the folder where the function source code is located.
+            file_id (int, optional):                 File ID of the code uploaded to the Files API.
+            function_path (str, optional):           Relative path from the root folder to the file containing the `handle` function. Defaults to `handler.py`. Must be on POSIX path format.
+            function_handle (Callable, optional):    Reference to a function object, which must be named `handle`.
+            external_id (str, optional):             External id of the function.
+            description (str, optional):             Description of the function.
+            owner (str, optional):                   Owner of this function. Typically used to know who created it.
+            api_key (str, optional):                 API key that can be used inside the function to access data in CDF.
+            secrets (Dict[str, str]):                Additional secrets as key/value pairs. These can e.g. password to simulators or other data sources. Keys must be lowercase characters, numbers or dashes (-) and at most 15 characters. You can create at most 30 secrets, all keys must be unique, and cannot be apikey.
+            env_vars (Dict[str, str]):               Environment variables as key/value pairs. Keys can contain only letters, numbers or the underscore character. You can create at most 100 environment variables.
+            cpu (Number, optional):                  Number of CPU cores per function. Allowed values are in the range [0.1, 0.6], and None translates to the API default which is 0.25 in GCP. The argument is unavailable in Azure.
+            memory (Number, optional):               Memory per function measured in GB. Allowed values are in the range [0.1, 2.5], and None translates to the API default which is 1 GB in GCP. The argument is unavailable in Azure.
+            runtime (str, optional):                 The function runtime. Valid values are ["py37", "py38", "py39", `None`], and `None` translates to the API default which currently is "py38". The runtime "py3x" resolves to the latest version of the Python 3.x.y series.
+            metadata (Dict[str, str], optional):     Metadata for the function as key/value pairs. Key & values can be at most 32, 512 characters long respectively. You can have at the most 16 key-value pairs, with a maximum size of 512 bytes.
+            index_url (str, optional):               Index URL for Python Package Manager to use. Be aware of the intrinsic security implications of using the `index_url` option. `More information can be found on official docs, <https://docs.cognite.com/cdf/functions/#additional-arguments>`_
+            extra_index_urls (List[str], optional):  Extra Index URLs for Python Package Manager to use. Be aware of the intrinsic security implications of using the `extra_index_urls` option. `More information can be found on official docs, <https://docs.cognite.com/cdf/functions/#additional-arguments>`_
         Returns:
             Function: The created function.
 
@@ -138,6 +141,7 @@ class FunctionsAPI(APIClient):
             "fileId": file_id,
             "functionPath": function_path,
             "envVars": env_vars,
+            "metadata": metadata,
         }
         if cpu:
             function["cpu"] = cpu
@@ -151,6 +155,11 @@ class FunctionsAPI(APIClient):
             function["apiKey"] = api_key
         if secrets:
             function["secrets"] = secrets
+        if extra_index_urls:
+            function["extraIndexUrls"] = extra_index_urls
+        if index_url:
+            function["indexUrl"] = index_url
+
         body = {"items": [function]}
         res = self._post(url, json=body)
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
@@ -291,7 +300,7 @@ class FunctionsAPI(APIClient):
         Args:
             id (int, optional): ID
             external_id (str, optional): External ID
-            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data.
+            data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data. **WARNING:** Secrets or other confidential information should not be passed via this argument. There is a dedicated `secrets` argument in FunctionsAPI.create() for this purpose.'
             wait (bool): Wait until the function call is finished. Defaults to True.
 
         Returns:
@@ -425,7 +434,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
         client_id = cognite_client.config.token_client_id
         client_secret = cognite_client.config.token_client_secret
 
-    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    session_url = f"/api/v1/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"clientId": client_id, "clientSecret": client_secret}]}
     try:
         res = cognite_client.post(session_url, json=payload)
@@ -436,7 +445,7 @@ def _use_client_credentials(cognite_client: CogniteClient, client_credentials: O
 
 
 def _use_token_exchange(cognite_client: CogniteClient) -> str:
-    session_url = f"/api/playground/projects/{cognite_client.config.project}/sessions"
+    session_url = f"/api/v1/projects/{cognite_client.config.project}/sessions"
     payload = {"items": [{"tokenExchange": True}]}
     try:
         res = cognite_client.post(url=session_url, json=payload)
@@ -781,7 +790,7 @@ class FunctionSchedulesAPI(APIClient):
             client_credentials: (optional, Dict): Dictionary containing client credentials:
                 client_id
                 client_secret
-            data (optional, Dict): Data to be passed to the scheduled run.
+            data (optional, Dict): Data to be passed to the scheduled run. **WARNING:** Secrets or other confidential information should not be passed via this argument. There is a dedicated `secrets` argument in FunctionsAPI.create() for this purpose.
 
         Returns:
             FunctionSchedule: Created function schedule.
