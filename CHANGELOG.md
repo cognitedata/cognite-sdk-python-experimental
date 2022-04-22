@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.75.0]
+
+### Added
+
+- AnnotationsV2: Support for filtering the annotations data field
+
 ## [0.74.1]
 
 ### Changed
