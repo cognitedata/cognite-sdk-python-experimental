@@ -12,6 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.76.0]
+
+### Added
+
+- Extraction pipelines config endpoints
+
+### Removed
+
+- Other extraction pipelines functionality in favour of those from the main SDK
+
 ## [0.75.0]
 
 ### Added
