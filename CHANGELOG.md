@@ -12,6 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.75.0]
+
+### Added
+
+- AnnotationsV2: Support for filtering the annotations data field
+
+## [0.74.1]
+
+### Changed
+
+- Use `v1` sessions endpoint instead of `playground` in functions api.
+
 ## [0.74.0]
 
 ### Added

@@ -174,6 +174,24 @@ class TestAnnotationsV2Integration:
         _test_list_on_created_annotations(cognite_client, created_annotations_1, limit=-1)
         _test_list_on_created_annotations(cognite_client, created_annotations_2, limit=-1)
 
+    def test_list_with_data_filter(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
+        base_annotation.annotation_type = "images.Classification"
+        base_annotation.data = {"label": "test_0"}
+        created_annotation_0 = cognite_client.annotations_v2.create(base_annotation)
+        base_annotation.data = {"label": "test_1"}
+        created_annotation_1 = cognite_client.annotations_v2.create(base_annotation)
+
+        filtered_annotations = cognite_client.annotations_v2.list(
+            filter=AnnotationV2Filter(
+                annotated_resource_type="file",
+                annotated_resource_ids=[{"id": base_annotation.annotated_resource_id}],
+                data={"label": "test_1"},
+            )
+        )
+        assert isinstance(filtered_annotations, AnnotationV2List)
+        assert len(filtered_annotations) == 1
+        assert created_annotation_1.dump() == filtered_annotations[0].dump()
+
     def test_list_limit(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
         created_annotations = cognite_client.annotations_v2.create([base_annotation] * 30)
         _test_list_on_created_annotations(cognite_client, created_annotations, limit=5)

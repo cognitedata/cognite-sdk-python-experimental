@@ -125,6 +125,7 @@ class AnnotationV2Filter(CogniteFilter):
         linked_resource_type(str, optional): Type of the CDF resource the annotations to filter for are linked to, if any.
         linked_resource_ids(List[Dict[str, Any]], optional): List of ids or external ids the annotations are linked to. Example format: [{"id": 1234}, {"external_id": "ext_1234"}] .
         annotation_type(str, optional): Type name of the annotations.
+        data(Dict[str, Any], optional): The annotation data to filter by. Example format: {"label": "cat", "confidence": 0.9}
     """
 
     def __init__(
@@ -138,6 +139,7 @@ class AnnotationV2Filter(CogniteFilter):
         linked_resource_type: Optional[str] = None,
         linked_resource_ids: Optional[List[Dict[str, Any]]] = None,
         annotation_type: Optional[str] = None,
+        data: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.annotated_resource_type = annotated_resource_type
         self.annotated_resource_ids = annotated_resource_ids
@@ -148,6 +150,7 @@ class AnnotationV2Filter(CogniteFilter):
         self.linked_resource_type = linked_resource_type
         self.linked_resource_ids = linked_resource_ids
         self.annotation_type = annotation_type
+        self.data = data
 
     def dump(self, camel_case: bool = False):
         result = super(AnnotationV2Filter, self).dump(camel_case=camel_case)
