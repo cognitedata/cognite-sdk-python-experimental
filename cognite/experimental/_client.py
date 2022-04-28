@@ -9,8 +9,7 @@ from cognite.experimental._api.annotations_v2 import AnnotationsV2API
 from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
-from cognite.experimental._api.extractionpipelineruns import ExtractionPipelinesRunsAPI
-from cognite.experimental._api.extractionpipelines import ExtractionPipelinesAPI
+from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
@@ -109,8 +108,7 @@ class CogniteClient(Client):
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
-        self.extraction_pipelines = ExtractionPipelinesAPI(self._config, api_version="playground", cognite_client=self)
-        self.extraction_pipeline_runs = ExtractionPipelinesRunsAPI(
+        self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self
         )
 

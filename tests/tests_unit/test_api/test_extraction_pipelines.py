@@ -3,33 +3,22 @@ import re
 import pytest
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import ExtractionPipeline, ExtractionPipelineList, ExtractionPipelineUpdate
-from tests.utils import jsgz_load
+from cognite.experimental.data_classes import ExtractionPipelineConfig, ExtractionPipelineConfigRevisionList
 
 COGNITE_CLIENT = CogniteClient()
 TEST_API = COGNITE_CLIENT.extraction_pipelines
 
 
 @pytest.fixture
-def mock_int_response(rsps):
+def mock_config_response(rsps):
     response_body = {
-        "items": [
-            {
-                "id": 1,
-                "externalId": "int-123",
-                "name": "test_name",
-                "description": "description",
-                "createdTime": 1565965333132,
-                "lastUpdatedTime": 1565965333132,
-                "dataSetId": 1,
-                "contacts": [{"name": "test name", "email": "aaa@cognite.com", "sendNotification": True}],
-                "metadata": {"step": "22", "version": "1"},
-            }
-        ]
+        "revision": 5,
+        "externalId": "int-123",
+        "description": "description",
+        "createdTime": 1565965333132,
+        "config": "config abc 123",
     }
-    url_pattern = re.compile(
-        re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes(?:/byids|/update|/delete|/list|/search|$|\?.+)"
-    )
+    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/config")
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
@@ -38,119 +27,40 @@ def mock_int_response(rsps):
 
 
 @pytest.fixture
-def mock_int_empty(rsps):
-    response_body = {"items": []}
-    url_pattern = re.compile(
-        re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes(?:/byids|/update|/delete|/list|/search|$|\?.+)"
-    )
+def mock_config_list_response(rsps):
+    response_body = {
+        "items": [
+            {"revision": 3, "externalId": "int-123", "description": "description 3", "createdTime": 1565965333132},
+            {"revision": 2, "externalId": "int-123", "description": "description 2", "createdTime": 1565965233132},
+            {"revision": 1, "externalId": "int-123", "description": "description 1", "createdTime": 1565965133132},
+        ]
+    }
+    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/config/revisions")
     rsps.assert_all_requests_are_fired = False
 
-    rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
     rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
     yield rsps
 
 
 class TestExtractionPipelines:
-    def test_retrieve_single(self, mock_int_response):
-        res = TEST_API.retrieve(id=1)
-        assert isinstance(res, ExtractionPipeline)
-        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+    def test_retrieve_config(self, mock_config_response):
+        res = TEST_API.get_config(external_id="int-123")
+        res.cognite_client = None
+        assert isinstance(res, ExtractionPipelineConfig)
+        assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_retrieve_multiple(self, mock_int_response):
-        res = TEST_API.retrieve_multiple(ids=[1])
-        assert isinstance(res, ExtractionPipelineList)
-        assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
-
-    def test_list(self, mock_int_response):
-        res = TEST_API.list()
-        assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
-
-    def test_create_single(self, mock_int_response):
-        res = TEST_API.create(
-            ExtractionPipeline(
-                external_id="py test id",
-                name="py test",
-                description="python generated",
-                data_set_id=1,
-                schedule="",
-                contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
-            )
+    def test_new_config(self, mock_config_response):
+        res = TEST_API.new_config(
+            ExtractionPipelineConfig(external_id="int-123", config="config abc 123", description="description")
         )
-        assert isinstance(res, ExtractionPipeline)
-        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
+        res.cognite_client = None
+        assert isinstance(res, ExtractionPipelineConfig)
+        assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_create_multiple(self, mock_int_response):
-        ep1 = ExtractionPipeline(
-            external_id="py test id",
-            name="py test",
-            description="python generated",
-            data_set_id=1,
-            schedule="",
-            contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
-        )
-
-        ep2 = ExtractionPipeline(
-            external_id="py test id2",
-            name="py test2",
-            description="python generated",
-            data_set_id=1,
-            schedule="",
-            contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
-        )
-
-        res = TEST_API.create([ep1, ep2])
-        assert isinstance(res, ExtractionPipelineList)
-        assert mock_int_response.calls[0].response.json()["items"] == res.dump(camel_case=True)
-
-    def test_delete_single(self, mock_int_response):
-        res = TEST_API.delete(external_id="a")
-        assert {"items": [{"externalId": "a"}]} == jsgz_load(mock_int_response.calls[0].request.body)
-        assert res is None
-
-    def test_delete_single_byid(self, mock_int_response):
-        res = TEST_API.delete(id=1)
-        assert {"items": [{"id": 1}]} == jsgz_load(mock_int_response.calls[0].request.body)
-        assert res is None
-
-    def test_delete_multiple(self, mock_int_response):
-        res = TEST_API.delete(external_id=["a", "b"])
-        assert {"items": [{"externalId": "a"}, {"externalId": "b"}]} == jsgz_load(
-            mock_int_response.calls[0].request.body
-        )
-        assert res is None
-
-    def test_update_single(self, mock_int_response):
-        res = TEST_API.update(
-            ExtractionPipeline(
-                external_id="py test id",
-                name="py test",
-                description="python generated",
-                data_set_id=1,
-                schedule="",
-                contacts=[{"name": "Alex", "email": "Alex@test.no", "sendNotification": True}],
-            )
-        )
-        assert isinstance(res, ExtractionPipeline)
-        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
-
-    def test_update_single_with_update_class(self, mock_int_response):
-        up = ExtractionPipelineUpdate(external_id="py test id")
-        up.description.set("New description")
-        res = TEST_API.update(up)
-        assert isinstance(res, ExtractionPipeline)
-        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
-        assert {
-            "items": [{"externalId": "py test id", "update": {"description": {"set": "New description"}}}]
-        } == jsgz_load(mock_int_response.calls[0].request.body)
-
-    def test_update_raw_tables_with_update_class(self, mock_int_response):
-        up = ExtractionPipelineUpdate(external_id="py test id")
-        up.raw_tables.add([{"dbName": "db", "tableName": "table"}])
-        res = TEST_API.update(up)
-        assert isinstance(res, ExtractionPipeline)
-        assert mock_int_response.calls[0].response.json()["items"][0] == res.dump(camel_case=True)
-        assert {
-            "items": [
-                {"externalId": "py test id", "update": {"rawTables": {"add": [{"dbName": "db", "tableName": "table"}]}}}
-            ]
-        } == jsgz_load(mock_int_response.calls[0].request.body)
+    def test_list_revisions(self, mock_config_list_response):
+        res = TEST_API.list_config_revisions(external_id="int-123")
+        res.cognite_client = None
+        for r in res:
+            r.cognite_client = None
+        assert isinstance(res, ExtractionPipelineConfigRevisionList)
+        assert mock_config_list_response.calls[0].response.json() == {"items": res.dump(camel_case=True)}
