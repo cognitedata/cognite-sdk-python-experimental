@@ -51,7 +51,6 @@ class ComputedItem(CogniteResource):
     """A representation of a computed item by the geospatial api."""
 
     def __init__(self, cognite_client=None, **properties):
-        self.external_id = None
         for key in properties:
             setattr(self, key, properties[key])
         self._cognite_client = cognite_client

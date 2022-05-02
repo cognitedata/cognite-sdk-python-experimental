@@ -6,7 +6,7 @@ from typing import Dict, Generator, Optional, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature
-from cognite.client.exceptions import CogniteConnectionError
+from cognite.client.exceptions import CogniteConnectionError, CogniteException
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import *
@@ -363,16 +363,20 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
         output: Dict[str, Any] = None,
-    ) -> Union[ComputedItem, ComputedItemList]:
+        binary_output: Dict[str, Any] = None,
+    ) -> Union[bytes, ComputedItemList]:
         """`Compute something`
         <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
 
         Args:
             with_subcompute (Dict[str, Any]): the subcomputed data for the main compute
             from_feature_type (str): the main feature type external id to compute from
+            filter (Dict[str, Any]): the filter for the main feature type
+            output (Dict[str, Any]): the output json spec
+            binary_output (Dict[str, Any]): the binary output computation to execute
 
         Returns:
-            Union[ComputeResult|List[ComputeResult]]
+            Union[bytes,List[ComputedItem]]
 
         Examples:
 
@@ -383,10 +387,27 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> res = c.geospatial.compute(
                 >>>     from_feature_type="wind",
                 >>>     filter=None,
-                >>>     output=None
+                >>>     output=None,
                 >>> )
         """
+        with_json = {"with": with_subcompute} if with_subcompute is not None else {}
+        from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
+        filter_json = {"filter": filter} if filter is not None else {}
+        output_json = {"output": output} if output is not None else {}
+        binary_output_json = {"binaryOutput": binary_output} if binary_output is not None else {}
         res = self._post(
-            url_path=GeospatialAPI._RESOURCE_PATH + "/compute", json={"with": with_subcompute, "output": output}
+            url_path=GeospatialAPI._RESOURCE_PATH + "/compute",
+            json={
+                **with_json,
+                **from_feature_type_json,
+                **filter_json,
+                **output_json,
+                **binary_output_json,
+            },
         )
-        return ComputedItemList._load(res.json()["items"], cognite_client=self._cognite_client)
+        content_type = res.headers["Content-Type"].split(";")[0]
+        if content_type == "application/json":
+            return ComputedItemList._load(res.json()["items"], cognite_client=self._cognite_client)
+        if content_type == "image/tiff":
+            return res.content
+        raise ValueError(f"unsupported content type ${content_type}")
