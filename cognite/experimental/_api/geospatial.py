@@ -357,10 +357,13 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)
 
     @_with_cognite_domain
-    def compute(self, with_subcompute: Dict[str, Any],
-                from_feature_type: str = None,
-                filter: Dict[str, Any] = None,
-                output: Dict[str, Any] = None) -> Union[ComputedItem,ComputedItemList]:
+    def compute(
+        self,
+        with_subcompute: Dict[str, Any],
+        from_feature_type: str = None,
+        filter: Dict[str, Any] = None,
+        output: Dict[str, Any] = None,
+    ) -> Union[ComputedItem, ComputedItemList]:
         """`Compute something`
         <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
 
@@ -384,10 +387,6 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> )
         """
         res = self._post(
-            url_path=GeospatialAPI._RESOURCE_PATH + "/compute",
-            json={
-                "with": with_subcompute,
-                "output": output
-            }
+            url_path=GeospatialAPI._RESOURCE_PATH + "/compute", json={"with": with_subcompute, "output": output}
         )
         return ComputedItemList._load(res.json()["items"], cognite_client=self._cognite_client)

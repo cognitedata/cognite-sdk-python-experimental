@@ -262,11 +262,10 @@ class TestExperimentalGeospatialAPI:
 
     def test_compute(self, cognite_client):
         res = cognite_client.geospatial.compute(
-            with_subcompute={"geom1": { "ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}},
+            with_subcompute={"geom1": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}},
             output={
-                "polygonValue": { "ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))" },
-                "polygonFromRef": { "geometryRef": "geom1" }
-            }
+                "polygonValue": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"},
+                "polygonFromRef": {"geometryRef": "geom1"},
+            },
         )
         assert len(res) == 1
-
