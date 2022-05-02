@@ -355,3 +355,39 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)
+
+    @_with_cognite_domain
+    def compute(self, with_subcompute: Dict[str, Any],
+                from_feature_type: str = None,
+                filter: Dict[str, Any] = None,
+                output: Dict[str, Any] = None) -> Union[ComputedItem,ComputedItemList]:
+        """`Compute something`
+        <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
+
+        Args:
+            with_subcompute (Dict[str, Any]): the subcomputed data for the main compute
+            from_feature_type (str): the main feature type external id to compute from
+
+        Returns:
+            Union[ComputeResult|List[ComputeResult]]
+
+        Examples:
+
+            Compute the area and the perimeter:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.compute(
+                >>>     from_feature_type="wind",
+                >>>     filter=None,
+                >>>     output=None
+                >>> )
+        """
+        res = self._post(
+            url_path=GeospatialAPI._RESOURCE_PATH + "/compute",
+            json={
+                "with": with_subcompute,
+                "output": output
+            }
+        )
+        return ComputedItemList._load(res.json()["items"], cognite_client=self._cognite_client)
