@@ -5,7 +5,7 @@ import urllib.parse
 from typing import Dict, Generator, Optional, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
-from cognite.client.data_classes.geospatial import Feature
+from cognite.client.data_classes.geospatial import Feature, FeatureTypeUpdate
 from cognite.client.exceptions import CogniteConnectionError
 from requests.exceptions import ChunkedEncodingError
 
@@ -54,10 +54,61 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             if (
                 "coordinate_reference_systems" not in attr_name
                 and "stream_features" not in attr_name
+                and "feature_types" not in attr_name
                 and isinstance(attr, types.MethodType)
             ):
                 wrapped = _with_cognite_domain(getattr(GeospatialAPI, attr_name))
                 setattr(ExperimentalGeospatialAPI, attr_name, wrapped)
+
+    @_with_cognite_domain
+    def create_feature_types(
+        self, feature_type: Union[FeatureType, List[FeatureType]]
+    ) -> Union[FeatureType, FeatureTypeList]:
+        return self._create_multiple(
+            items=feature_type, cls=FeatureTypeList, resource_path=f"{self._RESOURCE_PATH}/featuretypes"
+        )
+
+    @_with_cognite_domain
+    def delete_feature_types(self, external_id: Union[str, List[str]], recursive: bool = False) -> None:
+        extra_body_fields = {"recursive": True} if recursive else {}
+        return self._delete_multiple(
+            external_ids=external_id,
+            wrap_ids=True,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+            extra_body_fields=extra_body_fields,
+        )
+
+    @_with_cognite_domain
+    def list_feature_types(self) -> FeatureTypeList:
+        return self._list(method="POST", cls=FeatureTypeList, resource_path=f"{self._RESOURCE_PATH}/featuretypes")
+
+    @_with_cognite_domain
+    def retrieve_feature_types(self, external_id: Union[str, List[str]] = None) -> FeatureTypeList:
+        return self._retrieve_multiple(
+            wrap_ids=True,
+            external_ids=external_id,
+            cls=FeatureTypeList,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+        )
+
+    @_with_cognite_domain
+    def update_feature_types(self, update: Union[FeatureTypeUpdate, List[FeatureTypeUpdate]] = None) -> FeatureTypeList:
+        if isinstance(update, FeatureTypeUpdate):
+            update = [update]
+
+        def mapper(it):
+            add_properties = it.add.properties if hasattr(it, "add") else None
+            remove_properties = it.remove.properties if hasattr(it, "remove") else None
+            add_search_spec = it.add.search_spec if hasattr(it, "add") else None
+            remove_search_spec = it.remove.search_spec if hasattr(it, "remove") else None
+            properties_update = {"add": add_properties, "remove": remove_properties}
+            search_spec_update = {"add": add_search_spec, "remove": remove_search_spec}
+            return {"properties": properties_update, "searchSpec": search_spec_update}
+
+        json = {"items": [{"externalId": it.external_id, "update": mapper(it)} for it in update]}
+        res = self._post(url_path=f"{self._RESOURCE_PATH}/featuretypes/update", json=json)
+        return FeatureTypeList._load(res.json()["items"], cognite_client=self._cognite_client)
+
 
     @_with_cognite_domain
     def stream_features(
