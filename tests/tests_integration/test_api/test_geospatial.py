@@ -14,7 +14,7 @@ def cognite_client() -> CogniteClient:
     return CogniteClient()
 
 
-@pytest.fixture(params=[None,])
+@pytest.fixture(params=[None, "sdk_test"])
 def cognite_domain(request):
     yield request.param
 
