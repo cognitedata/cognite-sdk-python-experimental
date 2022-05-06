@@ -109,7 +109,6 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         res = self._post(url_path=f"{self._RESOURCE_PATH}/featuretypes/update", json=json)
         return FeatureTypeList._load(res.json()["items"], cognite_client=self._cognite_client)
 
-
     @_with_cognite_domain
     def stream_features(
         self,
