@@ -1,4 +1,5 @@
-from typing import List, Optional
+from copy import deepcopy
+from typing import Any, Dict, List, Optional
 
 import pytest
 from cognite.client.data_classes import FileMetadata
@@ -49,9 +50,30 @@ def file_id(cognite_client: CogniteClient) -> int:
 
 
 @pytest.fixture
-def base_annotation(annotation: AnnotationV2, file_id: int):
+def base_annotation(annotation: AnnotationV2, file_id: int) -> AnnotationV2:
     annotation.annotated_resource_id = file_id
     return annotation
+
+
+@pytest.fixture
+def base_suggest_annotation(base_annotation: AnnotationV2) -> AnnotationV2:
+    ann = deepcopy(base_annotation)
+    ann.status = "suggested"
+    return ann
+
+
+def assert_payload_dict(local: Dict[str, Any], remote: Dict[str, Any]) -> None:
+    for k, local_v in local.items():
+        if local_v is None:
+            continue
+        assert k in remote
+        remote_v = remote[k]
+
+        if isinstance(local_v, dict):
+            assert isinstance(remote_v, dict)
+            assert_payload_dict(local_v, remote_v)
+        else:
+            assert local_v == remote_v
 
 
 def check_created_vs_base(base_annotation: AnnotationV2, created_annotation: AnnotationV2) -> None:
@@ -114,6 +136,16 @@ class TestAnnotationsV2Integration:
         for a in created_annotations:
             check_created_vs_base(base_annotation, a)
 
+    def test_suggest_annotations(self, cognite_client: CogniteClient, base_suggest_annotation: AnnotationV2) -> None:
+        suggested_annotations = cognite_client.annotations_v2.suggest([base_suggest_annotation] * 30)
+        assert isinstance(suggested_annotations, AnnotationV2List)
+        for a in suggested_annotations:
+            check_created_vs_base(base_suggest_annotation, a)
+
+    def test_invalid_suggest_annotations(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
+        with pytest.raises(ValueError, match="status field for Annotation suggestions must be set to 'suggested'"):
+            _ = cognite_client.annotations_v2.suggest([base_annotation] * 30)
+
     def test_delete_annotations(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
         created_annotations = cognite_client.annotations_v2.create([base_annotation] * 30)
         delete_with_check(cognite_client, [a.id for a in created_annotations])
@@ -134,6 +166,8 @@ class TestAnnotationsV2Integration:
         for k, v in remote_dump.items():
             if k == "last_updated_time":
                 assert v > local_dump[k]
+            elif k == "data":
+                assert_payload_dict(local_dump["data"], remote_dump["data"])
             else:
                 assert v == local_dump[k]
 
@@ -165,7 +199,10 @@ class TestAnnotationsV2Integration:
         assert isinstance(updated, AnnotationV2List)
         updated = updated[0]
         for k, v in update.items():
-            assert getattr(updated, k) == v
+            if k == "data":
+                assert_payload_dict(update["data"], updated.data)
+            else:
+                assert getattr(updated, k) == v
 
     def test_list(self, cognite_client: CogniteClient, base_annotation: AnnotationV2) -> None:
         created_annotations_1 = cognite_client.annotations_v2.create([base_annotation] * 30)

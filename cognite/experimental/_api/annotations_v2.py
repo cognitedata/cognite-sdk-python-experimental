@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
 from cognite.client._api_client import APIClient
@@ -25,6 +26,35 @@ class AnnotationsV2API(APIClient):
         """
         assert_type(annotations, "annotations", [AnnotationV2, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
+
+    def suggest(self, annotations: Union[AnnotationV2, List[AnnotationV2]]) -> Union[AnnotationV2, AnnotationV2List]:
+        """Suggest annotations
+
+        Args:
+            annotations (Union[AnnotationV2, List[AnnotationV2]]): annotation(s) to suggest. They must have status set to "suggested".
+
+        Returns:
+            Union[AnnotationV2, AnnotationV2List]: suggested annotation(s)
+        """
+        assert_type(annotations, "annotations", [AnnotationV2, list])
+        # Check that status is set to suggested if it is set and afterwards remove it
+        if isinstance(annotations, list):
+            # not a single item
+            pre_items = annotations
+        else:
+            # single item
+            pre_items = [annotations]
+
+        items = []
+        for pre_item in pre_items:
+            item = pre_item.dump(camel_case=True) if isinstance(pre_item, CogniteResource) else deepcopy(pre_item)
+            if "status" in item:
+                if item["status"] != "suggested":
+                    raise ValueError("status field for Annotation suggestions must be set to 'suggested'")
+                del item["status"]
+            items.append(item)
+
+        return self._create_multiple(resource_path=self._RESOURCE_PATH + "/suggest", items=items)
 
     def list(self, filter: Union[AnnotationV2Filter, Dict], limit: int = 25) -> AnnotationV2List:
         """List annotations.
