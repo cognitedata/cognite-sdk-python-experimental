@@ -136,6 +136,14 @@ class TestAnnotationsV2Integration:
         for a in created_annotations:
             check_created_vs_base(base_annotation, a)
 
+    def test_suggest_single_annotation(
+        self, cognite_client: CogniteClient, base_suggest_annotation: AnnotationV2
+    ) -> None:
+        suggested_annotation = cognite_client.annotations_v2.suggest(base_suggest_annotation)
+        assert isinstance(suggested_annotation, AnnotationV2)
+        check_created_vs_base(base_suggest_annotation, suggested_annotation)
+        assert suggested_annotation.creating_user == None
+
     def test_suggest_annotations(self, cognite_client: CogniteClient, base_suggest_annotation: AnnotationV2) -> None:
         suggested_annotations = cognite_client.annotations_v2.suggest([base_suggest_annotation] * 30)
         assert isinstance(suggested_annotations, AnnotationV2List)
