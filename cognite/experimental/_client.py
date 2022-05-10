@@ -13,7 +13,6 @@ from cognite.experimental._api.extractionpipelines import ExperimentalExtraction
 from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.model_hosting import ModelHostingAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
@@ -94,7 +93,6 @@ class CogniteClient(Client):
         # NEW assets features - e.g. types
         self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
 
-        self.model_hosting = ModelHostingAPI(self._config, api_version="playground", cognite_client=self)
         self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
 
