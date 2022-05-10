@@ -387,8 +387,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> res = c.geospatial.compute(
                 ...     sub_computes={"geom": { "ewkt": "SRID=4326;POLYGON((0 0,0 10,10 10,10 0, 0 0))"}},
                 ...     output={
-                ...         "geomArea": {"stArea": {"geometry": {"ref": "geom2"}}}
-                ...         "geomPerimeter": {"stPerimeter": {"geometry": {"ref": "geom2"}}}
+                ...         "geomArea": {"stArea": {"geometry": {"ref": "geom"}}}
+                ...         "geomPerimeter": {"stPerimeter": {"geometry": {"ref": "geom"}}}
                 ...     },
                 >>> )
 
