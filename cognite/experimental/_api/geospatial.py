@@ -359,7 +359,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     @_with_cognite_domain
     def compute(
         self,
-        with_subcompute: Dict[str, Any],
+        sub_computes: Dict[str, Any] = None,
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
         output: Dict[str, Any] = None,
@@ -369,7 +369,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
 
         Args:
-            with_subcompute (Dict[str, Any]): the subcomputed data for the main compute
+            sub_computes (Dict[str, Any]): the sub-computed data for the main compute
             from_feature_type (str): the main feature type external id to compute from
             filter (Dict[str, Any]): the filter for the main feature type
             output (Dict[str, Any]): the output json spec
@@ -380,17 +380,42 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
         Examples:
 
-            Compute the area and the perimeter:
+            Compute the area and the perimeter of a direct geometry value:
 
                 >>> from cognite.client import CogniteClient
                 >>> c = CogniteClient()
                 >>> res = c.geospatial.compute(
-                >>>     from_feature_type="wind",
-                >>>     filter=None,
-                >>>     output=None,
+                ...     sub_computes={"geom": { "ewkt": "SRID=4326;POLYGON((0 0,0 10,10 10,10 0, 0 0))"}},
+                ...     output={
+                ...         "geomArea": {"stArea": {"geometry": {"ref": "geom2"}}}
+                ...         "geomPerimeter": {"stPerimeter": {"geometry": {"ref": "geom2"}}}
+                ...     },
+                >>> )
+
+            Compute the geotiff image of the union of clipped selection of rasters
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.compute(
+                ...     from_feature_type="windspeed",
+                ...     filter={"equals": {"property": "tag", "value": "SWE"}},
+                ...     binary_output={
+                ...         "stAsGeotiff": {
+                ...             "raster": {
+                ...                 "stUnion": {
+                ...                     "raster": {
+                ...                         "stClip": {
+                ...                             "raster": {"property": "rast"},
+                ...                             "geometry": {"ewkt": "SRID=4326;POLYGON((17.410 64.966,17.698 64.653,18.016 65.107,17.410 64.966))"}
+                ...                         }
+                ...                     }
+                ...                 }
+                ...             }
+                ...         }
+                ...     }
                 >>> )
         """
-        with_json = {"with": with_subcompute} if with_subcompute is not None else {}
+        sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
         filter_json = {"filter": filter} if filter is not None else {}
         output_json = {"output": output} if output is not None else {}
@@ -398,7 +423,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         res = self._post(
             url_path=GeospatialAPI._RESOURCE_PATH + "/compute",
             json={
-                **with_json,
+                **sub_computes_json,
                 **from_feature_type_json,
                 **filter_json,
                 **output_json,
