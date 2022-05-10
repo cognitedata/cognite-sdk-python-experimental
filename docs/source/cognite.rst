@@ -97,6 +97,10 @@ Create an annotation
 ^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.create
 
+Suggest an annotation
+^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.suggest
+
 Update annotations
 ^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.update
