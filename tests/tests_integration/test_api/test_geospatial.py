@@ -266,7 +266,7 @@ class TestExperimentalGeospatialAPI:
             output={
                 "polygonValue": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"},
                 "polygonFromRef": {"ref": "geom1"},
-            }
+            },
         )
         assert type(res) == ComputedItemList
         assert len(res) == 1
@@ -288,7 +288,6 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.compute(
             from_feature_type=test_feature_type.external_id,
             filter={"equals": {"property": "externalId", "value": test_feature.external_id}},
-            output={"mylocation": {"property": "position"}}
+            output={"mylocation": {"property": "position"}},
         )
         assert type(res) == ComputedItemList
-
