@@ -259,3 +259,35 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.list_mvt_mappings_definitions()
         assert len(res) == 1
         assert res[0].external_id == test_mvt_mappings_def.external_id
+
+    def test_compute(self, cognite_client, test_feature_type, test_feature):
+        res = cognite_client.geospatial.compute(
+            sub_computes={"geom1": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}},
+            output={
+                "polygonValue": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"},
+                "polygonFromRef": {"ref": "geom1"},
+            },
+        )
+        assert type(res) == ComputedItemList
+        assert len(res) == 1
+        res = cognite_client.geospatial.compute(
+            binary_output={
+                "stAsGeotiff": {
+                    "raster": {
+                        "stAsRaster": {
+                            "geometry": {"ewkt": "SRID=4326;POLYGON((0 0,4 6,10 10,0 0))"},
+                            "width": 300,
+                            "height": 200,
+                        }
+                    }
+                }
+            }
+        )
+        assert type(res) == bytes
+        assert len(res) == 60426
+        res = cognite_client.geospatial.compute(
+            from_feature_type=test_feature_type.external_id,
+            filter={"equals": {"property": "externalId", "value": test_feature.external_id}},
+            output={"mylocation": {"property": "position"}},
+        )
+        assert type(res) == ComputedItemList

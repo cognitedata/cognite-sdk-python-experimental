@@ -6,7 +6,7 @@ from typing import Dict, Generator, Optional, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature
-from cognite.client.exceptions import CogniteConnectionError
+from cognite.client.exceptions import CogniteConnectionError, CogniteException
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import *
@@ -355,3 +355,84 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)
+
+    @_with_cognite_domain
+    def compute(
+        self,
+        sub_computes: Dict[str, Any] = None,
+        from_feature_type: str = None,
+        filter: Dict[str, Any] = None,
+        output: Dict[str, Any] = None,
+        binary_output: Dict[str, Any] = None,
+    ) -> Union[bytes, ComputedItemList]:
+        """`Compute something`
+        <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
+
+        Args:
+            sub_computes (Dict[str, Any]): the sub-computed data for the main compute
+            from_feature_type (str): the main feature type external id to compute from
+            filter (Dict[str, Any]): the filter for the main feature type
+            output (Dict[str, Any]): the output json spec
+            binary_output (Dict[str, Any]): the binary output computation to execute
+
+        Returns:
+            Union[bytes,List[ComputedItem]]
+
+        Examples:
+
+            Compute the area and the perimeter of a direct geometry value:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.compute(
+                ...     sub_computes={"geom": { "ewkt": "SRID=4326;POLYGON((0 0,0 10,10 10,10 0, 0 0))"}},
+                ...     output={
+                ...         "geomArea": {"stArea": {"geometry": {"ref": "geom"}}}
+                ...         "geomPerimeter": {"stPerimeter": {"geometry": {"ref": "geom"}}}
+                ...     },
+                >>> )
+
+            Compute the geotiff image of the union of clipped selection of rasters
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.compute(
+                ...     from_feature_type="windspeed",
+                ...     filter={"equals": {"property": "tag", "value": "SWE"}},
+                ...     binary_output={
+                ...         "stAsGeotiff": {
+                ...             "raster": {
+                ...                 "stUnion": {
+                ...                     "raster": {
+                ...                         "stClip": {
+                ...                             "raster": {"property": "rast"},
+                ...                             "geometry": {"ewkt": "SRID=4326;POLYGON((17.410 64.966,17.698 64.653,18.016 65.107,17.410 64.966))"}
+                ...                         }
+                ...                     }
+                ...                 }
+                ...             }
+                ...         }
+                ...     }
+                >>> )
+        """
+        sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
+        from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
+        filter_json = {"filter": filter} if filter is not None else {}
+        output_json = {"output": output} if output is not None else {}
+        binary_output_json = {"binaryOutput": binary_output} if binary_output is not None else {}
+        res = self._post(
+            url_path=GeospatialAPI._RESOURCE_PATH + "/compute",
+            json={
+                **sub_computes_json,
+                **from_feature_type_json,
+                **filter_json,
+                **output_json,
+                **binary_output_json,
+            },
+        )
+        content_type = res.headers["Content-Type"].split(";")[0]
+        if content_type == "application/json":
+            return ComputedItemList._load(res.json()["items"], cognite_client=self._cognite_client)
+        if content_type == "image/tiff":
+            return res.content
+        raise ValueError(f"unsupported content type ${content_type}")
