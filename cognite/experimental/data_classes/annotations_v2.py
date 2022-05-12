@@ -86,7 +86,7 @@ class AnnotationV2(CogniteResource):
         annotation = AnnotationV2(
             annotation_type=data["annotation_type"],
             data=data["data"],
-            status=data["status"],
+            status=data.get("status", "suggested"),
             creating_app=data["creating_app"],
             creating_app_version=data["creating_app_version"],
             creating_user=data.get("creating_user"),

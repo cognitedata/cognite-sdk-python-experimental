@@ -12,6 +12,28 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.79.0]
+
+### Added
+
+- AnnotationsV2 `/suggest` endpoint as `client.annotations_v2.suggest`
+
+### Fixed
+
+- integration tests for AnnotationsV2 update endpoints
+
+## [0.78.0]
+
+### Removed
+
+- Model hosting API
+
+## [0.77.0]
+
+### Added
+
+- Initial Geospatial /compute endpoint support
+
 ## [0.76.0]
 
 ### Added

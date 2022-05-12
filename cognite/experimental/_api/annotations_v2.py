@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
 from cognite.client._api_client import APIClient
@@ -25,6 +26,34 @@ class AnnotationsV2API(APIClient):
         """
         assert_type(annotations, "annotations", [AnnotationV2, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
+
+    def suggest(self, annotations: Union[AnnotationV2, List[AnnotationV2]]) -> Union[AnnotationV2, AnnotationV2List]:
+        """Suggest annotations
+
+        Args:
+            annotations (Union[AnnotationV2, List[AnnotationV2]]): annotation(s) to suggest. They must have status set to "suggested".
+
+        Returns:
+            Union[AnnotationV2, AnnotationV2List]: suggested annotation(s)
+        """
+        assert_type(annotations, "annotations", [AnnotationV2, list])
+        # Deal with status fields in both cases: Single item and list of items
+        items = (
+            [AnnotationsV2API._sanitize_suggest_item(ann) for ann in annotations]
+            if isinstance(annotations, list)
+            else AnnotationsV2API._sanitize_suggest_item(annotations)
+        )
+        return self._create_multiple(resource_path=self._RESOURCE_PATH + "/suggest", items=items)
+
+    @staticmethod
+    def _sanitize_suggest_item(annotation: AnnotationV2) -> Dict[str, any]:
+        # Check that status is set to suggested if it is set and afterwards remove it
+        item = annotation.dump(camel_case=True) if isinstance(annotation, AnnotationV2) else deepcopy(annotation)
+        if "status" in item:
+            if item["status"] != "suggested":
+                raise ValueError("status field for Annotation suggestions must be set to 'suggested'")
+            del item["status"]
+        return item
 
     def list(self, filter: Union[AnnotationV2Filter, Dict], limit: int = 25) -> AnnotationV2List:
         """List annotations.
