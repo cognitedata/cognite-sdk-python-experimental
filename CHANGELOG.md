@@ -12,6 +12,9 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.79.1]
+- Geospatial: Dataset support
+
 ## [0.79.0]
 
 ### Added
