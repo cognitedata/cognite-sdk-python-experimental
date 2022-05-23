@@ -6,7 +6,6 @@ from cognite.client.beta import CogniteClient as Client
 
 from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.annotations_v2 import AnnotationsV2API
-from cognite.experimental._api.assets import ExperimentalAssetsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
@@ -17,7 +16,6 @@ from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
-from cognite.experimental._api.types import TypesAPI
 from cognite.experimental._api.vision import VisionAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
@@ -90,10 +88,6 @@ class CogniteClient(Client):
             debug=debug,
             **kwargs,
         )
-        # NEW assets features - e.g. types
-        self.assets_playground = ExperimentalAssetsAPI(self._config, api_version="playground", cognite_client=self)
-
-        self.types = TypesAPI(self._config, api_version="playground", cognite_client=self)
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)

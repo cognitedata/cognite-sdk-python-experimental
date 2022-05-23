@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.79.1]
+
+### Removed
+
+- assets playground API
+- types playground API
+
 ## [0.79.0]
 
 ### Added
