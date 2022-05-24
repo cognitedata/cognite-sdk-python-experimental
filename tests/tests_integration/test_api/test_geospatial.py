@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 from cognite.client.data_classes.geospatial import *
+from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.geospatial import *
@@ -89,6 +90,17 @@ def test_mvt_mappings_def(cognite_client, test_feature_type):
 
 
 class TestExperimentalGeospatialAPI:
+    def test_create_feature_type_dataset(self, cognite_client):
+        feature_type_spec = FeatureType(
+            external_id="external_id",
+            data_set_id=4658488153688345,
+            properties={f"attr{i}": {"type": "LONG"} for i in range(0, 80)},
+        )
+        try:
+            cognite_client.geospatial.create_feature_types(feature_type_spec)
+            raise pytest.fail("creating feature types with dataSetId should have raised an exception")
+        except CogniteAPIError as e:
+            assert e.message == "Unsupported field: dataSetId"
 
     # This test already exist in the main python sdk
     # It is repeated here to test the geospatial domain part.
