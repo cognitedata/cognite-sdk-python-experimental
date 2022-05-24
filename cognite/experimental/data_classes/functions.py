@@ -27,6 +27,7 @@ class Function(CogniteResource):
         cpu (Number): Number of CPU cores per function. Defaults to 0.25. Allowed values are in the range [0.1, 0.6].
         memory (Number): Memory per function measured in GB. Defaults to 1. Allowed values are in the range [0.1, 2.5].
         runtime (str): Runtime of the function. Allowed values are ["py37", "py38", "py39"]. The runtime "py38" resolves to the latest version of the Python 3.8 series. Will default to "py38" if not specified.
+        runtime_version (str): The complete specification of the function runtime with major, minor and patch version numbers.
         metadata(Dict[str, str): Metadata associated with a function as a set of key:value pairs.
         error(Dict[str, str]): Dictionary with keys "message" and "trace", which is populated if deployment fails.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
