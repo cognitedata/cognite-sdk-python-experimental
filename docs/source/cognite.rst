@@ -8,8 +8,6 @@ For a quickstart guide see the main SDK Documentation at https://cognite-docs.re
 
 The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
-* client.assets_playground: `Assets`_ (Playground Assets API with Types and Labels support)
-* client.types: `Types`_
 * client.model_hosting = `Model Hosting`_
 * client.annotations_v2: `AnnotationsV2`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
 * client.annotations: `Annotations`_ (Legacy Annotations, soon to be deprecated and replaced with new Annotations API (`AnnotationsV2`_))
@@ -27,55 +25,6 @@ CogniteClient
 .. autoclass:: cognite.experimental.CogniteClient
     :members:
     :member-order: bysource
-
-
-Assets
-------
-The assets API is currently duplicated in the
-experimental package to support testing of the types feature in playground.
-Note that asset objects passed to this API should be created using the data type from the experimental package (``cognite.experimental.data_classes``).
-
-Retrieve an asset by id
-^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.retrieve
-
-Retrieve multiple assets by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.retrieve_multiple
-
-Retrieve an asset subtree
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.retrieve_subtree
-
-List assets
-^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.list
-
-Search for assets
-^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.search
-
-Create assets
-^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.create
-
-Create asset hierarchy
-^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.create_hierarchy
-
-Delete assets
-^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.delete
-
-Update assets
-^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.assets.ExperimentalAssetsAPI.update
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.assets
-    :members:
-    :show-inheritance:
 
 
 AnnotationsV2
@@ -147,39 +96,6 @@ Delete annotations
 Data classes
 ^^^^^^^^^^^^
 .. automodule:: cognite.experimental.data_classes.annotations
-    :members:
-    :show-inheritance:
-
-Types
------
-
-Retrieve a type definition by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.types.TypesAPI.retrieve
-
-Retrieve multiple type definitions by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.types.TypesAPI.retrieve_multiple
-
-List type definitions
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.types.TypesAPI.list
-
-Create type definitions
-^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.types.TypesAPI.create
-
-Delete type definitions
-^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.types.TypesAPI.delete
-
-Update type definitions
-^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.types.TypesAPI.update
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.types
     :members:
     :show-inheritance:
 
