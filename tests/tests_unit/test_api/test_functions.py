@@ -64,6 +64,8 @@ EXAMPLE_FUNCTION = {
     "envVars": {"env1": "foo", "env2": "bar"},
     "cpu": 0.25,
     "memory": 1,
+    "runtime": "py38",
+    "runtimeVersion": "Python 3.8.13",
 }
 
 CALL_RUNNING = {
