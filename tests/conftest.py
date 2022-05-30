@@ -4,12 +4,12 @@ import re
 import pytest
 import responses
 
-from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter
+from cognite.experimental.data_classes import Annotation, AnnotationFilter
 
 
 @pytest.fixture
-def annotation() -> AnnotationV2:
-    return AnnotationV2(
+def annotation() -> Annotation:
+    return Annotation(
         annotation_type="diagrams.FileLink",
         data={
             "fileRef": {"id": 1, "externalId": None},
@@ -35,8 +35,8 @@ def annotation() -> AnnotationV2:
 
 
 @pytest.fixture
-def annotation_filter() -> AnnotationV2Filter:
-    return AnnotationV2Filter(
+def annotation_filter() -> AnnotationFilter:
+    return AnnotationFilter(
         annotated_resource_type="file",
         annotated_resource_ids=[{"id": 1234}, {"external_id": "ext_1234"}],
         annotation_type="diagrams.FileLink",

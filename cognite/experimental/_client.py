@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Optional, Union
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 
-from cognite.experimental._api.annotations_v2 import AnnotationsV2API
+from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
@@ -96,7 +96,7 @@ class CogniteClient(Client):
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
         self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
-        self.annotations_v2 = AnnotationsV2API(self._config, api_version="playground", cognite_client=self)
+        self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)

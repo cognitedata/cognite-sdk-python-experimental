@@ -12,7 +12,7 @@ from cognite.client.data_classes._base import (
 from cognite.client.utils._auxiliary import to_snake_case
 
 
-class AnnotationV2(CogniteResource):
+class Annotation(CogniteResource):
     """Representation of an annotation in CDF.
 
     Args:
@@ -72,7 +72,7 @@ class AnnotationV2(CogniteResource):
         self._cognite_client = None  # Read only
 
     @classmethod
-    def _load(cls, resource: Union[Dict[str, Any], str], cognite_client=None) -> "AnnotationV2":
+    def _load(cls, resource: Union[Dict[str, Any], str], cognite_client=None) -> "Annotation":
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client=cognite_client)
         elif isinstance(resource, dict):
@@ -80,10 +80,10 @@ class AnnotationV2(CogniteResource):
         raise TypeError("Resource must be json str or Dict, not {}".format(type(resource)))
 
     @classmethod
-    def from_dict(cls, resource: Dict[str, Any], cognite_client=None) -> "AnnotationV2":
+    def from_dict(cls, resource: Dict[str, Any], cognite_client=None) -> "Annotation":
         # Create base annotation
         data = {to_snake_case(key): val for key, val in resource.items()}
-        annotation = AnnotationV2(
+        annotation = Annotation(
             annotation_type=data["annotation_type"],
             data=data["data"],
             status=data.get("status", "suggested"),
@@ -112,7 +112,7 @@ class AnnotationV2(CogniteResource):
         return result
 
 
-class AnnotationV2Filter(CogniteFilter):
+class AnnotationFilter(CogniteFilter):
     """Filter on annotations with various criteria
 
     Args:
@@ -153,7 +153,7 @@ class AnnotationV2Filter(CogniteFilter):
         self.data = data
 
     def dump(self, camel_case: bool = False):
-        result = super(AnnotationV2Filter, self).dump(camel_case=camel_case)
+        result = super(AnnotationFilter, self).dump(camel_case=camel_case)
         # Special handling for creating_user, which hasa valid None value
         key = "creatingUser" if camel_case else "creating_user"
         # Remove creating_user if it is an empty string
@@ -165,7 +165,7 @@ class AnnotationV2Filter(CogniteFilter):
         return result
 
 
-class AnnotationV2Update(CogniteUpdate):
+class AnnotationUpdate(CogniteUpdate):
     """Changes applied to annotation
 
     Args:
@@ -178,52 +178,52 @@ class AnnotationV2Update(CogniteUpdate):
     class _StrUpdate(CognitePrimitiveUpdate):
         """Only set, no set_null"""
 
-        def set(self, value: str) -> "AnnotationV2Update":
+        def set(self, value: str) -> "AnnotationUpdate":
             return self._set(value)
 
     class _OptionalStrUpdate(CognitePrimitiveUpdate):
         """Set and set_null"""
 
-        def set(self, value: Optional[str]) -> "AnnotationV2Update":
+        def set(self, value: Optional[str]) -> "AnnotationUpdate":
             return self._set(value)
 
     class _DictUpdate(CogniteObjectUpdate):
         """Only set, no set_null"""
 
-        def set(self, value: Dict[str, Any]) -> "AnnotationV2Update":
+        def set(self, value: Dict[str, Any]) -> "AnnotationUpdate":
             return self._set(value)
 
     class _OptionalIntUpdate(CognitePrimitiveUpdate):
         """Set and set_null"""
 
-        def set(self, value: Optional[int]) -> "AnnotationV2Update":
+        def set(self, value: Optional[int]) -> "AnnotationUpdate":
             return self._set(value)
 
     @property
-    def data(self) -> "AnnotationV2Update._DictUpdate":
-        return AnnotationV2Update._DictUpdate(self, "data")
+    def data(self) -> "AnnotationUpdate._DictUpdate":
+        return AnnotationUpdate._DictUpdate(self, "data")
 
     @property
-    def status(self) -> "AnnotationV2Update._StrUpdate":
-        return AnnotationV2Update._StrUpdate(self, "status")
+    def status(self) -> "AnnotationUpdate._StrUpdate":
+        return AnnotationUpdate._StrUpdate(self, "status")
 
     @property
-    def annotation_type(self) -> "AnnotationV2Update._StrUpdate":
-        return AnnotationV2Update._StrUpdate(self, "annotationType")
+    def annotation_type(self) -> "AnnotationUpdate._StrUpdate":
+        return AnnotationUpdate._StrUpdate(self, "annotationType")
 
     @property
-    def linked_resource_type(self) -> "AnnotationV2Update._OptionalStrUpdate":
-        return AnnotationV2Update._OptionalStrUpdate(self, "linkedResourceType")
+    def linked_resource_type(self) -> "AnnotationUpdate._OptionalStrUpdate":
+        return AnnotationUpdate._OptionalStrUpdate(self, "linkedResourceType")
 
     @property
-    def linked_resource_id(self) -> "AnnotationV2Update._OptionalIntUpdate":
-        return AnnotationV2Update._OptionalIntUpdate(self, "linkedResourceId")
+    def linked_resource_id(self) -> "AnnotationUpdate._OptionalIntUpdate":
+        return AnnotationUpdate._OptionalIntUpdate(self, "linkedResourceId")
 
     @property
-    def linked_resource_external_id(self) -> "AnnotationV2Update._OptionalStrUpdate":
-        return AnnotationV2Update._OptionalStrUpdate(self, "linkedResourceExternalId")
+    def linked_resource_external_id(self) -> "AnnotationUpdate._OptionalStrUpdate":
+        return AnnotationUpdate._OptionalStrUpdate(self, "linkedResourceExternalId")
 
 
-class AnnotationV2List(CogniteResourceList):
-    _RESOURCE = AnnotationV2
-    _UPDATE = AnnotationV2Update
+class AnnotationList(CogniteResourceList):
+    _RESOURCE = Annotation
+    _UPDATE = AnnotationUpdate

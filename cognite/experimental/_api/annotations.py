@@ -5,70 +5,70 @@ from cognite.client._api_client import APIClient
 from cognite.client.data_classes._base import CogniteResource
 from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
 
-from cognite.experimental.data_classes import AnnotationV2, AnnotationV2Filter, AnnotationV2List, AnnotationV2Update
+from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, AnnotationUpdate
 
 
-class AnnotationsV2API(APIClient):
+class AnnotationsAPI(APIClient):
     _RESOURCE_PATH = "/annotations"
-    _LIST_CLASS = AnnotationV2List
+    _LIST_CLASS = AnnotationList
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def create(self, annotations: Union[AnnotationV2, List[AnnotationV2]]) -> Union[AnnotationV2, AnnotationV2List]:
+    def create(self, annotations: Union[Annotation, List[Annotation]]) -> Union[Annotation, AnnotationList]:
         """Create annotations
 
         Args:
-            annotations (Union[AnnotationV2, List[AnnotationV2]]): annotation(s) to create
+            annotations (Union[Annotation, List[Annotation]]): annotation(s) to create
 
         Returns:
-            Union[AnnotationV2, AnnotationV2List]: created annotation(s)
+            Union[Annotation, AnnotationList]: created annotation(s)
         """
-        assert_type(annotations, "annotations", [AnnotationV2, list])
+        assert_type(annotations, "annotations", [Annotation, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
 
-    def suggest(self, annotations: Union[AnnotationV2, List[AnnotationV2]]) -> Union[AnnotationV2, AnnotationV2List]:
+    def suggest(self, annotations: Union[Annotation, List[Annotation]]) -> Union[Annotation, AnnotationList]:
         """Suggest annotations
 
         Args:
-            annotations (Union[AnnotationV2, List[AnnotationV2]]): annotation(s) to suggest. They must have status set to "suggested".
+            annotations (Union[Annotation, List[Annotation]]): annotation(s) to suggest. They must have status set to "suggested".
 
         Returns:
-            Union[AnnotationV2, AnnotationV2List]: suggested annotation(s)
+            Union[Annotation, AnnotationList]: suggested annotation(s)
         """
-        assert_type(annotations, "annotations", [AnnotationV2, list])
+        assert_type(annotations, "annotations", [Annotation, list])
         # Deal with status fields in both cases: Single item and list of items
         items = (
-            [AnnotationsV2API._sanitize_suggest_item(ann) for ann in annotations]
+            [AnnotationsAPI._sanitize_suggest_item(ann) for ann in annotations]
             if isinstance(annotations, list)
-            else AnnotationsV2API._sanitize_suggest_item(annotations)
+            else AnnotationsAPI._sanitize_suggest_item(annotations)
         )
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/suggest", items=items)
 
     @staticmethod
-    def _sanitize_suggest_item(annotation: AnnotationV2) -> Dict[str, any]:
+    def _sanitize_suggest_item(annotation: Annotation) -> Dict[str, any]:
         # Check that status is set to suggested if it is set and afterwards remove it
-        item = annotation.dump(camel_case=True) if isinstance(annotation, AnnotationV2) else deepcopy(annotation)
+        item = annotation.dump(camel_case=True) if isinstance(annotation, Annotation) else deepcopy(annotation)
         if "status" in item:
             if item["status"] != "suggested":
                 raise ValueError("status field for Annotation suggestions must be set to 'suggested'")
             del item["status"]
         return item
 
-    def list(self, filter: Union[AnnotationV2Filter, Dict], limit: int = 25) -> AnnotationV2List:
+    def list(self, filter: Union[AnnotationFilter, Dict], limit: int = 25) -> AnnotationList:
         """List annotations.
 
         Args:
             limit (int): Maximum number of annotations to return. Defaults to 25.
-            filter (AnnotationV2Filter, optional): Return annotations with parameter values that matches what is specified. Note that annotated_resource_type and annotated_resource_ids are always required.
+            filter (AnnotationFilter, optional): Return annotations with parameter values that matches what is specified. Note that annotated_resource_type and annotated_resource_ids are always required.
 
         Returns:
-            AnnotationV2List: list of annotations
+            AnnotationList: list of annotations
         """
         assert_type(limit, "limit", [int], allow_none=False)
-        assert_type(filter, "filter", [AnnotationV2Filter, dict], allow_none=False)
+        assert_type(filter, "filter", [AnnotationFilter, dict], allow_none=False)
 
-        if isinstance(filter, AnnotationV2Filter):
+        if isinstance(filter, AnnotationFilter):
             filter = filter.dump(camel_case=True)
 
         elif isinstance(filter, dict):
@@ -88,17 +88,17 @@ class AnnotationsV2API(APIClient):
 
     @staticmethod
     def _convert_resource_to_patch_object(resource: CogniteResource, update_attributes: List[str]):
-        if not isinstance(resource, AnnotationV2):
+        if not isinstance(resource, Annotation):
             return APIClient._convert_resource_to_patch_object(resource, update_attributes)
-        annotation: AnnotationV2 = resource
-        annotation_update = AnnotationV2Update(id=annotation.id)
+        annotation: Annotation = resource
+        annotation_update = AnnotationUpdate(id=annotation.id)
         for attr in update_attributes:
             getattr(annotation_update, attr).set(getattr(annotation, attr))
         return annotation_update.dump()
 
     def update(
-        self, item: Union[AnnotationV2, AnnotationV2Update, List[Union[AnnotationV2, AnnotationV2Update]]]
-    ) -> Union[AnnotationV2, AnnotationV2List]:
+        self, item: Union[Annotation, AnnotationUpdate, List[Union[Annotation, AnnotationUpdate]]]
+    ) -> Union[Annotation, AnnotationList]:
         """Update annotations
 
         Args:
@@ -114,26 +114,26 @@ class AnnotationsV2API(APIClient):
         """
         self._delete_multiple(ids=id, wrap_ids=True)
 
-    def retrieve_multiple(self, ids: List[int]) -> AnnotationV2List:
+    def retrieve_multiple(self, ids: List[int]) -> AnnotationList:
         """Retrieve annotations by IDs
 
         Args:
             ids (List[int]]: list of IDs to be retrieved
 
         Returns:
-            AnnotationV2List: list of annotations
+            AnnotationList: list of annotations
         """
         assert_type(ids, "ids", [List], allow_none=False)
         return self._retrieve_multiple(ids=ids, wrap_ids=True)
 
-    def retrieve(self, id: int) -> AnnotationV2:
+    def retrieve(self, id: int) -> Annotation:
         """Retrieve an annotation by id
 
         Args:
             id (int): id of the annotation to be retrieved
 
         Returns:
-            AnnotationV2: annotation requested
+            Annotation: annotation requested
         """
         assert_type(id, "id", [int], allow_none=False)
         return self._retrieve_multiple(ids=id, wrap_ids=True)
