@@ -12,14 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.80.1]
+## [0.81.0]
 
 ### Changed
 
 - Renamed `client.annotations.*` to `client.legacy_annotations.*` and renamed corresponding (data) class and filenames accordingly.
 - Renamed `client.annotations_v2.*` to `client.annotations.*` and renamed corresponding (data) class and filenames accordingly.
-- Update the 
-
  
 #### Removed
 
