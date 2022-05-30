@@ -9,8 +9,7 @@ For a quickstart guide see the main SDK Documentation at https://cognite-docs.re
 The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
 * client.model_hosting = `Model Hosting`_
-* client.annotations_v2: `AnnotationsV2`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
-* client.annotations: `Annotations`_ (Legacy Annotations, soon to be deprecated and replaced with new Annotations API (`AnnotationsV2`_))
+* client.annotations: `Annotations`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
@@ -27,47 +26,8 @@ CogniteClient
     :member-order: bysource
 
 
-AnnotationsV2
--------------
-
-Retrieve an annotation by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.retrieve
-
-Retrieve multiple annotations by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.retrieve_multiple
-
-List annotation
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.list
-
-Create an annotation
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.create
-
-Suggest an annotation
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.suggest
-
-Update annotations
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.update
-
-Delete annotations
-^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.delete
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.annotations_v2
-    :members:
-    :show-inheritance:
-
-
 Annotations
 -----------
-Legacy Annotations, soon to be deprecated and replaced with new Annotations API (`AnnotationsV2`_)
 
 Retrieve an annotation by id
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -84,6 +44,10 @@ List annotation
 Create an annotation
 ^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.create
+
+Suggest an annotation
+^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.suggest
 
 Update annotations
 ^^^^^^^^^^^^^^^^^^
