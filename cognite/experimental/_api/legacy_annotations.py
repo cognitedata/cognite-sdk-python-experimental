@@ -3,17 +3,22 @@ from typing import Dict, List, Optional, Tuple, Union
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
 
-from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, AnnotationUpdate
+from cognite.experimental.data_classes import (
+    LegacyAnnotation,
+    LegacyAnnotationFilter,
+    LegacyAnnotationList,
+    LegacyAnnotationUpdate,
+)
 
 
-class AnnotationsAPI(APIClient):
+class LegacyAnnotationsAPI(APIClient):
     _RESOURCE_PATH = "/context/annotations"
-    _LIST_CLASS = AnnotationList
+    _LIST_CLASS = LegacyAnnotationList
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def create(self, annotations: Union[Annotation, List[Annotation]]) -> AnnotationList:
+    def create(self, annotations: Union[LegacyAnnotation, List[LegacyAnnotation]]) -> LegacyAnnotationList:
         """Create annotations
 
         Args:
@@ -22,10 +27,10 @@ class AnnotationsAPI(APIClient):
         Returns:
             AnnotationList: created annotations
         """
-        assert_type(annotations, "annotation", [Annotation, list])
+        assert_type(annotations, "annotation", [LegacyAnnotation, list])
         return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
 
-    def list(self, filter: Union[AnnotationFilter, Dict], limit: int = 100) -> AnnotationList:
+    def list(self, filter: Union[LegacyAnnotationFilter, Dict], limit: int = 100) -> LegacyAnnotationList:
         """List annotations.
 
         Args:
@@ -36,9 +41,9 @@ class AnnotationsAPI(APIClient):
             AnnotationList: list of annotations
         """
         assert_type(limit, "limit", [int], allow_none=False)
-        assert_type(filter, "filter", [AnnotationFilter, dict], allow_none=False)
+        assert_type(filter, "filter", [LegacyAnnotationFilter, dict], allow_none=False)
 
-        if isinstance(filter, AnnotationFilter):
+        if isinstance(filter, LegacyAnnotationFilter):
             filter = filter.dump(camel_case=True)
 
         elif isinstance(filter, dict):
@@ -52,8 +57,9 @@ class AnnotationsAPI(APIClient):
         return self._list(method="POST", limit=limit, filter=filter)
 
     def update(
-        self, item: Union[Annotation, AnnotationUpdate, List[Union[Annotation, AnnotationUpdate]]]
-    ) -> Union[Annotation, AnnotationList]:
+        self,
+        item: Union[LegacyAnnotation, LegacyAnnotationUpdate, List[Union[LegacyAnnotation, LegacyAnnotationUpdate]]],
+    ) -> Union[LegacyAnnotation, LegacyAnnotationList]:
         """Update annotations
 
         Args:
@@ -69,7 +75,7 @@ class AnnotationsAPI(APIClient):
         """
         self._delete_multiple(ids=id, wrap_ids=True)
 
-    def retrieve_multiple(self, ids: List[int]) -> AnnotationList:
+    def retrieve_multiple(self, ids: List[int]) -> LegacyAnnotationList:
         """Retrieve annotations by IDs
 
         Args:
@@ -81,7 +87,7 @@ class AnnotationsAPI(APIClient):
         assert_type(ids, "ids", [List], allow_none=False)
         return self._retrieve_multiple(ids=ids, wrap_ids=True)
 
-    def retrieve(self, id: int) -> Annotation:
+    def retrieve(self, id: int) -> LegacyAnnotation:
         """Retrieve an annotation by id
 
         Args:

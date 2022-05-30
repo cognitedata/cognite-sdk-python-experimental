@@ -9,7 +9,7 @@ from cognite.client.data_classes._base import (
 )
 
 
-class Annotation(CogniteResource):
+class LegacyAnnotation(CogniteResource):
     """Representation of an annotation in CDF.
 
     Args:
@@ -68,7 +68,7 @@ class Annotation(CogniteResource):
         self._cognite_client = cognite_client
 
 
-class AnnotationFilter(CogniteFilter):
+class LegacyAnnotationFilter(CogniteFilter):
     def __init__(
         self,
         annotated_resource_type: str,
@@ -90,7 +90,7 @@ class AnnotationFilter(CogniteFilter):
         self.source = source
 
 
-class AnnotationUpdate(CogniteUpdate):
+class LegacyAnnotationUpdate(CogniteUpdate):
     """Changes applied to annotation
 
     Args:
@@ -101,26 +101,26 @@ class AnnotationUpdate(CogniteUpdate):
         super().__init__(id=id)
 
     class _PrimitiveAnnotationUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "AnnotationUpdate":
+        def set(self, value: Any) -> "LegacyAnnotationUpdate":
             return self._set(value)
 
     @property
     def text(self):
-        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "text")
+        return LegacyAnnotationUpdate._PrimitiveAnnotationUpdate(self, "text")
 
     @property
     def status(self):
-        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "status")
+        return LegacyAnnotationUpdate._PrimitiveAnnotationUpdate(self, "status")
 
     @property
     def region(self):
-        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "region")
+        return LegacyAnnotationUpdate._PrimitiveAnnotationUpdate(self, "region")
 
     @property
     def data(self):
-        return AnnotationUpdate._PrimitiveAnnotationUpdate(self, "data")
+        return LegacyAnnotationUpdate._PrimitiveAnnotationUpdate(self, "data")
 
 
-class AnnotationList(CogniteResourceList):
-    _RESOURCE = Annotation
-    _UPDATE = AnnotationUpdate
+class LegacyAnnotationList(CogniteResourceList):
+    _RESOURCE = LegacyAnnotation
+    _UPDATE = LegacyAnnotationUpdate
