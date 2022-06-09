@@ -347,6 +347,19 @@ class FunctionsAPI(APIClient):
         return function_call
 
     def limits(self):
+        """`Get service limits. <https://docs.cognite.com/api/playground/#operation/functionsLimits>`_.
+
+        Returns:
+            FunctionsLimits: A function limits object.
+
+        Examples:
+
+            Call a function by id::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> limits = c.functions.limits()
+        """
         res = self._get("/functions/limits")
         return FunctionsLimits._load(res.json())
 
