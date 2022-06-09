@@ -58,7 +58,7 @@ class FunctionsAPI(APIClient):
         index_url: Optional[str] = None,
         extra_index_urls: Optional[List[str]] = None,
     ) -> Function:
-        """`When creating a function, <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions>`_
+        """`When creating a function, <https://docs.cognite.com/api/playground/#operation/postFunctions>`_
         the source code can be specified in one of three ways:\n
         - Via the `folder` argument, which is the path to the folder where the source code is located. `function_path` must point to a python file in the folder within which a function named `handle` must be defined.\n
         - Via the `file_id` argument, which is the ID of a zip-file uploaded to the files API. `function_path` must point to a python file in the zipped folder within which a function named `handle` must be defined.\n
@@ -165,7 +165,7 @@ class FunctionsAPI(APIClient):
         return Function._load(res.json()["items"][0], cognite_client=self._cognite_client)
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
-        """`Delete one or more functions. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-delete>`_
+        """`Delete one or more functions. <https://docs.cognite.com/api/playground/#operation/deleteFunctions>`_
 
         Args:
             id (Union[int, List[int]): Id or list of ids.
@@ -232,7 +232,7 @@ class FunctionsAPI(APIClient):
         return self._LIST_CLASS._load(res.json()["items"], cognite_client=self._cognite_client)
 
     def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[Function]:
-        """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
+        """`Retrieve a single function by id. <https://docs.cognite.com/api/playground/#operation/byIdsFunctions>`_
 
         Args:
             id (int, optional): ID
@@ -261,7 +261,7 @@ class FunctionsAPI(APIClient):
     def retrieve_multiple(
         self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
     ) -> FunctionList:
-        """`Retrieve multiple functions by id. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-context-functions-byids>`_
+        """`Retrieve multiple functions by id. <https://docs.cognite.com/api/playground/#operation/byIdsFunctions>`_
 
         Args:
             ids (List[int], optional): IDs
@@ -295,7 +295,7 @@ class FunctionsAPI(APIClient):
         data: Optional[Dict] = None,
         wait: bool = True,
     ) -> FunctionCall:
-        """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_.
+        """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/postFunctionsCall>`_.
 
         Args:
             id (int, optional): ID
@@ -545,7 +545,7 @@ class FunctionCallsAPI(APIClient):
         end_time: Optional[Dict[str, int]] = None,
         limit: Optional[int] = LIST_LIMIT_DEFAULT,
     ) -> FunctionCallList:
-        """List all calls associated with a specific function id. Either function_id or function_external_id must be specified.
+        """`List all calls associated with a specific function id. <https://docs.cognite.com/api/playground/#operation/listFunctionCalls>`_ Either function_id or function_external_id must be specified.
 
         Args:
             function_id (int, optional): ID of the function on which the calls were made.
@@ -586,7 +586,7 @@ class FunctionCallsAPI(APIClient):
     def retrieve(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> Optional[FunctionCall]:
-        """`Retrieve a single function call by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionCalls>`_
+        """`Retrieve a single function call by id. <https://docs.cognite.com/api/playground/#operation/byIdsFunctionCalls>`_
 
         Args:
             call_id (int): ID of the call.
@@ -619,7 +619,7 @@ class FunctionCallsAPI(APIClient):
         return self._retrieve_multiple(wrap_ids=True, resource_path=resource_path, ids=call_id)
 
     def get_response(self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None):
-        """Retrieve the response from a function call.
+        """`Retrieve the response from a function call. <https://docs.cognite.com/api/playground/#operation/getFunctionCallResponse>`_
 
         Args:
             call_id (int): ID of the call.
@@ -655,7 +655,7 @@ class FunctionCallsAPI(APIClient):
     def get_logs(
         self, call_id: int, function_id: Optional[int] = None, function_external_id: Optional[str] = None
     ) -> FunctionCallLog:
-        """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
+        """`Retrieve logs for function call. <https://docs.cognite.com/api/playground/#operation/getFunctionCalls>`_
 
         Args:
             call_id (int): ID of the call.
@@ -694,7 +694,7 @@ class FunctionSchedulesAPI(APIClient):
     _LIST_CLASS = FunctionSchedulesList
 
     def retrieve(self, id: int) -> Optional[FunctionSchedule]:
-        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/byidsFunctionSchedules>`_
+        """`Retrieve a single function schedule by id. <https://docs.cognite.com/api/playground/#operation/byIdsFunctionSchedules>`_
 
         Args:
             id (int): ID
@@ -779,7 +779,7 @@ class FunctionSchedulesAPI(APIClient):
         description: str = "",
         data: Optional[Dict] = None,
     ) -> FunctionSchedule:
-        """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules>`_
+        """`Create a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/postFunctionSchedules>`_
 
         Args:
             name (str): Name of the schedule.
@@ -837,7 +837,7 @@ class FunctionSchedulesAPI(APIClient):
         return FunctionSchedule._load(res.json()["items"][0])
 
     def delete(self, id: int) -> None:
-        """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-schedules-delete>`_
+        """`Delete a schedule associated with a specific project. <https://docs.cognite.com/api/playground/#operation/deleteFunctionSchedules>`_
 
         Args:
             id (int): Id of the schedule
@@ -859,8 +859,7 @@ class FunctionSchedulesAPI(APIClient):
         self._post(url, json=body)
 
     def get_input_data(self, id: int) -> Dict:
-        """
-        Retrieve the input data to the associated function.
+        """`Retrieve the input data to the associated function. <https://docs.cognite.com/api/playground/#operation/getFunctionScheduleInputData>`_
         Args:
             id (int): Id of the schedule
 
