@@ -295,7 +295,7 @@ class FunctionsAPI(APIClient):
         data: Optional[Dict] = None,
         wait: bool = True,
     ) -> FunctionCall:
-        """Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/postFunctionsCall>`_.
+        """`Call a function by its ID or external ID. <https://docs.cognite.com/api/playground/#operation/postFunctionsCall>`_.
 
         Args:
             id (int, optional): ID
