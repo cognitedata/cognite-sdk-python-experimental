@@ -158,6 +158,9 @@ class TestAnnotationsV2Integration:
         created_annotations = cognite_client.annotations_v2.create([base_annotation] * 30)
         delete_with_check(cognite_client, [a.id for a in created_annotations])
 
+    @pytest.mark.skip(
+        reason="Test needs to be updated due to recent breaking changes. Contextualization team has been notified."
+    )
     def test_update_annotation_by_annotation(
         self, cognite_client: CogniteClient, base_annotation: AnnotationV2
     ) -> None:
@@ -179,6 +182,9 @@ class TestAnnotationsV2Integration:
             else:
                 assert v == local_dump[k]
 
+    @pytest.mark.skip(
+        reason="Test needs to be updated due to recent breaking changes. Contextualization team has been notified."
+    )
     def test_update_annotation_by_annotation_update(
         self, cognite_client: CogniteClient, base_annotation: AnnotationV2
     ) -> None:
