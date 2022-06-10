@@ -9,7 +9,6 @@ from cognite.experimental._api.annotations_v2 import AnnotationsV2API
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
-from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
@@ -20,7 +19,7 @@ from cognite.experimental._api.vision import VisionAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}"
-    for api in ["types", "labels", "functions", "templates"]
+    for api in ["types", "labels", "templates"]
     for endpoint in ["list", "byids", "search"]
 }
 
@@ -99,7 +98,6 @@ class CogniteClient(Client):
         self.annotations_v2 = AnnotationsV2API(self._config, api_version="playground", cognite_client=self)
         self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
-        self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self
         )

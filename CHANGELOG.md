@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.82.0]
+
+### Removed
+
+- Functions: moved the Functions SDK from experimental to general availability.
+
+
 ## [0.81.0]
 
 ### Removed
