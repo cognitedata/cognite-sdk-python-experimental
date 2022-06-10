@@ -21,8 +21,7 @@ class AnnotationV2(CogniteResource):
         status (str): The status of the annotation, e.g. "suggested", "approved", "rejected".
 
         annotated_resource_type (str): Type name of the CDF resource that is annotated, e.g. "file".
-        annotated_resource_id (int, optional): The internal ID of the annotated resource. Either this field or `annotated_resource_external_id` is required (not both).
-        annotated_resource_external_id (str, optional): The external ID of the annotated resource. Either this field or `annotated_resource_id` is required (not both).
+        annotated_resource_id (int, optional): The internal ID of the annotated resource.
 
         creating_app (str): The name of the app from which this annotation was created.
         creating_app_version (str): The version of the app that created this annotation. Must be a valid semantic versioning (SemVer) string.
@@ -55,7 +54,7 @@ class AnnotationV2(CogniteResource):
         self.creating_user = creating_user
         self.annotated_resource_type = annotated_resource_type
         self.annotated_resource_id = annotated_resource_id
-        self.annotated_resource_external_id = annotated_resource_external_id
+        self.annotated_resource_external_id = annotated_resource_external_id  # TODO Should be removed as soon as the migration that removes the field on the data persistence level is through.
         self.id = None  # Read only
         self.created_time = None  # Read only
         self.last_updated_time = None  # Read only
