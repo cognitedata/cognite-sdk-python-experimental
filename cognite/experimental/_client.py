@@ -18,9 +18,7 @@ from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAP
 from cognite.experimental._api.vision import VisionAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
-    f"/{api}/{endpoint}"
-    for api in ["types", "labels", "templates"]
-    for endpoint in ["list", "byids", "search"]
+    f"/{api}/{endpoint}" for api in ["types", "labels", "templates"] for endpoint in ["list", "byids", "search"]
 }
 
 
