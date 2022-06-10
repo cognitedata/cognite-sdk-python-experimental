@@ -28,9 +28,6 @@ def annotation() -> AnnotationV2:
         annotated_resource_type="file",
         annotated_resource_id=1,
         annotated_resource_external_id=None,
-        linked_resource_type=None,
-        linked_resource_id=None,
-        linked_resource_external_id=None,
     )
 
 
@@ -44,8 +41,6 @@ def annotation_filter() -> AnnotationV2Filter:
         creating_app="UnitTest",
         creating_user="",
         creating_app_version="0.0.1",
-        linked_resource_type="file",
-        linked_resource_ids=[{"id": 1234}, {"external_id": "ext_1234"}],
     )
 
 
