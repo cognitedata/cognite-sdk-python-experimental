@@ -80,9 +80,6 @@ class TestAnnotationV2Update:
             },
             "status": "rejected",
             "annotationType": "diagrams.AssetLink",
-            "linkedResourceType": "asset",
-            "linkedResourceId": 1,
-            "linkedResourceExternalId": None,
         }
         annotation_update = AnnotationV2Update(id=1)
         for k, v in update.items():
