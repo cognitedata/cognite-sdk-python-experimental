@@ -163,8 +163,6 @@ class TestAnnotationsV2Integration:
     ) -> None:
         # Create annotation, make some local changes and cache a dump
         annotation = cognite_client.annotations_v2.create(base_annotation)
-        annotation.linked_resource_type = "asset"
-        annotation.linked_resource_id = 1
         local_dump = annotation.dump()
         # Update the annotation on remote and make a dump
         annotation = cognite_client.annotations_v2.update(annotation)
@@ -193,9 +191,6 @@ class TestAnnotationsV2Integration:
             },
             "status": "rejected",
             "annotation_type": "diagrams.AssetLink",
-            "linked_resource_type": "asset",
-            "linked_resource_id": 1,
-            "linked_resource_external_id": None,
         }
         created_annotation = cognite_client.annotations_v2.create(base_annotation)
 

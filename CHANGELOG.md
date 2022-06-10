@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.81.0]
+
+### Removed
+
+- `linked_resource_id`, `linked_resource_external_id` and `linked_resource_type` fields to AnnotationsV2.
+
 ## [0.80.0]
 
 ### Added
