@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Removed
 
-- diagrams API
+- diagrams API (has been moved to the stable SDK)
 
 ## [0.81.0]
 
