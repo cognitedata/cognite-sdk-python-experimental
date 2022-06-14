@@ -6,8 +6,6 @@ from cognite.client.data_classes._base import CogniteResource
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
-    DiagramConvertResults,
-    DiagramDetectResults,
     PNIDConvertResults,
     PNIDDetectionList,
     PNIDDetectionPageList,
