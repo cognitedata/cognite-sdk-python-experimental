@@ -76,7 +76,7 @@ class Function(CogniteResource):
         self._cognite_client = cognite_client
 
     def call(self, data=None, wait: bool = True) -> "FunctionCall":
-        """`Call this particular function. <https://docs.cognite.com/api/playground/#operation/post-api-playground-projects-project-functions-function_name-call>`_
+        """`Call this particular function. <https://docs.cognite.com/api/playground/#operation/postFunctionsCall>`_
 
         Args:
             data (Union[str, dict], optional): Input data to the function (JSON serializable). This data is passed deserialized into the function through one of the arguments called data. **WARNING:** Secrets or other confidential information should not be passed via this argument. There is a dedicated `secrets` argument in FunctionsAPI.create() for this purpose.
@@ -117,7 +117,7 @@ class Function(CogniteResource):
         )
 
     def list_schedules(self, limit: Optional[int] = LIST_LIMIT_DEFAULT) -> "FunctionSchedulesList":
-        """`List all schedules associated with this function. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-schedules>`_
+        """`List all schedules associated with this function. <https://docs.cognite.com/api/playground/#operation/getFunctionSchedules>`_
 
         Args:
             limit (int): Maximum number of schedules to list. Pass in -1, float('inf') or None to list all.
@@ -136,7 +136,7 @@ class Function(CogniteResource):
         return (schedules_by_external_id + schedules_by_id)[:limit]
 
     def retrieve_call(self, id: int) -> "FunctionCall":
-        """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls-call_id>`_
+        """`Retrieve call by id. <https://docs.cognite.com/api/playground/#operation/getFunctionCall>`_
 
         Args:
             id (int): ID of the call.
@@ -300,7 +300,7 @@ class FunctionCall(CogniteResource):
         return self._cognite_client.functions.calls.get_response(call_id=self.id, function_id=self.function_id)
 
     def get_logs(self) -> "FunctionCallLog":
-        """`Retrieve logs for this function call. <https://docs.cognite.com/api/playground/#operation/get-api-playground-projects-project-functions-function_name-calls>`_
+        """`Retrieve logs for this function call. <https://docs.cognite.com/api/playground/#operation/getFunctionCallLogs>`_
 
         Returns:
             FunctionCallLog: Log for the function call.
