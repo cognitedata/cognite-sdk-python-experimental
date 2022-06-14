@@ -1,7 +1,7 @@
 import copy
 from collections import UserList
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 from cognite.client.data_classes import ContextualizationJob
@@ -520,4 +520,3 @@ class PNIDDetectResults(ContextualizationJob):
     def ocr(self) -> PNIDDetectionPageList:
         """Retrieve raw OCR results, for example, to visualize"""
         return self._cognite_client.pnid_parsing.ocr(file_id=self.file_id)
-

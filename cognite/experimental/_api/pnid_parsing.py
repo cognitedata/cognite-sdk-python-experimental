@@ -1,7 +1,6 @@
 import numbers
 from typing import Dict, List, Union
 
-from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import CogniteResource
 
 from cognite.experimental._context_client import ContextAPI
@@ -132,4 +131,3 @@ class PNIDParsingAPI(ContextAPI):
             for item in res.json()["items"]
         ]
         return PNIDDetectionPageList(items, file_id=file_id)
-
