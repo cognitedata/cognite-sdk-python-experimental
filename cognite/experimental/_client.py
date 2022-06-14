@@ -14,7 +14,7 @@ from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
-from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
+from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 from cognite.experimental._api.vision import VisionAPI
 
@@ -104,7 +104,6 @@ class CogniteClient(Client):
             self._config, api_version="playground", cognite_client=self
         )
 
-        self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         # template completion only
         self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         self.vision = VisionAPI(self._config, api_version="playground", cognite_client=self)
