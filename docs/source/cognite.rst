@@ -14,7 +14,6 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
-* client.diagrams: `Detect entities in Engineering Diagrams`_
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
@@ -335,15 +334,6 @@ Retrieve caches OCR results
 Detect common objects in a PNID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.pnid_object_detection.PNIDObjectDetectionAPI.find_objects
-
-
-Detect entities in Engineering Diagrams
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.pnid_parsing.DiagramsAPI.detect
-
-Convert to an interactive SVG where the provided annotations are highlighted
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.pnid_parsing.DiagramsAPI.convert
 
 
 
