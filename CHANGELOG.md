@@ -12,8 +12,18 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.81.0]
+## [0.82.0]
 
+### Changed
+
+- Renamed `client.annotations.*` to `client.legacy_annotations.*` and renamed corresponding (data) class and filenames accordingly.
+- Renamed `client.annotations_v2.*` to `client.annotations.*` and renamed corresponding (data) class and filenames accordingly.
+ 
+#### Removed
+
+- Removed documentation for legacy `annotations` (now called `legacy_annotations`), which will soon be deprecated.
+
+## [0.81.0]
 ### Removed
 
 - `linked_resource_id`, `linked_resource_external_id` and `linked_resource_type` fields to AnnotationsV2.
