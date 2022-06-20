@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.83.0]
+
+### Changed
+
+- More examples for the geospatial compute method.
+
 ## [0.82.0]
 
 ### Changed
