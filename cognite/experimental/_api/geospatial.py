@@ -414,6 +414,29 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 ...         }
                 ...     }
                 >>> )
+
+            Compute the transformed geometry of a direct geometry value
+
+                >>> client.geospatial.compute(
+                ...     output={
+                ...         "from4326to3857": {
+                ...             "stTransform": {
+                ...                 "geometry": {"ewkt": "SRID=4326;POINT(2.353295 48.850908)"},
+                ...                 "srid": 3857
+                ...             }
+                ...         }
+                ...     }
+                ... )
+
+            Compute multiple transformed geometries of a direct "sub_compute" geometry value
+
+                >>> client.geospatial.compute(
+                ...     sub_computes={"paris": {"ewkt": "SRID=4326;POINT(2.353295 48.850908)"}},
+                ...     output={
+                ...         "from4326to3857": {"stTransform": {"geometry": {"ref": "paris"}, "srid": 3857}},
+                ...         "from4326to102016": {"stTransform": {"geometry": {"ref": "paris"}, "srid": 102016}},
+                ...     }
+                ... )
         """
         sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
