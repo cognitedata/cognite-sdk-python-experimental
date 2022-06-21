@@ -245,7 +245,16 @@ class TestExperimentalGeospatialAPI:
                 remove=PropertyAndSearchSpec(properties=["raster"], search_spec=[]),
             )
         )
-        assert list(feature_type_updated[0].properties.keys()) == ['position', 'volume', 'temperature', 'pressure', 'externalId', 'createdTime', 'lastUpdatedTime', 'dataSetId']
+        assert list(feature_type_updated[0].properties.keys()) == [
+            "position",
+            "volume",
+            "temperature",
+            "pressure",
+            "externalId",
+            "createdTime",
+            "lastUpdatedTime",
+            "dataSetId",
+        ]
         res = cognite_client.geospatial.retrieve_features(
             feature_type_external_id=test_feature_type.external_id,
             external_id=[test_feature_with_raster.external_id],
