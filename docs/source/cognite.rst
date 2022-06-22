@@ -426,6 +426,17 @@ Retrieve MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_mvt_mappings_definitions
 
+List MVT Mappings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_mvt_mappings_definitions
+
+Compute
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Compute
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.compute
+
 Data classes
 ^^^^^^^^^^^^
 .. automodule:: cognite.experimental.data_classes.geospatial
