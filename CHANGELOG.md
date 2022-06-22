@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.84.0]
+
+### Removed
+
+- diagrams API (has been moved to the stable SDK)
+
 ## [0.83.0]
 
 ### Changed
