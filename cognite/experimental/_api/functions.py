@@ -9,12 +9,12 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
-from pip._internal.req.constructors import install_req_from_line
-
 from cognite.client import CogniteClient, utils
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
 from cognite.client.exceptions import CogniteAPIError
+from pip._internal.req.constructors import install_req_from_line
+
 from cognite.experimental._constants import (
     HANDLER_FILE_NAME,
     LIST_LIMIT_CEILING,
@@ -414,7 +414,7 @@ class FunctionsAPI(APIClient):
             zip_path = os.path.join(tmpdir, "function.zip")
             zf = ZipFile(zip_path, "w")
             zf.write(handle_path, arcname=HANDLER_FILE_NAME)
-            
+
             # Zip requirements.txt
             if req_path:
                 zf.write(req_path, arcname=REQUIREMENTS_FILE_NAME)
@@ -559,8 +559,9 @@ def _assert_at_most_one_of_function_id_and_function_external_id(function_id, fun
         has_function_id and has_function_external_id
     ), "Only function_id or function_external_id allowed when listing schedules."
 
+
 def extract_requirements_from_doc_string(docstr: str) -> Union[list[str], None]:
-    """ Extracts a list of library requirements defined between [requirements] and [/requirements] in a functions docstring.
+    """Extracts a list of library requirements defined between [requirements] and [/requirements] in a functions docstring.
 
     Args:
         docstr (str): the docstring to extract requirements from
@@ -583,8 +584,9 @@ def extract_requirements_from_doc_string(docstr: str) -> Union[list[str], None]:
         return docstr[substr_start:substr_end].splitlines()[1:]
     return None
 
+
 def validate_requirements(requirements: list[str]) -> str:
-    """ Validates the requirement specifications
+    """Validates the requirement specifications
 
     Args:
         requirements (list[str]): list of requirement specifications
@@ -609,8 +611,9 @@ def validate_requirements(requirements: list[str]) -> str:
 
     return tmp.name
 
+
 def get_requirements_handle(fn: Callable) -> Union[str, None]:
-    """ Read requirements from a function docstring, and validate them
+    """Read requirements from a function docstring, and validate them
 
     Args:
         fn (Callable): the function to read requirements from
@@ -626,6 +629,7 @@ def get_requirements_handle(fn: Callable) -> Union[str, None]:
             return validate_requirements(reqs)
 
     return None
+
 
 class FunctionCallsAPI(APIClient):
     _LIST_CLASS = FunctionCallList

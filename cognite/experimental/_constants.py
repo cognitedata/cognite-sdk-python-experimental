@@ -6,4 +6,4 @@ LIST_LIMIT_CEILING = 10_000  # variable used to guarantee all items are returned
 HANDLER_FILE_NAME = "handler.py"
 MAX_RETRIES = 5
 REQUIREMENTS_FILE_NAME = "requirements.txt"
-REQUIREMENTS_REG = re.compile(r"(\[\/?requirements\]){1}$", flags=re.M) # Matches [requirements] and [/requirements]
+REQUIREMENTS_REG = re.compile(r"(\[\/?requirements\]){1}$", flags=re.M)  # Matches [requirements] and [/requirements]
