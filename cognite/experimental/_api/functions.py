@@ -560,7 +560,7 @@ def _assert_at_most_one_of_function_id_and_function_external_id(function_id, fun
     ), "Only function_id or function_external_id allowed when listing schedules."
 
 
-def extract_requirements_from_doc_string(docstr: str) -> Union[list[str], None]:
+def extract_requirements_from_doc_string(docstr: str) -> Optional[List[str]]:
     """Extracts a list of library requirements defined between [requirements] and [/requirements] in a functions docstring.
 
     Args:
@@ -585,7 +585,7 @@ def extract_requirements_from_doc_string(docstr: str) -> Union[list[str], None]:
     return None
 
 
-def validate_requirements(requirements: list[str]) -> str:
+def validate_requirements(requirements: List[str]) -> str:
     """Validates the requirement specifications
 
     Args:
@@ -597,7 +597,7 @@ def validate_requirements(requirements: list[str]) -> str:
     Returns:
         str: output path of the requirements file
     """
-    parsed_reqs: list[str] = []
+    parsed_reqs: List[str] = []
     for req in requirements:
         parsed = install_req_from_line(req)
         parsed_reqs.append(str(parsed))
@@ -612,7 +612,7 @@ def validate_requirements(requirements: list[str]) -> str:
     return tmp.name
 
 
-def get_requirements_handle(fn: Callable) -> Union[str, None]:
+def get_requirements_handle(fn: Callable) -> Optional[str]:
     """Read requirements from a function docstring, and validate them
 
     Args:
