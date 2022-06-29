@@ -2,10 +2,10 @@ import importlib.util
 import os
 import sys
 import time
-from inspect import getsource
+from inspect import getdoc, getsource
 from numbers import Integral, Number
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Callable, Dict, List, Optional, Union
 from zipfile import ZipFile
 
@@ -13,8 +13,16 @@ from cognite.client import CogniteClient, utils
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import TimestampRange
 from cognite.client.exceptions import CogniteAPIError
+from pip._internal.req.constructors import install_req_from_line
 
-from cognite.experimental._constants import HANDLER_FILE_NAME, LIST_LIMIT_CEILING, LIST_LIMIT_DEFAULT, MAX_RETRIES
+from cognite.experimental._constants import (
+    HANDLER_FILE_NAME,
+    LIST_LIMIT_CEILING,
+    LIST_LIMIT_DEFAULT,
+    MAX_RETRIES,
+    REQUIREMENTS_FILE_NAME,
+    REQUIREMENTS_REG,
+)
 from cognite.experimental.data_classes import (
     Function,
     FunctionCall,
@@ -110,6 +118,24 @@ class FunctionsAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> function = c.functions.create(name="myfunction", function_handle=handle)
+
+            Create function with predefined function object named `handle` with dependencies::
+
+                >>> from cognite.experimental import CogniteClient
+                >>>
+                >>> def handle(client, data):
+                >>>     \"\"\"
+                >>>     [requirements]
+                >>>     numpy
+                >>>     [/requirements]
+                >>>     \"\"\"
+                >>>     ...
+                >>>
+                >>> c = CogniteClient()
+                >>> function = c.functions.create(name="myfunction", function_handle=handle)
+
+            .. note::
+                When using a predefined function object, you can list dependencies between the tags `[requirements]` and `[/requirements]` in the function's docstring. The dependencies will be parsed and validated in accordance with requirement format specified in `PEP 508 <https://peps.python.org/pep-0508/>`_.
         """
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
@@ -400,9 +426,16 @@ class FunctionsAPI(APIClient):
                 source = getsource(function_handle)
                 f.write(source)
 
+            # Read and validate requirements
+            req_path = get_requirements_handle(fn=function_handle)
+
             zip_path = os.path.join(tmpdir, "function.zip")
             zf = ZipFile(zip_path, "w")
             zf.write(handle_path, arcname=HANDLER_FILE_NAME)
+
+            # Zip requirements.txt
+            if req_path:
+                zf.write(req_path, arcname=REQUIREMENTS_FILE_NAME)
             zf.close()
 
             overwrite = True if external_id else False
@@ -543,6 +576,77 @@ def _assert_at_most_one_of_function_id_and_function_external_id(function_id, fun
     assert not (
         has_function_id and has_function_external_id
     ), "Only function_id or function_external_id allowed when listing schedules."
+
+
+def extract_requirements_from_doc_string(docstr: str) -> Optional[List[str]]:
+    """Extracts a list of library requirements defined between [requirements] and [/requirements] in a functions docstring.
+
+    Args:
+        docstr (str): the docstring to extract requirements from
+
+    Returns:
+        (list[str] | None): returns a list of library records if requirements are defined in the docstring, else None
+    """
+    substr_start, substr_end = None, None
+
+    # Get index values for the start and end of the requirements list
+    for match in REQUIREMENTS_REG.finditer(docstr):
+        val = match.group()
+        if val == "[requirements]":
+            substr_start = match.end()
+        elif val == "[/requirements]":
+            substr_end = match.start()
+
+    if substr_start and substr_end:
+        # Return a list of requirement entries
+        return docstr[substr_start:substr_end].splitlines()[1:]
+    return None
+
+
+def validate_requirements(requirements: List[str]) -> str:
+    """Validates the requirement specifications
+
+    Args:
+        requirements (list[str]): list of requirement specifications
+
+    Raises:
+        ValueError: if validation of requirements fails
+
+    Returns:
+        str: output path of the requirements file
+    """
+    parsed_reqs: List[str] = []
+    for req in requirements:
+        parsed = install_req_from_line(req)
+        parsed_reqs.append(str(parsed))
+
+    tmp = NamedTemporaryFile()
+
+    # Write requirements to temporary file
+    with open(tmp.name, "w+") as f:
+        f.write("\n".join(parsed_reqs))
+        f.close()
+
+    return tmp.name
+
+
+def get_requirements_handle(fn: Callable) -> Optional[str]:
+    """Read requirements from a function docstring, and validate them
+
+    Args:
+        fn (Callable): the function to read requirements from
+
+    Returns:
+        str: output path of the requirements file, or None if no requirements are specified
+    """
+    docstr = getdoc(fn)
+
+    if docstr:
+        reqs = extract_requirements_from_doc_string(docstr)
+        if reqs:
+            return validate_requirements(reqs)
+
+    return None
 
 
 class FunctionCallsAPI(APIClient):

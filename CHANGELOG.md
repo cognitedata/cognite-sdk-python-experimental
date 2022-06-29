@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.85.0]
+
+### Added
+- added parsing of requirements from docstring when uploading Cognite Function from function-handle.
+
 ## [0.84.0]
 
 ### Removed
