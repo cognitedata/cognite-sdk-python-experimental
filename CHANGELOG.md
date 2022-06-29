@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.86.0]
+
+### Added
+- added validation of requirements.txt when uploading function from a folder
+
 ## [0.85.0]
 
 ### Added
