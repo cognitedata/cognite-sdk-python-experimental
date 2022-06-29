@@ -411,10 +411,10 @@ class FunctionsAPI(APIClient):
                         reqs = extract_requirements_from_file(path)
                         # Validate and format requirements
                         req_path = validate_requirements(reqs)
-                        if req_path:
-                            # NOTE: the actual file is not written.
-                            # A temporary formatted file is used instead
-                            zf.write(req_path, arcname=REQUIREMENTS_FILE_NAME)
+
+                        # NOTE: the actual file is not written.
+                        # A temporary formatted file is used instead
+                        zf.write(req_path, arcname=REQUIREMENTS_FILE_NAME)
 
                     for filename in files:
                         zf.write(os.path.join(root, filename))
