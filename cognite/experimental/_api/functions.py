@@ -118,6 +118,24 @@ class FunctionsAPI(APIClient):
                 >>> from cognite.experimental import CogniteClient
                 >>> c = CogniteClient()
                 >>> function = c.functions.create(name="myfunction", function_handle=handle)
+
+            Create function with predefined function object named `handle` with dependencies::
+
+                >>> from cognite.experimental import CogniteClient
+                >>>
+                >>> def handle(client, data):
+                >>>     \"\"\"
+                >>>     [requirements]
+                >>>     numpy
+                >>>     [/requirements]
+                >>>     \"\"\"
+                >>>     ...
+                >>>
+                >>> c = CogniteClient()
+                >>> function = c.functions.create(name="myfunction", function_handle=handle)
+
+            .. note::
+                When using a predefined function object, you can list dependencies between the tags `[requirements]` and `[/requirements]` in the function's docstring. The dependencies will be parsed and validated in accordance with requirement format specified in `PEP 508 <https://peps.python.org/pep-0508/>`_.
         """
         self._assert_exactly_one_of_folder_or_file_id_or_function_handle(folder, file_id, function_handle)
 
