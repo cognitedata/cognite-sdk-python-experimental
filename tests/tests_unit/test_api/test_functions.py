@@ -10,6 +10,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental._api.functions import (
     _using_client_credential_flow,
     extract_requirements_from_doc_string,
+    extract_requirements_from_file,
     get_requirements_handle,
     validate_function_folder,
     validate_requirements,
@@ -375,6 +376,22 @@ class TestFunctionsAPI:
             with pytest.raises(exception):
                 validate_function_folder(folder, function_path)
 
+    @pytest.mark.parametrize(
+        "function_folder, function_name, exception",
+        [
+            ("function_code", "function_w_no_requirements", None),
+            ("function_code_with_requirements", "function_w_requirements", None),
+            ("function_code_with_invalid_requirements", "function_w_bad_requirements", ValueError),
+        ],
+    )
+    def test_zip_and_upload_folder(self, function_folder, function_name, exception):
+        folder = os.path.join(os.path.dirname(__file__), function_folder)
+        if exception is None:
+            FUNCTIONS_API._zip_and_upload_folder(folder, function_name)
+        else:
+            with pytest.raises(exception):
+                FUNCTIONS_API._zip_and_upload_folder(folder, function_name)
+
     @patch("cognite.experimental._api.functions.MAX_RETRIES", 1)
     def test_create_function_with_file_not_uploaded(self, mock_file_not_uploaded):
         with pytest.raises(IOError):
@@ -650,6 +667,17 @@ class TestRequirementsParser:
             return None
 
         assert get_requirements_handle(fn=fn) == None
+
+    def test_extract_requirements_from_file(self, tmpdir):
+        req = "somepackage == 3.8.1"
+        file = os.path.join(tmpdir, "requirements.txt")
+        with open(file, "w+") as f:
+            f.writelines("\n".join(["# this should not be included", "     " + req]))
+            f.close()
+        reqs = extract_requirements_from_file(file_name=file)
+        assert type(reqs) == list
+        assert len(reqs) == 1
+        assert req in reqs
 
     def test_extract_requirements_from_doc_string(self):
         req_mock = '[requirements]\nSomePackage==3.4.3, >3.4.1; python_version=="3.7"\nSomePackage==21.4.0; python_version=="3.7" and python_full_version<"3.0.0" or python_full_version>="3.5.0" and python_version>="3.7"\nSomePackage==2022.6.15; python_version>="3.8" and python_version<"4"\ncSomePackage==1.15.0; python_version>="3.6"\n[/requirements]\n'

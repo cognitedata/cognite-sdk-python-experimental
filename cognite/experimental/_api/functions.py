@@ -22,6 +22,7 @@ from cognite.experimental._constants import (
     MAX_RETRIES,
     REQUIREMENTS_FILE_NAME,
     REQUIREMENTS_REG,
+    UNCOMMENTED_LINE_REG,
 )
 from cognite.experimental.data_classes import (
     Function,
@@ -402,8 +403,22 @@ class FunctionsAPI(APIClient):
                 zf = ZipFile(zip_path, "w")
                 for root, dirs, files in os.walk("."):
                     zf.write(root)
+
+                    # Validate requirements.txt in root-dir only
+                    if root == "." and REQUIREMENTS_FILE_NAME in files:
+                        # Remove requirement from file list
+                        path = files.pop(files.index(REQUIREMENTS_FILE_NAME))
+                        reqs = extract_requirements_from_file(path)
+                        # Validate and format requirements
+                        req_path = validate_requirements(reqs)
+
+                        # NOTE: the actual file is not written.
+                        # A temporary formatted file is used instead
+                        zf.write(req_path, arcname=REQUIREMENTS_FILE_NAME)
+
                     for filename in files:
                         zf.write(os.path.join(root, filename))
+
                 zf.close()
 
                 overwrite = True if external_id else False
@@ -578,6 +593,24 @@ def _assert_at_most_one_of_function_id_and_function_external_id(function_id, fun
     ), "Only function_id or function_external_id allowed when listing schedules."
 
 
+def extract_requirements_from_file(file_name: str) -> List[str]:
+    """Extracts a list of library requirements from a file. Comments, lines starting with '#', are ignored.
+
+    Args:
+        file_name (str): name of the file to parse
+
+    Returns:
+        (list[str]): returns a list of library records
+    """
+    requirements: List[str] = []
+    with open(file_name, "r+") as f:
+        for line in f:
+            line = line.strip()
+            if UNCOMMENTED_LINE_REG.match(line):
+                requirements.append(line)
+    return requirements
+
+
 def extract_requirements_from_doc_string(docstr: str) -> Optional[List[str]]:
     """Extracts a list of library requirements defined between [requirements] and [/requirements] in a functions docstring.
 
@@ -617,8 +650,12 @@ def validate_requirements(requirements: List[str]) -> str:
     """
     parsed_reqs: List[str] = []
     for req in requirements:
-        parsed = install_req_from_line(req)
-        parsed_reqs.append(str(parsed))
+        try:
+            parsed = install_req_from_line(req)
+        except Exception as e:
+            raise ValueError(str(e))
+
+        parsed_reqs.append(str(parsed).strip())
 
     tmp = NamedTemporaryFile()
 
