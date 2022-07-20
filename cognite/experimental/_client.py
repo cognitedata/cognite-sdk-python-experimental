@@ -3,8 +3,8 @@ from typing import Callable, Dict, List, Optional, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
-from cognite.experimental._api.alerts import AlertsAPI, AlertsChannelsAPI
 
+from cognite.experimental._api.alerts import AlertsAPI, AlertsChannelsAPI
 from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI

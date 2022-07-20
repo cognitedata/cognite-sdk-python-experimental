@@ -1,10 +1,6 @@
 from typing import Dict, List, Union, cast
 
-from cognite.client.data_classes._base import (
-    CogniteFilter,
-    CogniteResource,
-    CogniteResourceList,
-)
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
 
 
 class AlertChannel(CogniteResource):

@@ -1,14 +1,16 @@
 from typing import Dict, List
+
+from cognite.client.utils._auxiliary import to_camel_case
+
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes.alerts import (
     Alert,
-    AlertChannelFilter,
-    AlertFilter,
     AlertChannel,
+    AlertChannelFilter,
     AlertChannelList,
+    AlertFilter,
     AlertList,
 )
-from cognite.client.utils._auxiliary import to_camel_case
 
 
 class AlertsChannelsAPI(ContextAPI):
