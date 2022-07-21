@@ -1,6 +1,7 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
-from cognite.client.utils._auxiliary import to_camel_case
+from cognite.client._api_client import APIClient
+from cognite.client.utils._auxiliary import assert_type, to_camel_case
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes.alerts import (
@@ -13,9 +14,24 @@ from cognite.experimental.data_classes.alerts import (
 )
 
 
-class AlertsChannelsAPI(ContextAPI):
+class AlertsChannelsAPI(APIClient):
     _RESOURCE_PATH = "/alerts/channels"
     _LIST_CLASS = AlertChannelList
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def create(
+        self,
+        alert_channels: Union[AlertChannel, List[AlertChannel]],
+    ) -> Union[AlertChannel, AlertChannelList]:
+        assert_type(alert_channels, "alert_channels", [AlertChannel, list])
+        return self._create_multiple(
+            items=alert_channels,
+            resource_path=self._RESOURCE_PATH,
+            list_cls=AlertChannelList,
+            resource_cls=AlertChannel,
+        )
 
     def list(
         self,
@@ -49,9 +65,18 @@ class AlertsChannelsAPI(ContextAPI):
         return AlertChannelList([AlertChannel._load(model, cognite_client=self._cognite_client) for model in models])
 
 
-class AlertsAPI(ContextAPI):
+class AlertsAPI(APIClient):
     _RESOURCE_PATH = "/alerts/alerts"
     _LIST_CLASS = AlertList
+
+    def create(
+        self,
+        alerts: Union[Alert, List[Alert]],
+    ) -> Union[Alert, AlertList]:
+        assert_type(alerts, "alerts", [Alert, list])
+        return self._create_multiple(
+            items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
+        )
 
     def list(
         self,

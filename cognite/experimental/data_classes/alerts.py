@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, cast
+from typing import Any, Dict, List, Union, cast
 
 from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
 
@@ -20,25 +20,12 @@ class AlertChannel(CogniteResource):
         self.parent_external_id = parent_external_id
         self.description = description
         self.metadata = metadata
-        self.id = id
+        # self.id = id
         self._cognite_client = cast("CogniteClient", cognite_client)
-
-    def to_pandas(self, camel_case=False):
-        pass
 
 
 class AlertChannelList(CogniteResourceList):
     _RESOURCE = AlertChannel
-    _ASSERT_CLASSES = False
-
-    @classmethod
-    def _load(cls, resource_list: Union[List, str], cognite_client=None):
-        loaded = super()._load(resource_list, cognite_client)
-        loaded.data = sorted(loaded.data, key=lambda match: -match.score)  # sort matches from highest to lowest score
-        return loaded
-
-    def to_pandas(self, camel_case=False):
-        pass
 
 
 class AlertChannelFilter(CogniteFilter):
@@ -67,7 +54,8 @@ class Alert(CogniteResource):
         id: int = None,
         external_id: str = None,
         timestamp: str = None,
-        # channel: AlertsChannel = None,
+        channel_id: int = None,
+        channel_external_id: int = None,
         source: str = None,
         value: str = None,
         level: str = None,
@@ -79,7 +67,8 @@ class Alert(CogniteResource):
         self.id = id
         self.external_id = external_id
         self.timestamp = timestamp
-        # self.channel = channel
+        self.channel_id = channel_id
+        self.channel_external_id = channel_external_id
         self.source = source
         self.value = value
         self.level = level
@@ -88,22 +77,9 @@ class Alert(CogniteResource):
         self.closed = closed
         self._cognite_client = cast("CogniteClient", cognite_client)
 
-    def to_pandas(self, camel_case=False):
-        pass
-
 
 class AlertList(CogniteResourceList):
     _RESOURCE = Alert
-    _ASSERT_CLASSES = False
-
-    @classmethod
-    def _load(cls, resource_list: Union[List, str], cognite_client=None):
-        loaded = super()._load(resource_list, cognite_client)
-        loaded.data = sorted(loaded.data, key=lambda match: -match.score)  # sort matches from highest to lowest score
-        return loaded
-
-    def to_pandas(self, camel_case=False):
-        pass
 
 
 class AlertFilter(CogniteFilter):
