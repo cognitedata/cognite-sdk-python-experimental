@@ -189,8 +189,6 @@ class AlertsAPI(APIClient):
 
         all_ids = self._process_ids(ids, external_ids, wrap_ids=True)
 
-        self._post(
-            self._RESOURCE_PATH + "/close", json={"items": all_ids}, headers={"cdf-version": "alpha"}
-        ).json()
+        self._post(self._RESOURCE_PATH + "/close", json={"items": all_ids}, headers={"cdf-version": "alpha"}).json()
 
         return None

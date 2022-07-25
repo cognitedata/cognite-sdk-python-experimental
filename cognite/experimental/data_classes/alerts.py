@@ -111,6 +111,7 @@ class AlertFilter(CogniteFilter):
         self.end_time = end_time
         self._cognite_client = cast("CogniteClient", cognite_client)
 
+
 class AlertSubscriber(CogniteResource):
     def __init__(
         self,
@@ -126,10 +127,12 @@ class AlertSubscriber(CogniteResource):
         self.email = email
         self._cognite_client = cast("CogniteClient", cognite_client)
 
+
 class AlertSubscriberList(CogniteResourceList):
     _RESOURCE = AlertSubscriber
     _UPDATE = None
     _ASSERT_CLASSES = False
+
 
 class AlertSubscriptionDelete(CogniteResource):
     def __init__(
@@ -149,6 +152,7 @@ class AlertSubscriptionDelete(CogniteResource):
         self.subscriber_id = subscriber_id
         self.subscriber_external_id = subscriber_external_id
         self._cognite_client = cast("CogniteClient", cognite_client)
+
 
 class AlertSubscription(CogniteResource):
     def __init__(
@@ -170,6 +174,7 @@ class AlertSubscription(CogniteResource):
         self.subscriber_external_id = subscriber_external_id
         self.metadata = metadata
         self._cognite_client = cast("CogniteClient", cognite_client)
+
 
 class AlertSubscriptionList(CogniteResourceList):
     _RESOURCE = AlertSubscription
