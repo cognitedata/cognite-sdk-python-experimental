@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Optional, Union
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 
-from cognite.experimental._api.alerts import AlertsAPI, AlertsChannelsAPI
+from cognite.experimental._api.alerts import AlertSubscribersAPI, AlertSubscriptionsAPI, AlertsAPI, AlertsChannelsAPI
 from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
@@ -92,6 +92,8 @@ class CogniteClient(Client):
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
         self.alerts = AlertsAPI(self._config, api_version="v1", cognite_client=self)
         self.alert_channels = AlertsChannelsAPI(self._config, api_version="v1", cognite_client=self)
+        self.alert_subscribers = AlertSubscribersAPI(self._config, api_version="v1", cognite_client=self)
+        self.alert_subscriptions = AlertSubscriptionsAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)

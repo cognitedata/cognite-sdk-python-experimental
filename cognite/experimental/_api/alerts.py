@@ -3,7 +3,6 @@ from typing import Dict, List, Union
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type, to_camel_case
 
-from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes.alerts import (
     Alert,
     AlertChannel,
@@ -11,6 +10,11 @@ from cognite.experimental.data_classes.alerts import (
     AlertChannelList,
     AlertFilter,
     AlertList,
+    AlertSubscriber,
+    AlertSubscriberList,
+    AlertSubscription,
+    AlertSubscriptionDelete,
+    AlertSubscriptionList,
 )
 
 
@@ -114,3 +118,37 @@ class AlertsAPI(APIClient):
         ).json()["items"]
 
         return AlertList([Alert._load(model, cognite_client=self._cognite_client) for model in models])
+
+
+class AlertSubscribersAPI(APIClient):
+    _RESOURCE_PATH = "/alerts/subscribers"
+    _LIST_CLASS = AlertSubscriberList
+
+    def create(
+        self,
+        alerts_subscribers: Union[AlertSubscriber, List[AlertSubscriber]],
+    ) -> Union[AlertSubscriber, AlertSubscriberList]:
+        assert_type(alerts_subscribers, "alerts_subscribers", [AlertSubscriber, list])
+        return self._create_multiple(
+            items=alerts_subscribers, resource_path=self._RESOURCE_PATH, list_cls=AlertSubscriberList, resource_cls=AlertSubscriber
+        )
+
+class AlertSubscriptionsAPI(APIClient):
+    _RESOURCE_PATH = "/alerts/subscriptions"
+    _LIST_CLASS = AlertSubscriptionList
+
+    def create(
+        self,
+        alerts_subscriptions: Union[AlertSubscription, List[AlertSubscriptionList]],
+    ) -> Union[AlertSubscription, AlertSubscriptionList]:
+        assert_type(alerts_subscriptions, "alerts_subscriptions", [AlertSubscription, list])
+        return self._create_multiple(
+            items=alerts_subscriptions, resource_path=self._RESOURCE_PATH, list_cls=AlertSubscriptionList, resource_cls=AlertSubscription
+        )
+
+    def delete(self, cmds: List[AlertSubscriptionDelete]) -> None:
+        items_to_delete = [cmd.dump(camel_case=True) for cmd in cmds]
+
+        body = {"items": items_to_delete}
+        url = self._RESOURCE_PATH + "/delete"
+        self._post(url, json=body)

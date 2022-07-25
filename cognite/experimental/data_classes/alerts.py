@@ -106,3 +106,64 @@ class AlertFilter(CogniteFilter):
         self.start_time = start_time
         self.end_time = end_time
         self._cognite_client = cast("CogniteClient", cognite_client)
+
+class AlertSubscriber(CogniteResource):
+    def __init__(
+        self,
+        id: int = None,
+        external_id: str = None,
+        metadata: Dict[str, str] = None,
+        email: str = None,
+        cognite_client: "CogniteClient" = None,
+    ):
+        self.id = id
+        self.external_id = external_id
+        self.metadata = metadata
+        self.email = email
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+class AlertSubscriberList(CogniteResourceList):
+    _RESOURCE = AlertSubscriber
+
+class AlertSubscriptionDelete(CogniteResource):
+    def __init__(
+        self,
+        id: int = None,
+        external_id: str = None,
+        channel_id: int = None,
+        channel_external_id: str = None,
+        subscriber_id: int = None,
+        subscriber_external_id: str = None,
+        cognite_client: "CogniteClient" = None,
+    ):
+        self.id = id
+        self.external_id = external_id
+        self.channel_id = channel_id
+        self.channel_external_id = channel_external_id
+        self.subscriber_id = subscriber_id
+        self.subscriber_external_id = subscriber_external_id
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+class AlertSubscription(CogniteResource):
+    def __init__(
+        self,
+        id: int = None,
+        external_id: str = None,
+        channel_id: int = None,
+        channel_external_id: str = None,
+        subscriber_id: int = None,
+        subscriber_external_id: str = None,
+        metadata: Dict[str, str] = None,
+        cognite_client: "CogniteClient" = None,
+    ):
+        self.id = id
+        self.external_id = external_id
+        self.channel_id = channel_id
+        self.channel_external_id = channel_external_id
+        self.subscriber_id = subscriber_id
+        self.subscriber_external_id = subscriber_external_id
+        self.metadata = metadata
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+class AlertSubscriptionList(CogniteResourceList):
+    _RESOURCE = AlertSubscription
