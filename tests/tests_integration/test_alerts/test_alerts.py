@@ -107,6 +107,13 @@ class TestAlertsIntegration:
 
         assert len(res) == 2
 
+    def test_close(self, cognite_client):
+        alerts = cognite_client.alerts.list(closed=False)
+
+        res = cognite_client.alerts.close(ids=[alerts[0].id])
+
+        assert res == None
+
     def test_list(self, cognite_client):
         res = cognite_client.alerts.list()
 

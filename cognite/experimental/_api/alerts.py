@@ -171,3 +171,26 @@ class AlertsAPI(APIClient):
         ).json()["items"]
 
         return AlertList([Alert._load(model, cognite_client=self._cognite_client) for model in models])
+
+    def close(
+        self,
+        ids: List[int] = None,
+        external_ids: List[str] = None,
+    ) -> None:
+        """Close an alert
+
+        Args:
+            ids: alert ids to close
+            external_ids: alert external_ids to close
+
+
+        Returns:
+            None"""
+
+        all_ids = self._process_ids(ids, external_ids, wrap_ids=True)
+
+        self._post(
+            self._RESOURCE_PATH + "/close", json={"items": all_ids}, headers={"cdf-version": "alpha"}
+        ).json()
+
+        return None

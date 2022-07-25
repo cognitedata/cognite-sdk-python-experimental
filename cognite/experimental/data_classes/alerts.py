@@ -26,6 +26,8 @@ class AlertChannel(CogniteResource):
 
 class AlertChannelList(CogniteResourceList):
     _RESOURCE = AlertChannel
+    _UPDATE = None
+    _ASSERT_CLASSES = False
 
 
 class AlertChannelFilter(CogniteFilter):
@@ -80,6 +82,8 @@ class Alert(CogniteResource):
 
 class AlertList(CogniteResourceList):
     _RESOURCE = Alert
+    _UPDATE = None
+    _ASSERT_CLASSES = False
 
 
 class AlertFilter(CogniteFilter):
@@ -124,6 +128,8 @@ class AlertSubscriber(CogniteResource):
 
 class AlertSubscriberList(CogniteResourceList):
     _RESOURCE = AlertSubscriber
+    _UPDATE = None
+    _ASSERT_CLASSES = False
 
 class AlertSubscriptionDelete(CogniteResource):
     def __init__(
@@ -167,3 +173,5 @@ class AlertSubscription(CogniteResource):
 
 class AlertSubscriptionList(CogniteResourceList):
     _RESOURCE = AlertSubscription
+    _UPDATE = None
+    _ASSERT_CLASSES = False
