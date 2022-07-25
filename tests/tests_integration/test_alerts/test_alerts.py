@@ -78,30 +78,30 @@ def base_subscription() -> Callable[..., AlertSubscription]:
 
 class TestAlertChannelsIntegration:
     def test_create_1(self, cognite_client, base_channel):
-        res = cognite_client.alert_channels.create(base_channel())
+        res = cognite_client.alerts.channels.create(base_channel())
         assert "test_" in res.external_id
 
     def test_create_2(self, cognite_client, base_channel):
-        res = cognite_client.alert_channels.create([base_channel(), base_channel()])
+        res = cognite_client.alerts.channels.create([base_channel(), base_channel()])
 
         assert len(res) == 2
 
     def test_list(self, cognite_client, disable_gzip):
-        res = cognite_client.alert_channels.list()
+        res = cognite_client.alerts.channels.list()
 
         assert len(res) > 0
 
 
 class TestAlertsIntegration:
     def test_create_1(self, cognite_client, base_alert, base_channel):
-        channel = cognite_client.alert_channels.create(base_channel())
+        channel = cognite_client.alerts.channels.create(base_channel())
 
         res = cognite_client.alerts.create(base_alert(channel.external_id))
 
         assert channel.external_id == res.channel_external_id
 
     def test_create_2(self, cognite_client, base_alert, base_channel):
-        channel = cognite_client.alert_channels.create(base_channel())
+        channel = cognite_client.alerts.channels.create(base_channel())
 
         res = cognite_client.alerts.create([base_alert(channel.external_id), base_alert(channel.external_id)])
 
@@ -115,25 +115,25 @@ class TestAlertsIntegration:
 
 class TestSubscribersIntegration:
     def test_create_1(self, cognite_client, base_subscriber):
-        res = cognite_client.alert_subscribers.create(base_subscriber())
+        res = cognite_client.alerts.subscribers.create(base_subscriber())
 
         assert ALERTS_INT_TEST_EMAIL == res.email
 
 
 class TestSubscriptionsIntegration:
     def test_create_1(self, cognite_client, base_subscription, base_subscriber):
-        subscriber = cognite_client.alert_subscribers.create(base_subscriber())
+        subscriber = cognite_client.alerts.subscribers.create(base_subscriber())
 
-        res = cognite_client.alert_subscriptions.create(base_subscription(subscriber.id))
+        res = cognite_client.alerts.subscriptions.create(base_subscription(subscriber.id))
 
         assert res.channel_id == 1
 
     def test_delete_by_subscriber_and_channel(self, cognite_client, base_subscription, base_subscriber):
-        subscriber = cognite_client.alert_subscribers.create(base_subscriber())
+        subscriber = cognite_client.alerts.subscribers.create(base_subscriber())
 
-        item = cognite_client.alert_subscriptions.create(base_subscription(subscriber.id))
+        item = cognite_client.alerts.subscriptions.create(base_subscription(subscriber.id))
 
         delete_item = AlertSubscriptionDelete(channel_id=item.channel_id, subscriber_id=item.subscriber_id)
-        res = cognite_client.alert_subscriptions.delete([delete_item])
+        res = cognite_client.alerts.subscriptions.delete([delete_item])
 
         assert res == None
