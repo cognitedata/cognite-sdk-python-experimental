@@ -7,6 +7,7 @@ class AlertChannel(CogniteResource):
     def __init__(
         self,
         external_id: str = None,
+        id: int = None,
         name: str = None,
         parent_id: int = None,
         parent_external_id: str = None,
@@ -15,6 +16,7 @@ class AlertChannel(CogniteResource):
         cognite_client: "CogniteClient" = None,
     ):
         self.external_id = external_id
+        self.id = id
         self.name = name
         self.parent_id = parent_id
         self.parent_external_id = parent_external_id
@@ -55,7 +57,7 @@ class Alert(CogniteResource):
         self,
         id: int = None,
         external_id: str = None,
-        timestamp: str = None,
+        timestamp: int = None,
         channel_id: int = None,
         channel_external_id: int = None,
         source: str = None,
@@ -98,8 +100,8 @@ class AlertFilter(CogniteFilter):
         channel_ids: List[int] = None,
         channel_external_ids: List[int] = None,
         closed: bool = None,
-        start_time: str = None,
-        end_time: str = None,
+        start_time: int = None,
+        end_time: int = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.ids = ids

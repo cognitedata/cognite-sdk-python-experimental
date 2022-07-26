@@ -15,8 +15,10 @@ from cognite.experimental.data_classes.alerts import (
     AlertSubscriptionDelete,
 )
 
-ALERTS_INT_TEST_EMAIL = f"ivan.polomanyi+{str(time())}@cognite.com"
-CURRENT_TS = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+CURRENT_TS = datetime.now(timezone.utc)
+CURRENT_TS_INT = int(CURRENT_TS.timestamp())
+CURRENT_TS_STR = CURRENT_TS.strftime("%Y-%m-%dT%H:%M:%S")
+ALERTS_INT_TEST_EMAIL = f"ivan.polomanyi+{CURRENT_TS_INT}@cognite.com"
 
 
 @fixture(scope="class")
@@ -28,9 +30,9 @@ def cognite_client() -> CogniteClient:
 def base_alert() -> Callable[..., Alert]:
     def create(channel_external_id: int) -> Alert:
         return Alert(
-            external_id="test_" + str(time()) + str(random.random()),
+            external_id="test_" + CURRENT_TS_STR + str(random.random()),
             channel_external_id=channel_external_id,
-            timestamp=CURRENT_TS,
+            timestamp=CURRENT_TS_INT,
             source="inttest",
             level="INFO",
             metadata={"test": "test"},
@@ -44,8 +46,8 @@ def base_alert() -> Callable[..., Alert]:
 def base_channel() -> Callable[..., AlertChannel]:
     def create() -> AlertChannel:
         return AlertChannel(
-            external_id="test_" + str(time()) + "_" + str(random.random()),
-            name="test_channel_" + CURRENT_TS,
+            external_id="test_" + CURRENT_TS_STR + "_" + str(random.random()),
+            name="test_channel_" + CURRENT_TS_STR,
             description="integration test channel",
             metadata={"test": "test"},
         )
@@ -57,7 +59,7 @@ def base_channel() -> Callable[..., AlertChannel]:
 def base_subscriber() -> Callable[..., AlertSubscriber]:
     def create() -> AlertSubscriber:
         return AlertSubscriber(
-            external_id="test_" + str(time()) + str(random.random()),
+            external_id="test_" + CURRENT_TS_STR + str(random.random()),
             metadata={"test": "test"},
             email=ALERTS_INT_TEST_EMAIL,
         )
@@ -67,10 +69,10 @@ def base_subscriber() -> Callable[..., AlertSubscriber]:
 
 @fixture(scope="class")
 def base_subscription() -> Callable[..., AlertSubscription]:
-    def create(subscriber_id: int) -> AlertSubscription:
+    def create(channel_id: int, subscriber_id: int) -> AlertSubscription:
         return AlertSubscription(
-            external_id="test_" + str(time()) + str(random.random()),
-            channel_id=1,
+            external_id="test_" + CURRENT_TS_STR + str(random.random()),
+            channel_id=channel_id,
             subscriber_id=subscriber_id,
             metadata={"test": "test"},
         )
@@ -155,17 +157,21 @@ class TestSubscribersIntegration:
     os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
 )
 class TestSubscriptionsIntegration:
-    def test_create_1(self, cognite_client, base_subscription, base_subscriber):
+    def test_create_1(self, cognite_client, base_subscription, base_subscriber, base_channel):
+        channel = cognite_client.alerts.channels.create(base_channel())
+
         subscriber = cognite_client.alerts.subscribers.create(base_subscriber())
 
-        res = cognite_client.alerts.subscriptions.create(base_subscription(subscriber.id))
+        res = cognite_client.alerts.subscriptions.create(base_subscription(channel.id, subscriber.id))
 
-        assert res.channel_id == 1
+        assert res.channel_id == channel.id
 
-    def test_delete_by_subscriber_and_channel(self, cognite_client, base_subscription, base_subscriber):
+    def test_delete_by_subscriber_and_channel(self, cognite_client, base_subscription, base_channel, base_subscriber):
+        channel = cognite_client.alerts.channels.create(base_channel())
+
         subscriber = cognite_client.alerts.subscribers.create(base_subscriber())
 
-        item = cognite_client.alerts.subscriptions.create(base_subscription(subscriber.id))
+        item = cognite_client.alerts.subscriptions.create(base_subscription(channel.id, subscriber.id))
 
         delete_item = AlertSubscriptionDelete(channel_id=item.channel_id, subscriber_id=item.subscriber_id)
         res = cognite_client.alerts.subscriptions.delete([delete_item])
