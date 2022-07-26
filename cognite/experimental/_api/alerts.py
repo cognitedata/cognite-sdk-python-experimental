@@ -68,6 +68,9 @@ class AlertsChannelsAPI(APIClient):
 
         return AlertChannelList([AlertChannel._load(model, cognite_client=self._cognite_client) for model in models])
 
+    def delete(self, ids: List[int] = None, external_ids: List[str] = None) -> None:
+        self._delete_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+
 
 class AlertSubscribersAPI(APIClient):
     _RESOURCE_PATH = "/alerts/subscribers"

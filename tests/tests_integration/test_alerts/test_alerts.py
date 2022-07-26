@@ -15,6 +15,7 @@ from cognite.experimental.data_classes.alerts import (
 )
 
 ALERTS_INT_TEST_EMAIL = f"ivan.polomanyi+{str(time())}@cognite.com"
+CURRENT_TS = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 
 @fixture(scope="class")
@@ -28,7 +29,7 @@ def base_alert() -> Callable[..., Alert]:
         return Alert(
             external_id="test_" + str(time()) + str(random.random()),
             channel_external_id=channel_external_id,
-            timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
+            timestamp=CURRENT_TS,
             source="inttest",
             level="INFO",
             metadata={"test": "test"},
@@ -43,7 +44,7 @@ def base_channel() -> Callable[..., AlertChannel]:
     def create() -> AlertChannel:
         return AlertChannel(
             external_id="test_" + str(time()) + "_" + str(random.random()),
-            name="test_channel_" + datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
+            name="test_channel_" + CURRENT_TS,
             description="integration test channel",
             metadata={"test": "test"},
         )
@@ -86,10 +87,19 @@ class TestAlertChannelsIntegration:
 
         assert len(res) == 2
 
-    def test_list(self, cognite_client, disable_gzip):
+    def test_list(self, cognite_client):
         res = cognite_client.alerts.channels.list()
 
         assert len(res) > 0
+
+    def test_delete(self, cognite_client, base_channel):
+        created = cognite_client.alerts.channels.create(base_channel())
+
+        cognite_client.alerts.channels.delete(external_ids=[created.external_id])
+
+        res = cognite_client.alerts.channels.list(external_ids=[created.external_id])
+
+        assert len(res) == 0
 
 
 class TestAlertsIntegration:
@@ -110,9 +120,13 @@ class TestAlertsIntegration:
     def test_close(self, cognite_client):
         alerts = cognite_client.alerts.list(closed=False)
 
-        res = cognite_client.alerts.close(ids=[alerts[0].id])
+        cognite_client.alerts.close(ids=[alerts[0].id])
 
-        assert res == None
+        check_closed = cognite_client.alerts.list(ids=[alerts[0].id])
+
+        assert check_closed[0].closed == True
+        assert len(check_closed) == 1
+        assert check_closed[0].id == alerts[0].id
 
     def test_list(self, cognite_client):
         res = cognite_client.alerts.list()
