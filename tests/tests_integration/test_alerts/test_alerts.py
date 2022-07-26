@@ -1,5 +1,5 @@
-import random
 import os
+import random
 from datetime import datetime, timezone
 from time import time
 from typing import Callable
@@ -78,7 +78,9 @@ def base_subscription() -> Callable[..., AlertSubscription]:
     return create
 
 
-@mark.skipif(os.environ.get('ENABLE_ALERTS_TESTS') == None, reason="Skipping alerts API tests due to service immaturity")
+@mark.skipif(
+    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
+)
 class TestAlertChannelsIntegration:
     def test_create_1(self, cognite_client, base_channel):
         res = cognite_client.alerts.channels.create(base_channel())
@@ -104,7 +106,9 @@ class TestAlertChannelsIntegration:
         assert len(res) == 0
 
 
-@mark.skipif(os.environ.get('ENABLE_ALERTS_TESTS') == None, reason="Skipping alerts API tests due to service immaturity")
+@mark.skipif(
+    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
+)
 class TestAlertsIntegration:
     def test_create_1(self, cognite_client, base_alert, base_channel):
         channel = cognite_client.alerts.channels.create(base_channel())
@@ -137,7 +141,9 @@ class TestAlertsIntegration:
         assert len(res) > 0
 
 
-@mark.skipif(os.environ.get('ENABLE_ALERTS_TESTS') == None, reason="Skipping alerts API tests due to service immaturity")
+@mark.skipif(
+    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
+)
 class TestSubscribersIntegration:
     def test_create_1(self, cognite_client, base_subscriber):
         res = cognite_client.alerts.subscribers.create(base_subscriber())
@@ -145,7 +151,9 @@ class TestSubscribersIntegration:
         assert ALERTS_INT_TEST_EMAIL == res.email
 
 
-@mark.skipif(os.environ.get('ENABLE_ALERTS_TESTS') == None, reason="Skipping alerts API tests due to service immaturity")
+@mark.skipif(
+    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
+)
 class TestSubscriptionsIntegration:
     def test_create_1(self, cognite_client, base_subscription, base_subscriber):
         subscriber = cognite_client.alerts.subscribers.create(base_subscriber())
