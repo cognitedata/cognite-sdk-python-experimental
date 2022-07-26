@@ -10,6 +10,7 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes.alerts import (
     Alert,
     AlertChannel,
+    AlertChannelUpdate,
     AlertSubscriber,
     AlertSubscription,
     AlertSubscriptionDelete,
@@ -97,6 +98,41 @@ class TestAlertChannelsIntegration:
         res = cognite_client.alerts.channels.list()
 
         assert len(res) > 0
+
+    def test_update_by_alert_channel(self, cognite_client, base_channel):
+        created = cognite_client.alerts.channels.create([base_channel()])[0]
+
+        created.description = "updated description"
+        created.external_id = f"{created.external_id}_updated_ext_id"
+        created.metadata = {"a": "b"}
+
+        cognite_client.alerts.channels.update([created])
+
+        updated = cognite_client.alerts.channels.list(ids=[created.id])
+
+        assert len(updated) == 1
+        assert updated[0].description == "updated description"
+        assert updated[0].metadata == {"a": "b"}
+        assert "updated_ext_id" in updated[0].external_id
+
+    def test_update_by_alert_channel_update(self, cognite_client, base_channel):
+        created = cognite_client.alerts.channels.create([base_channel()])[0]
+
+        update = (
+            AlertChannelUpdate(created.id)
+            .description.set("updated description")
+            .external_id.set(f"{created.external_id}_updated_ext_id")
+            .metadata.add({"a": "b"})
+        )
+
+        cognite_client.alerts.channels.update([update])
+
+        updated = cognite_client.alerts.channels.list(ids=[created.id])
+
+        assert len(updated) == 1
+        assert updated[0].description == "updated description"
+        assert updated[0].metadata == {"a": "b", "test": "test"}
+        assert "updated_ext_id" in updated[0].external_id
 
     def test_delete(self, cognite_client, base_channel):
         created = cognite_client.alerts.channels.create(base_channel())

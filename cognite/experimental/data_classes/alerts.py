@@ -1,6 +1,14 @@
 from typing import Any, Dict, List, Union, cast
 
-from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import (
+    CogniteFilter,
+    CogniteListUpdate,
+    CogniteObjectUpdate,
+    CognitePrimitiveUpdate,
+    CogniteResource,
+    CogniteResourceList,
+    CogniteUpdate,
+)
 
 
 class AlertChannel(CogniteResource):
@@ -22,14 +30,62 @@ class AlertChannel(CogniteResource):
         self.parent_external_id = parent_external_id
         self.description = description
         self.metadata = metadata
-        # self.id = id
         self._cognite_client = cast("CogniteClient", cognite_client)
+
+
+class AlertChannelUpdate(CogniteUpdate):
+    """Changes will be applied to alerting channel.
+
+    Args:
+        id (int): A server-generated ID for the object.
+        external_id (str): The external ID provided by the client. Must be unique for the resource type.
+    """
+
+    class _PrimitiveAlertChannelUpdate(CognitePrimitiveUpdate):
+        def set(self, value: Any) -> "AlertChannelUpdate":
+            return self._set(value)
+
+    class _ObjectAlertChannelUpdate(CogniteObjectUpdate):
+        def set(self, value: Dict) -> "AlertChannelUpdate":
+            return self._set(value)
+
+        def add(self, value: Dict) -> "AlertChannelUpdate":
+            return self._add(value)
+
+        def remove(self, value: List) -> "AlertChannelUpdate":
+            return self._remove(value)
+
+    class _ListAlertChannelUpdate(CogniteListUpdate):
+        def set(self, value: List) -> "AlertChannelUpdate":
+            return self._set(value)
+
+        def add(self, value: List) -> "AlertChannelUpdate":
+            return self._add(value)
+
+        def remove(self, value: List) -> "AlertChannelUpdate":
+            return self._remove(value)
+
+    @property
+    def external_id(self) -> "_PrimitiveAlertChannelUpdate":
+        return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "externalId")
+
+    @property
+    def source(self) -> "_PrimitiveAlertChannelUpdate":
+        return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "name")
+
+    @property
+    def description(self) -> "_PrimitiveAlertChannelUpdate":
+        return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "description")
+
+    @property
+    def metadata(self) -> "_ObjectAlertChannelUpdate":
+        return AlertChannelUpdate._ObjectAlertChannelUpdate(self, "metadata")
 
 
 class AlertChannelList(CogniteResourceList):
     _RESOURCE = AlertChannel
-    _UPDATE = None
-    _ASSERT_CLASSES = False
+    _UPDATE = AlertChannelUpdate
+    _ASSERT_CLASSES = True
 
 
 class AlertChannelFilter(CogniteFilter):

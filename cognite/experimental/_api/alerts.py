@@ -8,6 +8,7 @@ from cognite.experimental.data_classes.alerts import (
     AlertChannel,
     AlertChannelFilter,
     AlertChannelList,
+    AlertChannelUpdate,
     AlertFilter,
     AlertList,
     AlertSubscriber,
@@ -64,6 +65,18 @@ class AlertsChannelsAPI(APIClient):
 
         return self._list(
             method="POST", limit=limit, filter=filter, list_cls=AlertChannelList, resource_cls=AlertChannel
+        )
+
+    def update(
+        self, items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]
+    ) -> Union[AlertChannel, AlertChannelList]:
+        """Update alerting channels
+
+        Args:
+            items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]: items to be updated
+        """
+        return self._update_multiple(
+            items=items, list_cls=AlertChannelList, resource_cls=AlertChannel, update_cls=AlertChannelUpdate
         )
 
     def delete(self, ids: List[int] = None, external_ids: List[str] = None) -> None:
