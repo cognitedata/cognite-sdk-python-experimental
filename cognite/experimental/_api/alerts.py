@@ -62,11 +62,9 @@ class AlertsChannelsAPI(APIClient):
         ).dump(camel_case=True)
         filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
 
-        models = self._post(
-            self._RESOURCE_PATH + "/list", json={"filter": filter, "page": 1}, headers={"cdf-version": "alpha"}
-        ).json()["items"]
-
-        return AlertChannelList([AlertChannel._load(model, cognite_client=self._cognite_client) for model in models])
+        return self._list(
+            method="POST", limit=limit, filter=filter, list_cls=AlertChannelList, resource_cls=AlertChannel
+        )
 
     def delete(self, ids: List[int] = None, external_ids: List[str] = None) -> None:
         self._delete_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
@@ -169,11 +167,7 @@ class AlertsAPI(APIClient):
         ).dump(camel_case=True)
         filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
 
-        models = self._post(
-            self._RESOURCE_PATH + "/list", json={"filter": filter, "page": 1}, headers={"cdf-version": "alpha"}
-        ).json()["items"]
-
-        return AlertList([Alert._load(model, cognite_client=self._cognite_client) for model in models])
+        return self._list(method="POST", limit=limit, filter=filter, list_cls=AlertList, resource_cls=Alert)
 
     def close(
         self,
