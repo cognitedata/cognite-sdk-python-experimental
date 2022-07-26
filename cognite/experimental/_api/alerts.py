@@ -19,7 +19,7 @@ from cognite.experimental.data_classes.alerts import (
 )
 
 
-class AlertsChannelsAPI(APIClient):
+class AlertChannelsAPI(APIClient):
     _RESOURCE_PATH = "/alerts/channels"
     _LIST_CLASS = AlertChannelList
 
@@ -136,7 +136,7 @@ class AlertsAPI(APIClient):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.channels = AlertsChannelsAPI(*args, **kwargs)
+        self.channels = AlertChannelsAPI(*args, **kwargs)
         self.subscribers = AlertSubscribersAPI(*args, **kwargs)
         self.subscriptions = AlertSubscriptionsAPI(*args, **kwargs)
 

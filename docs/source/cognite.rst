@@ -17,6 +17,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
 * client.geospatial: `Geospatial`_
+* client.alerts: `Alerting`_
 
 CogniteClient
 -------------
@@ -442,3 +443,65 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.geospatial
     :members:
     :show-inheritance:
+
+Alerting
+--------
+
+Channels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+List channels
+~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.list
+
+Create channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.create
+
+Update channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.update
+
+Delete channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.delete
+
+Alerts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+List alerts
+~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.list
+
+Create alerts
+~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.create
+
+Close alerts
+~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.close
+
+Subscribers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create subscribers
+~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscribersAPI.create
+
+Subscriptions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create subscriptions
+~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscriptionsAPI.create
+
+Delete subscriptions
+~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscriptionsAPI.delete
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.alerts
+    :members:
+    :show-inheritance:
+
