@@ -449,6 +449,7 @@ Alerting
 
 Channels
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Channel is a bus to which Subscribers can make a Subscription and that Alerts can be sent to. Upon the receival of an Alert, a notification is sent on all registered providers of its Subscribers. A Channel can have a Parent, Alerts are propagated recursively from a Channel to its Parent and all of their Parents.
 
 List channels
 ~~~~~~~~~~~~~
@@ -468,6 +469,7 @@ Delete channels
 
 Alerts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+An Alert is an event detected by a monitoring system, raised to trigger a notification. The Alert is linked to a channel, and upon Alert creation, a Notification sent to all subscribers of the Channel and the Channels' parents
 
 List alerts
 ~~~~~~~~~~~
@@ -483,6 +485,7 @@ Close alerts
 
 Subscribers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subscribers are the people or groups thereof that should be notified when an Alert is fired. Subscribers can subscribe to multiple Channels
 
 Create subscribers
 ~~~~~~~~~~~~~~~~~~~~
@@ -490,6 +493,7 @@ Create subscribers
 
 Subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subscriptions link subscribers to channels, subscribing them to Alerts sent to the channel or channels that are children of that channel
 
 Create subscriptions
 ~~~~~~~~~~~~~~~~~~~~~

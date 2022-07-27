@@ -106,9 +106,11 @@ class TestAlertChannelsIntegration:
         created.external_id = f"{created.external_id}_updated_ext_id"
         created.metadata = {"a": "b"}
 
-        cognite_client.alerts.channels.update([created])
+        update_res = cognite_client.alerts.channels.update([created])
 
         updated = cognite_client.alerts.channels.list(ids=[created.id])
+
+        assert update_res == updated
 
         assert len(updated) == 1
         assert updated[0].description == "updated description"
@@ -125,9 +127,11 @@ class TestAlertChannelsIntegration:
             .metadata.add({"a": "b"})
         )
 
-        cognite_client.alerts.channels.update([update])
+        update_res = cognite_client.alerts.channels.update([update])
 
         updated = cognite_client.alerts.channels.list(ids=[created.id])
+
+        assert update_res == updated
 
         assert len(updated) == 1
         assert updated[0].description == "updated description"

@@ -28,11 +28,19 @@ class AlertChannelsAPI(APIClient):
 
     def create(
         self,
-        alert_channels: Union[AlertChannel, List[AlertChannel]],
+        channels: Union[AlertChannel, List[AlertChannel]],
     ) -> Union[AlertChannel, AlertChannelList]:
-        assert_type(alert_channels, "alert_channels", [AlertChannel, list])
+        """Create channels
+
+        Args:
+            channels (Union[AlertChannel, List[AlertChannel]]): channel(s) to create
+
+        Returns:
+            Union[AlertChannel, AlertChannelList]: created channel(s)
+        """
+        assert_type(channels, "alert_channels", [AlertChannel, list])
         return self._create_multiple(
-            items=alert_channels,
+            items=channels,
             resource_path=self._RESOURCE_PATH,
             list_cls=AlertChannelList,
             resource_cls=AlertChannel,
@@ -49,8 +57,10 @@ class AlertChannelsAPI(APIClient):
         """List alert channels
 
         Args:
-            ids: channel ids.
-
+            ids: channel ids
+            external_ids: channel external ids
+            parent_ids: channel parent ids
+            metadata: strict metadata filtering
 
         Returns:
             AlertChannelList: list of channels"""
@@ -73,8 +83,10 @@ class AlertChannelsAPI(APIClient):
         """Update alerting channels
 
         Args:
-            items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]: items to be updated
-        """
+            items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]: channel(s) to be updated
+
+        Returns:
+            Union[AlertChannel, AlertChannelList]: updated items"""
         return self._update_multiple(
             items=items, list_cls=AlertChannelList, resource_cls=AlertChannel, update_cls=AlertChannelUpdate
         )
@@ -90,13 +102,22 @@ class AlertSubscribersAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    """Create subscribers
+
+        Args:
+            subscribers (Union[AlertSubscriber, List[AlertSubscriber]]): subscriber(s) to create
+
+        Returns:
+            Union[AlertSubscriber, AlertSubscriberList]: created subscribers(s)
+        """
+
     def create(
         self,
-        alerts_subscribers: Union[AlertSubscriber, List[AlertSubscriber]],
+        subscribers: Union[AlertSubscriber, List[AlertSubscriber]],
     ) -> Union[AlertSubscriber, AlertSubscriberList]:
-        assert_type(alerts_subscribers, "alerts_subscribers", [AlertSubscriber, list])
+        assert_type(subscribers, "subscribers", [AlertSubscriber, list])
         return self._create_multiple(
-            items=alerts_subscribers,
+            items=subscribers,
             resource_path=self._RESOURCE_PATH,
             list_cls=AlertSubscriberList,
             resource_cls=AlertSubscriber,
@@ -110,17 +131,35 @@ class AlertSubscriptionsAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    """Create subscriptions
+
+        Args:
+            subscriptions (Union[AlertSubscriptions, List[AlertSubscriptions]]): subscription(s) to create
+
+        Returns:
+            Union[AlertSubscriptions, AlertSubscriptionsList]: created subscription(s)
+        """
+
     def create(
         self,
-        alerts_subscriptions: Union[AlertSubscription, List[AlertSubscriptionList]],
+        subscriptions: Union[AlertSubscription, List[AlertSubscriptionList]],
     ) -> Union[AlertSubscription, AlertSubscriptionList]:
-        assert_type(alerts_subscriptions, "alerts_subscriptions", [AlertSubscription, list])
+        assert_type(subscriptions, "subscriptions", [AlertSubscription, list])
         return self._create_multiple(
-            items=alerts_subscriptions,
+            items=subscriptions,
             resource_path=self._RESOURCE_PATH,
             list_cls=AlertSubscriptionList,
             resource_cls=AlertSubscription,
         )
+
+    """Delete subscriptions
+
+        Args:
+            ids: subscription ids to delete
+            external_ids: subscription external ids to delete
+
+        Returns:
+            None"""
 
     def delete(self, cmds: List[AlertSubscriptionDelete]) -> None:
         items_to_delete = [cmd.dump(camel_case=True) for cmd in cmds]
@@ -139,6 +178,15 @@ class AlertsAPI(APIClient):
         self.channels = AlertChannelsAPI(*args, **kwargs)
         self.subscribers = AlertSubscribersAPI(*args, **kwargs)
         self.subscriptions = AlertSubscriptionsAPI(*args, **kwargs)
+
+    """Create alerts
+
+        Args:
+            alerts (Union[Alert, List[Alert]]): alert(s) to create
+
+        Returns:
+            Union[Alert, AlertList]: created alert(s)
+        """
 
     def create(
         self,
@@ -163,7 +211,13 @@ class AlertsAPI(APIClient):
         """List alerts
 
         Args:
-            ids: alert ids to filter
+            ids: alert ids to filter on
+            external_ids: alert external_ids to filter on
+            channel_ids: alert channel_ids to filter on
+            channel_external_ids: alert channel_external_ids to filter on
+            closed: filter on whether alerts are closed or not
+            start_time: filter alerts based on timestamp
+            end_time: filter alerts based on timestamp
 
 
         Returns:
@@ -187,11 +241,11 @@ class AlertsAPI(APIClient):
         ids: List[int] = None,
         external_ids: List[str] = None,
     ) -> None:
-        """Close an alert
+        """Close alerts
 
         Args:
-            ids: alert ids to close
-            external_ids: alert external_ids to close
+            ids: alert(s) ids to close
+            external_ids: alert(s) external_ids to close
 
 
         Returns:

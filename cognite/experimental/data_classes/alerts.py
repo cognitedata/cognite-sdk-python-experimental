@@ -12,6 +12,8 @@ from cognite.client.data_classes._base import (
 
 
 class AlertChannel(CogniteResource):
+    """Alert channel"""
+
     def __init__(
         self,
         external_id: str = None,
@@ -89,9 +91,7 @@ class AlertChannelList(CogniteResourceList):
 
 
 class AlertChannelFilter(CogniteFilter):
-    """Filter on alert channels with strict matching.
-    Args:
-    """
+    """Filter on alert channels with strict matching."""
 
     def __init__(
         self,
@@ -109,6 +109,8 @@ class AlertChannelFilter(CogniteFilter):
 
 
 class Alert(CogniteResource):
+    """Alert"""
+
     def __init__(
         self,
         id: int = None,
@@ -145,9 +147,7 @@ class AlertList(CogniteResourceList):
 
 
 class AlertFilter(CogniteFilter):
-    """Filter on alerts with strict matching.
-    Args:
-    """
+    """Filter on alerts with strict matching."""
 
     def __init__(
         self,
@@ -171,6 +171,8 @@ class AlertFilter(CogniteFilter):
 
 
 class AlertSubscriber(CogniteResource):
+    """Alert subscriber"""
+
     def __init__(
         self,
         id: int = None,
@@ -213,6 +215,8 @@ class AlertSubscriptionDelete(CogniteResource):
 
 
 class AlertSubscription(CogniteResource):
+    """Alert subscription"""
+
     def __init__(
         self,
         id: int = None,
