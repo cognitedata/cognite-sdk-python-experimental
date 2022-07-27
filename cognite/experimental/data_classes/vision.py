@@ -306,11 +306,15 @@ class AnnotateJobResults(VisionJob):
         return AnnotatedItem._load(found[0], cognite_client=self._cognite_client)
 
     @property
-    def annotations(self) -> Optional[AnnotatedItemList]:
+    def items(self) -> Optional[AnnotatedItemList]:
         """returns a list of all results by file"""
-        if self._items is None and JobStatus(self.status) == JobStatus.COMPLETED:
+        if self.status == JobStatus.COMPLETED.value:
             self._items = AnnotatedItemList._load(self.result["items"], cognite_client=self._cognite_client)
         return self._items
+
+    @items.setter
+    def items(self, items: List[Union[List[AnnotatedItem], AnnotatedItemList]]) -> None:
+        self._items = items
 
     @property
     def errors(self) -> List[str]:
