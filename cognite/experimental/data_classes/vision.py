@@ -1,10 +1,13 @@
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from enum import Enum
+from typing import Any, Dict, List, Optional, Union, cast
 
-from cognite.client.data_classes._base import CogniteResource
+from cognite.client.data_classes import ContextualizationJob
+from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 from cognite.client.data_classes.contextualization import JobStatus
 
+from cognite.experimental.data_classes import ContextualizationJobType
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
 ExternalId = str
@@ -21,12 +24,36 @@ class InternalFileId:
     file_id: InternalId
 
 
+class Feature(str, Enum):
+    TEXT_DETECTION = "TextDetection"
+    ASSET_TAG_DETECTION = "AssetTagDetection"
+    INDUSTRIAL_OBJECT_DETECTION = "IndustrialObjectDetection"
+    PEOPLE_DETECTION = "PeopleDetection"
+    PPE_DETECTION = "PersonalProtectiveEquipmentDetection"
+
+
 EitherFileId = Union[InternalFileId, ExternalFileId]
 
 
 @dataclass
 class AllOfFileId(InternalFileId):
     file_external_id: Optional[ExternalId] = None
+
+
+class VisionJob(ContextualizationJob):
+    def update_status(self) -> str:
+        # Handle the vision-specific edge case where we also record failed items per batch
+        data = (
+            self._cognite_client.__getattribute__(self._JOB_TYPE.value)._get(f"{self._status_path}{self.job_id}").json()
+        )
+        self.status = data["status"]
+        self.status_time = data.get("statusTime")
+        self.start_time = data.get("startTime")
+        self.created_time = self.created_time or data.get("createdTime")
+        self.error_message = data.get("errorMessage") or data.get("failedItems")
+        self._result = {k: v for k, v in data.items() if k not in self._COMMON_FIELDS}
+        assert self.status is not None
+        return self.status
 
 
 class CreatedDetectAssetsInFilesJob(CogniteResource):
@@ -235,3 +262,57 @@ class DetectAssetsInFilesJob(CogniteResource):
                 instance.items = [SuccessfulAssetDetectionInFiles._load(v) for v in successful_items]
             return instance
         raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
+
+
+class AnnotatedItem(CogniteResource):
+    def __init__(
+        self,
+        file_id: int = None,
+        annotations: Dict[str, Any] = None,
+        file_external_id: str = None,
+        error_message: str = None,
+        cognite_client: "CogniteClient" = None,
+    ) -> None:
+        self.file_id = file_id
+        self.file_external_id = file_external_id
+        self.annotations = annotations
+        self.error_message = error_message
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+
+class AnnotatedItemList(CogniteResourceList):
+    _RESOURCE = AnnotatedItem
+    _UPDATE = AnnotatedItem
+
+
+class AnnotateJobResults(VisionJob):
+    _JOB_TYPE = ContextualizationJobType.VISION
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._items: Optional[List[AnnotatedItemList]] = None
+
+    def __getitem__(self, find_id: EitherFileId) -> AnnotatedItem:
+        """retrieves the results for the file with (external) id"""
+        found = [
+            item
+            for item in self.result["items"]
+            if item.get("fileId") == find_id or item.get("fileExternalId") == find_id
+        ]
+        if not found:
+            raise IndexError(f"File with (external) id {find_id} not found in results")
+        if len(found) != 1:
+            raise IndexError(f"Found multiple results for file with (external) id {find_id}, use .items instead")
+        return AnnotatedItem._load(found[0], cognite_client=self._cognite_client)
+
+    @property
+    def annotations(self) -> Optional[AnnotatedItemList]:
+        """returns a list of all results by file"""
+        if self._items is None and JobStatus(self.status) == JobStatus.COMPLETED:
+            self._items = AnnotatedItemList._load(self.result["items"], cognite_client=self._cognite_client)
+        return self._items
+
+    @property
+    def errors(self) -> List[str]:
+        """returns a list of all error messages across files"""
+        return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]

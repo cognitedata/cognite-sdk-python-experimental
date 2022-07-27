@@ -1,4 +1,5 @@
-from typing import Any, Dict
+import numbers
+from typing import Any, Dict, List, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import ContextualizationJob
@@ -27,6 +28,29 @@ class ContextAPI(APIClient):
             params={to_camel_case(k): v for k, v in (params or {}).items() if v is not None},
             headers=headers,
         )
+
+    @staticmethod
+    def _process_file_ids(ids: Union[List[int], int, None], external_ids: Union[List[str], str, None]) -> List:
+        if external_ids is None and ids is None:
+            raise ValueError("No ids specified")
+
+        if isinstance(ids, numbers.Integral):
+            ids = [ids]
+        elif isinstance(ids, list) or ids is None:
+            ids = ids or []
+        else:
+            raise TypeError("ids must be int or list of int")
+
+        if isinstance(external_ids, str):
+            external_ids = [external_ids]
+        elif isinstance(external_ids, list) or external_ids is None:
+            external_ids = external_ids or []
+        else:
+            raise TypeError("external_ids must be str or list of str")
+
+        id_objs = [{"fileId": id} for id in ids]
+        external_id_objs = [{"fileExternalId": external_id} for external_id in external_ids]
+        return [*id_objs, *external_id_objs]
 
     def _run_job(self, job_path, status_path=None, headers=None, job_cls=None, **kwargs) -> ContextualizationJob:
         job_cls = job_cls or ContextualizationJob
