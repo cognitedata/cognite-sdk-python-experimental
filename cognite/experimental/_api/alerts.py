@@ -1,7 +1,7 @@
 from typing import Dict, List, Union
 
 from cognite.client._api_client import APIClient
-from cognite.client.utils._auxiliary import assert_type, to_camel_case
+from cognite.client.utils._auxiliary import assert_type
 
 from cognite.experimental.data_classes.alerts import (
     Alert,
@@ -71,7 +71,6 @@ class AlertChannelsAPI(APIClient):
             parent_ids=parent_ids,
             metadata=metadata,
         ).dump(camel_case=True)
-        filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
 
         return self._list(
             method="POST", limit=limit, filter=filter, list_cls=AlertChannelList, resource_cls=AlertChannel
@@ -232,7 +231,6 @@ class AlertsAPI(APIClient):
             start_time=start_time,
             end_time=end_time,
         ).dump(camel_case=True)
-        filter = {to_camel_case(k): v for k, v in (filter or {}).items() if v is not None}
 
         return self._list(method="POST", limit=limit, filter=filter, list_cls=AlertList, resource_cls=Alert)
 
