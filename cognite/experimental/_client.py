@@ -13,7 +13,6 @@ from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
@@ -99,7 +98,6 @@ class CogniteClient(Client):
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
         self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
-        self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(

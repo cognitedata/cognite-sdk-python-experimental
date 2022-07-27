@@ -310,13 +310,6 @@ Contextualization Data Classes
     :show-inheritance:
     :inherited-members:
 
-Plot Data Extraction
---------------------
-
-Extract curve data
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.plot_extraction.PlotDataExtractionAPI.extract
-
 Functions
 ---------
 
