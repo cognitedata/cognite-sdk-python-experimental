@@ -38,12 +38,10 @@ class AlertChannelsAPI(APIClient):
         Returns:
             Union[AlertChannel, AlertChannelList]: created channel(s)
         """
-        assert_type(channels, "alert_channels", [AlertChannel, list])
+        assert_type(channels, "channels", [AlertChannel, list])
         return self._create_multiple(
             items=channels,
             resource_path=self._RESOURCE_PATH,
-            list_cls=AlertChannelList,
-            resource_cls=AlertChannel,
         )
 
     def list(
@@ -72,9 +70,7 @@ class AlertChannelsAPI(APIClient):
             metadata=metadata,
         ).dump(camel_case=True)
 
-        return self._list(
-            method="POST", limit=limit, filter=filter, list_cls=AlertChannelList, resource_cls=AlertChannel
-        )
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def update(
         self, items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]
@@ -86,9 +82,7 @@ class AlertChannelsAPI(APIClient):
 
         Returns:
             Union[AlertChannel, AlertChannelList]: updated items"""
-        return self._update_multiple(
-            items=items, list_cls=AlertChannelList, resource_cls=AlertChannel, update_cls=AlertChannelUpdate
-        )
+        return self._update_multiple(items=items)
 
     def delete(self, ids: List[int] = None, external_ids: List[str] = None) -> None:
         self._delete_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
@@ -118,8 +112,6 @@ class AlertSubscribersAPI(APIClient):
         return self._create_multiple(
             items=subscribers,
             resource_path=self._RESOURCE_PATH,
-            list_cls=AlertSubscriberList,
-            resource_cls=AlertSubscriber,
         )
 
 
@@ -147,8 +139,6 @@ class AlertSubscriptionsAPI(APIClient):
         return self._create_multiple(
             items=subscriptions,
             resource_path=self._RESOURCE_PATH,
-            list_cls=AlertSubscriptionList,
-            resource_cls=AlertSubscription,
         )
 
     """Delete subscriptions
@@ -192,9 +182,7 @@ class AlertsAPI(APIClient):
         alerts: Union[Alert, List[Alert]],
     ) -> Union[Alert, AlertList]:
         assert_type(alerts, "alerts", [Alert, list])
-        return self._create_multiple(
-            items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
-        )
+        return self._create_multiple(items=alerts, resource_path=self._RESOURCE_PATH)
 
     def list(
         self,
@@ -232,7 +220,7 @@ class AlertsAPI(APIClient):
             end_time=end_time,
         ).dump(camel_case=True)
 
-        return self._list(method="POST", limit=limit, filter=filter, list_cls=AlertList, resource_cls=Alert)
+        return self._list(method="POST", limit=limit, filter=filter)
 
     def close(
         self,

@@ -72,7 +72,7 @@ class AlertChannelUpdate(CogniteUpdate):
         return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "externalId")
 
     @property
-    def source(self) -> "_PrimitiveAlertChannelUpdate":
+    def name(self) -> "_PrimitiveAlertChannelUpdate":
         return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "name")
 
     @property
