@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.87.0]
+
+### Removed
+- Removed plot extractor as it is not in use anymore.
+
 ## [0.86.0]
 
 ### Added
