@@ -1,12 +1,13 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type, Union, cast, get_args, get_type_hints
+from typing import Any, Dict, List, Optional, Type, Union, cast, get_type_hints
 
 from cognite.client import utils
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 from cognite.client.data_classes.contextualization import JobStatus
+from typing_extensions import get_args
 
 from cognite.experimental.data_classes import ContextualizationJobType
 from cognite.experimental.data_classes.annotation_types.images import AssetLink, ObjectDetection, TextRegion
