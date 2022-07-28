@@ -36,6 +36,7 @@ from cognite.experimental.data_classes import (
     FunctionSchedulesList,
     FunctionsLimits,
 )
+from cognite.experimental.data_classes.functions import FunctionsStatus
 
 
 class FunctionsAPI(APIClient):
@@ -472,6 +473,40 @@ class FunctionsAPI(APIClient):
                 + ", ".join(given_source_code_options)
                 + " were given."
             )
+
+    def activate(self):
+        """`Activate functions for the Project. <https://docs.cognite.com/api/playground/#tag/Functions/operation/postFunctionsStatus>`_.
+
+        Returns:
+            FunctionsStatus: A function activation status.
+
+        Examples:
+
+            Call activate::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> status = c.functions.activate()
+        """
+        res = self._post("/functions/status")
+        return FunctionsStatus._load(res.json())
+
+    def status(self):
+        """`Functions activation status for the Project. <https://docs.cognite.com/api/playground/#tag/Functions/operation/getFunctionsStatus>`_.
+
+        Returns:
+            FunctionsStatus: A function activation status.
+
+        Examples:
+
+            Call status::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> status = c.functions.status()
+        """
+        res = self._get("/functions/status")
+        return FunctionsStatus._load(res.json())
 
 
 def _use_client_credentials(cognite_client: CogniteClient, client_credentials: Optional[Dict] = None) -> str:

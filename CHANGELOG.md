@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.89.0]
+
+### Added
+- added status endpoint calls to functions sdk
+
 ## [0.88.0]
 
 ### Added
@@ -21,7 +26,6 @@ Changes are grouped as follows
 
 ### Removed
 - Removed plot extractor as it is not in use anymore.
-
 
 ## [0.86.0]
 
