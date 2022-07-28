@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.91.0]
+
+### Added
+- Add annotate method for the Vision API
+
 ## [0.90.0]
 
 ### Added
