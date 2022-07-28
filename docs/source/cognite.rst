@@ -17,6 +17,7 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
 * client.geospatial: `Geospatial`_
+* client.alerts: `Alerting`_
 
 CogniteClient
 -------------
@@ -309,13 +310,6 @@ Contextualization Data Classes
     :show-inheritance:
     :inherited-members:
 
-Plot Data Extraction
---------------------
-
-Extract curve data
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.plot_extraction.PlotDataExtractionAPI.extract
-
 Functions
 ---------
 
@@ -442,3 +436,69 @@ Data classes
 .. automodule:: cognite.experimental.data_classes.geospatial
     :members:
     :show-inheritance:
+
+Alerting
+--------
+
+Channels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Channel is a bus to which Subscribers can make a Subscription and that Alerts can be sent to. Upon the receival of an Alert, a notification is sent on all registered providers of its Subscribers. A Channel can have a Parent, Alerts are propagated recursively from a Channel to its Parent and all of their Parents.
+
+List channels
+~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.list
+
+Create channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.create
+
+Update channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.update
+
+Delete channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.delete
+
+Alerts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+An Alert is an event detected by a monitoring system, raised to trigger a notification. The Alert is linked to a channel, and upon Alert creation, a Notification sent to all subscribers of the Channel and the Channels' parents
+
+List alerts
+~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.list
+
+Create alerts
+~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.create
+
+Close alerts
+~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.close
+
+Subscribers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subscribers are the people or groups thereof that should be notified when an Alert is fired. Subscribers can subscribe to multiple Channels
+
+Create subscribers
+~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscribersAPI.create
+
+Subscriptions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subscriptions link subscribers to channels, subscribing them to Alerts sent to the channel or channels that are children of that channel
+
+Create subscriptions
+~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscriptionsAPI.create
+
+Delete subscriptions
+~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscriptionsAPI.delete
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.alerts
+    :members:
+    :show-inheritance:
+

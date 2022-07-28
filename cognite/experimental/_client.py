@@ -4,6 +4,7 @@ from typing import Callable, Dict, List, Optional, Union
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 
+from cognite.experimental._api.alerts import AlertsAPI
 from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
@@ -12,7 +13,6 @@ from cognite.experimental._api.functions import FunctionsAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
@@ -89,6 +89,7 @@ class CogniteClient(Client):
             **kwargs,
         )
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
+        self.alerts = AlertsAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
@@ -97,7 +98,6 @@ class CogniteClient(Client):
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
         self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
-        self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.functions = FunctionsAPI(self.config, api_version="playground", cognite_client=self)
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
