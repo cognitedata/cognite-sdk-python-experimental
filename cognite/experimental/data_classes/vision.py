@@ -1,15 +1,18 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Type, Union, cast, get_args, get_type_hints
 
+from cognite.client import utils
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental.data_classes import ContextualizationJobType
+from cognite.experimental.data_classes.annotation_types.images import AssetLink, ObjectDetection, TextRegion
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
+FeatureClass = Union[Type[TextRegion], Type[AssetLink], Type[ObjectDetection]]
 ExternalId = str
 InternalId = int
 
@@ -31,6 +34,28 @@ class Feature(str, Enum):
     PEOPLE_DETECTION = "PeopleDetection"
     PPE_DETECTION = "PersonalProtectiveEquipmentDetection"
 
+
+@dataclass
+class AnnotatedObject:
+    text_annotations: Optional[List[TextRegion]] = None
+    asset_tag_annotations: Optional[List[AssetLink]] = None
+    industrial_object_annotations: Optional[List[ObjectDetection]] = None
+    people_annotations: Optional[List[ObjectDetection]] = None
+    personal_protective_equipment_annotations: Optional[List[ObjectDetection]] = None
+
+    @staticmethod
+    def _get_feature_class(type_hint: Type[Optional[List[FeatureClass]]]) -> FeatureClass:
+        # Unwrap the first level of type hints (i.e., the Optional[...])
+        list_type_hint, _ = get_args(type_hint)
+        # Unwrap the second level of type hint (i.e., the List[...])
+        (class_type,) = get_args(list_type_hint)
+        return class_type
+
+
+# Auto-generate the annotation-to-dataclass mapping based on the type hints of AnnotatedObject
+VISION_FEATURE_MAP: Dict[str, FeatureClass] = {
+    key: AnnotatedObject._get_feature_class(value) for key, value in get_type_hints(AnnotatedObject).items()
+}
 
 EitherFileId = Union[InternalFileId, ExternalFileId]
 
@@ -268,16 +293,33 @@ class AnnotatedItem(CogniteResource):
     def __init__(
         self,
         file_id: int = None,
-        annotations: Dict[str, Any] = None,
+        annotations: Union[AnnotatedObject, Dict[str, Any]] = None,
         file_external_id: str = None,
         error_message: str = None,
         cognite_client: "CogniteClient" = None,
     ) -> None:
         self.file_id = file_id
         self.file_external_id = file_external_id
-        self.annotations = annotations
         self.error_message = error_message
+        self.annotations = self._process_annotations_dict(annotations) if isinstance(annotations, Dict) else annotations
         self._cognite_client = cast("CogniteClient", cognite_client)
+
+    @classmethod
+    def _load(cls: "AnnotatedItem", resource: Union[Dict, str], cognite_client: "CogniteClient" = None):
+        annotated_item = super(AnnotatedItem, cls)._load(resource, cognite_client=cognite_client)
+        if annotated_item.annotations is not None:
+            annotated_item.annotations = cls._process_annotations_dict(annotated_item.annotations)
+        return annotated_item
+
+    @staticmethod
+    def _process_annotations_dict(annotations_dict: Dict[str, Any]) -> AnnotatedObject:
+        annotated_object = AnnotatedObject()
+        snake_case_annotations_dict = resource_to_snake_case(annotations_dict)
+        for key, value in snake_case_annotations_dict.items():
+            if hasattr(annotated_object, key):
+                feature_class = VISION_FEATURE_MAP[key]
+                setattr(annotated_object, key, [feature_class(**v) for v in value])
+        return annotated_object
 
 
 class AnnotatedItemList(CogniteResourceList):
