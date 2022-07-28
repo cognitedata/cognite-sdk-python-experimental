@@ -77,6 +77,15 @@ class VisionAPI(ContextAPI):
         file_ids: Optional[List[int]] = None,
         file_external_ids: Optional[List[str]] = None,
     ) -> AnnotateJobResults:
+        """Annotate image files with a provided set of feature(s).
+
+        Args:
+            features (Union[Feature, List[Feature]]): The feature(s) to extract from the provided image files.
+            file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same tenant.
+            file_external_ids (List[str]): The external file ids of the image files to annotate
+        Returns:
+            AnnotateJobResults: job information with a list of succeeded and failed asset detection for files
+        """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)
         if isinstance(features, Feature):

@@ -67,7 +67,8 @@ class AllOfFileId(InternalFileId):
 
 class VisionJob(ContextualizationJob):
     def update_status(self) -> str:
-        # Handle the vision-specific edge case where we also record failed items per batch
+        # Override update_status since we need to handle the vision-specific
+        # edge case where we also record failed items per batch
         data = (
             self._cognite_client.__getattribute__(self._JOB_TYPE.value)._get(f"{self._status_path}{self.job_id}").json()
         )
@@ -298,6 +299,7 @@ class AnnotatedItem(CogniteResource):
         error_message: str = None,
         cognite_client: "CogniteClient" = None,
     ) -> None:
+        """Data class for storing a single annotated item"""
         self.file_id = file_id
         self.file_external_id = file_external_id
         self.error_message = error_message
@@ -306,6 +308,7 @@ class AnnotatedItem(CogniteResource):
 
     @classmethod
     def _load(cls: "AnnotatedItem", resource: Union[Dict, str], cognite_client: "CogniteClient" = None):
+        """Override CogniteResource._load so that we can convert the dicts returned by the API to data classes"""
         annotated_item = super(AnnotatedItem, cls)._load(resource, cognite_client=cognite_client)
         if annotated_item.annotations is not None:
             annotated_item.annotations = cls._process_annotations_dict(annotated_item.annotations)
@@ -313,6 +316,7 @@ class AnnotatedItem(CogniteResource):
 
     @staticmethod
     def _process_annotations_dict(annotations_dict: Dict[str, Any]) -> AnnotatedObject:
+        """Converts a (validated) annotations dict to a corresponding AnnotatedObject"""
         annotated_object = AnnotatedObject()
         snake_case_annotations_dict = resource_to_snake_case(annotations_dict)
         for key, value in snake_case_annotations_dict.items():
@@ -335,7 +339,7 @@ class AnnotateJobResults(VisionJob):
         self._items: Optional[List[AnnotatedItemList]] = None
 
     def __getitem__(self, find_id: EitherFileId) -> AnnotatedItem:
-        """retrieves the results for the file with (external) id"""
+        """Retrieves the results for a file by (external) id"""
         found = [
             item
             for item in self.result["items"]
@@ -349,7 +353,7 @@ class AnnotateJobResults(VisionJob):
 
     @property
     def items(self) -> Optional[AnnotatedItemList]:
-        """returns a list of all results by file"""
+        """Returns a list of all annotate results by file"""
         if self.status == JobStatus.COMPLETED.value:
             self._items = AnnotatedItemList._load(self.result["items"], cognite_client=self._cognite_client)
         return self._items
@@ -360,5 +364,5 @@ class AnnotateJobResults(VisionJob):
 
     @property
     def errors(self) -> List[str]:
-        """returns a list of all error messages across files"""
+        """Returns a list of all error messages across files"""
         return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]
