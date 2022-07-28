@@ -84,7 +84,7 @@ class VisionAPI(ContextAPI):
             file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same tenant.
             file_external_ids (List[str]): The external file ids of the image files to annotate
         Returns:
-            AnnotateJobResults: job information with a list of succeeded and failed asset detection for files
+            AnnotateJobResults: Job result object which can be used to wait for and retrieve the annotation results.
         """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)
