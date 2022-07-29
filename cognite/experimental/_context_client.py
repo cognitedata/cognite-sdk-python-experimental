@@ -31,6 +31,11 @@ class ContextAPI(APIClient):
 
     @staticmethod
     def _process_file_ids(ids: Union[List[int], int, None], external_ids: Union[List[str], str, None]) -> List:
+        """
+        Utility for sanitizing a given lists of ids and external ids.
+        Returns the concatenation of the ids an external ids in the format
+        expected by the Context API.
+        """
         if external_ids is None and ids is None:
             raise ValueError("No ids specified")
 
