@@ -68,7 +68,7 @@ def mock_post_annotate(rsps: RequestsMock, mock_post_response_body: Dict[str, An
 def mock_get_annotate(rsps: RequestsMock, mock_get_response_body_ok: Dict[str, Any]) -> RequestsMock:
     rsps.add(
         rsps.GET,
-        re.compile(".*?/context/vision/annotate"),
+        re.compile(".*?/context/vision/annotate/\\d+"),
         status=200,
         json=mock_get_response_body_ok,
     )
