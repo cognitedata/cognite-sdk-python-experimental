@@ -107,7 +107,7 @@ class TestAnnotate:
             expected_job_id = 1
             job.wait_for_completion(interval=0)
             assert "items" in job.result
-            assert "Completed" == job.status
+            assert JobStatus.COMPLETED == JobStatus(job.status)
             assert expected_job_id == job.job_id
 
             num_post_requests, num_get_requests = 0, 0
