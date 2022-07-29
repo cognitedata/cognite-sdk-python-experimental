@@ -339,17 +339,11 @@ class AnnotateJobResults(VisionJob):
         super().__init__(*args, **kwargs)
         self._items: Optional[List[AnnotatedItemList]] = None
 
-    def __getitem__(self, find_id: EitherFileId) -> AnnotatedItem:
+    def __getitem__(self, file_id: InternalId) -> AnnotatedItem:
         """Retrieves the results for a file by (external) id"""
-        found = [
-            item
-            for item in self.result["items"]
-            if item.get("fileId") == find_id or item.get("fileExternalId") == find_id
-        ]
+        found = [item for item in self.result["items"] if item.get("fileId") == file_id]
         if not found:
-            raise IndexError(f"File with (external) id {find_id} not found in results")
-        if len(found) != 1:
-            raise IndexError(f"Found multiple results for file with (external) id {find_id}, use .items instead")
+            raise IndexError(f"File with id {file_id} not found in results")
         return AnnotatedItem._load(found[0], cognite_client=self._cognite_client)
 
     @property

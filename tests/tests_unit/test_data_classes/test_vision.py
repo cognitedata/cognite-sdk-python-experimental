@@ -85,18 +85,17 @@ class TestAnnotateJobResults:
 
     @patch("cognite.experimental.data_classes.vision.ContextualizationJob.result", new_callable=PropertyMock)
     @pytest.mark.parametrize(
-        "find_id, expected_item, error_message",
+        "file_id, expected_item, error_message",
         [
             (1, AnnotatedItem(file_id=1, file_external_id="foo", annotations=mock_annotations_dict), None),
             (1337, None, "File with \\(external\\) id 1337 not found in results"),
-            ("foo", None, f"Found multiple results for file with \\(external\\) id foo, use .items instead"),
         ],
-        ids=["valid_unique_id", "non_existing_id", "multiple_results"],
+        ids=["valid_unique_id", "non_existing_id"],
     )
     def test_get_item(
         self,
         mock_result: MagicMock,
-        find_id: Union[int, str],
+        file_id: int,
         expected_item: Optional[AnnotatedItem],
         error_message: Optional[str],
     ) -> None:
@@ -114,6 +113,6 @@ class TestAnnotateJobResults:
         job = AnnotateJobResults(cognite_client=cognite_client)
         if error_message is not None:
             with pytest.raises(IndexError, match=error_message):
-                job.__getitem__(find_id)
+                job[file_id]
         else:
-            assert job.__getitem__(find_id) == expected_item
+            assert job[file_id] == expected_item
