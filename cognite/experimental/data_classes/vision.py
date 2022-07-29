@@ -33,7 +33,7 @@ class Feature(str, Enum):
     ASSET_TAG_DETECTION = "AssetTagDetection"
     INDUSTRIAL_OBJECT_DETECTION = "IndustrialObjectDetection"
     PEOPLE_DETECTION = "PeopleDetection"
-    PPE_DETECTION = "PersonalProtectiveEquipmentDetection"
+    PERSONAL_PROTECTIVE_EQUIPMENT_DETECTION = "PersonalProtectiveEquipmentDetection"
 
 
 @dataclass

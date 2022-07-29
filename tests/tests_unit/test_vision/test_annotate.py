@@ -82,7 +82,7 @@ class TestAnnotate:
             ("foo", "features must be one of types \\[<enum 'Feature'>, <class 'list'>\\]"),
             (None, "features cannot be None"),
             (Feature.TEXT_DETECTION, None),
-            ([Feature.TEXT_DETECTION, Feature.PPE_DETECTION], None),
+            ([Feature.TEXT_DETECTION, Feature.PERSONAL_PROTECTIVE_EQUIPMENT_DETECTION], None),
         ],
         ids=["invalid_feature", "invalid_feature_None_value", "one_feature", "multiple_features"],
     )
