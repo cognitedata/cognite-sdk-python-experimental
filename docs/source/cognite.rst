@@ -381,8 +381,7 @@ Vision
 --------
 
 The Vision API enable extraction of information from imagery data based on
-their visual content. For example, you can detect external ID or name of
-assets, detect humans and industry related objects and so on.
+their visual content. For example, you can can extract features such as text, asset tags or industrial objects from images using this service.
 
 Annotate
 ^^^^^^^^^^^^^

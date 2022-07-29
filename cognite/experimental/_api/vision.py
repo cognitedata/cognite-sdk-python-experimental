@@ -81,10 +81,10 @@ class VisionAPI(ContextAPI):
 
         Args:
             features (Union[Feature, List[Feature]]): The feature(s) to extract from the provided image files.
-            file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same tenant.
+            file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same CDF project.
             file_external_ids (List[str]): The external file ids of the image files to annotate
         Returns:
-            AnnotateJobResults: Job result object which can be used to wait for and retrieve the annotation results.
+            AnnotateJobResults: Resulting queued job, which can be used to retrieve the status of the job or the annotation results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
         """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)
