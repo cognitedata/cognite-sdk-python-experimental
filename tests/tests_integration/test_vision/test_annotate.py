@@ -25,8 +25,8 @@ def file_id(cognite_client: CogniteClient) -> int:
     cognite_client.files.delete(id=file.id)
 
 
-class TestAssetDetection:
-    def test_asset_detection(self, file_id: int) -> None:
+class TestAnnotate:
+    def test_annotate(self, file_id: int) -> None:
         job = VAPI.annotate(features=Feature.PEOPLE_DETECTION, file_ids=[file_id])
         assert isinstance(job, AnnotateJobResults)
         assert job.job_id > 0
