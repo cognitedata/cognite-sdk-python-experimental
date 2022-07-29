@@ -296,7 +296,7 @@ class AnnotatedItem(CogniteResource):
     def __init__(
         self,
         file_id: int = None,
-        annotations: Union[AnnotatedObject, Dict[str, Any]] = None,
+        annotations: Dict[str, Any] = None,
         file_external_id: str = None,
         error_message: str = None,
         cognite_client: "CogniteClient" = None,
@@ -306,6 +306,8 @@ class AnnotatedItem(CogniteResource):
         self.file_external_id = file_external_id
         self.error_message = error_message
         self.annotations = self._process_annotations_dict(annotations) if isinstance(annotations, Dict) else annotations
+
+        self._annotations_dict = annotations  # The "raw" annotations dict returned by the endpoint
         self._cognite_client = cast("CogniteClient", cognite_client)
 
     @classmethod
@@ -313,8 +315,18 @@ class AnnotatedItem(CogniteResource):
         """Override CogniteResource._load so that we can convert the dicts returned by the API to data classes"""
         annotated_item = super(AnnotatedItem, cls)._load(resource, cognite_client=cognite_client)
         if annotated_item.annotations is not None:
-            annotated_item.annotations = cls._process_annotations_dict(annotated_item.annotations)
+            annotated_item._annotations_dict = annotated_item.annotations
+            annotated_item.annotations = cls._process_annotations_dict(annotated_item._annotations_dict)
         return annotated_item
+
+    def dump(self, camel_case: bool = False) -> Dict[str, Any]:
+        item_dump = super().dump(camel_case=camel_case)
+        # Replace the loaded AnnotationObject with its corresponding dict representation
+        if "annotations" in item_dump and isinstance(self._annotations_dict, Dict):
+            item_dump["annotations"] = (
+                self._annotations_dict if camel_case else resource_to_snake_case(self._annotations_dict)
+            )
+        return item_dump
 
     @staticmethod
     def _process_annotations_dict(annotations_dict: Dict[str, Any]) -> AnnotatedObject:

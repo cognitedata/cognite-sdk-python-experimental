@@ -11,6 +11,7 @@ from cognite.experimental.data_classes import Annotation, AnnotationFilter, Anno
 from cognite.experimental.data_classes.annotation_types.images import TextRegion
 from cognite.experimental.data_classes.annotation_types.primitives import BoundingBox
 from cognite.experimental.data_classes.vision import AnnotatedItem, AnnotatedObject, AnnotateJobResults
+from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
 mock_annotations_dict: Dict[str, Any] = {
     "textAnnotations": [
@@ -55,7 +56,7 @@ class TestAnnotatedItem:
             ),
             (
                 {"fileId": 1, "annotations": mock_annotations_dict},
-                AnnotatedItem(file_id=1, annotations=mock_annotated_object),
+                AnnotatedItem(file_id=1, annotations=mock_annotations_dict),
             ),
         ],
         ids=["valid_annotated_item_no_annotations", "valid_annotated_item"],
@@ -63,6 +64,25 @@ class TestAnnotatedItem:
     def test_load(self, resource: Dict[str, Any], expected_item: AnnotatedItem) -> None:
         annotated_item = AnnotatedItem._load(resource)
         assert annotated_item == expected_item
+
+    @pytest.mark.parametrize(
+        "item, expected_dump, camel_case",
+        [
+            (
+                AnnotatedItem(file_id=1, file_external_id="a", annotations=None),
+                {"file_id": 1, "file_external_id": "a"},
+                False,
+            ),
+            (
+                AnnotatedItem(file_id=1, file_external_id="a", annotations=mock_annotations_dict),
+                {"fileId": 1, "fileExternalId": "a", "annotations": resource_to_camel_case(mock_annotations_dict)},
+                True,
+            ),
+        ],
+        ids=["valid_dump_no_annotations", "valid_dump_with_annotation_camel_case"],
+    )
+    def test_dump(self, item: AnnotatedItem, expected_dump: Dict[str, Any], camel_case: bool) -> None:
+        assert item.dump(camel_case) == expected_dump
 
 
 class TestAnnotateJobResults:
@@ -74,7 +94,7 @@ class TestAnnotateJobResults:
             (
                 JobStatus.COMPLETED,
                 {"items": [{"fileId": 1, "annotations": mock_annotations_dict}]},
-                [AnnotatedItem(file_id=1, annotations=mock_annotated_object)],
+                [AnnotatedItem(file_id=1, annotations=mock_annotations_dict)],
             ),
         ],
         ids=["non_completed_job", "completed_job"],
