@@ -80,11 +80,18 @@ class TestAnnotate:
         "features, error_message",
         [
             ("foo", "features must be one of types \\[<enum 'Feature'>, <class 'list'>\\]"),
+            ([Feature.TEXT_DETECTION, "foo"], "feature 'foo' must be one of types \\[<enum 'Feature'>]"),
             (None, "features cannot be None"),
             (Feature.TEXT_DETECTION, None),
             ([Feature.TEXT_DETECTION, Feature.PERSONAL_PROTECTIVE_EQUIPMENT_DETECTION], None),
         ],
-        ids=["invalid_feature", "invalid_feature_None_value", "one_feature", "multiple_features"],
+        ids=[
+            "invalid_feature",
+            "invalid_non_supported_type_in_list",
+            "invalid_feature_None_value",
+            "one_feature",
+            "multiple_features",
+        ],
     )
     def test_annotate(
         self,

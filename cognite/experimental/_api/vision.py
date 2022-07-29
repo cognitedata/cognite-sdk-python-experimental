@@ -88,6 +88,9 @@ class VisionAPI(ContextAPI):
         """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)
+        if isinstance(features, list):
+            for f in features:
+                assert_type(f, f"feature '{f}'", [Feature], allow_none=False)
         if isinstance(features, Feature):
             features = [features]
 
