@@ -1,17 +1,20 @@
 from typing import List, Optional, Union
 
-from cognite.client._api_client import APIClient
+from cognite.client.utils._auxiliary import assert_type
 
+from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes.vision import (
+    AnnotateJobResults,
     CreatedDetectAssetsInFilesJob,
     DetectAssetsInFilesJob,
     EitherFileId,
+    Feature,
     InternalId,
 )
 from cognite.experimental.utils import resource_to_camel_case
 
 
-class VisionAPI(APIClient):
+class VisionAPI(ContextAPI):
     _RESOURCE_PATH = "/context/vision"
     _TAG_DETECTION_PATH = f"{_RESOURCE_PATH}/tagdetection"
 
@@ -67,3 +70,34 @@ class VisionAPI(APIClient):
             DetectAssetsInFilesJob: job information with a list of succeeded and failed asset detection for files
         """
         return self._retrieve(id=job_id, resource_path=self._TAG_DETECTION_PATH, cls=DetectAssetsInFilesJob)
+
+    def annotate(
+        self,
+        features: Union[Feature, List[Feature]],
+        file_ids: Optional[List[int]] = None,
+        file_external_ids: Optional[List[str]] = None,
+    ) -> AnnotateJobResults:
+        """Annotate image files with a provided set of feature(s).
+
+        Args:
+            features (Union[Feature, List[Feature]]): The feature(s) to extract from the provided image files.
+            file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same CDF project.
+            file_external_ids (List[str]): The external file ids of the image files to annotate
+        Returns:
+            AnnotateJobResults: Resulting queued job, which can be used to retrieve the status of the job or the annotation results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
+        """
+        # Sanitize input(s)
+        assert_type(features, "features", [Feature, list], allow_none=False)
+        if isinstance(features, list):
+            for f in features:
+                assert_type(f, f"feature '{f}'", [Feature], allow_none=False)
+        if isinstance(features, Feature):
+            features = [features]
+
+        return self._run_job(
+            job_path="/annotate",
+            status_path="/annotate/",
+            items=self._process_file_ids(file_ids, file_external_ids),
+            features=features,
+            job_cls=AnnotateJobResults,
+        )

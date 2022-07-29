@@ -19,6 +19,7 @@ from cognite.experimental.data_classes.utils.rules_output import _color_matches,
 
 class ContextualizationJobType(Enum):
     PNID_PARSER = "pnid_parsing"
+    VISION = "vision"
 
 
 class EntityMatchingMatchRule(CogniteResource):
