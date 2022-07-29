@@ -40,6 +40,7 @@ class CdfResourceRef:
 
 @dataclass
 class Polygon:
+    # A valid polygon contains *at least* three vertices
     vertices: List[Point]
 
     def __post_init__(self) -> None:
@@ -48,6 +49,7 @@ class Polygon:
 
 @dataclass
 class PolyLine:
+    # A valid polyline contains *at least* two vertices
     vertices: List[Point]
 
     def __post_init__(self) -> None:
