@@ -47,6 +47,7 @@ class AnnotatedObject:
     @staticmethod
     def _get_feature_class(type_hint: Type[Optional[List[FeatureClass]]]) -> FeatureClass:
         # Unwrap the first level of type hints (i.e., the Optional[...])
+        # NOTE: outer type hint MUST be an Optional, since Optional[X] == Union[X, None]
         list_type_hint, _ = get_args(type_hint)
         # Unwrap the second level of type hint (i.e., the List[...])
         (class_type,) = get_args(list_type_hint)

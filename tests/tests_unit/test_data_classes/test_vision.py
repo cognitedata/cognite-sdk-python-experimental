@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Type, Union
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
@@ -32,6 +32,10 @@ class TestAnnotatedObject:
     def test_get_feature_class(self) -> None:
         assert AnnotatedObject._get_feature_class(Optional[List[str]]) == str
         assert AnnotatedObject._get_feature_class(Optional[List[List[str]]]) == List[str]
+        assert AnnotatedObject._get_feature_class(Optional[List[float]]) == float
+        assert AnnotatedObject._get_feature_class(Optional[List[Union[int, str]]]) == Union[int, str]
+        assert AnnotatedObject._get_feature_class(Optional[List[AnnotatedObject]]) == AnnotatedObject
+        assert AnnotatedObject._get_feature_class(Optional[List[Dict[str, TextRegion]]]) == Dict[str, TextRegion]
 
 
 class TestAnnotatedItem:
@@ -88,7 +92,7 @@ class TestAnnotateJobResults:
         "file_id, expected_item, error_message",
         [
             (1, AnnotatedItem(file_id=1, file_external_id="foo", annotations=mock_annotations_dict), None),
-            (1337, None, "File with \\(external\\) id 1337 not found in results"),
+            (1337, None, "File with id 1337 not found in results"),
         ],
         ids=["valid_unique_id", "non_existing_id"],
     )
