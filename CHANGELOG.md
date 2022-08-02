@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.91.1]
+
+### Added
+- Add example for Vision's annotate method
+
 ## [0.91.0]
 
 ### Added

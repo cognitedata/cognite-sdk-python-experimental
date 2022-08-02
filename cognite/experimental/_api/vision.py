@@ -85,6 +85,18 @@ class VisionAPI(ContextAPI):
             file_external_ids (List[str]): The external file ids of the image files to annotate
         Returns:
             AnnotateJobResults: Resulting queued job, which can be used to retrieve the status of the job or the annotation results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
+
+        Examples:
+            Start a job, wait for completion and then get the parsed results::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes.vision import Feature
+                >>> c = CogniteClient()
+                >>> annotate_job = c.vision.annotate(features=Feature.ASSET_TAG_DETECTION, file_ids=[1])
+                >>> annotate_job.wait_for_completion()
+                >>> for item in annotate_job.items:
+                ...     annotations = item.annotations
+                ...     # do something with the annotations
         """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)
