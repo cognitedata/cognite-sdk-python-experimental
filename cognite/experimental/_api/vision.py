@@ -87,15 +87,7 @@ class VisionAPI(ContextAPI):
             AnnotateJobResults: Resulting queued job, which can be used to retrieve the status of the job or the annotation results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
 
         Examples:
-            Start a job and get the status::
-
-                >>> from cognite.experimental import CogniteClient
-                >>> from cognite.experimental.data_classes.vision import Feature
-                >>> c = CogniteClient()
-                >>> annotate_job = c.vision.annotate(features=Feature.ASSET_TAG_DETECTION, file_ids=[1])
-                >>> annotate_job.update_status()
-
-            Wait for completion and then get the parsed results::
+            Start a job, wait for completion and then get the parsed results::
 
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes.vision import Feature
