@@ -10,16 +10,16 @@ from cognite.client.utils._auxiliary import to_snake_case
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationUpdate, annotations
 from cognite.experimental.data_classes.annotation_types.images import TextRegion
 from cognite.experimental.data_classes.annotation_types.primitives import BoundingBox
-from cognite.experimental.data_classes.vision import AnnotatedItem, AnnotatedObject, AnnotateJobResults
+from cognite.experimental.data_classes.vision import VisionExtractItem, VisionExtractJob, VisionExtractPredictions
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
-mock_annotations_dict: Dict[str, Any] = {
-    "textAnnotations": [
+mock_vision_predictions_dict: Dict[str, Any] = {
+    "textAnnotations": [  # TODO: rename to predictions
         {"text": "a", "textRegion": {"xMin": 0.1, "xMax": 0.2, "yMin": 0.3, "yMax": 0.4}, "confidence": 0.1}
     ]
 }
-mock_annotated_object = AnnotatedObject(
-    text_annotations=[
+mock_vision_extract_predictions = VisionExtractPredictions(
+    text_annotations=[  # TODO: rename to predictions
         TextRegion(
             text="a",
             text_region=BoundingBox(x_min=0.1, x_max=0.2, y_min=0.3, y_max=0.4),
@@ -29,63 +29,72 @@ mock_annotated_object = AnnotatedObject(
 )
 
 
-class TestAnnotatedObject:
+class TestVisionExtractPredictions:
     def test_get_feature_class(self) -> None:
-        assert AnnotatedObject._get_feature_class(Optional[List[str]]) == str
-        assert AnnotatedObject._get_feature_class(Optional[List[List[str]]]) == List[str]
-        assert AnnotatedObject._get_feature_class(Optional[List[float]]) == float
-        assert AnnotatedObject._get_feature_class(Optional[List[Union[int, str]]]) == Union[int, str]
-        assert AnnotatedObject._get_feature_class(Optional[List[AnnotatedObject]]) == AnnotatedObject
-        assert AnnotatedObject._get_feature_class(Optional[List[Dict[str, TextRegion]]]) == Dict[str, TextRegion]
+        assert VisionExtractPredictions._get_feature_class(Optional[List[str]]) == str
+        assert VisionExtractPredictions._get_feature_class(Optional[List[List[str]]]) == List[str]
+        assert VisionExtractPredictions._get_feature_class(Optional[List[float]]) == float
+        assert VisionExtractPredictions._get_feature_class(Optional[List[Union[int, str]]]) == Union[int, str]
+        assert (
+            VisionExtractPredictions._get_feature_class(Optional[List[VisionExtractPredictions]])
+            == VisionExtractPredictions
+        )
+        assert (
+            VisionExtractPredictions._get_feature_class(Optional[List[Dict[str, TextRegion]]]) == Dict[str, TextRegion]
+        )
 
 
-class TestAnnotatedItem:
-    def test_process_annotations_dict(self) -> None:
+class TestVisionExtractItem:
+    def test_process_predictions_dict(self) -> None:
         useless_kwargs = {"foo": 1, "bar": "baz"}  # these should be ignored
         assert (
-            AnnotatedItem._process_annotations_dict({**mock_annotations_dict, **useless_kwargs})
-            == mock_annotated_object
+            VisionExtractItem._process_predictions_dict({**mock_vision_predictions_dict, **useless_kwargs})
+            == mock_vision_extract_predictions
         )
 
     @pytest.mark.parametrize(
         "resource, expected_item",
         [
             (
-                {"fileId": 1, "fileExternalId": "a", "annotations": None},
-                AnnotatedItem(file_id=1, file_external_id="a", annotations=None),
+                {"fileId": 1, "fileExternalId": "a", "annotations": None},  # TODO: rename to predictions
+                VisionExtractItem(file_id=1, file_external_id="a", predictions=None),
             ),
             (
-                {"fileId": 1, "annotations": mock_annotations_dict},
-                AnnotatedItem(file_id=1, annotations=mock_annotations_dict),
+                {"fileId": 1, "annotations": mock_vision_predictions_dict},
+                VisionExtractItem(file_id=1, predictions=mock_vision_predictions_dict),
             ),
         ],
-        ids=["valid_annotated_item_no_annotations", "valid_annotated_item"],
+        ids=["valid_vision_extract_item_no_predictions", "valid_vision_extract_item"],
     )
-    def test_load(self, resource: Dict[str, Any], expected_item: AnnotatedItem) -> None:
-        annotated_item = AnnotatedItem._load(resource)
-        assert annotated_item == expected_item
+    def test_load(self, resource: Dict[str, Any], expected_item: VisionExtractItem) -> None:
+        vision_extract_item = VisionExtractItem._load(resource)
+        assert vision_extract_item == expected_item
 
     @pytest.mark.parametrize(
         "item, expected_dump, camel_case",
         [
             (
-                AnnotatedItem(file_id=1, file_external_id="a", annotations=None),
+                VisionExtractItem(file_id=1, file_external_id="a", predictions=None),
                 {"file_id": 1, "file_external_id": "a"},
                 False,
             ),
             (
-                AnnotatedItem(file_id=1, file_external_id="a", annotations=mock_annotations_dict),
-                {"fileId": 1, "fileExternalId": "a", "annotations": resource_to_camel_case(mock_annotations_dict)},
+                VisionExtractItem(file_id=1, file_external_id="a", predictions=mock_vision_predictions_dict),
+                {
+                    "fileId": 1,
+                    "fileExternalId": "a",
+                    "annotations": resource_to_camel_case(mock_vision_predictions_dict),
+                },  # TODO: rename to predictions
                 True,
             ),
         ],
-        ids=["valid_dump_no_annotations", "valid_dump_with_annotation_camel_case"],
+        ids=["valid_dump_no_predictions", "valid_dump_with_predictions_camel_case"],
     )
-    def test_dump(self, item: AnnotatedItem, expected_dump: Dict[str, Any], camel_case: bool) -> None:
+    def test_dump(self, item: VisionExtractItem, expected_dump: Dict[str, Any], camel_case: bool) -> None:
         assert item.dump(camel_case) == expected_dump
 
 
-class TestAnnotateJobResults:
+class TestVisionExtractJob:
     @patch("cognite.experimental.data_classes.vision.ContextualizationJob.result", new_callable=PropertyMock)
     @pytest.mark.parametrize(
         "status, result, expected_items",
@@ -93,8 +102,8 @@ class TestAnnotateJobResults:
             (JobStatus.QUEUED, None, None),
             (
                 JobStatus.COMPLETED,
-                {"items": [{"fileId": 1, "annotations": mock_annotations_dict}]},
-                [AnnotatedItem(file_id=1, annotations=mock_annotations_dict)],
+                {"items": [{"fileId": 1, "annotations": mock_vision_predictions_dict}]},  # TODO: rename to predictions
+                [VisionExtractItem(file_id=1, predictions=mock_vision_predictions_dict)],
             ),
         ],
         ids=["non_completed_job", "completed_job"],
@@ -104,14 +113,14 @@ class TestAnnotateJobResults:
     ) -> None:
         cognite_client = MagicMock(spec=CogniteClient)
         mock_result.return_value = result
-        job = AnnotateJobResults(status=status.value, cognite_client=cognite_client)
+        job = VisionExtractJob(status=status.value, cognite_client=cognite_client)
         assert job.items == expected_items
 
     @patch("cognite.experimental.data_classes.vision.ContextualizationJob.result", new_callable=PropertyMock)
     @pytest.mark.parametrize(
         "file_id, expected_item, error_message",
         [
-            (1, AnnotatedItem(file_id=1, file_external_id="foo", annotations=mock_annotations_dict), None),
+            (1, VisionExtractItem(file_id=1, file_external_id="foo", predictions=mock_vision_predictions_dict), None),
             (1337, None, "File with id 1337 not found in results"),
         ],
         ids=["valid_unique_id", "non_existing_id"],
@@ -120,7 +129,7 @@ class TestAnnotateJobResults:
         self,
         mock_result: MagicMock,
         file_id: int,
-        expected_item: Optional[AnnotatedItem],
+        expected_item: Optional[VisionExtractItem],
         error_message: Optional[str],
     ) -> None:
         cognite_client = MagicMock(spec=CogniteClient)
@@ -129,12 +138,12 @@ class TestAnnotateJobResults:
                 {
                     "fileId": i + 1,
                     "fileExternalId": "foo",
-                    "annotations": mock_annotations_dict,
+                    "annotations": mock_vision_predictions_dict,  # TODO: rename to predictions
                 }
                 for i in range(2)
             ]
         }
-        job = AnnotateJobResults(cognite_client=cognite_client)
+        job = VisionExtractJob(cognite_client=cognite_client)
         if error_message is not None:
             with pytest.raises(IndexError, match=error_message):
                 job[file_id]

@@ -3,14 +3,14 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Type, Union, cast, get_type_hints
 
-from cognite.client import utils
 from cognite.client.data_classes import ContextualizationJob
-from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+from cognite.client.data_classes._base import CogniteResource
 from cognite.client.data_classes.contextualization import JobStatus
 from typing_extensions import get_args
 
 from cognite.experimental.data_classes import ContextualizationJobType
 from cognite.experimental.data_classes.annotation_types.images import AssetLink, ObjectDetection, TextRegion
+from cognite.experimental.data_classes.annotation_types.primitives import VisionResource
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
 FeatureClass = Union[Type[TextRegion], Type[AssetLink], Type[ObjectDetection]]
@@ -37,7 +37,8 @@ class Feature(str, Enum):
 
 
 @dataclass
-class AnnotatedObject:
+class VisionExtractPredictions(VisionResource):
+    # TODO: rename to predictions
     text_annotations: Optional[List[TextRegion]] = None
     asset_tag_annotations: Optional[List[AssetLink]] = None
     industrial_object_annotations: Optional[List[ObjectDetection]] = None
@@ -54,9 +55,10 @@ class AnnotatedObject:
         return class_type
 
 
-# Auto-generate the annotation-to-dataclass mapping based on the type hints of AnnotatedObject
+# Auto-generate the annotation-to-dataclass mapping based on the type hints of VisionExtractPredictions
 VISION_FEATURE_MAP: Dict[str, FeatureClass] = {
-    key: AnnotatedObject._get_feature_class(value) for key, value in get_type_hints(AnnotatedObject).items()
+    key: VisionExtractPredictions._get_feature_class(value)
+    for key, value in get_type_hints(VisionExtractPredictions).items()
 }
 
 EitherFileId = Union[InternalFileId, ExternalFileId]
@@ -292,82 +294,85 @@ class DetectAssetsInFilesJob(CogniteResource):
         raise TypeError(f"Resource must be json str or Dict, not {type(resource)}")
 
 
-class AnnotatedItem(CogniteResource):
+class VisionExtractItem(CogniteResource):
     def __init__(
         self,
         file_id: int = None,
-        annotations: Dict[str, Any] = None,
+        predictions: Dict[str, Any] = None,
         file_external_id: str = None,
         error_message: str = None,
         cognite_client: "CogniteClient" = None,
     ) -> None:
-        """Data class for storing a single annotated item"""
+        """Data class for storing predictions for a single image file"""
         self.file_id = file_id
         self.file_external_id = file_external_id
         self.error_message = error_message
-        self.annotations = self._process_annotations_dict(annotations) if isinstance(annotations, Dict) else annotations
+        self.annotations = (  # TODO: rename to predictions
+            self._process_predictions_dict(predictions) if isinstance(predictions, Dict) else predictions
+        )
 
-        self._annotations_dict = annotations  # The "raw" annotations dict returned by the endpoint
+        self._predictions_dict = predictions  # The "raw" predictions dict returned by the endpoint
         self._cognite_client = cast("CogniteClient", cognite_client)
 
     @classmethod
-    def _load(cls: "AnnotatedItem", resource: Union[Dict, str], cognite_client: "CogniteClient" = None):
+    def _load(
+        cls: "VisionExtractItem", resource: Union[Dict, str], cognite_client: "CogniteClient" = None
+    ) -> Dict[str, Any]:
         """Override CogniteResource._load so that we can convert the dicts returned by the API to data classes"""
-        annotated_item = super(AnnotatedItem, cls)._load(resource, cognite_client=cognite_client)
-        if annotated_item.annotations is not None:
-            annotated_item._annotations_dict = annotated_item.annotations
-            annotated_item.annotations = cls._process_annotations_dict(annotated_item._annotations_dict)
-        return annotated_item
+        extracted_item = super(VisionExtractItem, cls)._load(resource, cognite_client=cognite_client)
+        if extracted_item.annotations is not None:  # TODO: rename to predictions
+            extracted_item._predictions_dict = extracted_item.annotations  # TODO: rename to predictions
+            extracted_item.annotations = cls._process_predictions_dict(
+                extracted_item._predictions_dict
+            )  # TODO: rename to predictions
+        return extracted_item
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
         item_dump = super().dump(camel_case=camel_case)
-        # Replace the loaded AnnotationObject with its corresponding dict representation
-        if "annotations" in item_dump and isinstance(self._annotations_dict, Dict):
-            item_dump["annotations"] = (
-                self._annotations_dict if camel_case else resource_to_snake_case(self._annotations_dict)
+        # Replace the loaded VisionExtractPredictions with its corresponding dict representation
+        if "annotations" in item_dump and isinstance(self._predictions_dict, Dict):  # TODO: rename to predictions
+            item_dump["annotations"] = (  # TODO: rename to predictions
+                self._predictions_dict if camel_case else resource_to_snake_case(self._predictions_dict)
             )
         return item_dump
 
     @staticmethod
-    def _process_annotations_dict(annotations_dict: Dict[str, Any]) -> AnnotatedObject:
-        """Converts a (validated) annotations dict to a corresponding AnnotatedObject"""
-        annotated_object = AnnotatedObject()
-        snake_case_annotations_dict = resource_to_snake_case(annotations_dict)
-        for key, value in snake_case_annotations_dict.items():
-            if hasattr(annotated_object, key):
+    def _process_predictions_dict(predictions_dict: Dict[str, Any]) -> VisionExtractPredictions:
+        """Converts a (validated) predictions dict to a corresponding VisionExtractPredictions"""
+        prediction_object = VisionExtractPredictions()
+        snake_case_predictions_dict = resource_to_snake_case(predictions_dict)
+        for key, value in snake_case_predictions_dict.items():
+            if hasattr(prediction_object, key):
                 feature_class = VISION_FEATURE_MAP[key]
-                setattr(annotated_object, key, [feature_class(**v) for v in value])
-        return annotated_object
+                setattr(prediction_object, key, [feature_class(**v) for v in value])
+        return prediction_object
 
 
-class AnnotatedItemList(CogniteResourceList):
-    _RESOURCE = AnnotatedItem
-    _UPDATE = AnnotatedItem
-
-
-class AnnotateJobResults(VisionJob):
+class VisionExtractJob(VisionJob):
     _JOB_TYPE = ContextualizationJobType.VISION
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self._items: Optional[List[AnnotatedItemList]] = None
+        self._items: Optional[List[VisionExtractItem]] = None
 
-    def __getitem__(self, file_id: InternalId) -> AnnotatedItem:
-        """Retrieves the results for a file by (external) id"""
+    def __getitem__(self, file_id: InternalId) -> VisionExtractItem:
+        """Retrieves the results for a file by id"""
         found = [item for item in self.result["items"] if item.get("fileId") == file_id]
         if not found:
             raise IndexError(f"File with id {file_id} not found in results")
-        return AnnotatedItem._load(found[0], cognite_client=self._cognite_client)
+        return VisionExtractItem._load(found[0], cognite_client=self._cognite_client)
 
     @property
-    def items(self) -> Optional[AnnotatedItemList]:
-        """Returns a list of all annotate results by file"""
+    def items(self) -> Optional[List[VisionExtractItem]]:
+        """Returns a list of all predictions by file"""
         if self.status == JobStatus.COMPLETED.value:
-            self._items = AnnotatedItemList._load(self.result["items"], cognite_client=self._cognite_client)
+            self._items = [
+                VisionExtractItem._load(item, cognite_client=self._cognite_client) for item in self.result["items"]
+            ]
         return self._items
 
     @items.setter
-    def items(self, items: List[Union[List[AnnotatedItem], AnnotatedItemList]]) -> None:
+    def items(self, items: List[VisionExtractItem]) -> None:
         self._items = items
 
     @property

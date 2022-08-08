@@ -1,14 +1,12 @@
-import json
 import re
 from typing import Any, Dict, List, Optional, Union
-from unittest.mock import MagicMock
 
 import pytest
 from cognite.client.data_classes.contextualization import JobStatus
 from responses import RequestsMock
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.vision import AnnotateJobResults, Feature
+from cognite.experimental.data_classes.vision import Feature, VisionExtractJob
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -44,7 +42,9 @@ def mock_get_response_body_ok() -> Dict[str, Any]:
         "items": [
             {
                 "fileId": 1,
-                "annotations": [{"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}],
+                "annotations": [
+                    {"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}
+                ],  # TODO: rename to predictions
             },
         ],
         "useCache": True,
@@ -54,10 +54,10 @@ def mock_get_response_body_ok() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_post_annotate(rsps: RequestsMock, mock_post_response_body: Dict[str, Any]) -> RequestsMock:
+def mock_post_extract(rsps: RequestsMock, mock_post_response_body: Dict[str, Any]) -> RequestsMock:
     rsps.add(
         rsps.POST,
-        re.compile(".*?/context/vision/annotate"),
+        re.compile(".*?/context/vision/annotate"),  # TODO: rename to extract
         status=200,
         json=mock_post_response_body,
     )
@@ -65,10 +65,10 @@ def mock_post_annotate(rsps: RequestsMock, mock_post_response_body: Dict[str, An
 
 
 @pytest.fixture
-def mock_get_annotate(rsps: RequestsMock, mock_get_response_body_ok: Dict[str, Any]) -> RequestsMock:
+def mock_get_extract(rsps: RequestsMock, mock_get_response_body_ok: Dict[str, Any]) -> RequestsMock:
     rsps.add(
         rsps.GET,
-        re.compile(".*?/context/vision/annotate/\\d+"),
+        re.compile(".*?/context/vision/annotate/\\d+"),  # TODO: rename to extract
         status=200,
         json=mock_get_response_body_ok,
     )
@@ -93,10 +93,10 @@ class TestAnnotate:
             "multiple_features",
         ],
     )
-    def test_annotate(
+    def test_extract(
         self,
-        mock_post_annotate: RequestsMock,
-        mock_get_annotate: RequestsMock,
+        mock_post_extract: RequestsMock,
+        mock_get_extract: RequestsMock,
         features: Union[Feature, List[Feature]],
         error_message: Optional[str],
     ) -> None:
@@ -104,11 +104,12 @@ class TestAnnotate:
         file_external_ids = []
         if error_message is not None:
             with pytest.raises(TypeError, match=error_message):
-                VAPI.annotate(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
+                VAPI.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
         else:
-            job = VAPI.annotate(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
-            # Job should be queued immediately after a successfull POST
-            assert isinstance(job, AnnotateJobResults)
+            # Job should be queued immediately after a successfully POST
+            job = VAPI.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
+            # Job should be queued immediately after a successfully POST
+            assert isinstance(job, VisionExtractJob)
             assert "Queued" == job.status
             # Wait for job to complete and check its content
             expected_job_id = 1
@@ -118,8 +119,8 @@ class TestAnnotate:
             assert expected_job_id == job.job_id
 
             num_post_requests, num_get_requests = 0, 0
-            for call in mock_post_annotate.calls:
-                if "annotate" in call.request.url and call.request.method == "POST":
+            for call in mock_post_extract.calls:
+                if "annotate" in call.request.url and call.request.method == "POST":  # TODO: rename to extract
                     num_post_requests += 1
                     assert {
                         "features": [f.value for f in features] if isinstance(features, list) else [features.value],
