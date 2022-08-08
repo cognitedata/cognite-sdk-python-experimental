@@ -97,6 +97,8 @@ class VisionAPI(ContextAPI):
                 >>> for item in extract_job.items:
                 ...     predictions = item.predictions
                 ...     # do something with the predictions
+                >>> # Save predictions in CDF using Annotations API:
+                >>> extract_job.save_predictions()
         """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)

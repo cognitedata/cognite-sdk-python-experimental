@@ -50,4 +50,4 @@ class AssetLink(VisionResource):
         if isinstance(self.text_region, Dict):
             self.text_region = BoundingBox(**self.text_region)
         if isinstance(self.asset_ref, Dict):
-            self.text_region = CdfResourceRef(**self.asset_ref)
+            self.asset_ref = CdfResourceRef(**self.asset_ref)
