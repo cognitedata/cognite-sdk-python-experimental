@@ -6,11 +6,13 @@ from typing import Any, Dict, List, Optional, Type, Union, cast, get_type_hints
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import CogniteResource
 from cognite.client.data_classes.contextualization import JobStatus
+from cognite.client.exceptions import CogniteException
 from typing_extensions import get_args
 
-from cognite.experimental.data_classes import ContextualizationJobType
+from cognite.experimental.data_classes import Annotation, ContextualizationJobType
 from cognite.experimental.data_classes.annotation_types.images import AssetLink, ObjectDetection, TextRegion
 from cognite.experimental.data_classes.annotation_types.primitives import VisionResource
+from cognite.experimental.data_classes.annotations import AnnotationList
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
 FeatureClass = Union[Type[TextRegion], Type[AssetLink], Type[ObjectDetection]]
@@ -379,3 +381,48 @@ class VisionExtractJob(VisionJob):
     def errors(self) -> List[str]:
         """Returns a list of all error messages across files"""
         return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]
+
+    def save_predictions(
+        self,
+        creating_user: Optional[str] = None,
+        creating_app: Optional[str] = None,
+        creating_app_version: Optional[str] = None,
+    ) -> Union[Annotation, AnnotationList]:
+        """
+        Saves all predictions made by the feature extractors in CDF using Annotations API.
+        See https://docs.cognite.com/api/v1/#tag/Annotations/operation/annotationsSuggest
+
+        Args:
+            creating_app (str, optional): The name of the app from which this annotation was created. Defaults to 'cognite-sdk-experimental'.
+            creating_app_version (str, optional): The version of the app that created this annotation. Must be a valid semantic versioning (SemVer) string. Defaults to client version.
+            creating_user: (str, optional): A username, or email, or name. This is not checked nor enforced. If the value is None, it means the annotation was created by a service.
+        Returns:
+            Union[Annotation, AnnotationList]: (suggested) annotation(s) stored in CDF.
+
+        """
+        if self.items:
+            annotations = [
+                Annotation(
+                    annotated_resource_id=item.file_id,
+                    annotation_type=(
+                        "images.TextRegion"
+                        if annotation_type == "text_annotations"
+                        else "images.AssetLink"
+                        if annotation_type == "asset_tag_annotations"
+                        else "images.ObjectDetection"
+                    ),
+                    data=data.dump(),
+                    annotated_resource_type="file",
+                    status="suggested",
+                    creating_app=creating_app or "cognite-sdk-experimental",
+                    creating_app_version=creating_app_version or self._cognite_client.version,
+                    creating_user=creating_user or None,
+                )
+                for item in self.items
+                for annotation_type, annotation_data_list in item.annotations.dump().items()
+                for data in annotation_data_list
+            ]
+
+            return self._cognite_client.annotations.suggest(annotations=annotations)
+        else:
+            raise CogniteException("Extract job is not completed. Wait for completion and try again")
