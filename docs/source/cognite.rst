@@ -383,9 +383,16 @@ Vision
 The Vision API enable extraction of information from imagery data based on
 their visual content. For example, you can can extract features such as text, asset tags or industrial objects from images using this service.
 
-Annotate
-^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.vision.VisionAPI.annotate
+
+
+Extract
+^^^^^^^
+.. automethod:: cognite.experimental._api.vision.VisionAPI.extract
+
+
+Get vision extract job
+^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.vision.VisionAPI.get_extract_job
 
 Data classes
 ^^^^^^^^^^^^^

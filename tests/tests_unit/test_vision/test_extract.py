@@ -1,4 +1,5 @@
 import re
+from logging import exception
 from typing import Any, Dict, List, Optional, Union
 
 import pytest
@@ -75,7 +76,7 @@ def mock_get_extract(rsps: RequestsMock, mock_get_response_body_ok: Dict[str, An
     yield rsps
 
 
-class TestAnnotate:
+class TestExtract:
     @pytest.mark.parametrize(
         "features, error_message",
         [
@@ -131,3 +132,26 @@ class TestAnnotate:
                     assert f"/{expected_job_id}" in call.request.url
             assert 1 == num_post_requests
             assert 1 == num_get_requests
+
+    def test_get_extract(
+        self,
+        mock_post_extract: RequestsMock,
+        mock_get_extract: RequestsMock,
+    ) -> None:
+        file_ids = [1, 2, 3]
+        file_external_ids = []
+
+        job = VAPI.extract(features=Feature.TEXT_DETECTION, file_ids=file_ids, file_external_ids=file_external_ids)
+
+        # retrieved job should correspond to the started job:
+        retrieved_job = VAPI.get_extract_job(job_id=job.job_id)
+
+        assert isinstance(retrieved_job, VisionExtractJob)
+        assert retrieved_job.job_id == job.job_id
+
+        num_get_requests = 0
+        for call in mock_get_extract.calls:
+            if "annotate" in call.request.url and call.request.method == "GET":  # TODO: rename to extract
+                num_get_requests += 1
+                assert f"/{job.job_id}" in call.request.url
+        assert 1 == num_get_requests

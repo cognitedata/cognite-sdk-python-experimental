@@ -81,10 +81,10 @@ class VisionAPI(ContextAPI):
 
         Args:
             features (Union[Feature, List[Feature]]): The feature(s) to extract from the provided image files.
-            file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same CDF project.
-            file_external_ids (List[str]): The external file ids of the image files to annotate
+            file_ids (List[int]): IDs of the image files to analyze. The images must already be uploaded in the same CDF project.
+            file_external_ids (List[str]): The external file ids of the image files to analyze.
         Returns:
-            VisionExtractJobResults: Resulting queued job, which can be used to retrieve the status of the job or the prediction results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
+            VisionExtractJob: Resulting queued job, which can be used to retrieve the status of the job or the prediction results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
 
         Examples:
             Start a job, wait for completion and then get the parsed results::
@@ -113,3 +113,31 @@ class VisionAPI(ContextAPI):
             features=features,
             job_cls=VisionExtractJob,
         )
+
+    def get_extract_job(self, job_id: InternalId) -> VisionExtractJob:
+        """Retrieve an extraction job.
+
+        Args:
+            job_id (InternalId): ID of an existing feature extraction job.
+        Returns:
+            VisionExtractJob: Vision  extract job, which can be used to retrieve the status of the job or the prediction results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
+
+        Examples:
+            Retrieve a vision extract job by ID::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> extract_job = c.vision.get_extract_job(job_id=1)
+                >>> extract_job.wait_for_completion()
+                >>> for item in extract_job.items:
+                ...     predictions = item.predictions
+                ...     # do something with the predictions
+        """
+        job = VisionExtractJob(
+            job_id=job_id,
+            status_path=f"{self._RESOURCE_PATH}/annotate/",  # TODO: rename to extract
+            cognite_client=self._cognite_client,
+        )
+        job.update_status()
+
+        return job
