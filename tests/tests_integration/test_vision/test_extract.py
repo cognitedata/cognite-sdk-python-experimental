@@ -3,7 +3,7 @@ from cognite.client.data_classes import FileMetadata
 from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.vision import AnnotateJobResults, Feature
+from cognite.experimental.data_classes.vision import Feature, VisionExtractJob
 
 COGNITE_CLIENT = CogniteClient()
 VAPI = COGNITE_CLIENT.vision
@@ -18,17 +18,17 @@ def cognite_client() -> CogniteClient:
 @pytest.fixture(scope="class")
 def file_id(cognite_client: CogniteClient) -> int:
     # Create a test file
-    name = "vision_annotate_test_file"
+    name = "vision_extract_test_file"
     file = cognite_client.files.create(FileMetadata(external_id=name, name=name), overwrite=True)[0]
     yield file.id
 
     cognite_client.files.delete(id=file.id)
 
 
-class TestAnnotate:
-    def test_annotate(self, file_id: int) -> None:
-        job = VAPI.annotate(features=Feature.PEOPLE_DETECTION, file_ids=[file_id])
-        assert isinstance(job, AnnotateJobResults)
+class TestExtract:
+    def test_extract(self, file_id: int) -> None:
+        job = VAPI.extract(features=Feature.PEOPLE_DETECTION, file_ids=[file_id])
+        assert isinstance(job, VisionExtractJob)
         assert job.job_id > 0
         assert JobStatus(job.status) == JobStatus.QUEUED
         assert len(job.items) == 1

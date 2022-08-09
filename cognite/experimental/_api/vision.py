@@ -4,12 +4,12 @@ from cognite.client.utils._auxiliary import assert_type
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes.vision import (
-    AnnotateJobResults,
     CreatedDetectAssetsInFilesJob,
     DetectAssetsInFilesJob,
     EitherFileId,
     Feature,
     InternalId,
+    VisionExtractJob,
 )
 from cognite.experimental.utils import resource_to_camel_case
 
@@ -71,20 +71,20 @@ class VisionAPI(ContextAPI):
         """
         return self._retrieve(id=job_id, resource_path=self._TAG_DETECTION_PATH, cls=DetectAssetsInFilesJob)
 
-    def annotate(
+    def extract(
         self,
         features: Union[Feature, List[Feature]],
         file_ids: Optional[List[int]] = None,
         file_external_ids: Optional[List[str]] = None,
-    ) -> AnnotateJobResults:
-        """Annotate image files with a provided set of feature(s).
+    ) -> VisionExtractJob:
+        """Extract features from image files.
 
         Args:
             features (Union[Feature, List[Feature]]): The feature(s) to extract from the provided image files.
-            file_ids (List[int]): IDs of the image files to annotate. The images must already be uploaded in the same CDF project.
-            file_external_ids (List[str]): The external file ids of the image files to annotate
+            file_ids (List[int]): IDs of the image files to analyze. The images must already be uploaded in the same CDF project.
+            file_external_ids (List[str]): The external file ids of the image files to analyze.
         Returns:
-            AnnotateJobResults: Resulting queued job, which can be used to retrieve the status of the job or the annotation results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
+            VisionExtractJob: Resulting queued job, which can be used to retrieve the status of the job or the prediction results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
 
         Examples:
             Start a job, wait for completion and then get the parsed results::
@@ -92,11 +92,13 @@ class VisionAPI(ContextAPI):
                 >>> from cognite.experimental import CogniteClient
                 >>> from cognite.experimental.data_classes.vision import Feature
                 >>> c = CogniteClient()
-                >>> annotate_job = c.vision.annotate(features=Feature.ASSET_TAG_DETECTION, file_ids=[1])
-                >>> annotate_job.wait_for_completion()
-                >>> for item in annotate_job.items:
-                ...     annotations = item.annotations
-                ...     # do something with the annotations
+                >>> extract_job = c.vision.extract(features=Feature.ASSET_TAG_DETECTION, file_ids=[1])
+                >>> extract_job.wait_for_completion()
+                >>> for item in extract_job.items:
+                ...     predictions = item.predictions
+                ...     # do something with the predictions
+                >>> # Save predictions in CDF using Annotations API:
+                >>> extract_job.save_predictions()
         """
         # Sanitize input(s)
         assert_type(features, "features", [Feature, list], allow_none=False)
@@ -107,9 +109,37 @@ class VisionAPI(ContextAPI):
             features = [features]
 
         return self._run_job(
-            job_path="/annotate",
-            status_path="/annotate/",
+            job_path="/extract",
+            status_path="/extract/",
             items=self._process_file_ids(file_ids, file_external_ids),
             features=features,
-            job_cls=AnnotateJobResults,
+            job_cls=VisionExtractJob,
         )
+
+    def get_extract_job(self, job_id: InternalId) -> VisionExtractJob:
+        """Retrieve an extraction job.
+
+        Args:
+            job_id (InternalId): ID of an existing feature extraction job.
+        Returns:
+            VisionExtractJob: Vision extract job, which can be used to retrieve the status of the job or the prediction results if the job is finished. Note that .result property of this job will wait for the job to finish and returns the results.
+
+        Examples:
+            Retrieve a vision extract job by ID::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> extract_job = c.vision.get_extract_job(job_id=1)
+                >>> extract_job.wait_for_completion()
+                >>> for item in extract_job.items:
+                ...     predictions = item.predictions
+                ...     # do something with the predictions
+        """
+        job = VisionExtractJob(
+            job_id=job_id,
+            status_path=f"{self._RESOURCE_PATH}/extract/",
+            cognite_client=self._cognite_client,
+        )
+        job.update_status()
+
+        return job
