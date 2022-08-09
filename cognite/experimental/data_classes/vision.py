@@ -382,6 +382,35 @@ class VisionExtractJob(VisionJob):
         """Returns a list of all error messages across files"""
         return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]
 
+    def _represent_predictions_as_annotations(
+        self,
+        creating_user: Optional[str] = None,
+        creating_app: Optional[str] = None,
+        creating_app_version: Optional[str] = None,
+    ) -> List[Annotation]:
+
+        return [
+            Annotation(
+                annotated_resource_id=item.file_id,
+                annotation_type=(
+                    "images.TextRegion"
+                    if annotation_type == "text_annotations"
+                    else "images.AssetLink"
+                    if annotation_type == "asset_tag_annotations"
+                    else "images.ObjectDetection"
+                ),
+                data=data.dump(),
+                annotated_resource_type="file",
+                status="suggested",
+                creating_app=creating_app or "cognite-sdk-experimental",
+                creating_app_version=creating_app_version or self._cognite_client.version,
+                creating_user=creating_user or None,
+            )
+            for item in self.items or []
+            for annotation_type, annotation_data_list in item.annotations.dump().items()
+            for data in annotation_data_list
+        ]
+
     def save_predictions(
         self,
         creating_user: Optional[str] = None,
@@ -400,29 +429,10 @@ class VisionExtractJob(VisionJob):
             Union[Annotation, AnnotationList]: (suggested) annotation(s) stored in CDF.
 
         """
-        if self.items:
-            annotations = [
-                Annotation(
-                    annotated_resource_id=item.file_id,
-                    annotation_type=(
-                        "images.TextRegion"
-                        if annotation_type == "text_annotations"
-                        else "images.AssetLink"
-                        if annotation_type == "asset_tag_annotations"
-                        else "images.ObjectDetection"
-                    ),
-                    data=data.dump(),
-                    annotated_resource_type="file",
-                    status="suggested",
-                    creating_app=creating_app or "cognite-sdk-experimental",
-                    creating_app_version=creating_app_version or self._cognite_client.version,
-                    creating_user=creating_user or None,
-                )
-                for item in self.items
-                for annotation_type, annotation_data_list in item.annotations.dump().items()
-                for data in annotation_data_list
-            ]
-
+        annotations = self._represent_predictions_as_annotations(
+            creating_user=creating_user, creating_app=creating_app, creating_app_version=creating_app_version
+        )
+        if annotations:
             return self._cognite_client.annotations.suggest(annotations=annotations)
         else:
             raise CogniteException("Extract job is not completed. Wait for completion and try again")

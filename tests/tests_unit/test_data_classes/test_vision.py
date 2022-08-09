@@ -149,3 +149,76 @@ class TestVisionExtractJob:
                 job[file_id]
         else:
             assert job[file_id] == expected_item
+
+    @patch("cognite.experimental.data_classes.vision.ContextualizationJob.result", new_callable=PropertyMock)
+    @pytest.mark.parametrize(
+        "result, params, expected_items",
+        [
+            (
+                {"items": []},
+                None,
+                [],
+            ),
+            (
+                {"items": [{"fileId": 1, "annotations": {}}]},
+                None,
+                [],
+            ),
+            (
+                {"items": [{"fileId": 1, "annotations": {"text_annotations": []}}]},
+                None,
+                [],
+            ),
+            (
+                {"items": [{"fileId": 1, "annotations": mock_vision_predictions_dict}]},  # TODO: rename to predictions
+                {"creating_user": None, "creating_app": None, "creating_app_version": None},
+                [
+                    Annotation(
+                        annotated_resource_id=1,
+                        annotation_type="images.TextRegion",
+                        data=resource_to_snake_case(mock_vision_predictions_dict)["text_annotations"][0],
+                        annotated_resource_type="file",
+                        status="suggested",
+                        creating_app="cognite-sdk-experimental",
+                        creating_app_version=1,
+                        creating_user=None,
+                    )
+                ],
+            ),
+            (
+                {"items": [{"fileId": 1, "annotations": mock_vision_predictions_dict}]},  # TODO: rename to predictions
+                {"creating_user": "foo", "creating_app": "bar", "creating_app_version": "1.0.0"},
+                [
+                    Annotation(
+                        annotated_resource_id=1,
+                        annotation_type="images.TextRegion",
+                        data=resource_to_snake_case(mock_vision_predictions_dict)["text_annotations"][0],
+                        annotated_resource_type="file",
+                        status="suggested",
+                        creating_app="bar",
+                        creating_app_version="1.0.0",
+                        creating_user="foo",
+                    )
+                ],
+            ),
+        ],
+        ids=[
+            "empty_items",
+            "empty_annotations",
+            "empty_text_annotations",
+            "completed_job_default_params",
+            "completed_job_with_user_params",
+        ],
+    )
+    def test_represent_predictions_as_annotations(
+        self,
+        mock_result: MagicMock,
+        result: Optional[Dict],
+        params: Optional[Dict],
+        expected_items: Optional[List],
+    ) -> None:
+        cognite_client = MagicMock(spec=CogniteClient)
+        cognite_client.version = (params or {}).get("creating_app_version") or 1
+        mock_result.return_value = result
+        job = VisionExtractJob(status=JobStatus.COMPLETED.value, cognite_client=cognite_client)
+        assert job._represent_predictions_as_annotations(**(params or {})) == expected_items
