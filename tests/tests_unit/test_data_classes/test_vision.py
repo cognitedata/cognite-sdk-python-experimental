@@ -3,13 +3,12 @@ from typing import Any, Dict, List, Optional, Type, Union
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
-from cognite.client import CogniteClient
+from cognite.client import CogniteClient, utils
 from cognite.client.data_classes.contextualization import JobStatus
-from cognite.client.utils._auxiliary import to_snake_case
 
-from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationUpdate, annotations
+from cognite.experimental.data_classes import Annotation
 from cognite.experimental.data_classes.annotation_types.images import TextRegion
-from cognite.experimental.data_classes.annotation_types.primitives import BoundingBox
+from cognite.experimental.data_classes.annotation_types.primitives import BoundingBox, CdfResourceRef, VisionResource
 from cognite.experimental.data_classes.vision import VisionExtractItem, VisionExtractJob, VisionExtractPredictions
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
@@ -41,6 +40,82 @@ class TestVisionExtractPredictions:
         )
         assert (
             VisionExtractPredictions._get_feature_class(Optional[List[Dict[str, TextRegion]]]) == Dict[str, TextRegion]
+        )
+
+
+class TestVisionResource:
+    @pytest.mark.parametrize(
+        "item, expected_dump, camel_case",
+        [
+            (
+                CdfResourceRef(id=1, external_id="a"),
+                {"id": 1, "external_id": "a"},
+                False,
+            ),
+            (
+                CdfResourceRef(id=1, external_id="a"),
+                {"id": 1, "externalId": "a"},
+                True,
+            ),
+            (
+                TextRegion(
+                    text="foo", text_region={"x_min": 0.1, "x_max": 0.1, "y_min": 0.1, "y_max": 0.1}, confidence=None
+                ),
+                {"text": "foo", "text_region": {"x_min": 0.1, "x_max": 0.1, "y_min": 0.1, "y_max": 0.1}},
+                False,
+            ),
+        ],
+        ids=["valid_dump", "valid_dump_camel_case", "valid_dump_mix"],
+    )
+    def test_dump(self, item: VisionResource, expected_dump: Dict[str, Any], camel_case: bool) -> None:
+        assert item.dump(camel_case) == expected_dump
+
+    @pytest.mark.parametrize(
+        "item, expected_dump, camel_case",
+        [
+            (
+                CdfResourceRef(id=1, external_id="a"),
+                {"id": 1, "external_id": "a"},
+                False,
+            ),
+            (
+                CdfResourceRef(id=1, external_id="a"),
+                {"id": 1, "externalId": "a"},
+                True,
+            ),
+            (
+                TextRegion(
+                    text="foo", text_region={"x_min": 0.1, "x_max": 0.1, "y_min": 0.1, "y_max": 0.1}, confidence=None
+                ),
+                {"text": "foo", "text_region": {"x_min": 0.1, "x_max": 0.1, "y_min": 0.1, "y_max": 0.1}},
+                False,
+            ),
+            (
+                VisionExtractPredictions(
+                    text_annotations=[  # TODO: rename to predictions
+                        TextRegion(
+                            text="foo",
+                            text_region={"x_min": 0.1, "x_max": 0.1, "y_min": 0.1, "y_max": 0.1},
+                            confidence=None,
+                        )
+                    ]
+                ),
+                {
+                    "textAnnotations": [  # TODO: rename to predictions
+                        {"text": "foo", "textRegion": {"xMin": 0.1, "xMax": 0.1, "yMin": 0.1, "yMax": 0.1}}
+                    ]
+                },
+                True,
+            ),
+        ],
+        ids=["valid_dump", "valid_dump_camel_case", "valid_dump_mix", "valid_dump_list"],
+    )
+    def test_to_pandas(self, item: VisionResource, expected_dump: Dict[str, Any], camel_case: bool) -> None:
+        pd = utils._auxiliary.local_import("pandas")
+
+        assert all(
+            item.to_pandas(camel_case)
+            == pd.DataFrame(columns=["value"], index=list(expected_dump.keys()), data=list(expected_dump.values()))
         )
 
 
