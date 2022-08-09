@@ -12,6 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.92.0]
+
+### Changed
+- Renamed Vision's annotate method to extract
+- Updated Vision data classes
+
+### Added
+- Method to save predictions made by Vision's extract method (previously called annotate) in CDF using the Annotations API
+- Method to retrieve a Vision feature extraction job by job id. 
+
 ## [0.91.1]
 
 ### Added
