@@ -13,12 +13,12 @@ from cognite.experimental.data_classes.vision import VisionExtractItem, VisionEx
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
 mock_vision_predictions_dict: Dict[str, Any] = {
-    "textAnnotations": [  # TODO: rename to predictions
+    "textPredictions": [
         {"text": "a", "textRegion": {"xMin": 0.1, "xMax": 0.2, "yMin": 0.3, "yMax": 0.4}, "confidence": 0.1}
     ]
 }
 mock_vision_extract_predictions = VisionExtractPredictions(
-    text_annotations=[  # TODO: rename to predictions
+    text_predictions=[
         TextRegion(
             text="a",
             text_region=BoundingBox(x_min=0.1, x_max=0.2, y_min=0.3, y_max=0.4),
@@ -92,7 +92,7 @@ class TestVisionResource:
             ),
             (
                 VisionExtractPredictions(
-                    text_annotations=[  # TODO: rename to predictions
+                    text_predictions=[
                         TextRegion(
                             text="foo",
                             text_region={"x_min": 0.1, "x_max": 0.1, "y_min": 0.1, "y_max": 0.1},
@@ -101,7 +101,7 @@ class TestVisionResource:
                     ]
                 ),
                 {
-                    "textAnnotations": [  # TODO: rename to predictions
+                    "textPredictions": [
                         {"text": "foo", "textRegion": {"xMin": 0.1, "xMax": 0.1, "yMin": 0.1, "yMax": 0.1}}
                     ]
                 },
@@ -131,11 +131,11 @@ class TestVisionExtractItem:
         "resource, expected_item",
         [
             (
-                {"fileId": 1, "fileExternalId": "a", "annotations": None},  # TODO: rename to predictions
+                {"fileId": 1, "fileExternalId": "a", "predictions": None},
                 VisionExtractItem(file_id=1, file_external_id="a", predictions=None),
             ),
             (
-                {"fileId": 1, "annotations": mock_vision_predictions_dict},
+                {"fileId": 1, "predictions": mock_vision_predictions_dict},
                 VisionExtractItem(file_id=1, predictions=mock_vision_predictions_dict),
             ),
         ],
@@ -158,8 +158,8 @@ class TestVisionExtractItem:
                 {
                     "fileId": 1,
                     "fileExternalId": "a",
-                    "annotations": resource_to_camel_case(mock_vision_predictions_dict),
-                },  # TODO: rename to predictions
+                    "predictions": resource_to_camel_case(mock_vision_predictions_dict),
+                },
                 True,
             ),
         ],
@@ -177,7 +177,7 @@ class TestVisionExtractJob:
             (JobStatus.QUEUED, None, None),
             (
                 JobStatus.COMPLETED,
-                {"items": [{"fileId": 1, "annotations": mock_vision_predictions_dict}]},  # TODO: rename to predictions
+                {"items": [{"fileId": 1, "predictions": mock_vision_predictions_dict}]},
                 [VisionExtractItem(file_id=1, predictions=mock_vision_predictions_dict)],
             ),
         ],
@@ -213,7 +213,7 @@ class TestVisionExtractJob:
                 {
                     "fileId": i + 1,
                     "fileExternalId": "foo",
-                    "annotations": mock_vision_predictions_dict,  # TODO: rename to predictions
+                    "predictions": mock_vision_predictions_dict,
                 }
                 for i in range(2)
             ]
@@ -235,23 +235,23 @@ class TestVisionExtractJob:
                 [],
             ),
             (
-                {"items": [{"fileId": 1, "annotations": {}}]},
+                {"items": [{"fileId": 1, "predictions": {}}]},
                 None,
                 [],
             ),
             (
-                {"items": [{"fileId": 1, "annotations": {"text_annotations": []}}]},
+                {"items": [{"fileId": 1, "predictions": {"text_predictions": []}}]},
                 None,
                 [],
             ),
             (
-                {"items": [{"fileId": 1, "annotations": mock_vision_predictions_dict}]},  # TODO: rename to predictions
+                {"items": [{"fileId": 1, "predictions": mock_vision_predictions_dict}]},
                 {"creating_user": None, "creating_app": None, "creating_app_version": None},
                 [
                     Annotation(
                         annotated_resource_id=1,
                         annotation_type="images.TextRegion",
-                        data=resource_to_snake_case(mock_vision_predictions_dict)["text_annotations"][0],
+                        data=resource_to_snake_case(mock_vision_predictions_dict)["text_predictions"][0],
                         annotated_resource_type="file",
                         status="suggested",
                         creating_app="cognite-sdk-experimental",
@@ -261,13 +261,13 @@ class TestVisionExtractJob:
                 ],
             ),
             (
-                {"items": [{"fileId": 1, "annotations": mock_vision_predictions_dict}]},  # TODO: rename to predictions
+                {"items": [{"fileId": 1, "predictions": mock_vision_predictions_dict}]},
                 {"creating_user": "foo", "creating_app": "bar", "creating_app_version": "1.0.0"},
                 [
                     Annotation(
                         annotated_resource_id=1,
                         annotation_type="images.TextRegion",
-                        data=resource_to_snake_case(mock_vision_predictions_dict)["text_annotations"][0],
+                        data=resource_to_snake_case(mock_vision_predictions_dict)["text_predictions"][0],
                         annotated_resource_type="file",
                         status="suggested",
                         creating_app="bar",
@@ -279,8 +279,8 @@ class TestVisionExtractJob:
         ],
         ids=[
             "empty_items",
-            "empty_annotations",
-            "empty_text_annotations",
+            "empty_predictions",
+            "empty_text_predictions",
             "completed_job_default_params",
             "completed_job_with_user_params",
         ],

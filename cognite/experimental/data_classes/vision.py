@@ -40,12 +40,11 @@ class Feature(str, Enum):
 
 @dataclass
 class VisionExtractPredictions(VisionResource):
-    # TODO: rename to predictions
-    text_annotations: Optional[List[TextRegion]] = None
-    asset_tag_annotations: Optional[List[AssetLink]] = None
-    industrial_object_annotations: Optional[List[ObjectDetection]] = None
-    people_annotations: Optional[List[ObjectDetection]] = None
-    personal_protective_equipment_annotations: Optional[List[ObjectDetection]] = None
+    text_predictions: Optional[List[TextRegion]] = None
+    asset_tag_predictions: Optional[List[AssetLink]] = None
+    industrial_object_predictions: Optional[List[ObjectDetection]] = None
+    people_predictions: Optional[List[ObjectDetection]] = None
+    personal_protective_equipment_predictions: Optional[List[ObjectDetection]] = None
 
     @staticmethod
     def _get_feature_class(type_hint: Type[Optional[List[FeatureClass]]]) -> FeatureClass:
@@ -65,11 +64,11 @@ VISION_FEATURE_MAP: Dict[str, FeatureClass] = {
 
 
 VISION_ANNOTATION_TYPE_MAP: Dict[str, str] = {
-    "text_annotations": "images.TextRegion",
-    "asset_tag_annotations": "images.AssetLink",
-    "industrial_object_annotations": "images.ObjectDetection",
-    "people_annotations": "images.ObjectDetection",
-    "personal_protective_equipment_annotations": "images.ObjectDetection",
+    "text_predictions": "images.TextRegion",
+    "asset_tag_predictions": "images.AssetLink",
+    "industrial_object_predictions": "images.ObjectDetection",
+    "people_predictions": "images.ObjectDetection",
+    "personal_protective_equipment_predictions": "images.ObjectDetection",
 }
 
 EitherFileId = Union[InternalFileId, ExternalFileId]
@@ -318,9 +317,7 @@ class VisionExtractItem(CogniteResource):
         self.file_id = file_id
         self.file_external_id = file_external_id
         self.error_message = error_message
-        self.annotations = (  # TODO: rename to predictions
-            self._process_predictions_dict(predictions) if isinstance(predictions, Dict) else predictions
-        )
+        self.predictions = self._process_predictions_dict(predictions) if isinstance(predictions, Dict) else predictions
 
         self._predictions_dict = predictions  # The "raw" predictions dict returned by the endpoint
         self._cognite_client = cast("CogniteClient", cognite_client)
@@ -331,18 +328,16 @@ class VisionExtractItem(CogniteResource):
     ) -> Dict[str, Any]:
         """Override CogniteResource._load so that we can convert the dicts returned by the API to data classes"""
         extracted_item = super(VisionExtractItem, cls)._load(resource, cognite_client=cognite_client)
-        if extracted_item.annotations is not None:  # TODO: rename to predictions
-            extracted_item._predictions_dict = extracted_item.annotations  # TODO: rename to predictions
-            extracted_item.annotations = cls._process_predictions_dict(
-                extracted_item._predictions_dict
-            )  # TODO: rename to predictions
+        if extracted_item.predictions is not None:
+            extracted_item._predictions_dict = extracted_item.predictions
+            extracted_item.predictions = cls._process_predictions_dict(extracted_item._predictions_dict)
         return extracted_item
 
     def dump(self, camel_case: bool = False) -> Dict[str, Any]:
         item_dump = super().dump(camel_case=camel_case)
         # Replace the loaded VisionExtractPredictions with its corresponding dict representation
-        if "annotations" in item_dump and isinstance(self._predictions_dict, Dict):  # TODO: rename to predictions
-            item_dump["annotations"] = (  # TODO: rename to predictions
+        if "predictions" in item_dump and isinstance(self._predictions_dict, Dict):
+            item_dump["predictions"] = (
                 self._predictions_dict if camel_case else resource_to_snake_case(self._predictions_dict)
             )
         return item_dump
@@ -401,7 +396,7 @@ class VisionExtractJob(VisionJob):
         return [
             Annotation(
                 annotated_resource_id=item.file_id,
-                annotation_type=VISION_ANNOTATION_TYPE_MAP[annotation_type],
+                annotation_type=VISION_ANNOTATION_TYPE_MAP[prediction_type],
                 data=data.dump(),
                 annotated_resource_type="file",
                 status="suggested",
@@ -410,8 +405,8 @@ class VisionExtractJob(VisionJob):
                 creating_user=creating_user or None,
             )
             for item in self.items or []
-            for annotation_type, annotation_data_list in item.annotations.dump().items()
-            for data in annotation_data_list
+            for prediction_type, prediction_data_list in item.predictions.dump().items()
+            for data in prediction_data_list
         ]
 
     def save_predictions(

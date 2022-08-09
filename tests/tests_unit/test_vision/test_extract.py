@@ -43,9 +43,7 @@ def mock_get_response_body_ok() -> Dict[str, Any]:
         "items": [
             {
                 "fileId": 1,
-                "annotations": [
-                    {"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}
-                ],  # TODO: rename to predictions
+                "predictions": [{"text": "testing", "assetIds": [1, 2, 3], "confidence": 0.9}],
             },
         ],
         "useCache": True,
@@ -58,7 +56,7 @@ def mock_get_response_body_ok() -> Dict[str, Any]:
 def mock_post_extract(rsps: RequestsMock, mock_post_response_body: Dict[str, Any]) -> RequestsMock:
     rsps.add(
         rsps.POST,
-        re.compile(".*?/context/vision/annotate"),  # TODO: rename to extract
+        re.compile(".*?/context/vision/extract"),
         status=200,
         json=mock_post_response_body,
     )
@@ -69,7 +67,7 @@ def mock_post_extract(rsps: RequestsMock, mock_post_response_body: Dict[str, Any
 def mock_get_extract(rsps: RequestsMock, mock_get_response_body_ok: Dict[str, Any]) -> RequestsMock:
     rsps.add(
         rsps.GET,
-        re.compile(".*?/context/vision/annotate/\\d+"),  # TODO: rename to extract
+        re.compile(".*?/context/vision/extract/\\d+"),
         status=200,
         json=mock_get_response_body_ok,
     )
@@ -120,7 +118,7 @@ class TestExtract:
 
             num_post_requests, num_get_requests = 0, 0
             for call in mock_post_extract.calls:
-                if "annotate" in call.request.url and call.request.method == "POST":  # TODO: rename to extract
+                if "extract" in call.request.url and call.request.method == "POST":
                     num_post_requests += 1
                     assert {
                         "features": [f.value for f in features] if isinstance(features, list) else [features.value],
@@ -150,7 +148,7 @@ class TestExtract:
 
         num_get_requests = 0
         for call in mock_get_extract.calls:
-            if "annotate" in call.request.url and call.request.method == "GET":  # TODO: rename to extract
+            if "extract" in call.request.url and call.request.method == "GET":
                 num_get_requests += 1
                 assert f"/{job.job_id}" in call.request.url
         assert 1 == num_get_requests

@@ -109,8 +109,8 @@ class VisionAPI(ContextAPI):
             features = [features]
 
         return self._run_job(
-            job_path="/annotate",  # TODO: rename to extract
-            status_path="/annotate/",  # TODO: rename to extract
+            job_path="/extract",
+            status_path="/extract/",
             items=self._process_file_ids(file_ids, file_external_ids),
             features=features,
             job_cls=VisionExtractJob,
@@ -137,7 +137,7 @@ class VisionAPI(ContextAPI):
         """
         job = VisionExtractJob(
             job_id=job_id,
-            status_path=f"{self._RESOURCE_PATH}/annotate/",  # TODO: rename to extract
+            status_path=f"{self._RESOURCE_PATH}/extract/",
             cognite_client=self._cognite_client,
         )
         job.update_status()
