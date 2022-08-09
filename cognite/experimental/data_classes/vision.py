@@ -63,6 +63,15 @@ VISION_FEATURE_MAP: Dict[str, FeatureClass] = {
     for key, value in get_type_hints(VisionExtractPredictions).items()
 }
 
+
+VISION_ANNOTATION_TYPE_MAP: Dict[str, str] = {
+    "text_annotations": "images.TextRegion",
+    "asset_tag_annotations": "images.AssetLink",
+    "industrial_object_annotations": "images.ObjectDetection",
+    "people_annotations": "images.ObjectDetection",
+    "personal_protective_equipment_annotations": "images.ObjectDetection",
+}
+
 EitherFileId = Union[InternalFileId, ExternalFileId]
 
 
@@ -392,13 +401,7 @@ class VisionExtractJob(VisionJob):
         return [
             Annotation(
                 annotated_resource_id=item.file_id,
-                annotation_type=(
-                    "images.TextRegion"
-                    if annotation_type == "text_annotations"
-                    else "images.AssetLink"
-                    if annotation_type == "asset_tag_annotations"
-                    else "images.ObjectDetection"
-                ),
+                annotation_type=VISION_ANNOTATION_TYPE_MAP[annotation_type],
                 data=data.dump(),
                 annotated_resource_type="file",
                 status="suggested",
