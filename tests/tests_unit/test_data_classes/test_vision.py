@@ -285,7 +285,7 @@ class TestVisionExtractJob:
             "completed_job_with_user_params",
         ],
     )
-    def test_represent_predictions_as_annotations(
+    def test_predictions_to_annotations(
         self,
         mock_result: MagicMock,
         result: Optional[Dict],
@@ -296,4 +296,4 @@ class TestVisionExtractJob:
         cognite_client.version = (params or {}).get("creating_app_version") or 1
         mock_result.return_value = result
         job = VisionExtractJob(status=JobStatus.COMPLETED.value, cognite_client=cognite_client)
-        assert job._represent_predictions_as_annotations(**(params or {})) == expected_items
+        assert job._predictions_to_annotations(**(params or {})) == expected_items

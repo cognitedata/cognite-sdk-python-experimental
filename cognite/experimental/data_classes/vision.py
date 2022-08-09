@@ -382,7 +382,7 @@ class VisionExtractJob(VisionJob):
         """Returns a list of all error messages across files"""
         return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]
 
-    def _represent_predictions_as_annotations(
+    def _predictions_to_annotations(
         self,
         creating_user: Optional[str] = None,
         creating_app: Optional[str] = None,
@@ -429,7 +429,7 @@ class VisionExtractJob(VisionJob):
             Union[Annotation, AnnotationList]: (suggested) annotation(s) stored in CDF.
 
         """
-        annotations = self._represent_predictions_as_annotations(
+        annotations = self._predictions_to_annotations(
             creating_user=creating_user, creating_app=creating_app, creating_app_version=creating_app_version
         )
         if annotations:
