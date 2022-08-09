@@ -109,7 +109,6 @@ class TestExtract:
         else:
             # Job should be queued immediately after a successfully POST
             job = VAPI.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
-            # Job should be queued immediately after a successfully POST
             assert isinstance(job, VisionExtractJob)
             assert "Queued" == job.status
             # Wait for job to complete and check its content
