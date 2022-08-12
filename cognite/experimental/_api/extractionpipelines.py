@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cognite.client import utils
 from cognite.client._api.extractionpipelines import ExtractionPipelinesAPI
 
@@ -10,8 +12,12 @@ class ExperimentalExtractionPipelinesAPI(ExtractionPipelinesAPI):
             config=config, api_version=api_version, cognite_client=cognite_client
         )
 
-    def get_config(self, external_id: str) -> ExtractionPipelineConfig:
-        response = self._get("/extpipes/config", params={"externalId": external_id})
+    def get_config(
+        self, external_id: str, revision: Optional[int] = None, active_at_time: Optional[int] = None
+    ) -> ExtractionPipelineConfig:
+        response = self._get(
+            "/extpipes/config", params={"externalId": external_id, "activeAtTime": active_at_time, "revision": revision}
+        )
         return ExtractionPipelineConfig._load(response.json(), cognite_client=self._cognite_client)
 
     def list_config_revisions(self, external_id: str) -> ExtractionPipelineConfigRevisionList:
@@ -20,4 +26,8 @@ class ExperimentalExtractionPipelinesAPI(ExtractionPipelinesAPI):
 
     def new_config(self, config: ExtractionPipelineConfig) -> ExtractionPipelineConfig:
         response = self._post("/extpipes/config", json=config.dump(camel_case=True))
+        return ExtractionPipelineConfig._load(response.json(), cognite_client=self._cognite_client)
+
+    def revert_config(self, external_id: str, revision: int) -> ExtractionPipelineConfig:
+        response = self._post("/extpipes/config/revert", json={"externalId": external_id, "revision": revision})
         return ExtractionPipelineConfig._load(response.json(), cognite_client=self._cognite_client)
