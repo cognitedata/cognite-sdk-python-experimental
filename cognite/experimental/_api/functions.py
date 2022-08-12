@@ -428,7 +428,8 @@ class FunctionsAPI(APIClient):
                 )
 
             return file.id
-
+        except Exception as e:
+            raise e
         finally:
             os.chdir(current_dir)
 
