@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.93.0]
+
+### Added
+- Method to revert extraction pipeline config revisions.
+- Option to retrieve specific config revision, or retrieve config active at specific time.
+
 ## [0.92.0]
 
 ### Changed
