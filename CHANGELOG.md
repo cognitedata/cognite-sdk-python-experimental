@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.93.1]
+
+### Fixed
+- Small error on requirements.txt parsing on functions SDK.
+
 ## [0.93.0]
 
 ### Added
