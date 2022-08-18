@@ -10,19 +10,8 @@ VAPI = COGNITE_CLIENT.vision
 
 
 @pytest.fixture(scope="class")
-def cognite_client() -> CogniteClient:
-    return CogniteClient()
-
-
-# TODO(VIS-986): replace this file generator with a hard-coded ID of an actual image
-@pytest.fixture(scope="class")
-def file_id(cognite_client: CogniteClient) -> int:
-    # Create a test file
-    name = "vision_extract_test_file"
-    file = cognite_client.files.create(FileMetadata(external_id=name, name=name), overwrite=True)[0]
-    yield file.id
-
-    cognite_client.files.delete(id=file.id)
+def file_id() -> int:
+    return 616207239733766
 
 
 class TestExtract:
