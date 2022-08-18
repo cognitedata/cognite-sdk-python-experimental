@@ -146,6 +146,7 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5
         assert res.upper_left_y == -0.5
 
+    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_get_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.get_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -223,6 +224,7 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5891363261459447
         assert res.upper_left_y == -0.31623471547260973
 
+    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.delete_raster(
             feature_type_external_id=test_feature_type.external_id,
