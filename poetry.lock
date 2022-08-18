@@ -135,7 +135,7 @@ test = ["pytest-cov"]
 
 [[package]]
 name = "cognite-sdk-core"
-version = "2.49.1"
+version = "2.56.0"
 description = "Client library for Cognite Data Fusion (CDF)"
 category = "main"
 optional = false
@@ -1045,7 +1045,7 @@ geopandas = ["geopandas", "shapely"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0.0"
-content-hash = "6e5a96ceddb762f8d427c05219dac7dd1ff1eba1ef83412a80569dc76ee99e8e"
+content-hash = "60e66df709a969c24cfd3b94bf2cb6f9579f942a7c35e51d56b169b7fc49a5d3"
 
 [metadata.files]
 alabaster = [
@@ -1145,8 +1145,8 @@ cligj = [
     {file = "cligj-0.7.2.tar.gz", hash = "sha256:a4bc13d623356b373c2c27c53dbd9c68cae5d526270bfa71f6c6fa69669c6b27"},
 ]
 cognite-sdk-core = [
-    {file = "cognite-sdk-core-2.49.1.tar.gz", hash = "sha256:ba205642b9c3dcb59a080c6a0a01b30b5afb1c2e91ad304d5c37bef1836b3a16"},
-    {file = "cognite_sdk_core-2.49.1-py3-none-any.whl", hash = "sha256:6384ed8710be974ba6c5c6652c1443a33c2f9885051f7888b4a26ac11fbd4046"},
+    {file = "cognite-sdk-core-2.56.0.tar.gz", hash = "sha256:81b734d58e9516daa07ef41719167548d629438784ff42d37c0487473e94c154"},
+    {file = "cognite_sdk_core-2.56.0-py3-none-any.whl", hash = "sha256:56707627a00863e009df356f9d6f18da65f1293dae4bd217e5eda8fe5e89ff62"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},

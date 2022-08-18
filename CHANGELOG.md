@@ -12,12 +12,90 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.82.0]
+## [0.94.0]
 
 ### Removed
 
-- Functions: moved the Functions SDK from experimental to general availability.
+- Moved Functions from cognite-sdk-experimental cognite-sdk.
 
+## [0.93.0]
+
+### Added
+- Method to revert extraction pipeline config revisions.
+- Option to retrieve specific config revision, or retrieve config active at specific time.
+
+## [0.92.0]
+
+### Changed
+- Renamed Vision's annotate method to extract
+- Updated Vision data classes
+
+### Added
+- Method to save predictions made by Vision's extract method (previously called annotate) in CDF using the Annotations API
+- Method to retrieve a Vision feature extraction job by job id. 
+
+## [0.91.1]
+
+### Added
+- Add example for Vision's annotate method
+
+## [0.91.0]
+
+### Added
+- Add annotate method for the Vision API
+
+## [0.90.0]
+
+### Added
+- properly expose alerts API data_classes
+
+## [0.89.0]
+
+### Added
+- added status endpoint calls to functions sdk
+
+## [0.88.0]
+
+### Added
+- alerts API (alpha)
+
+## [0.87.0]
+
+### Removed
+- Removed plot extractor as it is not in use anymore.
+
+## [0.86.0]
+
+### Added
+- added validation of requirements.txt when uploading function from a folder
+
+## [0.85.0]
+
+### Added
+- added parsing of requirements from docstring when uploading Cognite Function from function-handle.
+
+## [0.84.0]
+
+### Removed
+
+- diagrams API (has been moved to the stable SDK)
+
+## [0.83.0]
+
+### Changed
+
+- More examples for the geospatial compute method.
+
+## [0.82.0]
+
+### Changed
+
+- Renamed `client.annotations.*` to `client.legacy_annotations.*` and renamed corresponding (data) class and filenames accordingly.
+- Renamed `client.annotations_v2.*` to `client.annotations.*` and renamed corresponding (data) class and filenames accordingly.
+ 
+#### Removed
+
+- Removed documentation for legacy `annotations` (now called `legacy_annotations`), which will soon be deprecated.
 
 ## [0.81.0]
 

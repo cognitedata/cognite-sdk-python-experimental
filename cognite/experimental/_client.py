@@ -4,16 +4,16 @@ from typing import Callable, Dict, List, Optional, Union
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 
+from cognite.experimental._api.alerts import AlertsAPI
 from cognite.experimental._api.annotations import AnnotationsAPI
-from cognite.experimental._api.annotations_v2 import AnnotationsV2API
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
+from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.plot_extraction import PlotDataExtractionAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
-from cognite.experimental._api.pnid_parsing import DiagramsAPI, PNIDParsingAPI
+from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 from cognite.experimental._api.vision import VisionAPI
 
@@ -86,21 +86,20 @@ class CogniteClient(Client):
             **kwargs,
         )
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
+        self.alerts = AlertsAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
+        self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
-        self.annotations_v2 = AnnotationsV2API(self._config, api_version="playground", cognite_client=self)
-        self.plot_extraction = PlotDataExtractionAPI(self._config, api_version="playground", cognite_client=self)
 
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self
         )
 
-        self.diagrams = DiagramsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         # template completion only
         self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
         self.vision = VisionAPI(self._config, api_version="playground", cognite_client=self)

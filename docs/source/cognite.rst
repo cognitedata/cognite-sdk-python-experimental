@@ -9,15 +9,15 @@ For a quickstart guide see the main SDK Documentation at https://cognite-docs.re
 The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
 * client.model_hosting = `Model Hosting`_
-* client.annotations_v2: `AnnotationsV2`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
-* client.annotations: `Annotations`_ (Legacy Annotations, soon to be deprecated and replaced with new Annotations API (`AnnotationsV2`_))
+* client.annotations: `Annotations`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
-* client.diagrams: `Detect entities in Engineering Diagrams`_
 * client.pnid_object_detection: `Detect common objects in a PNID`_
 * client.templates: `Extensions for Templates`_
 * client.geospatial: `Geospatial`_
+* client.alerts: `Alerting`_
+* client.vision: `Vision`_
 
 CogniteClient
 -------------
@@ -26,47 +26,8 @@ CogniteClient
     :member-order: bysource
 
 
-AnnotationsV2
--------------
-
-Retrieve an annotation by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.retrieve
-
-Retrieve multiple annotations by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.retrieve_multiple
-
-List annotation
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.list
-
-Create an annotation
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.create
-
-Suggest an annotation
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.suggest
-
-Update annotations
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.update
-
-Delete annotations
-^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations_v2.AnnotationsV2API.delete
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.annotations_v2
-    :members:
-    :show-inheritance:
-
-
 Annotations
 -----------
-Legacy Annotations, soon to be deprecated and replaced with new Annotations API (`AnnotationsV2`_)
 
 Retrieve an annotation by id
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -83,6 +44,10 @@ List annotation
 Create an annotation
 ^^^^^^^^^^^^^^^^^^^^^
 .. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.create
+
+Suggest an annotation
+^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.suggest
 
 Update annotations
 ^^^^^^^^^^^^^^^^^^
@@ -336,15 +301,6 @@ Detect common objects in a PNID
 .. automethod:: cognite.experimental._api.pnid_object_detection.PNIDObjectDetectionAPI.find_objects
 
 
-Detect entities in Engineering Diagrams
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.pnid_parsing.DiagramsAPI.detect
-
-Convert to an interactive SVG where the provided annotations are highlighted
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.pnid_parsing.DiagramsAPI.convert
-
-
 
 Contextualization Data Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -354,13 +310,53 @@ Contextualization Data Classes
     :show-inheritance:
     :inherited-members:
 
-Plot Data Extraction
---------------------
+Vision
+--------
 
-Extract curve data
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.plot_extraction.PlotDataExtractionAPI.extract
+The Vision API enable extraction of information from imagery data based on
+their visual content. For example, you can can extract features such as text, asset tags or industrial objects from images using this service.
 
+
+
+Extract
+^^^^^^^
+.. automethod:: cognite.experimental._api.vision.VisionAPI.extract
+
+
+Get vision extract job
+^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: cognite.experimental._api.vision.VisionAPI.get_extract_job
+
+Data classes
+^^^^^^^^^^^^^
+
+Vision data classes
+~~~~~~~~~~~~~~~~~~~
+.. automodule:: cognite.experimental.data_classes.vision
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
+
+Image type data classes
+~~~~~~~~~~~~~~~~~~~~~~~
+Minimal containers for the image annotations returned by the Annotations API.
+
+.. automodule:: cognite.experimental.data_classes.annotation_types.images
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
+
+Primitive type data classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Minimal containers for the primitive annotations returned by the Annotations API.
+
+.. automodule:: cognite.experimental.data_classes.annotation_types.primitives
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
 
 Extensions for Templates
 ------------------------
@@ -405,8 +401,85 @@ Retrieve MVT Mappings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.retrieve_mvt_mappings_definitions
 
+List MVT Mappings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.list_mvt_mappings_definitions
+
+Compute
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Compute
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.compute
+
 Data classes
 ^^^^^^^^^^^^
 .. automodule:: cognite.experimental.data_classes.geospatial
     :members:
     :show-inheritance:
+
+Alerting
+--------
+
+Channels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A Channel is a bus to which Subscribers can make a Subscription and that Alerts can be sent to. Upon the receival of an Alert, a notification is sent on all registered providers of its Subscribers. A Channel can have a Parent, Alerts are propagated recursively from a Channel to its Parent and all of their Parents.
+
+List channels
+~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.list
+
+Create channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.create
+
+Update channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.update
+
+Delete channels
+~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertChannelsAPI.delete
+
+Alerts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+An Alert is an event detected by a monitoring system, raised to trigger a notification. The Alert is linked to a channel, and upon Alert creation, a Notification sent to all subscribers of the Channel and the Channels' parents
+
+List alerts
+~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.list
+
+Create alerts
+~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.create
+
+Close alerts
+~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertsAPI.close
+
+Subscribers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subscribers are the people or groups thereof that should be notified when an Alert is fired. Subscribers can subscribe to multiple Channels
+
+Create subscribers
+~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscribersAPI.create
+
+Subscriptions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Subscriptions link subscribers to channels, subscribing them to Alerts sent to the channel or channels that are children of that channel
+
+Create subscriptions
+~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscriptionsAPI.create
+
+Delete subscriptions
+~~~~~~~~~~~~~~~~~~~~~
+.. automethod:: cognite.experimental._api.alerts.AlertSubscriptionsAPI.delete
+
+Data classes
+^^^^^^^^^^^^
+.. automodule:: cognite.experimental.data_classes.alerts
+    :members:
+    :show-inheritance:
+
