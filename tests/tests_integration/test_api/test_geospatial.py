@@ -146,6 +146,7 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5
         assert res.upper_left_y == -0.5
 
+    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_get_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.get_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -161,11 +162,9 @@ class TestExperimentalGeospatialAPI:
             feature_external_id=test_feature_with_raster.external_id,
             raster_property_name="raster",
             raster_format="XYZ",
-            raster_options={"ADD_HEADER_LINE": "YES"},
+            raster_options={"DECIMAL_PRECISION": 5},
         )
-        raster_content = open(
-            "tests/tests_integration/test_api/geospatial_data/raster-grid-header-example.xyz", "rb"
-        ).read()
+        raster_content = open("tests/tests_integration/test_api/geospatial_data/raster-grid-5-decimal.xyz", "rb").read()
         assert res == raster_content
 
     def test_get_raster_with_transformation(self, cognite_client, test_feature_type, test_feature_with_raster):
@@ -223,6 +222,7 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5891363261459447
         assert res.upper_left_y == -0.31623471547260973
 
+    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.delete_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -237,6 +237,7 @@ class TestExperimentalGeospatialAPI:
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
 
+    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
         feature_type_updated = cognite_client.geospatial.update_feature_types(
             update=FeatureTypeUpdate(
@@ -254,6 +255,7 @@ class TestExperimentalGeospatialAPI:
             "createdTime",
             "lastUpdatedTime",
             "dataSetId",
+            "assetIds",
         ]
         res = cognite_client.geospatial.retrieve_features(
             feature_type_external_id=test_feature_type.external_id,
