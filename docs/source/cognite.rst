@@ -14,7 +14,6 @@ The currently available extensions for a `client` ( `CogniteClient`_) instance a
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
 * client.pnid_object_detection: `Detect common objects in a PNID`_
-* client.functions: `Functions`_
 * client.templates: `Extensions for Templates`_
 * client.geospatial: `Geospatial`_
 * client.alerts: `Alerting`_
@@ -310,72 +309,6 @@ Contextualization Data Classes
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-
-Functions
----------
-
-Create function
-^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.functions.FunctionsAPI.create
-
-Delete function
-^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.functions.FunctionsAPI.delete
-
-List functions
-^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.functions.FunctionsAPI.list
-
-Retrieve function
-^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.functions.FunctionsAPI.retrieve
-
-Retrieve multiple functions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.functions.FunctionsAPI.retrieve_multiple
-
-Call function
-^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.functions.FunctionsAPI.call
-
-
-Function calls
-^^^^^^^^^^^^^^
-List function calls
-~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.list
-
-Retrieve function call
-~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.retrieve
-
-Retrieve function call response
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_response
-
-Retrieve function call logs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionCallsAPI.get_logs
-
-Function schedules
-^^^^^^^^^^^^^^^^^^
-List function schedules
-~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.list
-
-Create function schedule
-~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.create
-
-Delete function schedule
-~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.functions.FunctionSchedulesAPI.delete
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.functions
-    :members:
-    :show-inheritance:
 
 Vision
 --------

@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.94.0]
+
+### Removed
+
+- Moved Functions from cognite-sdk-experimental cognite-sdk.
+
 ## [0.93.0]
 
 ### Added
@@ -92,6 +98,7 @@ Changes are grouped as follows
 - Removed documentation for legacy `annotations` (now called `legacy_annotations`), which will soon be deprecated.
 
 ## [0.81.0]
+
 ### Removed
 
 - `linked_resource_id`, `linked_resource_external_id` and `linked_resource_type` fields to AnnotationsV2.
