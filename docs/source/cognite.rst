@@ -342,7 +342,7 @@ Wait for job completion and get the parsed results:
     ...     # do something with the predictions
 
 
-Save the prediction results in CDF as `Annotations <https://docs.cognite.com/api/v1/#tag/Annotations/operation/annotationsCreate>`_:
+Save the prediction results in CDF as `Annotations <https://docs.cognite.com/api/v1/#tag/Annotations>`_:
 
 .. code:: python
 
