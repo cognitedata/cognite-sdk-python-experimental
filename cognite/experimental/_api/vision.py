@@ -77,7 +77,7 @@ class VisionAPI(ContextAPI):
         file_ids: Optional[List[int]] = None,
         file_external_ids: Optional[List[str]] = None,
     ) -> VisionExtractJob:
-        """Extract features from image files.
+        """Start an asynchronous job to extract features from image files.
 
         Args:
             features (Union[Feature, List[Feature]]): The feature(s) to extract from the provided image files.
@@ -117,7 +117,7 @@ class VisionAPI(ContextAPI):
         )
 
     def get_extract_job(self, job_id: InternalId) -> VisionExtractJob:
-        """Retrieve an extraction job.
+        """Retrieve an existing extract job by ID.
 
         Args:
             job_id (InternalId): ID of an existing feature extraction job.
