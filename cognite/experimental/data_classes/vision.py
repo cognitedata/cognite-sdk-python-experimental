@@ -422,6 +422,13 @@ class VisionExtractJob(VisionJob):
         self._items = items
 
     @property
+    def parameters(self) -> Optional[Dict[str, Any]]:
+        """Returns a dict of the used feature parameters"""
+        if self.status in {JobStatus.QUEUED.value, JobStatus.COMPLETED.value}:
+            self._parameters = self.result["parameters"]
+        return self._parameters
+
+    @property
     def errors(self) -> List[str]:
         """Returns a list of all error messages across files"""
         return [item["errorMessage"] for item in self.result["items"] if "errorMessage" in item]
