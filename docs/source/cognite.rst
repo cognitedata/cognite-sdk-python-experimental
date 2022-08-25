@@ -352,6 +352,17 @@ Save the prediction results in CDF as `Annotations <https://docs.cognite.com/api
 .. note:: 
     Prediction results are stored in CDF as `Annotations <https://docs.cognite.com/api/v1/#tag/Annotations/operation/annotationsCreate>`_ using the :code:`images.*` annotation types. In particular, text detections are stored as :code:`images.TextRegion`, asset tag detections are stored as :code:`images.AssetLink`, while other detections are stored as :code:`images.ObjectDetection`.    
 
+Tweaking the parameters of a feature extractor:
+
+.. code:: python
+
+    >>> from cognite.experimental.data_classes.vision import FeatureParameters, TextDetectionParameters
+    >>> extract_job = c.vision.extract(
+    ...     features=Feature.TEXT_DETECTION,
+    ...     file_ids=[1, 2],
+    ...     parameters=FeatureParameters(TextDetectionParameters(threshold=0.9))
+    ... )
+
 Extract
 ^^^^^^^
 .. automethod:: cognite.experimental._api.vision.VisionAPI.extract

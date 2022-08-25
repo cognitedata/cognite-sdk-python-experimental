@@ -75,6 +75,46 @@ EitherFileId = Union[InternalFileId, ExternalFileId]
 
 
 @dataclass
+class ThresholdParameter:
+    threshold: Optional[float] = None
+
+
+@dataclass
+class AssetTagDetectionParameters(VisionResource, ThresholdParameter):
+    partial_match: Optional[bool] = None
+    asset_subtree_ids: Optional[List[int]] = None
+
+
+@dataclass
+class TextDetectionParameters(VisionResource, ThresholdParameter):
+    pass
+
+
+@dataclass
+class PeopleDetectionParameters(VisionResource, ThresholdParameter):
+    pass
+
+
+@dataclass
+class IndustrialObjectDetectionParameters(VisionResource, ThresholdParameter):
+    pass
+
+
+@dataclass
+class PersonalProtectiveEquipmentDetectionParameters(VisionResource, ThresholdParameter):
+    pass
+
+
+@dataclass
+class FeatureParameters(VisionResource):
+    text_detection_parameters: Optional[TextDetectionParameters] = None
+    asset_tag_detection_parameters: Optional[AssetTagDetectionParameters] = None
+    people_detection_parameters: Optional[PeopleDetectionParameters] = None
+    industrial_object_detection_parameters: Optional[IndustrialObjectDetectionParameters] = None
+    personal_protective_equipment_detection_parameters: Optional[PersonalProtectiveEquipmentDetectionParameters] = None
+
+
+@dataclass
 class AllOfFileId(InternalFileId):
     file_external_id: Optional[ExternalId] = None
 

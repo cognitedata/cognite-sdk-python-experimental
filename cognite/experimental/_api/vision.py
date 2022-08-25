@@ -8,6 +8,7 @@ from cognite.experimental.data_classes.vision import (
     DetectAssetsInFilesJob,
     EitherFileId,
     Feature,
+    FeatureParameters,
     InternalId,
     VisionExtractJob,
 )
@@ -76,6 +77,7 @@ class VisionAPI(ContextAPI):
         features: Union[Feature, List[Feature]],
         file_ids: Optional[List[int]] = None,
         file_external_ids: Optional[List[str]] = None,
+        parameters: Optional[FeatureParameters] = None,
     ) -> VisionExtractJob:
         """Start an asynchronous job to extract features from image files.
 
@@ -113,6 +115,7 @@ class VisionAPI(ContextAPI):
             status_path="/extract/",
             items=self._process_file_ids(file_ids, file_external_ids),
             features=features,
+            parameters=parameters.dump(camel_case=True),
             job_cls=VisionExtractJob,
         )
 
