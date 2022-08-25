@@ -115,7 +115,7 @@ class VisionAPI(ContextAPI):
             status_path="/extract/",
             items=self._process_file_ids(file_ids, file_external_ids),
             features=features,
-            parameters=parameters.dump(camel_case=True),
+            parameters=parameters.dump(camel_case=True) if parameters is not None else None,
             job_cls=VisionExtractJob,
         )
 
