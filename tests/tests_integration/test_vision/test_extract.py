@@ -44,4 +44,3 @@ class TestExtract:
         assert job.items[0]["fileId"] == file_id
         assert job.status_time > 0
         assert job.created_time > 0
-        assert job.parameters == {"peopleDetectionParameters": {"threshold": 0.1}}
