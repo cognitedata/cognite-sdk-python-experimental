@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.95.0]
+
+### Added
+
+- Implemented support for providing feature parameters to `client.vision.extract`
+
 ## [0.94.1]
 
 ### Added

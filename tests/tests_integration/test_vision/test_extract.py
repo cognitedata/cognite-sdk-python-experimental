@@ -3,7 +3,12 @@ from cognite.client.data_classes import FileMetadata
 from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.vision import Feature, VisionExtractJob
+from cognite.experimental.data_classes.vision import (
+    Feature,
+    FeatureParameters,
+    PeopleDetectionParameters,
+    VisionExtractJob,
+)
 
 COGNITE_CLIENT = CogniteClient()
 VAPI = COGNITE_CLIENT.vision
@@ -27,7 +32,11 @@ def file_id(cognite_client: CogniteClient) -> int:
 
 class TestExtract:
     def test_extract(self, file_id: int) -> None:
-        job = VAPI.extract(features=Feature.PEOPLE_DETECTION, file_ids=[file_id])
+        job = VAPI.extract(
+            features=Feature.PEOPLE_DETECTION,
+            file_ids=[file_id],
+            parameters=FeatureParameters(people_detection_parameters=PeopleDetectionParameters(threshold=0.1)),
+        )
         assert isinstance(job, VisionExtractJob)
         assert job.job_id > 0
         assert JobStatus(job.status) == JobStatus.QUEUED
