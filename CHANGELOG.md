@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Fixed
 
-- import statement for ClientConfig
+- Import statement for ClientConfig conflicting with v4 of `cognite-sdk`.
 
 ## [0.95.0]
 
