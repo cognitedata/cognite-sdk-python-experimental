@@ -1,13 +1,13 @@
 from typing import Optional
 
-from cognite.client import utils
+from cognite.client import ClientConfig
 from cognite.client._api.extractionpipelines import ExtractionPipelinesAPI
 
 from cognite.experimental.data_classes import ExtractionPipelineConfig, ExtractionPipelineConfigRevisionList
 
 
 class ExperimentalExtractionPipelinesAPI(ExtractionPipelinesAPI):
-    def __init__(self, config: utils._client_config.ClientConfig, api_version: str = None, cognite_client=None):
+    def __init__(self, config: ClientConfig, api_version: str = None, cognite_client=None):
         super(ExperimentalExtractionPipelinesAPI, self).__init__(
             config=config, api_version=api_version, cognite_client=cognite_client
         )
