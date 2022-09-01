@@ -9,7 +9,14 @@ from cognite.client.data_classes.contextualization import JobStatus
 from cognite.experimental.data_classes import Annotation
 from cognite.experimental.data_classes.annotation_types.images import TextRegion
 from cognite.experimental.data_classes.annotation_types.primitives import BoundingBox, CdfResourceRef, VisionResource
-from cognite.experimental.data_classes.vision import VisionExtractItem, VisionExtractJob, VisionExtractPredictions
+from cognite.experimental.data_classes.vision import (
+    AssetTagDetectionParameters,
+    FeatureParameters,
+    TextDetectionParameters,
+    VisionExtractItem,
+    VisionExtractJob,
+    VisionExtractPredictions,
+)
 from cognite.experimental.utils import resource_to_camel_case, resource_to_snake_case
 
 mock_vision_predictions_dict: Dict[str, Any] = {
@@ -297,3 +304,31 @@ class TestVisionExtractJob:
         mock_result.return_value = result
         job = VisionExtractJob(status=JobStatus.COMPLETED.value, cognite_client=cognite_client)
         assert job._predictions_to_annotations(**(params or {})) == expected_items
+
+
+class TestFeatureParameters:
+    @pytest.mark.parametrize(
+        "item, expected_dump, camel_case",
+        [
+            (
+                FeatureParameters(text_detection_parameters=TextDetectionParameters(threshold=0.3)),
+                {"text_detection_parameters": {"threshold": 0.3}},
+                False,
+            ),
+            (
+                FeatureParameters(text_detection_parameters=TextDetectionParameters(threshold=0.3)),
+                {"textDetectionParameters": {"threshold": 0.3}},
+                True,
+            ),
+            (
+                FeatureParameters(
+                    asset_tag_detection_parameters=AssetTagDetectionParameters(asset_subtree_ids=[1, 2, 3])
+                ),
+                {"assetTagDetectionParameters": {"assetSubtreeIds": [1, 2, 3]}},
+                True,
+            ),
+        ],
+        ids=["dump", "dump w/camelcase", "only non-null values are dumped"],
+    )
+    def test_dump(self, item: VisionResource, expected_dump: Dict[str, Any], camel_case: bool) -> None:
+        assert item.dump(camel_case) == expected_dump

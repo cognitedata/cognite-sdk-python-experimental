@@ -7,7 +7,13 @@ from cognite.client.data_classes.contextualization import JobStatus
 from responses import RequestsMock
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.vision import Feature, VisionExtractJob
+from cognite.experimental.data_classes.vision import (
+    Feature,
+    FeatureParameters,
+    PersonalProtectiveEquipmentDetectionParameters,
+    TextDetectionParameters,
+    VisionExtractJob,
+)
 from tests.utils import jsgz_load
 
 COGNITE_CLIENT = CogniteClient()
@@ -76,20 +82,35 @@ def mock_get_extract(rsps: RequestsMock, mock_get_response_body_ok: Dict[str, An
 
 class TestExtract:
     @pytest.mark.parametrize(
-        "features, error_message",
+        "features, parameters, error_message",
         [
-            ("foo", "features must be one of types \\[<enum 'Feature'>, <class 'list'>\\]"),
-            ([Feature.TEXT_DETECTION, "foo"], "feature 'foo' must be one of types \\[<enum 'Feature'>]"),
-            (None, "features cannot be None"),
-            (Feature.TEXT_DETECTION, None),
-            ([Feature.TEXT_DETECTION, Feature.PERSONAL_PROTECTIVE_EQUIPMENT_DETECTION], None),
+            ("foo", None, "features must be one of types \\[<enum 'Feature'>, <class 'list'>\\]"),
+            ([Feature.TEXT_DETECTION, "foo"], None, "feature 'foo' must be one of types \\[<enum 'Feature'>]"),
+            (None, None, "features cannot be None"),
+            (Feature.TEXT_DETECTION, None, None),
+            (
+                Feature.TEXT_DETECTION,
+                FeatureParameters(text_detection_parameters=TextDetectionParameters(threshold=0.5)),
+                None,
+            ),
+            (
+                [Feature.TEXT_DETECTION, Feature.PERSONAL_PROTECTIVE_EQUIPMENT_DETECTION],
+                FeatureParameters(
+                    text_detection_parameters=TextDetectionParameters(threshold=0.1),
+                    personal_protective_equipment_detection_parameters=PersonalProtectiveEquipmentDetectionParameters(
+                        threshold=0.2
+                    ),
+                ),
+                None,
+            ),
         ],
         ids=[
             "invalid_feature",
             "invalid_non_supported_type_in_list",
             "invalid_feature_None_value",
             "one_feature",
-            "multiple_features",
+            "one_feature with parameter",
+            "multiple_features with parameters",
         ],
     )
     def test_extract(
@@ -97,6 +118,7 @@ class TestExtract:
         mock_post_extract: RequestsMock,
         mock_get_extract: RequestsMock,
         features: Union[Feature, List[Feature]],
+        parameters: Optional[FeatureParameters],
         error_message: Optional[str],
     ) -> None:
         file_ids = [1, 2, 3]
@@ -106,7 +128,9 @@ class TestExtract:
                 VAPI.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
         else:
             # Job should be queued immediately after a successfully POST
-            job = VAPI.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
+            job = VAPI.extract(
+                features=features, file_ids=file_ids, file_external_ids=file_external_ids, parameters=parameters
+            )
             assert isinstance(job, VisionExtractJob)
             assert "Queued" == job.status
             # Wait for job to complete and check its content
@@ -120,10 +144,17 @@ class TestExtract:
             for call in mock_post_extract.calls:
                 if "extract" in call.request.url and call.request.method == "POST":
                     num_post_requests += 1
-                    assert {
+
+                    expected_features_and_items = {
                         "features": [f.value for f in features] if isinstance(features, list) else [features.value],
                         "items": [{"fileId": fid} for fid in file_ids],
-                    } == jsgz_load(call.request.body)
+                    }
+                    expected_request_body = (
+                        expected_features_and_items
+                        if parameters is None
+                        else {**expected_features_and_items, "parameters": parameters.dump(camel_case=True)}
+                    )
+                    assert expected_request_body == jsgz_load(call.request.body)
                 else:
                     num_get_requests += 1
                     assert f"/{expected_job_id}" in call.request.url

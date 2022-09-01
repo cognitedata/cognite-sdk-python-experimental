@@ -12,6 +12,24 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.96.0]
+
+### Fixed
+
+- Import statement for ClientConfig conflicting with v4 of `cognite-sdk`.
+
+## [0.95.0]
+
+### Added
+
+- Implemented support for providing feature parameters to `client.vision.extract`
+
+## [0.94.1]
+
+### Added
+
+- Quickstart guide for Vision extract method.
+
 ## [0.94.0]
 
 ### Removed
