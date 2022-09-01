@@ -12,6 +12,20 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.97.0]
+
+### Removed
+
+- Support for cognite-sdk v3 / cognite-sdk-core.
+
+### Added
+
+- Support for cognite-sdk v4.
+
+### Changed
+
+- CogniteClient constructor to use the new ClientConfig type in cognite-sdk v4.
+
 ## [0.96.0]
 
 ### Fixed
