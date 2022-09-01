@@ -16,7 +16,7 @@ VAPI = COGNITE_CLIENT.vision
 
 @pytest.fixture(scope="class")
 def file_id() -> int:
-    return 2817345574340931
+    return 3823365477419477
 
 
 class TestExtract:
