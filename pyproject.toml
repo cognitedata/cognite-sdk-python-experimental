@@ -12,7 +12,7 @@ packages = [
 
 [tool.black]
 line-length = 120
-target_version = ['py37']
+target_version = ['py38']
 include = '\.py$'
 
 [tool.isort]
@@ -23,7 +23,7 @@ line_length = 120
 legacy_tox_ini = """
 [tox]
 isolated_build = true
-envlist = py36,py37,py38
+envlist = py38, py39, py310
 
 [testenv]
 setenv =
@@ -43,7 +43,7 @@ commands =
 """
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4.0.0"
+python = ">=3.8,<4.0.0"
 responses = "^0.13.3"
 sympy = "^1.3.0"
 typing-extensions = ">=3.7.4,<5"
