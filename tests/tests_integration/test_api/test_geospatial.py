@@ -73,7 +73,7 @@ def test_feature_with_raster(cognite_client, test_feature_type, test_feature):
 def test_mvt_mappings_def(cognite_client, test_feature_type):
     external_id = f"MVT/O@ö_{uuid.uuid4().hex[:10]}"
     mvt_mappings_def = cognite_client.geospatial.create_mvt_mappings_definitions(
-        MvpMappingsDefinition(
+        MvtMappingsDefinition(
             external_id=external_id,
             mappings=[
                 {
@@ -90,7 +90,6 @@ def test_mvt_mappings_def(cognite_client, test_feature_type):
 
 
 class TestExperimentalGeospatialAPI:
-    @pytest.mark.skip(reason="test fails with error 400 'Data sets do not exist.'")
     def test_create_feature_type_dataset(self, cognite_client):
         feature_type_spec = FeatureType(
             external_id="external_id",
@@ -146,7 +145,6 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5
         assert res.upper_left_y == -0.5
 
-    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_get_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.get_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -222,7 +220,6 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5891363261459447
         assert res.upper_left_y == -0.31623471547260973
 
-    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.delete_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -237,7 +234,6 @@ class TestExperimentalGeospatialAPI:
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
 
-    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
         feature_type_updated = cognite_client.geospatial.update_feature_types(
             update=FeatureTypeUpdate(
@@ -273,8 +269,8 @@ class TestExperimentalGeospatialAPI:
 
     def test_list_mvt_mappings_definitions(self, cognite_client, test_mvt_mappings_def):
         res = cognite_client.geospatial.list_mvt_mappings_definitions()
-        assert len(res) == 1
-        assert res[0].external_id == test_mvt_mappings_def.external_id
+        mapping = [it for it in res if it.external_id == test_mvt_mappings_def.external_id]
+        assert len(mapping) == 1
 
     def test_compute(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(

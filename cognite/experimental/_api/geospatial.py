@@ -249,8 +249,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     @_with_cognite_domain
     def create_mvt_mappings_definitions(
         self,
-        mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
-    ) -> MvpMappingsDefinitionList:
+        mappings_definitions: Union[MvtMappingsDefinition, MvtMappingsDefinitionList],
+    ) -> MvtMappingsDefinitionList:
         """`Creates MVP mappings`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialCreateMvtMappings>
 
@@ -266,7 +266,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
                 >>> from cognite.client import CogniteClient
                 >>> c = CogniteClient()
-                >>> mvp_mappings_def = MvpMappingsDefinition(
+                >>> mvp_mappings_def = MvtMappingsDefinition(
                 >>>                        external_id="surveys",
                 >>>                        mappings_definitions=[
                 ...                            {
@@ -287,7 +287,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._create_multiple(
-            items=mappings_definitions, resource_path=resource_path, cls=MvpMappingsDefinitionList
+            items=mappings_definitions, resource_path=resource_path, cls=MvtMappingsDefinitionList
         )
 
     @_with_cognite_domain
@@ -313,7 +313,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         return self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
 
     @_with_cognite_domain
-    def retrieve_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> MvpMappingsDefinitionList:
+    def retrieve_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> MvtMappingsDefinitionList:
         """`Retrieve MVP mappings definitions`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialGetByIdsMvtMappings>
 
@@ -322,7 +322,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             external_id (Union[str, List[str]]): External ID or list of external ids
 
         Returns:
-            MvpMappingsDefinitionList: the requested mappings or None if it does not exist.
+            MvtMappingsDefinitionList: the requested mappings or None if it does not exist.
 
         Examples:
 
@@ -334,16 +334,16 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._retrieve_multiple(
-            wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=MvpMappingsDefinitionList
+            wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=MvtMappingsDefinitionList
         )
 
     @_with_cognite_domain
-    def list_mvt_mappings_definitions(self) -> MvpMappingsDefinitionList:
-        """`List MVP mappings definitions`
+    def list_mvt_mappings_definitions(self) -> MvtMappingsDefinitionList:
+        """`List MVT mappings definitions`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialListMvtMappings>
 
         Returns:
-            MvpMappingsDefinitionList: the requested mappings or EmptyList if it does not exist.
+            MvtMappingsDefinitionList: the requested mappings or EmptyList if it does not exist.
 
         Examples:
 
@@ -354,7 +354,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c.geospatial.list_mvt_mappings_definitions()
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
-        return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)
+        return self._list(method="POST", cls=MvtMappingsDefinitionList, resource_path=resource_path)
 
     @_with_cognite_domain
     def compute(

@@ -20,7 +20,7 @@ class RasterMetadata:
         return instance
 
 
-class MvpMappingsDefinition(CogniteResource):
+class MvtMappingsDefinition(CogniteResource):
     """MVT mappings definition"""
 
     def __init__(
@@ -42,8 +42,8 @@ class MvpMappingsDefinition(CogniteResource):
         return instance
 
 
-class MvpMappingsDefinitionList(CogniteResourceList):
-    _RESOURCE = MvpMappingsDefinition
+class MvtMappingsDefinitionList(CogniteResourceList):
+    _RESOURCE = MvtMappingsDefinition
     _ASSERT_CLASSES = False
 
 
