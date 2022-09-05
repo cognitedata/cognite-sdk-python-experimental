@@ -4,8 +4,10 @@ from cognite.client.data_classes.contextualization import JobStatus
 
 from cognite.experimental import CogniteClient
 
-COGNITE_CLIENT = CogniteClient()
-VAPI = COGNITE_CLIENT.vision
+
+@pytest.fixture
+def vision_api(cognite_client):
+    return cognite_client.vision
 
 
 @pytest.fixture(scope="class")
@@ -24,8 +26,8 @@ def file_id(cognite_client: CogniteClient) -> int:
 
 
 class TestAssetDetection:
-    def test_asset_detection(self, file_id):
-        response = VAPI.detect_assets_in_files(files=[{"file_id": file_id}])
+    def test_asset_detection(self, file_id, vision_api):
+        response = vision_api.detect_assets_in_files(files=[{"file_id": file_id}])
         assert response is not None
         assert response.job_id > 0
         assert response.job_id == response.job_id
@@ -35,7 +37,7 @@ class TestAssetDetection:
         assert response.status_time > 0
         assert response.created_time > 0
 
-        response = VAPI.retrieve_detected_assets_in_files_job(job_id=response.job_id)
+        response = vision_api.retrieve_detected_assets_in_files_job(job_id=response.job_id)
         assert response is not None
         assert response.job_id > 0
         assert response.status_time > 0

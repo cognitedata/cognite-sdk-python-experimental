@@ -1,14 +1,14 @@
 import re
-import unittest
 
 import pytest
 from cognite.client.data_classes import ContextualizationJob
 
-from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
 
-COGNITE_CLIENT = CogniteClient()
-RULES_API = COGNITE_CLIENT.match_rules
+
+@pytest.fixture
+def rules_api(cognite_client):
+    return cognite_client.match_rules
 
 
 @pytest.fixture
@@ -83,11 +83,11 @@ def result_mock(matches, rules):
 
 
 @pytest.fixture
-def mock_apply(rsps):
+def mock_apply(rsps, rules_api):
     response_body = {"jobId": 121110, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        RULES_API._get_base_url_with_base_path() + RULES_API._RESOURCE_PATH + "/apply",
+        rules_api._get_base_url_with_base_path() + rules_api._RESOURCE_PATH + "/apply",
         status=200,
         json=response_body,
     )
@@ -95,11 +95,11 @@ def mock_apply(rsps):
 
 
 @pytest.fixture
-def mock_suggest(rsps):
+def mock_suggest(rsps, rules_api):
     response_body = {"jobId": 101112, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        RULES_API._get_base_url_with_base_path() + RULES_API._RESOURCE_PATH + "/suggest",
+        rules_api._get_base_url_with_base_path() + rules_api._RESOURCE_PATH + "/suggest",
         status=200,
         json=response_body,
     )
@@ -107,7 +107,7 @@ def mock_suggest(rsps):
 
 
 @pytest.fixture
-def mock_status_apply_ok(rsps, result_mock):
+def mock_status_apply_ok(rsps, result_mock, rules_api):
     response_body = {
         "jobId": 121110,
         "status": "Completed",
@@ -115,7 +115,7 @@ def mock_status_apply_ok(rsps, result_mock):
     }
     rsps.add(
         rsps.GET,
-        re.compile(RULES_API._get_base_url_with_base_path() + RULES_API._RESOURCE_PATH + "/apply" + "/\\d+"),
+        re.compile(rules_api._get_base_url_with_base_path() + rules_api._RESOURCE_PATH + "/apply" + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -123,7 +123,7 @@ def mock_status_apply_ok(rsps, result_mock):
 
 
 @pytest.fixture
-def mock_status_suggest_ok(rsps, rules):
+def mock_status_suggest_ok(rsps, rules, rules_api):
     response_body = {
         "jobId": 121110,
         "status": "Completed",
@@ -131,7 +131,7 @@ def mock_status_suggest_ok(rsps, rules):
     }
     rsps.add(
         rsps.GET,
-        re.compile(RULES_API._get_base_url_with_base_path() + RULES_API._RESOURCE_PATH + "/suggest" + "/\\d+"),
+        re.compile(rules_api._get_base_url_with_base_path() + rules_api._RESOURCE_PATH + "/suggest" + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -139,8 +139,8 @@ def mock_status_suggest_ok(rsps, rules):
 
 
 class TestMatchRules:
-    def test_suggest(self, sources, targets, reference_matches, mock_suggest, mock_status_suggest_ok):
-        job = RULES_API.suggest(sources=sources, targets=targets, matches=reference_matches)
+    def test_suggest(self, sources, targets, reference_matches, mock_suggest, mock_status_suggest_ok, rules_api):
+        job = rules_api.suggest(sources=sources, targets=targets, matches=reference_matches)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert "rules" in job.result
@@ -161,8 +161,8 @@ class TestMatchRules:
         assert 1 == n_suggest_calls
         assert 1 == n_status_calls
 
-    def test_apply(self, sources, targets, rules, mock_apply, mock_status_apply_ok):
-        job = RULES_API.apply(sources=sources, targets=targets, rules=rules)
+    def test_apply(self, sources, targets, rules, mock_apply, mock_status_apply_ok, rules_api):
+        job = rules_api.apply(sources=sources, targets=targets, rules=rules)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert "items" in job.result

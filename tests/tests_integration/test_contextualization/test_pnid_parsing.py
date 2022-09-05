@@ -4,17 +4,20 @@ from cognite.client.data_classes import ContextualizationJob
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList
 
-COGNITE_CLIENT = CogniteClient()
-PNIDAPI = COGNITE_CLIENT.pnid_parsing
 PNID_FILE_ID = 3261066797848581
+
+
+@pytest.fixture
+def pnid_api(cognite_client):
+    return cognite_client.pnid_parsing
 
 
 @pytest.mark.skip(reason="This test fails approx 4 out of 5 times")
 class TestPNIDParsingIntegration:
-    def test_run_detect_str(self):
+    def test_run_detect_str(self, pnid_api):
         entities = ["YT-96122", "XE-96125"]
         file_id = PNID_FILE_ID
-        job = PNIDAPI.detect(file_id=file_id, entities=entities)
+        job = pnid_api.detect(file_id=file_id, entities=entities)
         assert isinstance(job, ContextualizationJob)
         assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
         assert "Completed" == job.status
@@ -22,21 +25,21 @@ class TestPNIDParsingIntegration:
         assert isinstance(job._repr_html_(), str)
         assert isinstance(job.matches, PNIDDetectionList)
 
-    def test_run_detect_entities_dict(self):
+    def test_run_detect_entities_dict(self, pnid_api):
         entities = [{"name": "YT-96122"}, {"name": "XE-96125", "ee": 123}, {"name": "XWDW-9615"}]
         file_id = PNID_FILE_ID
-        job = PNIDAPI.detect(file_id=file_id, entities=entities)
+        job = pnid_api.detect(file_id=file_id, entities=entities)
         assert isinstance(job, ContextualizationJob)
         assert {"items", "fileId", "fileExternalId"} == set(job.result.keys())
         assert "Completed" == job.status
-        ocr_result = PNIDAPI.ocr(file_id=file_id)
+        ocr_result = pnid_api.ocr(file_id=file_id)
         assert isinstance(ocr_result, PNIDDetectionPageList)
         assert isinstance(ocr_result._repr_html_(), str)
         assert 1 == len(ocr_result)
         assert isinstance(ocr_result[0], PNIDDetectionList)
         assert isinstance(ocr_result[0]._repr_html_(), str)
 
-    def test_run_convert(self):
+    def test_run_convert(self, pnid_api):
         items = [
             {
                 "text": "21-PT-1019",
@@ -49,7 +52,7 @@ class TestPNIDParsingIntegration:
             }
         ]
         file_id = PNID_FILE_ID
-        job = PNIDAPI.convert(file_id=file_id, items=items, grayscale=True)
+        job = pnid_api.convert(file_id=file_id, items=items, grayscale=True)
         assert isinstance(job, ContextualizationJob)
         assert {
             "pngUrl",

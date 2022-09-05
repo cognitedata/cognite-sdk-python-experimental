@@ -2,15 +2,16 @@ import re
 
 import pytest
 
-from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import ExtractionPipelineConfig, ExtractionPipelineConfigRevisionList
-
-COGNITE_CLIENT = CogniteClient()
-TEST_API = COGNITE_CLIENT.extraction_pipelines
 
 
 @pytest.fixture
-def mock_config_response(rsps):
+def extraction_pipelines_api(cognite_client):
+    return cognite_client.extraction_pipelines
+
+
+@pytest.fixture
+def mock_config_response(rsps, extraction_pipelines_api):
     response_body = {
         "revision": 5,
         "externalId": "int-123",
@@ -18,7 +19,7 @@ def mock_config_response(rsps):
         "createdTime": 1565965333132,
         "config": "config abc 123",
     }
-    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/config")
+    url_pattern = re.compile(re.escape(extraction_pipelines_api._get_base_url_with_base_path()) + r"/extpipes/config")
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
@@ -27,7 +28,7 @@ def mock_config_response(rsps):
 
 
 @pytest.fixture
-def mock_config_response_with_revision(rsps):
+def mock_config_response_with_revision(rsps, extraction_pipelines_api):
     response_body = {
         "revision": 4,
         "externalId": "int-123",
@@ -36,7 +37,8 @@ def mock_config_response_with_revision(rsps):
         "config": "config abc 123 2",
     }
     url_pattern = re.compile(
-        re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/config\?externalId=int-123&revision=4$"
+        re.escape(extraction_pipelines_api._get_base_url_with_base_path())
+        + r"/extpipes/config\?externalId=int-123&revision=4$"
     )
     rsps.assert_all_requests_are_fired = False
 
@@ -45,7 +47,7 @@ def mock_config_response_with_revision(rsps):
 
 
 @pytest.fixture
-def mock_config_list_response(rsps):
+def mock_config_list_response(rsps, extraction_pipelines_api):
     response_body = {
         "items": [
             {"revision": 3, "externalId": "int-123", "description": "description 3", "createdTime": 1565965333132},
@@ -53,7 +55,9 @@ def mock_config_list_response(rsps):
             {"revision": 1, "externalId": "int-123", "description": "description 1", "createdTime": 1565965133132},
         ]
     }
-    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/config/revisions")
+    url_pattern = re.compile(
+        re.escape(extraction_pipelines_api._get_base_url_with_base_path()) + r"/extpipes/config/revisions"
+    )
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.GET, url_pattern, status=200, json=response_body)
@@ -61,7 +65,7 @@ def mock_config_list_response(rsps):
 
 
 @pytest.fixture
-def mock_revert_config_response(rsps):
+def mock_revert_config_response(rsps, extraction_pipelines_api):
     response_body = {
         "revision": 6,
         "externalId": "int-123",
@@ -69,7 +73,9 @@ def mock_revert_config_response(rsps):
         "createdTime": 1565965333132,
         "config": "config abc 123",
     }
-    url_pattern = re.compile(re.escape(TEST_API._get_base_url_with_base_path()) + r"/extpipes/config/revert")
+    url_pattern = re.compile(
+        re.escape(extraction_pipelines_api._get_base_url_with_base_path()) + r"/extpipes/config/revert"
+    )
     rsps.assert_all_requests_are_fired = False
 
     rsps.add(rsps.POST, url_pattern, status=200, json=response_body)
@@ -77,35 +83,35 @@ def mock_revert_config_response(rsps):
 
 
 class TestExtractionPipelines:
-    def test_retrieve_config(self, mock_config_response):
-        res = TEST_API.get_config(external_id="int-123")
+    def test_retrieve_config(self, mock_config_response, extraction_pipelines_api):
+        res = extraction_pipelines_api.get_config(external_id="int-123")
         print("Test")
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
         assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_retrieve_config_revision(self, mock_config_response_with_revision):
-        res = TEST_API.get_config(external_id="int-123", revision=4)
+    def test_retrieve_config_revision(self, mock_config_response_with_revision, extraction_pipelines_api):
+        res = extraction_pipelines_api.get_config(external_id="int-123", revision=4)
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
         assert mock_config_response_with_revision.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_new_config(self, mock_config_response):
-        res = TEST_API.new_config(
+    def test_new_config(self, mock_config_response, extraction_pipelines_api):
+        res = extraction_pipelines_api.new_config(
             ExtractionPipelineConfig(external_id="int-123", config="config abc 123", description="description")
         )
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
         assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_revert_config(self, mock_revert_config_response):
-        res = TEST_API.revert_config(external_id="int-123", revision=3)
+    def test_revert_config(self, mock_revert_config_response, extraction_pipelines_api):
+        res = extraction_pipelines_api.revert_config(external_id="int-123", revision=3)
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
         assert mock_revert_config_response.calls[0].response.json() == res.dump(camel_case=True)
 
-    def test_list_revisions(self, mock_config_list_response):
-        res = TEST_API.list_config_revisions(external_id="int-123")
+    def test_list_revisions(self, mock_config_list_response, extraction_pipelines_api):
+        res = extraction_pipelines_api.list_config_revisions(external_id="int-123")
         res.cognite_client = None
         for r in res:
             r.cognite_client = None

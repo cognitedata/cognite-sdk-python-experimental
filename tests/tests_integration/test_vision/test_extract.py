@@ -10,8 +10,10 @@ from cognite.experimental.data_classes.vision import (
     VisionExtractJob,
 )
 
-COGNITE_CLIENT = CogniteClient()
-VAPI = COGNITE_CLIENT.vision
+
+@pytest.fixture
+def vision_api(cognite_client):
+    return cognite_client.vision
 
 
 @pytest.fixture(scope="class")
@@ -31,8 +33,8 @@ def file_id(cognite_client: CogniteClient) -> int:
 
 
 class TestExtract:
-    def test_extract(self, file_id: int) -> None:
-        job = VAPI.extract(
+    def test_extract(self, file_id: int, vision_api) -> None:
+        job = vision_api.extract(
             features=Feature.PEOPLE_DETECTION,
             file_ids=[file_id],
             parameters=FeatureParameters(people_detection_parameters=PeopleDetectionParameters(threshold=0.1)),

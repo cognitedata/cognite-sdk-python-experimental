@@ -4,19 +4,20 @@ import pytest
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.exceptions import ModelFailedException
 
-from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
-
-COGNITE_CLIENT = CogniteClient()
-DOCUMENT_API = COGNITE_CLIENT.document_parsing
 
 
 @pytest.fixture
-def mock_detect(rsps):
+def document_api(cognite_client):
+    return cognite_client.document_parsing
+
+
+@pytest.fixture
+def mock_detect(rsps, document_api):
     response_body = {"jobId": 456, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/detect",
+        document_api._get_base_url_with_base_path() + document_api._RESOURCE_PATH + "/detect",
         status=200,
         json=response_body,
     )
@@ -24,11 +25,11 @@ def mock_detect(rsps):
 
 
 @pytest.fixture
-def mock_status_ok(rsps):
+def mock_status_ok(rsps, document_api):
     response_body = {"jobId": 123, "status": "Completed", "svgUrl": "x"}
     rsps.add(
         rsps.GET,
-        re.compile(DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/\\d+"),
+        re.compile(document_api._get_base_url_with_base_path() + document_api._RESOURCE_PATH + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -36,11 +37,11 @@ def mock_status_ok(rsps):
 
 
 @pytest.fixture
-def mock_status_failed(rsps):
+def mock_status_failed(rsps, document_api):
     response_body = {"jobId": 123, "status": "Failed", "errorMessage": "error message"}
     rsps.add(
         rsps.GET,
-        re.compile(DOCUMENT_API._get_base_url_with_base_path() + DOCUMENT_API._RESOURCE_PATH + "/\\d+"),
+        re.compile(document_api._get_base_url_with_base_path() + document_api._RESOURCE_PATH + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -48,10 +49,10 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_detect(self, mock_detect, mock_status_ok):
+    def test_detect(self, mock_detect, mock_status_ok, document_api):
         entities = ["a", "b"]
         file_id = 123432423
-        job = DOCUMENT_API.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
+        job = document_api.detect(file_id, entities, name_mapping={"a": "c"}, partial_match=False)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert {"svgUrl": "x"} == job.result
@@ -77,8 +78,8 @@ class TestPNIDParsing:
         assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
-    def test_run_fails(self, mock_detect, mock_status_failed):
-        job = DOCUMENT_API.detect([1], [])
+    def test_run_fails(self, mock_detect, mock_status_failed, document_api):
+        job = document_api.detect([1], [])
         with pytest.raises(ModelFailedException) as exc_info:
             job.result
         assert "ContextualizationJob 456 failed with error 'error message'" == str(exc_info.value)
