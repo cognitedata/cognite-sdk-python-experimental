@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.97.0]
+
+### Changed
+
+- Update the alert prefix from `/alerts/alerts` to `/alerts`.
+
 ## [0.96.0]
 
 ### Fixed
