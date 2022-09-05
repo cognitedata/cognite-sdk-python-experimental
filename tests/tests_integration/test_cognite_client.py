@@ -1,9 +1,25 @@
+import os
+
 import pytest
+from cognite.client import ClientConfig
+from cognite.client.credentials import OAuthClientCredentials
 from cognite.client.exceptions import CogniteAPIError
 
 from cognite.experimental import CogniteClient
 
-c = CogniteClient()
+creds = OAuthClientCredentials(
+    token_url=os.getenv("COGNITE_TOKEN_URL"),
+    client_id=os.getenv("COGNITE_CLIENT_ID"),
+    client_secret=os.getenv("COGNITE_CLIENT_SECRET"),
+    scopes=[os.getenv("COGNITE_TOKEN_SCOPES")],
+)
+cnf = ClientConfig(
+    client_name=os.getenv("COGNITE_CLIENT_NAME"),
+    base_url=os.getenv("COGNITE_BASE_URL"),
+    project=os.getenv("COGNITE_PROJECT"),
+    credentials=creds,
+)
+c = CogniteClient(cnf)
 
 
 class TestCogniteClient:
