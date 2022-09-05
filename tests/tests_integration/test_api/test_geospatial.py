@@ -1,31 +1,10 @@
-import os
 import uuid
 
 import pytest
-from cognite.client import ClientConfig
-from cognite.client.credentials import OAuthClientCredentials
 from cognite.client.data_classes.geospatial import *
 from cognite.client.exceptions import CogniteAPIError
 
-from cognite.experimental._client import CogniteClient
 from cognite.experimental.data_classes.geospatial import *
-
-
-@pytest.fixture(scope="class")
-def cognite_client() -> CogniteClient:
-    creds = OAuthClientCredentials(
-        token_url=os.getenv("COGNITE_TOKEN_URL"),
-        client_id=os.getenv("COGNITE_CLIENT_ID"),
-        client_secret=os.getenv("COGNITE_CLIENT_SECRET"),
-        scopes=[os.getenv("COGNITE_TOKEN_SCOPES")],
-    )
-    cnf = ClientConfig(
-        client_name=os.getenv("COGNITE_CLIENT_NAME"),
-        base_url=os.getenv("COGNITE_BASE_URL"),
-        project=os.getenv("COGNITE_PROJECT"),
-        credentials=creds,
-    )
-    return CogniteClient(cnf)
 
 
 @pytest.fixture(params=[None, "sdk_test"])

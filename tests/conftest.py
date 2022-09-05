@@ -3,7 +3,11 @@ import re
 
 import pytest
 import responses
+from cognite.client import ClientConfig
+from cognite.client.credentials import OAuthClientCredentials
+from cognite.client.data_classes.geospatial import *
 
+from cognite.experimental._client import CogniteClient
 from cognite.experimental.data_classes import Annotation, AnnotationFilter
 
 
@@ -62,3 +66,20 @@ def disable_gzip():
     os.environ["COGNITE_DISABLE_GZIP"] = "1"
     yield
     del os.environ["COGNITE_DISABLE_GZIP"]
+
+
+@pytest.fixture(scope="class")
+def cognite_client() -> CogniteClient:
+    creds = OAuthClientCredentials(
+        token_url=os.getenv("COGNITE_TOKEN_URL"),
+        client_id=os.getenv("COGNITE_CLIENT_ID"),
+        client_secret=os.getenv("COGNITE_CLIENT_SECRET"),
+        scopes=[os.getenv("COGNITE_TOKEN_SCOPES")],
+    )
+    cnf = ClientConfig(
+        client_name=os.getenv("COGNITE_CLIENT_NAME"),
+        base_url=os.getenv("COGNITE_BASE_URL"),
+        project=os.getenv("COGNITE_PROJECT"),
+        credentials=creds,
+    )
+    return CogniteClient(cnf)

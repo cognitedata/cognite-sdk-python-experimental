@@ -1,9 +1,3 @@
-import os
-
-from cognite.client import ClientConfig
-from cognite.client.credentials import OAuthClientCredentials
-
-from cognite.experimental._client import CogniteClient
 from cognite.experimental.data_classes import (
     EntityMatchingMatchList,
     EntityMatchingPipeline,
@@ -11,26 +5,10 @@ from cognite.experimental.data_classes import (
     EntityMatchingPipelineUpdate,
 )
 
-creds = OAuthClientCredentials(
-    token_url=os.getenv("COGNITE_TOKEN_URL"),
-    client_id=os.getenv("COGNITE_CLIENT_ID"),
-    client_secret=os.getenv("COGNITE_CLIENT_SECRET"),
-    scopes=[os.getenv("COGNITE_TOKEN_SCOPES")],
-)
-cnf = ClientConfig(
-    client_name=os.getenv("COGNITE_CLIENT_NAME"),
-    base_url=os.getenv("COGNITE_BASE_URL"),
-    project=os.getenv("COGNITE_PROJECT"),
-    credentials=creds,
-)
-COGNITE_CLIENT = CogniteClient(cnf)
-
-
-EMAPI = COGNITE_CLIENT.entity_matching
-
 
 class TestEntityMatchingIntegration:
-    def test_pipeline(self):
+    def test_pipeline(self, cognite_client):
+        EMAPI = cognite_client.entity_matching
         sources = targets = {"assetSubtreeIds": [{"externalId": "test__asset_0"}], "resource": "assets"}
         pipeline = EntityMatchingPipeline(
             name="foo",
