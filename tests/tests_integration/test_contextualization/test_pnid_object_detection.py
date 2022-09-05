@@ -1,6 +1,8 @@
 import pytest
 from cognite.client.data_classes import ContextualizationJob
 
+PNID_FILE_ID = 3261066797848581
+
 
 @pytest.fixture
 def annotations_api(cognite_client):
@@ -14,7 +16,6 @@ def pnid_object_detection_api(cognite_client):
 
 class TestPNIDObjectDetectionIntegration:
     def test_run_find_objects(self, pnid_object_detection_api):
-        PNID_FILE_ID = 3261066797848581
         file_id = PNID_FILE_ID
         job = pnid_object_detection_api.find_objects(file_id)
         assert isinstance(job, ContextualizationJob)
