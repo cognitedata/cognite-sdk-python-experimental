@@ -3,19 +3,20 @@ import re
 import pytest
 from cognite.client.data_classes import ContextualizationJob
 
-from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
-
-COGNITE_CLIENT = CogniteClient()
-EMAPI = COGNITE_CLIENT.entity_matching
 
 
 @pytest.fixture
-def mock_rules(rsps):
+def entity_matching_api(cognite_client):
+    return cognite_client.entity_matching
+
+
+@pytest.fixture
+def mock_rules(rsps, entity_matching_api):
     response_body = {"jobId": 456, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/rules",
+        entity_matching_api._get_base_url_with_base_path() + entity_matching_api._RESOURCE_PATH + "/rules",
         status=200,
         json=response_body,
     )
@@ -23,11 +24,13 @@ def mock_rules(rsps):
 
 
 @pytest.fixture
-def mock_status_rules_ok(rsps):
+def mock_status_rules_ok(rsps, entity_matching_api):
     response_body = {"jobId": 456, "status": "Completed", "items": [1]}
     rsps.add(
         rsps.GET,
-        re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/rules/\\d+"),
+        re.compile(
+            f"{entity_matching_api._get_base_url_with_base_path()}{entity_matching_api._RESOURCE_PATH}/rules/\\d+"
+        ),
         status=200,
         json=response_body,
     )
@@ -47,20 +50,23 @@ def mock_suggest_ok(rsps):
 
 
 @pytest.fixture
-def mock_fit(rsps):
+def mock_fit(rsps, entity_matching_api):
     response_body = {"id": 123, "status": "Queued", "createdTime": 42}
     rsps.add(
-        rsps.POST, EMAPI._get_base_url_with_base_path() + EMAPI._RESOURCE_PATH + "/", status=200, json=response_body
+        rsps.POST,
+        entity_matching_api._get_base_url_with_base_path() + entity_matching_api._RESOURCE_PATH + "/",
+        status=200,
+        json=response_body,
     )
     yield rsps
 
 
 @pytest.fixture
-def mock_status_ok(rsps):
+def mock_status_ok(rsps, entity_matching_api):
     response_body = {"id": 123, "status": "Completed", "createdTime": 42, "statusTime": 456, "startTime": 789}
     rsps.add(
         rsps.GET,
-        re.compile(f"{EMAPI._get_base_url_with_base_path()}{EMAPI._RESOURCE_PATH}/\\d+"),
+        re.compile(f"{entity_matching_api._get_base_url_with_base_path()}{entity_matching_api._RESOURCE_PATH}/\\d+"),
         status=200,
         json=response_body,
     )
@@ -68,8 +74,8 @@ def mock_status_ok(rsps):
 
 
 class TestEntityMatching:
-    def test_rules(self, mock_rules, mock_status_rules_ok):
-        job = EMAPI.create_rules({"a": "b"})
+    def test_rules(self, mock_rules, mock_status_rules_ok, entity_matching_api):
+        job = entity_matching_api.create_rules({"a": "b"})
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert 456 == job.job_id
@@ -77,17 +83,19 @@ class TestEntityMatching:
         assert {"items": [1]} == job.result
         assert "Completed" == job.status
 
-    def test_suggest_fields(self, mock_suggest_ok):
-        res = EMAPI.suggest_fields(sources=[{"name": "a"}], targets=[{"name": "b"}])
+    def test_suggest_fields(self, mock_suggest_ok, entity_matching_api):
+        res = entity_matching_api.suggest_fields(sources=[{"name": "a"}], targets=[{"name": "b"}])
         assert {"sources": [{"name": "a"}], "targets": [{"name": "b"}], "scoreThreshold": 0.5} == jsgz_load(
             mock_suggest_ok.calls[0].request.body
         )
         assert isinstance(res, list)
 
-    def test_fit(self, mock_fit, mock_status_ok):  # dup for replacements test, remove/move if that gets to v1
+    def test_fit(
+        self, mock_fit, mock_status_ok, entity_matching_api
+    ):  # dup for replacements test, remove/move if that gets to v1
         entities_from = [{"id": 1, "name": "xx"}]
         entities_to = [{"id": 2, "name": "yy"}]
-        model = EMAPI.fit(
+        model = entity_matching_api.fit(
             sources=entities_from,
             targets=entities_to,
             true_matches=[(1, 2)],

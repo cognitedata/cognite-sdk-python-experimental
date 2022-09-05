@@ -3,19 +3,20 @@ import re
 import pytest
 from cognite.client.data_classes import ContextualizationJob
 
-from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
 
-COGNITE_CLIENT = CogniteClient()
-SCAPI = COGNITE_CLIENT.templates.completion
+
+@pytest.fixture
+def completion_api(cognite_client):
+    return cognite_client.templates.completion
 
 
 @pytest.fixture
-def mock_complete_type(rsps):
+def mock_complete_type(rsps, completion_api):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/type",
+        completion_api._get_base_url_with_base_path() + completion_api._RESOURCE_PATH + "/type",
         status=200,
         json=response_body,
     )
@@ -23,11 +24,11 @@ def mock_complete_type(rsps):
 
 
 @pytest.fixture
-def mock_complete_template(rsps):
+def mock_complete_template(rsps, completion_api):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/template",
+        completion_api._get_base_url_with_base_path() + completion_api._RESOURCE_PATH + "/template",
         status=200,
         json=response_body,
     )
@@ -35,11 +36,11 @@ def mock_complete_template(rsps):
 
 
 @pytest.fixture
-def mock_suggest_instance(rsps):
+def mock_suggest_instance(rsps, completion_api):
     response_body = {"jobId": 123, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/instancesuggestion",
+        completion_api._get_base_url_with_base_path() + completion_api._RESOURCE_PATH + "/instancesuggestion",
         status=200,
         json=response_body,
     )
@@ -47,11 +48,11 @@ def mock_suggest_instance(rsps):
 
 
 @pytest.fixture
-def mock_status_ok(rsps):
+def mock_status_ok(rsps, completion_api):
     response_body = {"jobId": 123, "status": "Completed", "items": []}
     rsps.add(
         rsps.GET,
-        re.compile(SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/\\d+"),
+        re.compile(completion_api._get_base_url_with_base_path() + completion_api._RESOURCE_PATH + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -59,11 +60,13 @@ def mock_status_ok(rsps):
 
 
 @pytest.fixture
-def mock_suggest_instance_status_ok(rsps):
+def mock_suggest_instance_status_ok(rsps, completion_api):
     response_body = {"jobId": 123, "status": "Completed", "items": []}
     rsps.add(
         rsps.GET,
-        re.compile(SCAPI._get_base_url_with_base_path() + SCAPI._RESOURCE_PATH + "/instancesuggestion/\\d+"),
+        re.compile(
+            completion_api._get_base_url_with_base_path() + completion_api._RESOURCE_PATH + "/instancesuggestion/\\d+"
+        ),
         status=200,
         json=response_body,
     )
@@ -71,9 +74,9 @@ def mock_suggest_instance_status_ok(rsps):
 
 
 class TestSchemaCompletion:
-    def test_complete_type(self, mock_complete_type, mock_status_ok):
+    def test_complete_type(self, mock_complete_type, mock_status_ok, completion_api):
         eid = "schematocomplete"
-        job = SCAPI.complete_type(external_id=eid)
+        job = completion_api.complete_type(external_id=eid)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert {"items": []} == job.result
@@ -92,10 +95,10 @@ class TestSchemaCompletion:
         assert 1 == extract_calls
         assert 1 == n_status_calls
 
-    def test_complete_template(self, mock_complete_template, mock_status_ok):
+    def test_complete_template(self, mock_complete_template, mock_status_ok, completion_api):
         eid = "schematocomplete"
         template = "templatename"
-        job = SCAPI.complete(external_id=eid, template_name=template)
+        job = completion_api.complete(external_id=eid, template_name=template)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert {"items": []} == job.result
@@ -114,10 +117,10 @@ class TestSchemaCompletion:
         assert 1 == extract_calls
         assert 1 == n_status_calls
 
-    def test_suggest_instance(self, mock_suggest_instance, mock_suggest_instance_status_ok):
+    def test_suggest_instance(self, mock_suggest_instance, mock_suggest_instance_status_ok, completion_api):
         eid = "schematocomplete"
         template = "templatename"
-        job = SCAPI.suggest_instance(external_id=eid, template_name=template)
+        job = completion_api.suggest_instance(external_id=eid, template_name=template)
         assert "Queued" == job.status
         assert {"items": []} == job.result
         extract_calls = 0

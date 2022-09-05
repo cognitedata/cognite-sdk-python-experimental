@@ -16,8 +16,10 @@ from cognite.experimental.data_classes.vision import (
 )
 from tests.utils import jsgz_load
 
-COGNITE_CLIENT = CogniteClient()
-VAPI = COGNITE_CLIENT.vision
+
+@pytest.fixture
+def vision_api(cognite_client):
+    return cognite_client.vision
 
 
 @pytest.fixture
@@ -120,15 +122,16 @@ class TestExtract:
         features: Union[Feature, List[Feature]],
         parameters: Optional[FeatureParameters],
         error_message: Optional[str],
+        vision_api,
     ) -> None:
         file_ids = [1, 2, 3]
         file_external_ids = []
         if error_message is not None:
             with pytest.raises(TypeError, match=error_message):
-                VAPI.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
+                vision_api.extract(features=features, file_ids=file_ids, file_external_ids=file_external_ids)
         else:
             # Job should be queued immediately after a successfully POST
-            job = VAPI.extract(
+            job = vision_api.extract(
                 features=features, file_ids=file_ids, file_external_ids=file_external_ids, parameters=parameters
             )
             assert isinstance(job, VisionExtractJob)
@@ -165,14 +168,17 @@ class TestExtract:
         self,
         mock_post_extract: RequestsMock,
         mock_get_extract: RequestsMock,
+        vision_api,
     ) -> None:
         file_ids = [1, 2, 3]
         file_external_ids = []
 
-        job = VAPI.extract(features=Feature.TEXT_DETECTION, file_ids=file_ids, file_external_ids=file_external_ids)
+        job = vision_api.extract(
+            features=Feature.TEXT_DETECTION, file_ids=file_ids, file_external_ids=file_external_ids
+        )
 
         # retrieved job should correspond to the started job:
-        retrieved_job = VAPI.get_extract_job(job_id=job.job_id)
+        retrieved_job = vision_api.get_extract_job(job_id=job.job_id)
 
         assert isinstance(retrieved_job, VisionExtractJob)
         assert retrieved_job.job_id == job.job_id

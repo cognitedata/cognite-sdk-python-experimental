@@ -14,8 +14,10 @@ from cognite.experimental.data_classes.vision import (
     InternalFileId,
 )
 
-COGNITE_CLIENT = CogniteClient()
-VAPI = COGNITE_CLIENT.vision
+
+@pytest.fixture
+def vision_api(cognite_client):
+    return cognite_client.vision
 
 
 @pytest.fixture
@@ -103,8 +105,8 @@ def contains_file_id(
 
 
 class TestAssetDetection:
-    def test_create_job(self, mock_create_job_ok):
-        job = VAPI.detect_assets_in_files(
+    def test_create_job(self, mock_create_job_ok, vision_api):
+        job = vision_api.detect_assets_in_files(
             files=[
                 {"file_id": 1, "file_external_id": "some_external_id"},
                 {"file_id": 2},
@@ -123,8 +125,8 @@ class TestAssetDetection:
         assert job.partial_match, job
         assert 39468345 in job.asset_subtree_ids, job
 
-    def test_retrieve_job(self, mock_fetch_job_ok):
-        job = VAPI.retrieve_detected_assets_in_files_job(job_id=1)
+    def test_retrieve_job(self, mock_fetch_job_ok, vision_api):
+        job = vision_api.retrieve_detected_assets_in_files_job(job_id=1)
         assert isinstance(job, DetectAssetsInFilesJob), "wrong instance returned"
         assert job.status == JobStatus.COMPLETED.value, job
         assert job.items is not None, job

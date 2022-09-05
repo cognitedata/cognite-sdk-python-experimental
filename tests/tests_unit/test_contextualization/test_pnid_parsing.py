@@ -9,16 +9,18 @@ from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectResults
 from tests.utils import jsgz_load
 
-COGNITE_CLIENT = CogniteClient()
-PNIDAPI = COGNITE_CLIENT.pnid_parsing
+
+@pytest.fixture
+def pnid_parsing_api(cognite_client):
+    return cognite_client.pnid_parsing
 
 
 @pytest.fixture
-def mock_detect(rsps):
+def mock_detect(rsps, pnid_parsing_api):
     response_body = {"jobId": 789, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/detect",
+        pnid_parsing_api._get_base_url_with_base_path() + pnid_parsing_api._RESOURCE_PATH + "/detect",
         status=200,
         json=response_body,
     )
@@ -26,11 +28,11 @@ def mock_detect(rsps):
 
 
 @pytest.fixture
-def mock_extract_pattern(rsps):
+def mock_extract_pattern(rsps, pnid_parsing_api):
     response_body = {"jobId": 456, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/extractpattern",
+        pnid_parsing_api._get_base_url_with_base_path() + pnid_parsing_api._RESOURCE_PATH + "/extractpattern",
         status=200,
         json=response_body,
     )
@@ -38,11 +40,11 @@ def mock_extract_pattern(rsps):
 
 
 @pytest.fixture
-def mock_convert(rsps):
+def mock_convert(rsps, pnid_parsing_api):
     response_body = {"jobId": 345, "status": "Queued"}
     rsps.add(
         rsps.POST,
-        PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/convert",
+        pnid_parsing_api._get_base_url_with_base_path() + pnid_parsing_api._RESOURCE_PATH + "/convert",
         status=200,
         json=response_body,
     )
@@ -50,7 +52,7 @@ def mock_convert(rsps):
 
 
 @pytest.fixture
-def mock_status_detect_ok(rsps):
+def mock_status_detect_ok(rsps, pnid_parsing_api):
     response_body = {
         "jobId": 123,
         "status": "Completed",
@@ -62,7 +64,9 @@ def mock_status_detect_ok(rsps):
     }
     rsps.add(
         rsps.GET,
-        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/detect" + "/\\d+"),
+        re.compile(
+            pnid_parsing_api._get_base_url_with_base_path() + pnid_parsing_api._RESOURCE_PATH + "/detect" + "/\\d+"
+        ),
         status=200,
         json=response_body,
     )
@@ -70,7 +74,7 @@ def mock_status_detect_ok(rsps):
 
 
 @pytest.fixture
-def mock_status_pattern_ok(rsps):
+def mock_status_pattern_ok(rsps, pnid_parsing_api):
     response_body = {
         "jobId": 456,
         "status": "Completed",
@@ -80,7 +84,12 @@ def mock_status_pattern_ok(rsps):
     }
     rsps.add(
         rsps.GET,
-        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/extractpattern" + "/\\d+"),
+        re.compile(
+            pnid_parsing_api._get_base_url_with_base_path()
+            + pnid_parsing_api._RESOURCE_PATH
+            + "/extractpattern"
+            + "/\\d+"
+        ),
         status=200,
         json=response_body,
     )
@@ -88,7 +97,7 @@ def mock_status_pattern_ok(rsps):
 
 
 @pytest.fixture
-def mock_status_convert_ok(rsps):
+def mock_status_convert_ok(rsps, pnid_parsing_api):
     response_body = {
         "jobId": 123,
         "status": "Completed",
@@ -99,7 +108,9 @@ def mock_status_convert_ok(rsps):
     }
     rsps.add(
         rsps.GET,
-        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/convert" + "/\\d+"),
+        re.compile(
+            pnid_parsing_api._get_base_url_with_base_path() + pnid_parsing_api._RESOURCE_PATH + "/convert" + "/\\d+"
+        ),
         status=200,
         json=response_body,
     )
@@ -107,11 +118,11 @@ def mock_status_convert_ok(rsps):
 
 
 @pytest.fixture
-def mock_status_failed(rsps):
+def mock_status_failed(rsps, pnid_parsing_api):
     response_body = {"jobId": 123, "status": "Failed", "errorMessage": "error message"}
     rsps.add(
         rsps.GET,
-        re.compile(PNIDAPI._get_base_url_with_base_path() + PNIDAPI._RESOURCE_PATH + "/\\d+"),
+        re.compile(pnid_parsing_api._get_base_url_with_base_path() + pnid_parsing_api._RESOURCE_PATH + "/\\d+"),
         status=200,
         json=response_body,
     )
@@ -119,10 +130,10 @@ def mock_status_failed(rsps):
 
 
 class TestPNIDParsing:
-    def test_detect_entities_str(self, mock_detect, mock_status_detect_ok):
+    def test_detect_entities_str(self, mock_detect, mock_status_detect_ok, pnid_parsing_api):
         entities = ["a", "b"]
         file_id = 123432423
-        job = PNIDAPI.detect(
+        job = pnid_parsing_api.detect(
             file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
         )
         assert isinstance(job, ContextualizationJob)
@@ -149,10 +160,10 @@ class TestPNIDParsing:
         assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
-    def test_detect_entities_dict(self, mock_detect, mock_status_detect_ok):
+    def test_detect_entities_dict(self, mock_detect, mock_status_detect_ok, pnid_parsing_api):
         entities = [{"name": "a"}, {"name": "b"}]
         file_id = 123432423
-        job = PNIDAPI.detect(
+        job = pnid_parsing_api.detect(
             file_id=file_id, entities=entities, name_mapping={"a": "c"}, partial_match=False, min_tokens=3
         )
         assert isinstance(job, ContextualizationJob)
@@ -183,10 +194,10 @@ class TestPNIDParsing:
         assert 1 == n_detect_calls
         assert 1 == n_status_calls
 
-    def test_extract_pattern(self, mock_extract_pattern, mock_status_pattern_ok):
+    def test_extract_pattern(self, mock_extract_pattern, mock_status_pattern_ok, pnid_parsing_api):
         patterns = ["ab{1,2}"]
         file_id = 123432423
-        job = PNIDAPI.extract_pattern(file_id=file_id, patterns=patterns)
+        job = pnid_parsing_api.extract_pattern(file_id=file_id, patterns=patterns)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert "items" in job.result
@@ -205,7 +216,7 @@ class TestPNIDParsing:
         assert 1 == n_extract_pattern_calls
         assert 1 == n_status_calls
 
-    def test_convert(self, mock_convert, mock_status_convert_ok):
+    def test_convert(self, mock_convert, mock_status_convert_ok, pnid_parsing_api):
         items = [
             {
                 "text": "21-PT-1019",
@@ -218,7 +229,7 @@ class TestPNIDParsing:
             }
         ]
         file_id = 123432423
-        job = PNIDAPI.convert(file_id=file_id, items=items, grayscale=True)
+        job = pnid_parsing_api.convert(file_id=file_id, items=items, grayscale=True)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert "svgUrl" in job.result
@@ -241,10 +252,10 @@ class TestPNIDParsing:
         assert 1 == n_convert_calls
         assert 1 == n_status_calls
 
-    def test_file_external_id(self, mock_detect, mock_status_detect_ok):
+    def test_file_external_id(self, mock_detect, mock_status_detect_ok, pnid_parsing_api):
         entities = [{"name": "a"}, {"name": "b"}]
         file_external_id = "123432423"
-        job = PNIDAPI.detect(
+        job = pnid_parsing_api.detect(
             file_external_id=file_external_id,
             entities=entities,
             name_mapping={"a": "c"},
