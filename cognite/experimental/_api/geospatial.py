@@ -498,7 +498,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 ...     )
                 ... ]
                 >>> res = c.geospatial.create_feature_types(feature_types)
-                >>> res = c.geospatial.create_features(
+                >>> res = c.geospatial.upsert_features(
                 ...     feature_type_external_id="my_feature_type",
                 ...     feature=Feature(
                 ...         external_id="my_feature",
