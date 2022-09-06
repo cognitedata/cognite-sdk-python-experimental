@@ -2,10 +2,10 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Dict, Generator, Optional, Union
+from typing import Dict, Generator, Optional, Sequence, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
-from cognite.client.data_classes.geospatial import Feature
+from cognite.client.data_classes.geospatial import Feature, FeatureList
 from cognite.client.exceptions import CogniteConnectionError, CogniteException
 from requests.exceptions import ChunkedEncodingError
 
@@ -459,3 +459,64 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         if content_type == "image/tiff":
             return res.content
         raise ValueError(f"unsupported content type ${content_type}")
+
+    def upsert_features(
+        self,
+        feature_type_external_id: str,
+        feature: Union[Feature, Sequence[Feature], FeatureList],
+        allow_crs_transformation: bool = False,
+        chunk_size: int = None,
+    ) -> Union[Feature, FeatureList]:
+        """`Upsert features`
+        <https://pr-1814.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/upsertFeatures>
+
+        Args:
+            feature_type_external_id: Feature type definition for the features to upsert.
+            feature: one feature or a list of features to upsert or a FeatureList object
+            allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
+                System defined in the feature type specification. When it is false, then requests with geometries in
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
+            chunk_size: maximum number of items in a single request to the api
+
+        Returns:
+            Union[Feature, FeatureList]: Upserted features
+
+        Examples:
+
+            Upsert some features:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_types = [
+                ...     FeatureType(
+                ...         external_id="my_feature_type",
+                ...         properties={
+                ...             "location": {"type": "POINT", "srid": 4326},
+                ...             "temperature": {"type": "DOUBLE"}
+                ...         }
+                ...     )
+                ... ]
+                >>> res = c.geospatial.create_feature_types(feature_types)
+                >>> res = c.geospatial.upsert_features(
+                ...     feature_type_external_id="my_feature_type",
+                ...     feature=Feature(
+                ...         external_id="my_feature",
+                ...         location={"wkt": "POINT(1 1)"},
+                ...         temperature=12.4
+                ...     )
+                ... )
+        """
+        if chunk_size is not None and (chunk_size < 1 or chunk_size > self._CREATE_LIMIT):
+            raise ValueError(f"The chunk_size must be strictly positive and not exceed {self._CREATE_LIMIT}")
+        if isinstance(feature, FeatureList):
+            feature = list(feature)
+        resource_path = self._feature_resource_path(feature_type_external_id) + "/upsert"
+        extra_body_fields = {"allowCrsTransformation": "true"} if allow_crs_transformation else {}
+        return self._create_multiple(
+            cls=FeatureList,
+            items=feature,
+            resource_path=resource_path,
+            extra_body_fields=extra_body_fields,
+            limit=chunk_size,
+        )
