@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.98.0]
+
+### Added
+
+- Implemented support for the geospatial upsert_features(...) method.
+
 ## [0.97.0]
 
 ### Changed
