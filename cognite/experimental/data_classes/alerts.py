@@ -117,7 +117,7 @@ class Alert(CogniteResource):
         external_id: str = None,
         timestamp: int = None,
         channel_id: int = None,
-        channel_external_id: int = None,
+        channel_external_id: str = None,
         source: str = None,
         value: str = None,
         level: str = None,
