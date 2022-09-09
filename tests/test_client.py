@@ -1,28 +1,27 @@
 import os
 
 import pytest
+from cognite.client import ClientConfig
+from cognite.client.credentials import APIKey, Token
 
 from cognite.experimental import CogniteClient
 
 
 class TestClient:
     def test_client(self):
-        CogniteClient(project="test", api_key="test")
+        CogniteClient(
+            ClientConfig(
+                client_name="experimental",
+                project="test",
+                credentials=APIKey("test"),
+            )
+        )
 
     def test_client_token(self):
-        CogniteClient(project="test", token="test")
-
-    def test_client_auto_key(self):
-
-        _environ = os.environ.copy()
-        try:
-            os.environ["TEST_API_KEY"] = ""
-            os.environ["COGNITE_API_KEY"] = ""
-            with pytest.raises(ValueError):
-                CogniteClient(project="test")
-
-            os.environ["TEST_API_KEY"] = "foo"
-            CogniteClient(project="test")
-        finally:
-            os.environ.clear()
-            os.environ.update(_environ)
+        CogniteClient(
+            ClientConfig(
+                client_name="experimental",
+                project="test",
+                credentials=Token("test"),
+            )
+        )

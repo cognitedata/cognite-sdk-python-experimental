@@ -1,8 +1,10 @@
 import os
 from typing import Callable, Dict, List, Optional, Union
 
+from cognite.client import ClientConfig, global_config
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
+from cognite.client.credentials import OAuthClientCredentials
 
 from cognite.experimental._api.alerts import AlertsAPI
 from cognite.experimental._api.annotations import AnnotationsAPI
@@ -26,65 +28,25 @@ class CogniteClient(Client):
     """Initializes cognite client, with experimental extensions.
 
     Args:
-        * api_key (str): Your api key. If not given, looks for it in environment variables COGNITE_API_KEY and [PROJECT]_API_KEY
-        * server (str): Sets base_url to https://[server].cognitedata.com, e.g. server=greenfield.
-        * Other keyword arguments are passed to the base SDK directly.
+        config (ClientConfig): The configuration for this client.
     """
 
-    def __init__(
-        self,
-        api_key: str = None,
-        project: str = None,
-        client_name: str = None,
-        base_url: str = None,
-        max_workers: int = None,
-        headers: Dict[str, str] = None,
-        timeout: int = None,
-        token: Union[str, Callable[[], str], None] = None,
-        token_url: Optional[str] = None,
-        token_client_id: Optional[str] = None,
-        token_client_secret: Optional[str] = None,
-        token_scopes: Optional[List[str]] = None,
-        token_custom_args: Optional[Dict[str, str]] = None,
-        disable_pypi_version_check: Optional[bool] = None,
-        debug: bool = False,
-        server=None,
-        **kwargs,
-    ):
-        if base_url is None and server is not None:
-            base_url = "https://" + server + ".cognitedata.com"
-
-        if client_name is None and not os.environ.get("COGNITE_CLIENT_NAME"):
-            client_name = "Cognite Experimental SDK"
-
-        no_auth_args = token is None and token_url is None and api_key is None
-        if no_auth_args and not os.environ.get("COGNITE_API_KEY") and project is not None:
-            key = project.upper().replace("-", "_") + "_API_KEY"
-            if os.environ.get(key):
-                api_key = os.environ[key]
-            else:
-                raise ValueError(
-                    "Did not find api key variable in environment, searched COGNITE_API_KEY and {}".format(key)
-                )
-
-        super().__init__(
-            api_key=api_key,
-            project=project,
-            client_name=client_name,
-            base_url=base_url,
-            max_workers=max_workers,
-            headers=headers,
-            timeout=timeout,
-            token=token,
-            token_url=token_url,
-            token_client_id=token_client_id,
-            token_client_secret=token_client_secret,
-            token_scopes=token_scopes,
-            token_custom_args=token_custom_args,
-            disable_pypi_version_check=disable_pypi_version_check,
-            debug=debug,
-            **kwargs,
-        )
+    def __init__(self, config: Optional[ClientConfig] = None):
+        if (client_config := config or global_config.default_client_config) is None:
+            credentials = OAuthClientCredentials(
+                token_url=os.environ["COGNITE_TOKEN_URL"],
+                client_id=os.environ["COGNITE_CLIENT_ID"],
+                client_secret=os.environ["COGNITE_CLIENT_SECRET"],
+                scopes=os.environ["COGNITE_TOKEN_SCOPES"].split(","),
+            )
+            client_config = ClientConfig(
+                os.environ["COGNITE_CLIENT_NAME"],
+                os.environ["COGNITE_PROJECT"],
+                credentials,
+                base_url=os.environ["COGNITE_BASE_URL"],
+            )
+        self._config = client_config
+        super().__init__(self._config)
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
         self.alerts = AlertsAPI(self._config, api_version="v1", cognite_client=self)
 
