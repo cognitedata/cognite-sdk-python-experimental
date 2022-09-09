@@ -363,7 +363,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
         group_by: List[Dict[str, Any]] = None,
-        output: List[Dict[str, Any]] = None,
+        output: Dict[str, Any] = None,
         binary_output: Dict[str, Any] = None,
     ) -> Union[bytes, ComputedItemList]:
         """`Compute something`
