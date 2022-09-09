@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.99.0]
+
+### Added
+
+- Support for group_by in the geospatial compute(...) method.
+
 ## [0.98.0]
 
 ### Added
