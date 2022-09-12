@@ -339,7 +339,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c.geospatial.retrieve_mvt_mappings_definitions(external_id="surveys")
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
-        identifiers = SingletonIdentifierSequence.load(external_ids=external_id)
+        identifiers = IdentifierSequence.load(external_ids=external_id)
         return self._retrieve_multiple(
             identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
             resource_path=resource_path,
