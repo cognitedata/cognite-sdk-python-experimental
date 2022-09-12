@@ -82,6 +82,8 @@ class TestExtractionPipelines:
         print("Test")
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
+        print(mock_config_response.calls[0].response.json())
+        print(res.dump(camel_case=True))
         assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
 
     def test_retrieve_config_revision(self, mock_config_response_with_revision):
