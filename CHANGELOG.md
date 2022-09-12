@@ -16,7 +16,7 @@ Changes are grouped as follows
 
 ### Removed
 
-- Removed vision extract from Playground SDK, as it is now in V1.
+- Removed everything vision-related as they are now in V1
 
 ## [0.98.0]
 
