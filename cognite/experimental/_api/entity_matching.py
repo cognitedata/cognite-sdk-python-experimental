@@ -96,7 +96,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipeline: Pipeline requested."""
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        IdentifierSequence.load(id, external_id).assert_singleton()
         return self._retrieve_multiple(
             identifiers=IdentifierSequence.load(ids=id, external_ids=external_id).as_singleton(),
             resource_cls=EntityMatchingPipeline,
@@ -142,7 +142,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        IdentifierSequence.load(id, external_id).assert_singleton()
         return self._run_job(job_path="/run", id=id, external_id=external_id, job_cls=EntityMatchingPipelineRun)
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
