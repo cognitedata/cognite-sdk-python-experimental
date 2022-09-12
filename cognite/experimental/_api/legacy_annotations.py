@@ -109,4 +109,4 @@ class LegacyAnnotationsAPI(APIClient):
             Annotation: annotation requested
         """
         assert_type(id, "id", [int], allow_none=False)
-        return self._retrieve_multiple(Identifier.load(id=id), resource_cls=LegacyAnnotation)
+        return self._retrieve(Identifier.load(id=id), cls=LegacyAnnotation)
