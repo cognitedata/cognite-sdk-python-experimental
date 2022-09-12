@@ -97,7 +97,11 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         Returns:
             EntityMatchingPipeline: Pipeline requested."""
         utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
-        return self._retrieve(identifier=Identifier.load(id=id, external_id=external_id), cls=EntityMatchingPipeline)
+        return self._retrieve_multiple(
+            identifiers=IdentifierSequence.load(ids=id, external_ids=external_id).as_singleton(),
+            resource_cls=EntityMatchingPipeline,
+            list_cls=EntityMatchingPipelineList,
+        )
 
     def retrieve_multiple(
         self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
