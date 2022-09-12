@@ -27,6 +27,7 @@ class TestEntityMatchingIntegration:
         assert {"matches", "generatedRules", "errors"} == run.result.keys()
         list_runs = new_pipeline.runs()
         assert isinstance(list_runs, EntityMatchingPipelineRunList)
+        print(run, list_runs[0])
         assert [run] == list_runs
         assert run == new_pipeline.latest_run()
         assert run == EMAPI.pipelines.runs.retrieve_latest(id=new_pipeline.id)
