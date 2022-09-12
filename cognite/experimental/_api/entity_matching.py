@@ -187,7 +187,12 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             item = [self._fix_update(update) for update in item]
         else:
             item = self._fix_update(item)
-        return self._update_multiple(items=item)
+        return self._update_multiple(
+            items=item,
+            list_cls=EntityMatchingPipelineList,
+            resource_cls=EntityMatchingPipeline,
+            update_cls=EntityMatchingPipelineUpdate,
+        )
 
 
 class EntityMatchingAPI(EntityMatchingBaseAPI):
