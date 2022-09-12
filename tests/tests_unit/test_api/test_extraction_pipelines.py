@@ -82,15 +82,13 @@ class TestExtractionPipelines:
         print("Test")
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
-        print(mock_config_response.calls[0].response.json())
-        print(res.dump(camel_case=True))
-        assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_config_response.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_retrieve_config_revision(self, mock_config_response_with_revision):
         res = TEST_API.get_config(external_id="int-123", revision=4)
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
-        assert mock_config_response_with_revision.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_config_response_with_revision.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_new_config(self, mock_config_response):
         res = TEST_API.new_config(
@@ -98,13 +96,13 @@ class TestExtractionPipelines:
         )
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
-        assert mock_config_response.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_config_response.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_revert_config(self, mock_revert_config_response):
         res = TEST_API.revert_config(external_id="int-123", revision=3)
         res.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfig)
-        assert mock_revert_config_response.calls[0].response.json() == res.dump(camel_case=True)
+        assert mock_revert_config_response.calls[1].response.json() == res.dump(camel_case=True)
 
     def test_list_revisions(self, mock_config_list_response):
         res = TEST_API.list_config_revisions(external_id="int-123")
@@ -112,4 +110,4 @@ class TestExtractionPipelines:
         for r in res:
             r.cognite_client = None
         assert isinstance(res, ExtractionPipelineConfigRevisionList)
-        assert mock_config_list_response.calls[0].response.json() == {"items": res.dump(camel_case=True)}
+        assert mock_config_list_response.calls[1].response.json() == {"items": res.dump(camel_case=True)}
