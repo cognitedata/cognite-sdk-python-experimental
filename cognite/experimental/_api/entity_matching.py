@@ -264,7 +264,7 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
-        return self._run_job(job_path="/rules", json={"items": matches})
+        return self._run_job(job_path="/rules", json={"items": matches}, job_cls=ContextualizationJob)
 
     def suggest_fields(
         self,
