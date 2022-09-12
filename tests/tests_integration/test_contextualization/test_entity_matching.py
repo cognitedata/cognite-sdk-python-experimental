@@ -13,7 +13,6 @@ EMAPI = COGNITE_CLIENT.entity_matching
 
 
 class TestEntityMatchingIntegration:
-    @pytest.mark.skip(reason="infinite loop")
     def test_pipeline(self):
         sources = targets = {"assetSubtreeIds": [{"externalId": "test__asset_0"}], "resource": "assets"}
         pipeline = EntityMatchingPipeline(

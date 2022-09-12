@@ -249,7 +249,7 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
                 "replacements": replacements,
             },
         )
-        return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
+        return EntityMatchingModel._load(response.json(), cognite_client=self._cognite_client)
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
