@@ -60,9 +60,9 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
 
         Returns:
             Union[EntityMatchingPipelineRun,EntityMatchingPipelineRunList]: list of latest pipeline runs, or a single object if a single id was given and the run was found"""
-        all_ids = self._process_ids(id, external_id, wrap_ids=True)
-        is_single_id = self._is_single_identifier(id, external_id)
-        runs = self._camel_post("/latest", json={"items": all_ids}).json()["items"]
+        identifiers = IdentifierSequence.load(ids=id, external_ids=external_id)
+        is_single_id = identifiers.is_singleton()
+        runs = self._camel_post("/latest", json={"items": identifiers.as_dicts()}).json()["items"]
         if is_single_id and runs:
             return EntityMatchingPipelineRun._load(runs[0], cognite_client=self._cognite_client)
         return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
