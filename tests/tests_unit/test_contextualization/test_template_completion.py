@@ -1,4 +1,3 @@
-import json
 import re
 
 import pytest
@@ -108,7 +107,7 @@ class TestSchemaCompletion:
         for call in mock_complete_template.calls:
             if call.request.method == "POST":
                 extract_calls += 1
-                assert {"externalId": eid, "templateName": template} == json.loads(call.request.body)
+                assert {"externalId": eid, "templateName": template} == jsgz_load(call.request.body)
             else:
                 n_status_calls += 1
                 assert "/123" in call.request.url
