@@ -15,7 +15,6 @@ from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
-from cognite.experimental._api.vision import VisionAPI
 
 APIClient.RETRYABLE_POST_ENDPOINTS |= {
     f"/{api}/{endpoint}" for api in ["types", "labels", "templates"] for endpoint in ["list", "byids", "search"]
@@ -102,4 +101,3 @@ class CogniteClient(Client):
 
         # template completion only
         self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
-        self.vision = VisionAPI(self._config, api_version="playground", cognite_client=self)
