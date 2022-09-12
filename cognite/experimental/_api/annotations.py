@@ -145,4 +145,8 @@ class AnnotationsAPI(APIClient):
             Annotation: annotation requested
         """
         assert_type(id, "id", [int], allow_none=False)
-        return self._retrieve(identifier=Identifier.load(id=id), cls=Annotation)
+        return self._retrieve_multiple(
+            identifiers=IdentifierSequence.load(ids=id).as_singleton(),
+            list_cls=AnnotationList,
+            resource_cls=Annotation,
+        )
