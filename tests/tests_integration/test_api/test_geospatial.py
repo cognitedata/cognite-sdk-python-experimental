@@ -323,3 +323,9 @@ class TestExperimentalGeospatialAPI:
             output={"count": {"count": {"function": {"property": "temperature"}}}, "volume": {"property": "volume"}},
         )
         assert type(res) == ComputedItemList
+        res = cognite_client.geospatial.compute(
+            from_feature_type=test_feature_type.external_id,
+            order_by=[[{"property": "volume"}, "ASC"]],
+            output={"volume": {"property": "volume"}},
+        )
+        assert type(res) == ComputedItemList

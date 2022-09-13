@@ -363,6 +363,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
         group_by: List[Dict[str, Any]] = None,
+        order_by: List[List[Any]] = None,
         output: Dict[str, Any] = None,
         binary_output: Dict[str, Any] = None,
     ) -> Union[bytes, ComputedItemList]:
@@ -374,6 +375,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             from_feature_type (str): the main feature type external id to compute from
             filter (Dict[str, Any]): the filter for the main feature type
             group_by (List[Dict[str, Any]]): the list of group by expressions
+            order_by (List[List[Any]]): the list of order by expressions and direction
             output (Dict[str, Any]): the output json spec
             binary_output (Dict[str, Any]): the binary output computation to execute
 
@@ -439,11 +441,31 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 ...         "from4326to102016": {"stTransform": {"geometry": {"ref": "paris"}, "srid": 102016}},
                 ...     }
                 ... )
+
+            Compute the sorted aggregation result from a feature type
+
+                >>> client.geospatial.compute(
+                ...     from_feature_type="someFeatureType",
+                ...     group_by=[
+                ...         {"property": "tag"}
+                ...         {"property": "week"}
+                ...     ],
+                ...     order_by=[
+                ...         [{"property": "week"}, "ASC"],
+                ...         [{"property": "tag"}, "DESC"]
+                ...     ],
+                ...     output={
+                ...         "myTag": {"property": "tag"}
+                ...         "myWeek": {"property": "week"}
+                ...         "myCount": {"count": {"function": {"property": "tag"}}}
+                ...     }
+                ... )
         """
         sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
         filter_json = {"filter": filter} if filter is not None else {}
         group_by_json = {"groupBy": group_by} if group_by is not None else {}
+        order_by_json = {"orderBy": order_by} if order_by is not None else {}
         output_json = {"output": output} if output is not None else {}
         binary_output_json = {"binaryOutput": binary_output} if binary_output is not None else {}
         res = self._post(
@@ -453,6 +475,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 **from_feature_type_json,
                 **filter_json,
                 **group_by_json,
+                **order_by_json,
                 **output_json,
                 **binary_output_json,
             },
