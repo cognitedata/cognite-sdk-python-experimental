@@ -67,3 +67,11 @@ class ComputedItem(CogniteResource):
 class ComputedItemList(CogniteResourceList):
     _RESOURCE = ComputedItem
     _ASSERT_CLASSES = False
+
+
+class ComputeOrderSpec:
+    """An order specification with respect to an expression."""
+
+    def __init__(self, expression: Dict[str, Any], direction: str):
+        self.expression = expression
+        self.direction = direction
