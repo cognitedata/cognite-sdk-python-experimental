@@ -377,6 +377,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         sub_computes: Dict[str, Any] = None,
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
+        group_by: List[Dict[str, Any]] = None,
         output: Dict[str, Any] = None,
         binary_output: Dict[str, Any] = None,
     ) -> Union[bytes, ComputedItemList]:
@@ -387,6 +388,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             sub_computes (Dict[str, Any]): the sub-computed data for the main compute
             from_feature_type (str): the main feature type external id to compute from
             filter (Dict[str, Any]): the filter for the main feature type
+            group_by (List[Dict[str, Any]]): the list of group by expressions
             output (Dict[str, Any]): the output json spec
             binary_output (Dict[str, Any]): the binary output computation to execute
 
@@ -456,6 +458,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
         filter_json = {"filter": filter} if filter is not None else {}
+        group_by_json = {"groupBy": group_by} if group_by is not None else {}
         output_json = {"output": output} if output is not None else {}
         binary_output_json = {"binaryOutput": binary_output} if binary_output is not None else {}
         res = self._post(
@@ -464,6 +467,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 **sub_computes_json,
                 **from_feature_type_json,
                 **filter_json,
+                **group_by_json,
                 **output_json,
                 **binary_output_json,
             },
