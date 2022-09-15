@@ -60,7 +60,8 @@ class TestPNIDParsing:
 
         n_detect_calls = 0
         n_status_calls = 0
-        for call in mock_detect.calls:
+        # The first call is to https://login.microsoftonline.com/.../oauth2/v2.0/token
+        for call in mock_detect.calls[1:]:
             if "detect" in call.request.url:
                 n_detect_calls += 1
                 assert {

@@ -2,6 +2,7 @@ from typing import Dict, List, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type
+from cognite.client.utils._identifier import IdentifierSequence
 
 from cognite.experimental.data_classes.alerts import (
     Alert,
@@ -83,10 +84,12 @@ class AlertChannelsAPI(APIClient):
 
         Returns:
             Union[AlertChannel, AlertChannelList]: updated items"""
-        return self._update_multiple(items=items)
+        return self._update_multiple(
+            items=items, list_cls=AlertChannelList, resource_cls=AlertChannel, update_cls=AlertChannelUpdate
+        )
 
     def delete(self, ids: List[int] = None, external_ids: List[str] = None) -> None:
-        self._delete_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+        self._delete_multiple(identifiers=IdentifierSequence.load(ids=ids, external_ids=external_ids), wrap_ids=True)
 
 
 class AlertSubscribersAPI(APIClient):
@@ -113,6 +116,8 @@ class AlertSubscribersAPI(APIClient):
         return self._create_multiple(
             items=subscribers,
             resource_path=self._RESOURCE_PATH,
+            list_cls=AlertSubscriberList,
+            resource_cls=AlertSubscriber,
         )
 
     def list(
@@ -168,6 +173,8 @@ class AlertSubscriptionsAPI(APIClient):
         return self._create_multiple(
             items=subscriptions,
             resource_path=self._RESOURCE_PATH,
+            list_cls=AlertSubscriptionList,
+            resource_cls=AlertSubscription,
         )
 
     """Delete subscriptions
@@ -211,7 +218,9 @@ class AlertsAPI(APIClient):
         alerts: Union[Alert, List[Alert]],
     ) -> Union[Alert, AlertList]:
         assert_type(alerts, "alerts", [Alert, list])
-        return self._create_multiple(items=alerts, resource_path=self._RESOURCE_PATH)
+        return self._create_multiple(
+            items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
+        )
 
     def list(
         self,
@@ -249,7 +258,7 @@ class AlertsAPI(APIClient):
             end_time=end_time,
         ).dump(camel_case=True)
 
-        return self._list(method="POST", limit=limit, filter=filter)
+        return self._list(method="POST", limit=limit, filter=filter, list_cls=AlertList, resource_cls=Alert)
 
     def close(
         self,

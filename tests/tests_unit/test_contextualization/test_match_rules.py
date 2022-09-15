@@ -149,7 +149,7 @@ class TestMatchRules:
 
         n_suggest_calls = 0
         n_status_calls = 0
-        for call in mock_suggest.calls:
+        for call in mock_suggest.calls[1:]:
             if call.request.method == "POST":
                 n_suggest_calls += 1
                 assert {"sources": sources, "targets": targets, "matches": reference_matches} == jsgz_load(

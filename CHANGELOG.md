@@ -12,11 +12,25 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.101.0]
+## [0.102.0]
 
 ### Added
 
 - Add list alert subscribers with filter.
+
+## [0.101.0]
+
+### Removed
+
+- Support for cognite-sdk-core
+
+### Added
+
+- Support for cognite-sdk:4.x.x
+
+### Changed
+
+- CogniteClient constructor to use the new ClientConfig type in cognite-sdk:4.x.x
 
 ## [0.100.0]
 
