@@ -12,6 +12,7 @@ from cognite.experimental.data_classes.alerts import (
     AlertFilter,
     AlertList,
     AlertSubscriber,
+    AlertSubscriberFilter,
     AlertSubscriberList,
     AlertSubscription,
     AlertSubscriptionDelete,
@@ -113,6 +114,34 @@ class AlertSubscribersAPI(APIClient):
             items=subscribers,
             resource_path=self._RESOURCE_PATH,
         )
+
+    def list(
+        self,
+        external_ids: List[str] = None,
+        ids: List[int] = None,
+        email: str = None,
+        metadata: Dict[str, str] = None,
+        limit=100,
+    ) -> AlertSubscriberList:
+        """List subscribers
+
+        Args:
+            ids: subscribers ids
+            external_ids: subscribers external ids
+            email: subscriber email
+            metadata: strict metadata filtering
+
+        Returns:
+            AlertSubscriberList: list of subscribers"""
+
+        filter = AlertSubscriberFilter(
+            external_ids=external_ids,
+            ids=ids,
+            email=email,
+            metadata=metadata,
+        ).dump(camel_case=True)
+
+        return self._list(method="POST", limit=limit, filter=filter)
 
 
 class AlertSubscriptionsAPI(APIClient):
