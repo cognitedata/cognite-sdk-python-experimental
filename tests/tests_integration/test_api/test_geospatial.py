@@ -119,6 +119,19 @@ class TestExperimentalGeospatialAPI:
         )
         cognite_client.geospatial.delete_features(test_feature_type.external_id, external_id=external_id)
 
+    def test_upsert_features(self, cognite_client, test_feature_type):
+        external_id = f"F_{uuid.uuid4().hex[:10]}"
+        feature = Feature(
+            external_id=external_id,
+            position={"wkt": "POINT(50 50)"},
+            temperature=12.4,
+            volume=1212.0,
+            pressure=2121.0,
+        )
+        cognite_client.geospatial.upsert_features(test_feature_type.external_id, feature)
+        cognite_client.geospatial.upsert_features(test_feature_type.external_id, feature)
+        cognite_client.geospatial.delete_features(test_feature_type.external_id, external_id=external_id)
+
     def test_stream_features(self, cognite_client, test_feature_type, test_feature):
         features = cognite_client.geospatial.stream_features(
             feature_type_external_id=test_feature_type.external_id, filter={}
@@ -146,7 +159,6 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5
         assert res.upper_left_y == -0.5
 
-    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_get_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.get_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -222,7 +234,6 @@ class TestExperimentalGeospatialAPI:
         assert res.upper_left_x == -0.5891363261459447
         assert res.upper_left_y == -0.31623471547260973
 
-    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster(self, cognite_client, test_feature_type, test_feature_with_raster):
         res = cognite_client.geospatial.delete_raster(
             feature_type_external_id=test_feature_type.external_id,
@@ -237,7 +248,6 @@ class TestExperimentalGeospatialAPI:
         assert res[0].external_id == test_feature_with_raster.external_id
         assert hasattr(res[0], "raster") is False
 
-    @pytest.mark.skip(reason="It was blocking functions team and Vincent it is ok to skip")
     def test_delete_raster_property(self, cognite_client, test_feature_type, test_feature_with_raster):
         feature_type_updated = cognite_client.geospatial.update_feature_types(
             update=FeatureTypeUpdate(
@@ -305,5 +315,11 @@ class TestExperimentalGeospatialAPI:
             from_feature_type=test_feature_type.external_id,
             filter={"equals": {"property": "externalId", "value": test_feature.external_id}},
             output={"mylocation": {"property": "position"}},
+        )
+        assert type(res) == ComputedItemList
+        res = cognite_client.geospatial.compute(
+            from_feature_type=test_feature_type.external_id,
+            group_by=[{"property": "volume"}],
+            output={"count": {"count": {"function": {"property": "temperature"}}}, "volume": {"property": "volume"}},
         )
         assert type(res) == ComputedItemList

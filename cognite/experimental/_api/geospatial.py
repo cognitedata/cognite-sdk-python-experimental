@@ -2,10 +2,10 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Dict, Generator, Optional, Union
+from typing import Dict, Generator, Optional, Sequence, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
-from cognite.client.data_classes.geospatial import Feature
+from cognite.client.data_classes.geospatial import Feature, FeatureList
 from cognite.client.exceptions import CogniteConnectionError, CogniteException
 from requests.exceptions import ChunkedEncodingError
 
@@ -362,6 +362,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         sub_computes: Dict[str, Any] = None,
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
+        group_by: List[Dict[str, Any]] = None,
         output: Dict[str, Any] = None,
         binary_output: Dict[str, Any] = None,
     ) -> Union[bytes, ComputedItemList]:
@@ -372,6 +373,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             sub_computes (Dict[str, Any]): the sub-computed data for the main compute
             from_feature_type (str): the main feature type external id to compute from
             filter (Dict[str, Any]): the filter for the main feature type
+            group_by (List[Dict[str, Any]]): the list of group by expressions
             output (Dict[str, Any]): the output json spec
             binary_output (Dict[str, Any]): the binary output computation to execute
 
@@ -441,6 +443,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
         filter_json = {"filter": filter} if filter is not None else {}
+        group_by_json = {"groupBy": group_by} if group_by is not None else {}
         output_json = {"output": output} if output is not None else {}
         binary_output_json = {"binaryOutput": binary_output} if binary_output is not None else {}
         res = self._post(
@@ -449,6 +452,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 **sub_computes_json,
                 **from_feature_type_json,
                 **filter_json,
+                **group_by_json,
                 **output_json,
                 **binary_output_json,
             },
@@ -459,3 +463,64 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         if content_type == "image/tiff":
             return res.content
         raise ValueError(f"unsupported content type ${content_type}")
+
+    def upsert_features(
+        self,
+        feature_type_external_id: str,
+        feature: Union[Feature, Sequence[Feature], FeatureList],
+        allow_crs_transformation: bool = False,
+        chunk_size: int = None,
+    ) -> Union[Feature, FeatureList]:
+        """`Upsert features`
+        <https://pr-1814.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/upsertFeatures>
+
+        Args:
+            feature_type_external_id: Feature type definition for the features to upsert.
+            feature: one feature or a list of features to upsert or a FeatureList object
+            allow_crs_transformation: If true, then input geometries will be transformed into the Coordinate Reference
+                System defined in the feature type specification. When it is false, then requests with geometries in
+                Coordinate Reference System different from the ones defined in the feature type will result in
+                CogniteAPIError exception.
+            chunk_size: maximum number of items in a single request to the api
+
+        Returns:
+            Union[Feature, FeatureList]: Upserted features
+
+        Examples:
+
+            Upsert some features:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> feature_types = [
+                ...     FeatureType(
+                ...         external_id="my_feature_type",
+                ...         properties={
+                ...             "location": {"type": "POINT", "srid": 4326},
+                ...             "temperature": {"type": "DOUBLE"}
+                ...         }
+                ...     )
+                ... ]
+                >>> res = c.geospatial.create_feature_types(feature_types)
+                >>> res = c.geospatial.upsert_features(
+                ...     feature_type_external_id="my_feature_type",
+                ...     feature=Feature(
+                ...         external_id="my_feature",
+                ...         location={"wkt": "POINT(1 1)"},
+                ...         temperature=12.4
+                ...     )
+                ... )
+        """
+        if chunk_size is not None and (chunk_size < 1 or chunk_size > self._CREATE_LIMIT):
+            raise ValueError(f"The chunk_size must be strictly positive and not exceed {self._CREATE_LIMIT}")
+        if isinstance(feature, FeatureList):
+            feature = list(feature)
+        resource_path = self._feature_resource_path(feature_type_external_id) + "/upsert"
+        extra_body_fields = {"allowCrsTransformation": "true"} if allow_crs_transformation else {}
+        return self._create_multiple(
+            cls=FeatureList,
+            items=feature,
+            resource_path=resource_path,
+            extra_body_fields=extra_body_fields,
+            limit=chunk_size,
+        )

@@ -12,6 +12,30 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.100.0]
+
+### Added
+
+- Support for group_by in the geospatial compute(...) method.
+
+## [0.99.0]
+
+### Removed
+
+- Removed everything vision-related as they are now in V1
+
+## [0.98.0]
+
+### Added
+
+- Implemented support for the geospatial upsert_features(...) method.
+
+## [0.97.0]
+
+### Changed
+
+- Update the alert prefix from `/alerts/alerts` to `/alerts`.
+
 ## [0.96.0]
 
 ### Fixed

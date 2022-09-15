@@ -159,7 +159,7 @@ class AlertSubscriptionsAPI(APIClient):
 
 
 class AlertsAPI(APIClient):
-    _RESOURCE_PATH = "/alerts/alerts"
+    _RESOURCE_PATH = "/alerts"
     _LIST_CLASS = AlertList
 
     def __init__(self, *args, **kwargs):
