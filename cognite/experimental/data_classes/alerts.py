@@ -194,6 +194,24 @@ class AlertSubscriberList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
 
+class AlertSubscriberFilter(CogniteFilter):
+    """Filter subscribers with strict matching."""
+
+    def __init__(
+        self,
+        external_ids: List[str] = None,
+        ids: List[int] = None,
+        email: str = None,
+        metadata: Dict[str, str] = None,
+        cognite_client: "CogniteClient" = None,
+    ):
+        self.external_ids = external_ids
+        self.ids = ids
+        self.email = email
+        self.metadata = metadata
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+
 class AlertSubscriptionDelete(CogniteResource):
     def __init__(
         self,
