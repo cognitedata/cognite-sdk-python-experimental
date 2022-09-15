@@ -1,5 +1,3 @@
-import pytest
-
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
     EntityMatchingMatchList,
