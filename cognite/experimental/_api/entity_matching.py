@@ -10,6 +10,7 @@ from cognite.client.data_classes import (
 )
 from cognite.client.data_classes._base import CogniteResource
 from cognite.client.utils._auxiliary import convert_true_match
+from cognite.client.utils._identifier import Identifier, IdentifierSequence
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
@@ -33,7 +34,7 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
-        return self._retrieve(id=id)
+        return self._retrieve(Identifier.load(id=id), cls=EntityMatchingPipelineRun)
 
     def list(self, id=None, external_id=None, limit=100) -> EntityMatchingPipelineRunList:
         """List pipeline runs
@@ -59,9 +60,9 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
 
         Returns:
             Union[EntityMatchingPipelineRun,EntityMatchingPipelineRunList]: list of latest pipeline runs, or a single object if a single id was given and the run was found"""
-        all_ids = self._process_ids(id, external_id, wrap_ids=True)
-        is_single_id = self._is_single_identifier(id, external_id)
-        runs = self._camel_post("/latest", json={"items": all_ids}).json()["items"]
+        identifiers = IdentifierSequence.load(ids=id, external_ids=external_id)
+        is_single_id = identifiers.is_singleton()
+        runs = self._camel_post("/latest", json={"items": identifiers.as_dicts()}).json()["items"]
         if is_single_id and runs:
             return EntityMatchingPipelineRun._load(runs[0], cognite_client=self._cognite_client)
         return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
@@ -95,8 +96,12 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipeline: Pipeline requested."""
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
-        return self._retrieve_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+        IdentifierSequence.load(id, external_id).assert_singleton()
+        return self._retrieve_multiple(
+            identifiers=IdentifierSequence.load(ids=id, external_ids=external_id).as_singleton(),
+            resource_cls=EntityMatchingPipeline,
+            list_cls=EntityMatchingPipelineList,
+        )
 
     def retrieve_multiple(
         self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
@@ -111,7 +116,11 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             EntityMatchingPipelineList: Pipelines requested."""
         utils._auxiliary.assert_type(ids, "id", [List], allow_none=True)
         utils._auxiliary.assert_type(external_ids, "external_id", [List], allow_none=True)
-        return self._retrieve_multiple(ids=ids, external_ids=external_ids, wrap_ids=True)
+        return self._retrieve_multiple(
+            identifiers=IdentifierSequence.load(ids=ids, external_ids=external_ids),
+            list_cls=EntityMatchingPipelineList,
+            resource_cls=EntityMatchingPipeline,
+        )
 
     def list(self, limit=100) -> EntityMatchingPipelineList:
         """List entity matching pipelines
@@ -133,7 +142,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
         Returns:
             EntityMatchingPipelineRun: object which can be used to wait for and retrieve results."""
-        utils._auxiliary.assert_exactly_one_of_id_or_external_id(id, external_id)
+        IdentifierSequence.load(id, external_id).assert_singleton()
         return self._run_job(job_path="/run", id=id, external_id=external_id, job_cls=EntityMatchingPipelineRun)
 
     def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
@@ -142,7 +151,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         Args:
             id (Union[int, List[int]): Id or list of ids
             external_id (Union[str, List[str]]): External ID or list of external ids"""
-        self._delete_multiple(ids=id, external_ids=external_id, wrap_ids=True)
+        self._delete_multiple(identifiers=IdentifierSequence.load(ids=id, external_ids=external_id), wrap_ids=True)
 
     def _fix_update(self, item):
         def fix_rules(rules):
@@ -178,7 +187,12 @@ class EntityMatchingPipelinesAPI(ContextAPI):
             item = [self._fix_update(update) for update in item]
         else:
             item = self._fix_update(item)
-        return self._update_multiple(items=item)
+        return self._update_multiple(
+            items=item,
+            list_cls=EntityMatchingPipelineList,
+            resource_cls=EntityMatchingPipeline,
+            update_cls=EntityMatchingPipelineUpdate,
+        )
 
 
 class EntityMatchingAPI(EntityMatchingBaseAPI):
@@ -240,7 +254,7 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
                 "replacements": replacements,
             },
         )
-        return self._LIST_CLASS._RESOURCE._load(response.json(), cognite_client=self._cognite_client)
+        return EntityMatchingModel._load(response.json(), cognite_client=self._cognite_client)
 
     def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
         """Fit rules model.
@@ -250,7 +264,7 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
 
         Returns:
             ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
-        return self._run_job(job_path="/rules", json={"items": matches})
+        return self._run_job(job_path="/rules", json={"items": matches}, job_cls=ContextualizationJob)
 
     def suggest_fields(
         self,

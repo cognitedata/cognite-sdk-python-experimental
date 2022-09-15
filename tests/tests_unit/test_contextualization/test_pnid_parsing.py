@@ -132,7 +132,7 @@ class TestPNIDParsing:
 
         n_detect_calls = 0
         n_status_calls = 0
-        for call in mock_detect.calls:
+        for call in mock_detect.calls[1:]:
             if "detect" in call.request.url and call.request.method == "POST":
                 n_detect_calls += 1
                 assert {
