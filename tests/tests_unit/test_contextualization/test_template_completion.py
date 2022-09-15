@@ -82,7 +82,7 @@ class TestSchemaCompletion:
 
         extract_calls = 0
         n_status_calls = 0
-        for call in mock_complete_type.calls:
+        for call in mock_complete_type.calls[1:]:
             if call.request.method == "POST":
                 extract_calls += 1
                 assert {"externalId": eid} == jsgz_load(call.request.body)

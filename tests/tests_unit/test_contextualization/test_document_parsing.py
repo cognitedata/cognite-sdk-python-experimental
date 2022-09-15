@@ -60,21 +60,21 @@ class TestPNIDParsing:
 
         n_detect_calls = 0
         n_status_calls = 0
-        for call in mock_detect.calls:
-            print(call.request.url)
-            # if "detect" in call.request.url:
-            #     n_detect_calls += 1
-            #     assert {
-            #         "entities": entities,
-            #         "fileId": file_id,
-            #         "nameMapping": {"a": "c"},
-            #         "partialMatch": False,
-            #         "minTokens": 1,
-            #         "searchField": "name",
-            #     } == jsgz_load(call.request.body)
-            # else:
-            #     n_status_calls += 1
-            #     assert "/456" in call.request.url
+        # The first call is to https://login.microsoftonline.com/.../oauth2/v2.0/token
+        for call in mock_detect.calls[1:]:
+            if "detect" in call.request.url:
+                n_detect_calls += 1
+                assert {
+                    "entities": entities,
+                    "fileId": file_id,
+                    "nameMapping": {"a": "c"},
+                    "partialMatch": False,
+                    "minTokens": 1,
+                    "searchField": "name",
+                } == jsgz_load(call.request.body)
+            else:
+                n_status_calls += 1
+                assert "/456" in call.request.url
         assert 1 == n_detect_calls
         assert 1 == n_status_calls
 

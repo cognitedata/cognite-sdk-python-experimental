@@ -69,7 +69,7 @@ class TestPNIDObjectDetection:
 
         n_find_objects_calls = 0
         n_status_calls = 0
-        for call in mock_find_objects.calls:
+        for call in mock_find_objects.calls[1:]:
             if "findobjects" in call.request.url and call.request.method == "POST":
                 n_find_objects_calls += 1
                 assert {
