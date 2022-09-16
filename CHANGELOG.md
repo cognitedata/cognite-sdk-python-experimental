@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.102.0]
+
+### Added
+
+- Support for order_by in the geospatial compute(...) method.
+- More examples to the compute(...) method
+
 ## [0.101.0]
 
 ### Removed
