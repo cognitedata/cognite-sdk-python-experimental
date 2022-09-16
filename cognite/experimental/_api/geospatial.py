@@ -378,7 +378,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         from_feature_type: str = None,
         filter: Dict[str, Any] = None,
         group_by: Sequence[Dict[str, Any]] = None,
-        order_by: Sequence[ComputeOrderSpec] = None,
+        order_by: Sequence[ComputeOrder] = None,
         output: Dict[str, Any] = None,
         binary_output: Dict[str, Any] = None,
     ) -> Union[bytes, ComputedItemList]:
@@ -390,7 +390,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             from_feature_type (str): the main feature type external id to compute from
             filter (Dict[str, Any]): the filter for the main feature type
             group_by (List[Dict[str, Any]]): the list of group by expressions
-            order_by (List[ComputeOrderSpec]): the list of order by expressions and direction
+            order_by (List[ComputeOrder]): the list of order by expressions and direction
             output (Dict[str, Any]): the output json spec
             binary_output (Dict[str, Any]): the binary output computation to execute
 
@@ -466,8 +466,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 ...         {"property": "week"}
                 ...     ],
                 ...     order_by=[
-                ...         ComputeOrderSpec({"property": "week"}, "ASC"),
-                ...         ComputeOrderSpec({"property": "tag"}, "DESC")
+                ...         ComputeOrder({"property": "week"}, "ASC"),
+                ...         ComputeOrder({"property": "tag"}, "DESC")
                 ...     ],
                 ...     output={
                 ...         "myTag": {"property": "tag"}
