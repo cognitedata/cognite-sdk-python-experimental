@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
+from cognite.client.utils._identifier import Identifier, IdentifierSequence
 
 from cognite.experimental.data_classes import (
     LegacyAnnotation,
@@ -28,7 +29,12 @@ class LegacyAnnotationsAPI(APIClient):
             AnnotationList: created annotations
         """
         assert_type(annotations, "annotation", [LegacyAnnotation, list])
-        return self._create_multiple(resource_path=self._RESOURCE_PATH + "/", items=annotations)
+        return self._create_multiple(
+            resource_path=self._RESOURCE_PATH,
+            items=annotations,
+            list_cls=LegacyAnnotationList,
+            resource_cls=LegacyAnnotation,
+        )
 
     def list(self, filter: Union[LegacyAnnotationFilter, Dict], limit: int = 100) -> LegacyAnnotationList:
         """List annotations.
@@ -54,7 +60,9 @@ class LegacyAnnotationsAPI(APIClient):
                 {to_camel_case(k): v for k, v in f.items()} for f in filter["annotatedResourceIds"]
             ]
 
-        return self._list(method="POST", limit=limit, filter=filter)
+        return self._list(
+            method="POST", limit=limit, filter=filter, list_cls=LegacyAnnotationList, resource_cls=LegacyAnnotation
+        )
 
     def update(
         self,
@@ -65,7 +73,9 @@ class LegacyAnnotationsAPI(APIClient):
         Args:
             id (Union[int, List[int]]): ID or list of IDs to be deleted
         """
-        return self._update_multiple(items=item)
+        return self._update_multiple(
+            items=item, list_cls=LegacyAnnotationList, resource_cls=LegacyAnnotation, update_cls=LegacyAnnotationUpdate
+        )
 
     def delete(self, id: Union[int, List[int]]) -> None:
         """Delete annotations
@@ -73,7 +83,7 @@ class LegacyAnnotationsAPI(APIClient):
         Args:
             id (Union[int, List[int]]): ID or list of IDs to be deleted
         """
-        self._delete_multiple(ids=id, wrap_ids=True)
+        self._delete_multiple(identifiers=IdentifierSequence.load(ids=id), wrap_ids=True)
 
     def retrieve_multiple(self, ids: List[int]) -> LegacyAnnotationList:
         """Retrieve annotations by IDs
@@ -85,7 +95,9 @@ class LegacyAnnotationsAPI(APIClient):
             AnnotationList: list of annotations
         """
         assert_type(ids, "ids", [List], allow_none=False)
-        return self._retrieve_multiple(ids=ids, wrap_ids=True)
+        return self._retrieve_multiple(
+            identifiers=IdentifierSequence.load(ids=ids), list_cls=LegacyAnnotationList, resource_cls=LegacyAnnotation
+        )
 
     def retrieve(self, id: int) -> LegacyAnnotation:
         """Retrieve an annotation by id
@@ -97,4 +109,8 @@ class LegacyAnnotationsAPI(APIClient):
             Annotation: annotation requested
         """
         assert_type(id, "id", [int], allow_none=False)
-        return self._retrieve_multiple(ids=id, wrap_ids=True)
+        return self._retrieve_multiple(
+            identifiers=IdentifierSequence.load(ids=id).as_singleton(),
+            resource_cls=LegacyAnnotation,
+            list_cls=LegacyAnnotationList,
+        )

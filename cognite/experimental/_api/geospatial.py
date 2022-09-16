@@ -7,6 +7,7 @@ from typing import Dict, Generator, Optional, Sequence, Union
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature, FeatureList
 from cognite.client.exceptions import CogniteConnectionError, CogniteException
+from cognite.client.utils._identifier import IdentifierSequence, SingletonIdentifierSequence
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import *
@@ -287,7 +288,10 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._create_multiple(
-            items=mappings_definitions, resource_path=resource_path, cls=MvpMappingsDefinitionList
+            items=mappings_definitions,
+            resource_path=resource_path,
+            list_cls=MvpMappingsDefinitionList,
+            resource_cls=MvpMappingsDefinition,
         )
 
     @_with_cognite_domain
@@ -310,7 +314,9 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> res = c.geospatial.delete_mvt_mappings_definitions(external_id="surveys")
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
-        return self._delete_multiple(external_ids=external_id, wrap_ids=True, resource_path=resource_path)
+        return self._delete_multiple(
+            IdentifierSequence.load(external_ids=external_id), wrap_ids=True, resource_path=resource_path
+        )
 
     @_with_cognite_domain
     def retrieve_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> MvpMappingsDefinitionList:
@@ -333,8 +339,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c.geospatial.retrieve_mvt_mappings_definitions(external_id="surveys")
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
+        identifiers = IdentifierSequence.load(external_ids=external_id)
         return self._retrieve_multiple(
-            wrap_ids=True, external_ids=external_id, resource_path=resource_path, cls=MvpMappingsDefinitionList
+            identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
+            resource_path=resource_path,
+            list_cls=MvpMappingsDefinitionList,
+            resource_cls=MvpMappingsDefinition,
         )
 
     @_with_cognite_domain
@@ -354,7 +364,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 >>> c.geospatial.list_mvt_mappings_definitions()
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
-        return self._list(method="POST", cls=MvpMappingsDefinitionList, resource_path=resource_path)
+        return self._list(
+            method="POST",
+            list_cls=MvpMappingsDefinitionList,
+            resource_cls=MvpMappingsDefinition,
+            resource_path=resource_path,
+        )
 
     @_with_cognite_domain
     def compute(
@@ -545,7 +560,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         resource_path = self._feature_resource_path(feature_type_external_id) + "/upsert"
         extra_body_fields = {"allowCrsTransformation": "true"} if allow_crs_transformation else {}
         return self._create_multiple(
-            cls=FeatureList,
+            list_cls=FeatureList,
+            resource_cls=Feature,
             items=feature,
             resource_path=resource_path,
             extra_body_fields=extra_body_fields,
