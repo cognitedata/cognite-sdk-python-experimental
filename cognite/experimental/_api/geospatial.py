@@ -376,6 +376,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         self,
         sub_computes: Dict[str, Any] = None,
         from_feature_type: str = None,
+        left_joins: Sequence[Dict[str, Any]] = None,
         filter: Dict[str, Any] = None,
         group_by: Sequence[Dict[str, Any]] = None,
         order_by: Sequence[ComputeOrder] = None,
@@ -388,6 +389,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         Args:
             sub_computes (Dict[str, Any]): the sub-computed data for the main compute
             from_feature_type (str): the main feature type external id to compute from
+            left_joins (Sequence[Dict[str, Any]]): the feature type to left join with
             filter (Dict[str, Any]): the filter for the main feature type
             group_by (List[Dict[str, Any]]): the list of group by expressions
             order_by (List[ComputeOrder]): the list of order by expressions and direction
@@ -478,6 +480,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
+        left_joins_json = {"leftJoins": left_joins} if left_joins is not None else {}
         filter_json = {"filter": filter} if filter is not None else {}
         group_by_json = {"groupBy": group_by} if group_by is not None else {}
         order_by_json = (
@@ -492,6 +495,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             json={
                 **sub_computes_json,
                 **from_feature_type_json,
+                **left_joins_json,
                 **filter_json,
                 **group_by_json,
                 **order_by_json,

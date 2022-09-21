@@ -89,6 +89,38 @@ def test_mvt_mappings_def(cognite_client, test_feature_type):
     cognite_client.geospatial.delete_mvt_mappings_definitions(external_id=external_id)
 
 
+@pytest.fixture()
+def test_feature_type_with_reference(cognite_client, cognite_domain):
+    cognite_client.geospatial.set_current_cognite_domain(cognite_domain)
+    external_id = f"FT_{uuid.uuid4().hex[:10]}"
+    feature_type = cognite_client.geospatial.create_feature_types(
+        FeatureType(
+            external_id=external_id,
+            properties={
+                "myRef": {"type": "STRING", "size": 32},
+                "speed": {"type": "DOUBLE"},
+            },
+        )
+    )
+    yield feature_type
+    cognite_client.geospatial.delete_feature_types(external_id=external_id)
+
+
+@pytest.fixture
+def test_feature_with_reference(cognite_client, test_feature_type_with_reference, test_feature):
+    external_id = f"F/O@ö_{uuid.uuid4().hex[:10]}"
+    feature = cognite_client.geospatial.create_features(
+        test_feature_type_with_reference.external_id,
+        Feature(
+            external_id=external_id,
+            myRef=test_feature.external_id,
+            speed=99.9,
+        ),
+    )
+    yield feature
+    cognite_client.geospatial.delete_features(test_feature_type_with_reference.external_id, external_id=external_id)
+
+
 class TestExperimentalGeospatialAPI:
     @pytest.mark.skip(reason="test fails with error 400 'Data sets do not exist.'")
     def test_create_feature_type_dataset(self, cognite_client):
@@ -286,7 +318,7 @@ class TestExperimentalGeospatialAPI:
         assert len(res) == 1
         assert res[0].external_id == test_mvt_mappings_def.external_id
 
-    def test_compute(self, cognite_client, test_feature_type, test_feature):
+    def test_compute_sub_computes(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
             sub_computes={"geom1": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}},
             output={
@@ -296,6 +328,8 @@ class TestExperimentalGeospatialAPI:
         )
         assert type(res) == ComputedItemList
         assert len(res) == 1
+
+    def test_compute_binary_output(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
             binary_output={
                 "stAsGeotiff": {
@@ -311,21 +345,57 @@ class TestExperimentalGeospatialAPI:
         )
         assert type(res) == bytes
         assert len(res) == 60426
+
+    def test_compute_from_feature_type(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
             from_feature_type=test_feature_type.external_id,
             filter={"equals": {"property": "externalId", "value": test_feature.external_id}},
             output={"mylocation": {"property": "position"}},
         )
         assert type(res) == ComputedItemList
+
+    def test_compute_group_by(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
             from_feature_type=test_feature_type.external_id,
             group_by=[{"property": "volume"}],
             output={"count": {"count": {"function": {"property": "temperature"}}}, "volume": {"property": "volume"}},
         )
         assert type(res) == ComputedItemList
+
+    def test_compute_order_by(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
             from_feature_type=test_feature_type.external_id,
             order_by=[ComputeOrder({"property": "volume"}, "ASC")],
             output={"volume": {"property": "volume"}},
+        )
+        assert type(res) == ComputedItemList
+
+    def test_compute_left_joins(
+        self,
+        cognite_client,
+        test_feature_type,
+        test_feature_type_with_reference,
+        test_feature,
+        test_feature_with_reference,
+    ):
+        res = cognite_client.geospatial.compute(
+            from_feature_type=test_feature_type.external_id,
+            left_joins=[
+                {
+                    "featureType": test_feature_type_with_reference.external_id,
+                    "condition": {
+                        "equals": {
+                            "expr1": {"featureType": test_feature_type.external_id, "property": "externalId"},
+                            "expr2": {"featureType": test_feature_type_with_reference.external_id, "property": "myRef"},
+                        },
+                    },
+                }
+            ],
+            output={
+                "ext1": {"featureType": test_feature_type_with_reference.external_id, "property": "externalId"},
+                "speed": {"featureType": test_feature_type_with_reference.external_id, "property": "speed"},
+                "extRef": {"featureType": test_feature_type_with_reference.external_id, "property": "myRef"},
+                "volume": {"featureType": test_feature_type.external_id, "property": "volume"},
+            },
         )
         assert type(res) == ComputedItemList

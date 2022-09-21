@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.103.0]
+
+### Added
+
+- Support for left joins in the geospatial compute(...) method.
+
 ## [0.102.0]
 
 ### Added
