@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.104.0]
+
+### Fixed
+- Dependency specification for `cognite-sdk`; now requiring major version 4
+
 ## [0.103.0]
 
 ### Added
