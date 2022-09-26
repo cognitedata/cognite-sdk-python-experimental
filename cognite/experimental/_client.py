@@ -18,8 +18,8 @@ from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionA
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 
-APIClient.RETRYABLE_POST_ENDPOINTS |= {
-    f"/{api}/{endpoint}" for api in ["types", "labels", "templates"] for endpoint in ["list", "byids", "search"]
+APIClient._RETRYABLE_POST_ENDPOINT_REGEX_PATTERNS |= {
+    "^" + path + "(\?.*)?$" for path in ("/(types|labels|templates)/(list|byids|search)",)
 }
 
 
