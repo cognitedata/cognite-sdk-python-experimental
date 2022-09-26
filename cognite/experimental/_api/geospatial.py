@@ -381,6 +381,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         group_by: Sequence[Dict[str, Any]] = None,
         order_by: Sequence[ComputeOrder] = None,
         output: Dict[str, Any] = None,
+        into_feature_type: str = None,
         binary_output: Dict[str, Any] = None,
     ) -> Union[bytes, ComputedItemList]:
         """`Compute something`
@@ -394,10 +395,11 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             group_by (List[Dict[str, Any]]): the list of group by expressions
             order_by (List[ComputeOrder]): the list of order by expressions and direction
             output (Dict[str, Any]): the output json spec
+            into_feature_type (str): the feature type where to store the result
             binary_output (Dict[str, Any]): the binary output computation to execute
 
         Returns:
-            Union[bytes,List[ComputedItem]]
+            Union[bytes,List[ComputedItem],None]
 
         Examples:
 
@@ -477,6 +479,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 ...         "myCount": {"count": {"function": {"property": "tag"}}}
                 ...     }
                 ... )
+                :param into_feature_type:
         """
         sub_computes_json = {"subComputes": sub_computes} if sub_computes is not None else {}
         from_feature_type_json = {"fromFeatureType": from_feature_type} if from_feature_type is not None else {}
@@ -490,6 +493,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         )
         output_json = {"output": output} if output is not None else {}
         binary_output_json = {"binaryOutput": binary_output} if binary_output is not None else {}
+        into_feature_type_json = {"intoFeatureType": into_feature_type} if into_feature_type is not None else {}
         res = self._post(
             url_path=GeospatialAPI._RESOURCE_PATH + "/compute",
             json={
@@ -500,6 +504,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 **group_by_json,
                 **order_by_json,
                 **output_json,
+                **into_feature_type_json,
                 **binary_output_json,
             },
         )

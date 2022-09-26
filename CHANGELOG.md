@@ -12,10 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.104.0]
+## [0.105.0]
 
 ### Fixed
 - Dependency specification for `cognite-sdk`; now requiring major version 4
+
+## [0.104.0]
+
+### Added
+
+- Support for into_feature_type parameter for the geospatial compute(...) method.
 
 ## [0.103.0]
 
