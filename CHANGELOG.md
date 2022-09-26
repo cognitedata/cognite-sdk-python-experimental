@@ -16,6 +16,7 @@ Changes are grouped as follows
 
 ### Fixed
 - Dependency specification for `cognite-sdk`; now requiring major version 4
+- Bug where the code would try to mutate a now-removed set of path suffixes
 
 ## [0.104.0]
 
