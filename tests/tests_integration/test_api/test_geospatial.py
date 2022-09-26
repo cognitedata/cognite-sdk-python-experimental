@@ -26,10 +26,10 @@ def test_feature_type(cognite_client, cognite_domain):
         FeatureType(
             external_id=external_id,
             properties={
-                "position": {"type": "POINT", "srid": "4326", "optional": "true"},
-                "volume": {"type": "DOUBLE"},
-                "temperature": {"type": "DOUBLE"},
-                "pressure": {"type": "DOUBLE"},
+                "position": {"type": "POINT", "srid": "4326", "optional": True},
+                "volume": {"type": "DOUBLE", "optional": True},
+                "temperature": {"type": "DOUBLE", "optional": True},
+                "pressure": {"type": "DOUBLE", "optional": True},
                 "raster": {"srid": 3857, "type": "RASTER", "storage": "embedded", "optional": True},
             },
             search_spec={"vol_press_idx": {"properties": ["volume", "pressure"]}},
@@ -37,6 +37,27 @@ def test_feature_type(cognite_client, cognite_domain):
     )
     yield feature_type
     cognite_client.geospatial.delete_feature_types(external_id=external_id)
+
+
+@pytest.fixture()
+def test_into_feature_type(cognite_client, cognite_domain):
+    cognite_client.geospatial.set_current_cognite_domain(cognite_domain)
+    external_id = f"FT_{uuid.uuid4().hex[:10]}"
+    feature_type = cognite_client.geospatial.create_feature_types(
+        FeatureType(
+            external_id=external_id,
+            properties={
+                "position": {"type": "POINT", "srid": "4326", "optional": True},
+                "volume": {"type": "DOUBLE", "optional": True},
+                "temperature": {"type": "DOUBLE", "optional": True},
+                "pressure": {"type": "DOUBLE", "optional": True},
+                "raster": {"srid": 3857, "type": "RASTER", "storage": "embedded", "optional": True},
+            },
+            search_spec={"vol_press_idx": {"properties": ["volume", "pressure"]}},
+        )
+    )
+    yield feature_type
+    cognite_client.geospatial.delete_feature_types(external_id=external_id, recursive=True)
 
 
 @pytest.fixture
@@ -353,6 +374,13 @@ class TestExperimentalGeospatialAPI:
             output={"mylocation": {"property": "position"}},
         )
         assert type(res) == ComputedItemList
+
+    def test_compute_into_feature_type(self, cognite_client, test_feature_type, test_into_feature_type, test_feature):
+        cognite_client.geospatial.compute(
+            from_feature_type=test_feature_type.external_id,
+            output={"externalId": {"property": "externalId"}},
+            into_feature_type=test_into_feature_type.external_id,
+        )
 
     def test_compute_group_by(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
