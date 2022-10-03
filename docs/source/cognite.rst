@@ -322,21 +322,6 @@ Geospatial
 .. note::
     Check https://github.com/cognitedata/geospatial-examples for some complete examples.
 
-Rasters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Put Raster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.put_raster
-
-Delete Raster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.delete_raster
-
-Get Raster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automethod:: cognite.experimental._api.geospatial.ExperimentalGeospatialAPI.get_raster
-
 Mapbox Vector Tiles (MVTs)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
