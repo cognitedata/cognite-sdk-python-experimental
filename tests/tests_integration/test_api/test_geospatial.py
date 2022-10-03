@@ -193,7 +193,7 @@ class TestExperimentalGeospatialAPI:
 
     def test_compute_sub_computes(self, cognite_client, test_feature_type, test_feature):
         res = cognite_client.geospatial.compute(
-            sub_computes={"geom1": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}},
+            sub_computes={"geom1": {"output": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}}},
             output={
                 "polygonValue": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"},
                 "polygonFromRef": {"ref": "geom1"},
@@ -238,7 +238,7 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.compute(
             from_feature_type=test_feature_type.external_id,
             group_by=[{"property": "volume"}],
-            output={"count": {"count": {"function": {"property": "temperature"}}}, "volume": {"property": "volume"}},
+            output={"count": {"count": {"property": "temperature"}}, "volume": {"property": "volume"}},
         )
         assert type(res) == ComputedItemList
 
