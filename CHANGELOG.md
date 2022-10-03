@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.106.0]
+
+### Changed
+- Move geospatial raster operations into core SDK
+
 ## [0.105.0]
 
 ### Fixed
