@@ -196,7 +196,7 @@ class TestExperimentalGeospatialAPI:
             sub_computes={"geom1": {"output": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"}}},
             output={
                 "polygonValue": {"ewkt": "SRID=4326;POLYGON Z((0 0 0,1 1 1,1 -1 1,0 0 0))"},
-                "polygonFromRef": {"ref": "geom1"},
+                "polygonFromRef": {"ref": "ewkt", "source": "geom1"},
             },
         )
         assert type(res) == ComputedItemList
