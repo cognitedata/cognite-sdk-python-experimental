@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.107.0]
+
+### Changed
+- Fixed geospatial compute behavior when into_feature_type option is used
+
 ## [0.106.0]
 
 ### Changed

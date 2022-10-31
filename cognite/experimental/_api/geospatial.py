@@ -215,7 +215,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         output: Dict[str, Any] = None,
         into_feature_type: str = None,
         binary_output: Dict[str, Any] = None,
-    ) -> Union[bytes, ComputedItemList]:
+    ) -> Union[bytes, ComputedItemList, None]:
         """`Compute something`
         <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
 
@@ -341,6 +341,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             },
         )
         content_type = res.headers["Content-Type"].split(";")[0]
+        if into_feature_type is not None:
+            return None
         if content_type == "application/json":
             return ComputedItemList._load(res.json()["items"], cognite_client=self._cognite_client)
         if content_type == "image/tiff":
