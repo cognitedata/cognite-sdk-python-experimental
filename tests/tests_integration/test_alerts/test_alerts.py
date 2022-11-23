@@ -33,7 +33,9 @@ def cognite_client() -> CogniteClient:
     )
     return CogniteClient(
         config=ClientConfig(
-            base_url=os.environ["COGNITE_BASE_URL"] if os.environ["COGNITE_BASE_URL"] else "https://azure-dev.cognitedata.com",
+            base_url=os.environ["COGNITE_BASE_URL"]
+            if os.environ["COGNITE_BASE_URL"]
+            else "https://azure-dev.cognitedata.com",
             client_name="experimental",
             project="air-azure-dev",
             headers={"cdf-version": "alpha"},
@@ -60,6 +62,28 @@ def base_alert() -> Callable[..., Alert]:
 
 
 @fixture(scope="class")
+def base_alert_with_deduplication_rules() -> Callable[..., Alert]:
+    def create(channel_external_id: int) -> Alert:
+        return Alert(
+            # external_id="test_" + CURRENT_TS_STR + str(random.random()),
+            channel_external_id=channel_external_id,
+            source="inttest",
+            level="INFO",
+            metadata={"test": "test"},
+            value="10 percent",
+            triggered_points=[
+                {"triggered": True, "timestamp": 1000000},
+                {"triggered": True, "timestamp": 1120000},
+                {"triggered": True, "timestamp": 3500000},
+                {"triggered": False, "timestamp": 4900000},
+                {"triggered": True, "timestamp": 5000000},
+            ],
+        )
+
+    return create
+
+
+@fixture(scope="class")
 def base_channel() -> Callable[..., AlertChannel]:
     def create() -> AlertChannel:
         return AlertChannel(
@@ -80,7 +104,7 @@ def base_channel_with_deduplication_rules() -> Callable[..., AlertChannel]:
             name="test_channel_" + CURRENT_TS_STR,
             description="integration test channel with deduplication rules",
             metadata={"test": "test"},
-            alert_rules={"deduplication": {"merge_interval": "2m", "activation_interval": "5m"}}
+            alert_rules={"deduplication": {"merge_interval": "2m", "activation_interval": "5m"}},
         )
 
     return create
@@ -206,6 +230,13 @@ class TestAlertsIntegration:
         res = cognite_client.alerts.create([base_alert(channel.external_id), base_alert(channel.external_id)])
 
         assert len(res) == 2
+
+    def test_create_3(self, cognite_client, base_alert_with_deduplication_rules, base_channel_with_deduplication_rules):
+        channel = cognite_client.alerts.channels.create(base_channel_with_deduplication_rules())
+
+        res = cognite_client.alerts.create_deduplicate(base_alert_with_deduplication_rules(channel.external_id))
+        assert len(res) == 1
+        assert channel.external_id == res.channel_external_id
 
     def test_close(self, cognite_client):
         alerts = cognite_client.alerts.list(closed=False)

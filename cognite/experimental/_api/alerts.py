@@ -17,6 +17,8 @@ from cognite.experimental.data_classes.alerts import (
     AlertSubscription,
     AlertSubscriptionDelete,
     AlertSubscriptionList,
+    DeduplicateAlert,
+    DeduplicateAlertList,
 )
 
 
@@ -171,6 +173,7 @@ class AlertSubscriptionsAPI(APIClient):
 
 class AlertsAPI(APIClient):
     _RESOURCE_PATH = "/alerts"
+    _RESOURCE_PATH_DEDUPLICATE = "/alerts/deduplicate"
     _LIST_CLASS = AlertList
 
     def __init__(self, *args, **kwargs):
@@ -195,6 +198,18 @@ class AlertsAPI(APIClient):
         assert_type(alerts, "alerts", [Alert, list])
         return self._create_multiple(
             items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
+        )
+
+    def create_deduplicate(
+        self,
+        alerts: Union[Alert, List[Alert]],
+    ) -> Union[Alert, AlertList]:
+        assert_type(alerts, "alerts", [Alert, list])
+        return self._create_multiple(
+            items=alerts,
+            resource_path=self._RESOURCE_PATH_DEDUPLICATE,
+            list_cls=DeduplicateAlertList,
+            resource_cls=DeduplicateAlert,
         )
 
     def list(
