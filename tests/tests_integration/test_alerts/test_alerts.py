@@ -1,9 +1,10 @@
 import os
 import random
 from datetime import datetime, timezone
-from time import time
 from typing import Callable
 
+from cognite.client import ClientConfig
+from cognite.client.credentials import OAuthClientCredentials
 from pytest import fixture, mark
 
 from cognite.experimental import CogniteClient
@@ -24,7 +25,22 @@ ALERTS_INT_TEST_EMAIL = f"ivan.polomanyi+{CURRENT_TS_INT}@cognite.com"
 
 @fixture(scope="class")
 def cognite_client() -> CogniteClient:
-    return CogniteClient(headers={"cdf-version": "alpha"})
+    creds = OAuthClientCredentials(
+        token_url=os.environ["COGNITE_TOKEN_URL"],
+        client_id=os.environ["COGNITE_CLIENT_ID"],
+        client_secret=os.environ["COGNITE_CLIENT_SECRET"],
+        scopes=[os.environ["COGNITE_TOKEN_SCOPES"]],
+    )
+    return CogniteClient(
+        config=ClientConfig(
+            base_url=os.environ["COGNITE_BASE_URL"] if os.environ["COGNITE_BASE_URL"] else "https://azure-dev.cognitedata.com",
+            client_name="experimental",
+            project="air-azure-dev",
+            headers={"cdf-version": "alpha"},
+            credentials=creds,
+            debug=True,
+        )
+    )
 
 
 @fixture(scope="class")
@@ -51,6 +67,20 @@ def base_channel() -> Callable[..., AlertChannel]:
             name="test_channel_" + CURRENT_TS_STR,
             description="integration test channel",
             metadata={"test": "test"},
+        )
+
+    return create
+
+
+@fixture(scope="class")
+def base_channel_with_deduplication_rules() -> Callable[..., AlertChannel]:
+    def create() -> AlertChannel:
+        return AlertChannel(
+            external_id="test_" + CURRENT_TS_STR + "_" + str(random.random()),
+            name="test_channel_" + CURRENT_TS_STR,
+            description="integration test channel with deduplication rules",
+            metadata={"test": "test"},
+            alert_rules={"deduplication": {"merge_interval": "2m", "activation_interval": "5m"}}
         )
 
     return create
@@ -87,16 +117,18 @@ def base_subscription() -> Callable[..., AlertSubscription]:
 class TestAlertChannelsIntegration:
     def test_create_1(self, cognite_client, base_channel):
         res = cognite_client.alerts.channels.create(base_channel())
-        assert "test_" in res.external_id
+        "test_" in res.external_id
 
     def test_create_2(self, cognite_client, base_channel):
         res = cognite_client.alerts.channels.create([base_channel(), base_channel()])
+        assert len(res) == 2
 
+    def test_create_3(self, cognite_client, base_channel, base_channel_with_deduplication_rules):
+        res = cognite_client.alerts.channels.create([base_channel(), base_channel_with_deduplication_rules()])
         assert len(res) == 2
 
     def test_list(self, cognite_client):
         res = cognite_client.alerts.channels.list()
-
         assert len(res) > 0
 
     def test_update_by_alert_channel(self, cognite_client, base_channel):
@@ -138,8 +170,17 @@ class TestAlertChannelsIntegration:
         assert updated[0].metadata == {"a": "b", "test": "test"}
         assert "updated_ext_id" in updated[0].external_id
 
-    def test_delete(self, cognite_client, base_channel):
+    def test_delete_channel(self, cognite_client, base_channel):
         created = cognite_client.alerts.channels.create(base_channel())
+
+        cognite_client.alerts.channels.delete(external_ids=[created.external_id])
+
+        res = cognite_client.alerts.channels.list(external_ids=[created.external_id])
+
+        assert len(res) == 0
+
+    def test_delete_channel_with_deduplication_rules(self, cognite_client, base_channel_with_deduplication_rules):
+        created = cognite_client.alerts.channels.create(base_channel_with_deduplication_rules())
 
         cognite_client.alerts.channels.delete(external_ids=[created.external_id])
 

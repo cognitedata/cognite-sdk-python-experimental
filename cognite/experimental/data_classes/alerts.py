@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 from cognite.client.data_classes._base import (
     CogniteFilter,
@@ -23,6 +23,7 @@ class AlertChannel(CogniteResource):
         parent_external_id: str = None,
         description: str = None,
         metadata: Dict[str, str] = None,
+        alert_rules: Dict[str, Dict[str, str]] = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.external_id = external_id
@@ -32,6 +33,7 @@ class AlertChannel(CogniteResource):
         self.parent_external_id = parent_external_id
         self.description = description
         self.metadata = metadata
+        self.alert_rules = alert_rules
         self._cognite_client = cast("CogniteClient", cognite_client)
 
 
