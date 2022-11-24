@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.108.0]
+
+### Fixed
+- Add deduplication endpoint to the alert module.
+- Fix existing tests and Add new tests. 
+
 ## [0.107.0]
 
 ### Changed
