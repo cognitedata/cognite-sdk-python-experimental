@@ -1,7 +1,7 @@
 import os
 import random
 from datetime import datetime, timezone
-from typing import Callable
+from typing import Callable, Union
 
 from cognite.client import ClientConfig
 from cognite.client.credentials import OAuthClientCredentials
@@ -12,9 +12,12 @@ from cognite.experimental.data_classes.alerts import (
     Alert,
     AlertChannel,
     AlertChannelUpdate,
+    AlertList,
     AlertSubscriber,
     AlertSubscription,
     AlertSubscriptionDelete,
+    DeduplicateAlert,
+    DeduplicateAlertList,
 )
 
 CURRENT_TS = datetime.now(timezone.utc)
@@ -62,7 +65,7 @@ def base_alert() -> Callable[..., Alert]:
 
 
 @fixture(scope="class")
-def base_alert_with_deduplication_rules() -> Callable[..., Alert]:
+def base_alert_with_triggered_points() -> Callable[..., Alert]:
     def create(channel_external_id: int) -> Alert:
         return Alert(
             # external_id="test_" + CURRENT_TS_STR + str(random.random()),
@@ -141,7 +144,7 @@ def base_subscription() -> Callable[..., AlertSubscription]:
 class TestAlertChannelsIntegration:
     def test_create_1(self, cognite_client, base_channel):
         res = cognite_client.alerts.channels.create(base_channel())
-        "test_" in res.external_id
+        assert "test_" in res.external_id
 
     def test_create_2(self, cognite_client, base_channel):
         res = cognite_client.alerts.channels.create([base_channel(), base_channel()])
@@ -231,11 +234,11 @@ class TestAlertsIntegration:
 
         assert len(res) == 2
 
-    def test_create_3(self, cognite_client, base_alert_with_deduplication_rules, base_channel_with_deduplication_rules):
+    def test_create_3(self, cognite_client, base_alert_with_triggered_points, base_channel_with_deduplication_rules):
         channel = cognite_client.alerts.channels.create(base_channel_with_deduplication_rules())
 
-        res = cognite_client.alerts.create_deduplicate(base_alert_with_deduplication_rules(channel.external_id))
-        assert len(res) == 1
+        res = cognite_client.alerts.create_deduplicated(base_alert_with_triggered_points(channel.external_id))
+        assert isinstance(res, Union[Alert, AlertList])
         assert channel.external_id == res.channel_external_id
 
     def test_close(self, cognite_client):

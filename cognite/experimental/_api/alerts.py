@@ -200,16 +200,16 @@ class AlertsAPI(APIClient):
             items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
         )
 
-    def create_deduplicate(
+    def create_deduplicated(
         self,
-        alerts: Union[Alert, List[Alert]],
+        alerts: Union[DeduplicateAlert, List[DeduplicateAlert]],
     ) -> Union[Alert, AlertList]:
         assert_type(alerts, "alerts", [Alert, list])
         return self._create_multiple(
             items=alerts,
             resource_path=self._RESOURCE_PATH_DEDUPLICATE,
-            list_cls=DeduplicateAlertList,
-            resource_cls=DeduplicateAlert,
+            list_cls=AlertList,
+            resource_cls=Alert,
         )
 
     def list(

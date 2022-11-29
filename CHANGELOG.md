@@ -14,9 +14,9 @@ Changes are grouped as follows
 
 ## [0.108.0]
 
-### Fixed
+### Added
 - Add deduplication endpoint to the alert module.
-- Fix existing tests and Add new tests. 
+- Fix existing alerts api tests and add new tests. 
 
 ## [0.107.0]
 
