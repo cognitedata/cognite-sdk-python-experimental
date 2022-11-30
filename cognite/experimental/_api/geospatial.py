@@ -41,13 +41,14 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     def __init__(self, *args, **kwargs):
         super(ExperimentalGeospatialAPI, self).__init__(*args, **kwargs)
 
+        # https://stackoverflow.com/questions/6034662/python-method-overriding-does-signature-matter
+        # skip these methods from parent
+        skip_methods = ["coordinate_reference_systems", "stream_features", "compute"]
         for attr_name in GeospatialAPI.__dict__:
+            if any([method in attr_name for method in skip_methods]):
+                continue
             attr = getattr(self, attr_name)
-            if (
-                "coordinate_reference_systems" not in attr_name
-                and "stream_features" not in attr_name
-                and isinstance(attr, types.MethodType)
-            ):
+            if isinstance(attr, types.MethodType):
                 wrapped = _with_cognite_domain(getattr(GeospatialAPI, attr_name))
                 setattr(ExperimentalGeospatialAPI, attr_name, wrapped)
 

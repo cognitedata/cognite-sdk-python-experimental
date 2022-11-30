@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cognite-sdk-experimental"
 
-version = "0.107.0"
+version = "0.108.0"
 
 description = "Experimental additions to the Python SDK"
 authors = ["Sander Land <sander.land@cognite.com>"]
