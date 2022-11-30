@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.107.1]
+
+### Fixed
+- Fixed geospatial compute conflict with base SDK
+
 ## [0.107.0]
 
 ### Changed
