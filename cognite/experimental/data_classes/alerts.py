@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 from cognite.client.data_classes._base import (
     CogniteFilter,
@@ -23,6 +23,7 @@ class AlertChannel(CogniteResource):
         parent_external_id: str = None,
         description: str = None,
         metadata: Dict[str, str] = None,
+        alert_rules: Dict[str, Dict[str, str]] = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.external_id = external_id
@@ -32,6 +33,7 @@ class AlertChannel(CogniteResource):
         self.parent_external_id = parent_external_id
         self.description = description
         self.metadata = metadata
+        self.alert_rules = alert_rules
         self._cognite_client = cast("CogniteClient", cognite_client)
 
 
@@ -124,6 +126,7 @@ class Alert(CogniteResource):
         metadata: Dict[str, str] = None,
         acknowledged: bool = None,
         closed: bool = None,
+        triggered_points: List[Dict[str, str]] = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.id = id
@@ -137,7 +140,58 @@ class Alert(CogniteResource):
         self.metadata = metadata
         self.acknowledged = acknowledged
         self.closed = closed
+        self.triggered_points = triggered_points
         self._cognite_client = cast("CogniteClient", cognite_client)
+
+
+class DeduplicateAlert(CogniteResource):
+    """Alert"""
+
+    def __init__(
+        self,
+        id: int = None,
+        external_id: str = None,
+        timestamp: int = None,
+        channel_id: int = None,
+        channel_external_id: str = None,
+        source: str = None,
+        value: str = None,
+        level: str = None,
+        metadata: Dict[str, str] = None,
+        acknowledged: bool = None,
+        closed: bool = None,
+        triggered_points: List[Dict[str, str]] = None,
+        cognite_client: "CogniteClient" = None,
+        status: str = None,
+        start_time: int = None,
+        last_triggered_time: int = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+    ):
+        self.id = id
+        self.external_id = external_id
+        self.timestamp = timestamp
+        self.channel_id = channel_id
+        self.channel_external_id = channel_external_id
+        self.source = source
+        self.value = value
+        self.level = level
+        self.metadata = metadata
+        self.acknowledged = acknowledged
+        self.closed = closed
+        self.triggered_points = triggered_points
+        self._cognite_client = cast("CogniteClient", cognite_client)
+        self.status = status
+        self.last_triggered_time = last_triggered_time
+        self.created_time = created_time
+        self.last_updated_time = last_updated_time
+        self.start_time = start_time
+
+
+class DeduplicateAlertList(CogniteResourceList):
+    _RESOURCE = DeduplicateAlert
+    _UPDATE = None
+    _ASSERT_CLASSES = False
 
 
 class AlertList(CogniteResourceList):
