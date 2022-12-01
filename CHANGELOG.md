@@ -12,10 +12,16 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.107.1]
+## [0.108.1]
 
 ### Fixed
 - Fixed geospatial compute conflict with base SDK
+
+## [0.108.0]
+
+### Added
+- Add deduplication endpoint to the alert module.
+- Fix existing alerts api tests and add new tests. 
 
 ## [0.107.0]
 

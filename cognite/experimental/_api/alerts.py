@@ -17,6 +17,8 @@ from cognite.experimental.data_classes.alerts import (
     AlertSubscription,
     AlertSubscriptionDelete,
     AlertSubscriptionList,
+    DeduplicateAlert,
+    DeduplicateAlertList,
 )
 
 
@@ -43,6 +45,8 @@ class AlertChannelsAPI(APIClient):
         return self._create_multiple(
             items=channels,
             resource_path=self._RESOURCE_PATH,
+            list_cls=AlertChannelList,
+            resource_cls=AlertChannel,
         )
 
     def list(
@@ -71,7 +75,9 @@ class AlertChannelsAPI(APIClient):
             metadata=metadata,
         ).dump(camel_case=True)
 
-        return self._list(method="POST", limit=limit, filter=filter)
+        return self._list(
+            method="POST", limit=limit, filter=filter, list_cls=AlertChannelList, resource_cls=AlertChannel
+        )
 
     def update(
         self, items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]
@@ -167,6 +173,7 @@ class AlertSubscriptionsAPI(APIClient):
 
 class AlertsAPI(APIClient):
     _RESOURCE_PATH = "/alerts"
+    _RESOURCE_PATH_DEDUPLICATE = "/alerts/deduplicate"
     _LIST_CLASS = AlertList
 
     def __init__(self, *args, **kwargs):
@@ -191,6 +198,18 @@ class AlertsAPI(APIClient):
         assert_type(alerts, "alerts", [Alert, list])
         return self._create_multiple(
             items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
+        )
+
+    def create_deduplicated(
+        self,
+        alerts: Union[DeduplicateAlert, List[DeduplicateAlert]],
+    ) -> Union[Alert, AlertList]:
+        assert_type(alerts, "alerts", [Alert, list])
+        return self._create_multiple(
+            items=alerts,
+            resource_path=self._RESOURCE_PATH_DEDUPLICATE,
+            list_cls=AlertList,
+            resource_cls=Alert,
         )
 
     def list(
@@ -245,9 +264,10 @@ class AlertsAPI(APIClient):
 
         Returns:
             None"""
+        identifiers = IdentifierSequence.load(ids=ids, external_ids=external_ids)
 
-        all_ids = self._process_ids(ids, external_ids, wrap_ids=True)
-
-        self._post(self._RESOURCE_PATH + "/close", json={"items": all_ids}, headers={"cdf-version": "alpha"}).json()
+        self._post(
+            self._RESOURCE_PATH + "/close", json={"items": identifiers.as_dicts()}, headers={"cdf-version": "alpha"}
+        ).json()
 
         return None
