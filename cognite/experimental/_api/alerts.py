@@ -17,8 +17,6 @@ from cognite.experimental.data_classes.alerts import (
     AlertSubscription,
     AlertSubscriptionDelete,
     AlertSubscriptionList,
-    DeduplicateAlert,
-    DeduplicateAlertList,
 )
 
 
@@ -202,7 +200,7 @@ class AlertsAPI(APIClient):
 
     def create_deduplicated(
         self,
-        alerts: Union[DeduplicateAlert, List[DeduplicateAlert]],
+        alerts: Union[Alert, List[Alert]],
     ) -> Union[Alert, AlertList]:
         assert_type(alerts, "alerts", [Alert, list])
         return self._create_multiple(
