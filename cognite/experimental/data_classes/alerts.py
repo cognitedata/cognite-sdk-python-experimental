@@ -143,6 +143,7 @@ class Alert(CogniteResource):
         self.triggered_points = triggered_points
         self._cognite_client = cast("CogniteClient", cognite_client)
 
+
 class AlertList(CogniteResourceList):
     _RESOURCE = Alert
     _UPDATE = None
