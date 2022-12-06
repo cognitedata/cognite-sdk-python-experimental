@@ -16,8 +16,6 @@ from cognite.experimental.data_classes.alerts import (
     AlertSubscriber,
     AlertSubscription,
     AlertSubscriptionDelete,
-    DeduplicateAlert,
-    DeduplicateAlertList,
 )
 
 CURRENT_TS = datetime.now(timezone.utc)

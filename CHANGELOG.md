@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.108.2]
+
+### Fixed
+- Fixed create deduplicated alert function signature
+
 ## [0.108.1]
 
 ### Fixed
