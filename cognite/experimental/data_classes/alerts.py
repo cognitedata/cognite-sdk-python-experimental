@@ -110,6 +110,14 @@ class AlertChannelFilter(CogniteFilter):
         self._cognite_client = cast("CogniteClient", cognite_client)
 
 
+class AlertTriggeredPoint:
+    """Triggered point, will be deduplicated into one or more alerts"""
+
+    def __init__(self, triggered: int, timestamp: int):
+        self.timestamp = timestamp
+        self.triggered = triggered
+
+
 class Alert(CogniteResource):
     """Alert"""
 
@@ -126,7 +134,7 @@ class Alert(CogniteResource):
         metadata: Dict[str, str] = None,
         acknowledged: bool = None,
         closed: bool = None,
-        triggered_points: List[Dict[str, str]] = None,
+        triggered_points: Optional[List[AlertTriggeredPoint]] = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.id = id
