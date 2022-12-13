@@ -46,7 +46,6 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         # skip these methods from parent
         skip_methods = [
             "create_feature_types",
-            "list_feature_types",
             "coordinate_reference_systems",
             "stream_features",
             "compute",
