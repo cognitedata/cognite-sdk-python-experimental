@@ -170,6 +170,10 @@ class TestExperimentalGeospatialAPI:
         assert test_partitioned_feature_type.partitions[0] == {"from": "aa", "to": "ll"}
         assert test_partitioned_feature_type.partitions[1] == {"from": "ll", "to": "zz"}
 
+    def test_list_feature_types(self, cognite_client, test_partitioned_feature_type):
+        res = cognite_client.geospatial.list_feature_types()
+        assert 0 < len(res) < 100
+
     # This test already exist in the main python sdk
     # It is repeated here to test the geospatial domain part.
     def test_create_features(self, cognite_client, test_feature_type):

@@ -44,7 +44,13 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
         # https://stackoverflow.com/questions/6034662/python-method-overriding-does-signature-matter
         # skip these methods from parent
-        skip_methods = ["create_feature_types", "coordinate_reference_systems", "stream_features", "compute"]
+        skip_methods = [
+            "create_feature_types",
+            "list_feature_types",
+            "coordinate_reference_systems",
+            "stream_features",
+            "compute",
+        ]
         for attr_name in GeospatialAPI.__dict__:
             if any([method in attr_name for method in skip_methods]):
                 continue
@@ -88,6 +94,29 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             list_cls=FeatureTypeList,
             resource_cls=FeatureType,
             items=feature_type,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+        )
+
+    def list_feature_types(self) -> FeatureTypeList:
+        """`List feature types`
+        <https://docs.cognite.com/api/v1/#operation/listFeatureTypes>
+
+        Returns:
+            FeatureTypeList: List of feature types
+
+        Examples:
+
+            Iterate over feature type definitions:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> for feature_type in c.geospatial.list_feature_types():
+                ...     feature_type # do something with the feature type definition
+        """
+        return self._list(
+            list_cls=FeatureTypeList,
+            resource_cls=FeatureType,
+            method="POST",
             resource_path=f"{self._RESOURCE_PATH}/featuretypes",
         )
 
