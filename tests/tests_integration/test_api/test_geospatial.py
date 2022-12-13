@@ -173,14 +173,14 @@ class TestExperimentalGeospatialAPI:
     def test_list_feature_types(self, cognite_client, test_partitioned_feature_type):
         res = cognite_client.geospatial.list_feature_types()
         assert 0 < len(res) < 100
+        assert res[-1].partitions[0] == {"from": "aa", "to": "ll"}
+        assert res[-1].partitions[1] == {"from": "ll", "to": "zz"}
 
     def test_retrieve_single_feature_type_by_external_id(self, cognite_client, test_partitioned_feature_type):
-        assert (
-            test_partitioned_feature_type.external_id
-            == cognite_client.geospatial.retrieve_feature_types(
-                external_id=test_partitioned_feature_type.external_id
-            ).external_id
-        )
+        res = cognite_client.geospatial.retrieve_feature_types(external_id=test_partitioned_feature_type.external_id)
+        assert test_partitioned_feature_type.external_id == res.external_id
+        assert res.partitions[0] == {"from": "aa", "to": "ll"}
+        assert res.partitions[1] == {"from": "ll", "to": "zz"}
 
     # This test already exist in the main python sdk
     # It is repeated here to test the geospatial domain part.

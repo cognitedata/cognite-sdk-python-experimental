@@ -97,63 +97,6 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             resource_path=f"{self._RESOURCE_PATH}/featuretypes",
         )
 
-    def list_feature_types(self) -> FeatureTypeList:
-        """`List feature types`
-        <https://docs.cognite.com/api/v1/#operation/listFeatureTypes>
-
-        Returns:
-            FeatureTypeList: List of feature types
-
-        Examples:
-
-            Iterate over feature type definitions:
-
-                >>> from cognite.client import CogniteClient
-                >>> c = CogniteClient()
-                >>> for feature_type in c.geospatial.list_feature_types():
-                ...     feature_type # do something with the feature type definition
-        """
-        return self._list(
-            list_cls=FeatureTypeList,
-            resource_cls=FeatureType,
-            method="POST",
-            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
-        )
-
-    @overload
-    def retrieve_feature_types(self, external_id: str) -> FeatureType:
-        ...
-
-    @overload
-    def retrieve_feature_types(self, external_id: List[str]) -> FeatureTypeList:
-        ...
-
-    def retrieve_feature_types(self, external_id: Union[str, List[str]]) -> Union[FeatureType, FeatureTypeList]:
-        """`Retrieve feature types`
-        <https://docs.cognite.com/api/v1/#operation/getFeatureTypesByIds>
-
-        Args:
-            external_id (Union[str, List[str]]): External ID
-
-        Returns:
-            FeatureTypeList: Requested Type or None if it does not exist.
-
-        Examples:
-
-            Get Type by external id:
-
-                >>> from cognite.client import CogniteClient
-                >>> c = CogniteClient()
-                >>> res = c.geospatial.retrieve_feature_types(external_id="1")
-        """
-        identifiers = IdentifierSequence.load(ids=None, external_ids=external_id)
-        return self._retrieve_multiple(
-            list_cls=FeatureTypeList,
-            resource_cls=FeatureType,
-            identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
-            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
-        )
-
     @_with_cognite_domain
     def stream_features(
         self,
