@@ -11,6 +11,7 @@ from cognite.client.utils._identifier import IdentifierSequence
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import *
+from cognite.experimental.data_classes.geospatial import FeatureType, FeatureTypeList
 
 
 def _with_cognite_domain(func):
@@ -43,7 +44,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
         # https://stackoverflow.com/questions/6034662/python-method-overriding-does-signature-matter
         # skip these methods from parent
-        skip_methods = ["coordinate_reference_systems", "stream_features", "compute"]
+        skip_methods = [
+            "create_feature_types",
+            "coordinate_reference_systems",
+            "stream_features",
+            "compute",
+        ]
         for attr_name in GeospatialAPI.__dict__:
             if any([method in attr_name for method in skip_methods]):
                 continue
@@ -51,6 +57,44 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             if isinstance(attr, types.MethodType):
                 wrapped = _with_cognite_domain(getattr(GeospatialAPI, attr_name))
                 setattr(ExperimentalGeospatialAPI, attr_name, wrapped)
+
+    @_with_cognite_domain
+    def create_feature_types(
+        self, feature_type: Union[FeatureType, Sequence[FeatureType]]
+    ) -> Union[FeatureType, FeatureTypeList]:
+        """`Creates feature types`
+        <https://docs.cognite.com/api/v1/#operation/createFeatureTypes>
+
+        Args:
+            feature_type (Union[FeatureType, Sequence[FeatureType]]): feature type definition or list of feature type definitions to create.
+
+        Returns:
+            Union[FeatureType, FeatureTypeList]: Created feature type definition(s)
+
+        Examples:
+
+            Create new type definitions:
+
+                >>> from cognite.client import CogniteClient
+                >>> from cognite.client.data_classes.geospatial import FeatureType
+                >>> c = CogniteClient()
+                >>> feature_types = [
+                ...     FeatureType(external_id="wells", properties={"location": {"type": "POINT", "srid": 4326}})
+                ...     FeatureType(
+                ...       external_id="cities",
+                ...       properties={"name": {"type": "STRING", "size": 10}},
+                ...       search_spec={"name_index": {"properties": ["name"]}}
+                ...       partitions=[{"from":"2000", "to":"2007"},{"from":"2007", "to":"2020"}],
+                ...     )
+                ... ]
+                >>> res = c.geospatial.create_feature_types(feature_types)
+        """
+        return self._create_multiple(
+            list_cls=FeatureTypeList,
+            resource_cls=FeatureType,
+            items=feature_type,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+        )
 
     @_with_cognite_domain
     def stream_features(
