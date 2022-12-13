@@ -2,7 +2,7 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Dict, Generator, Sequence, Union
+from typing import Dict, Generator, Sequence, Union, overload
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature, FeatureList
@@ -117,6 +117,40 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             list_cls=FeatureTypeList,
             resource_cls=FeatureType,
             method="POST",
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+        )
+
+    @overload
+    def retrieve_feature_types(self, external_id: str) -> FeatureType:
+        ...
+
+    @overload
+    def retrieve_feature_types(self, external_id: List[str]) -> FeatureTypeList:
+        ...
+
+    def retrieve_feature_types(self, external_id: Union[str, List[str]]) -> Union[FeatureType, FeatureTypeList]:
+        """`Retrieve feature types`
+        <https://docs.cognite.com/api/v1/#operation/getFeatureTypesByIds>
+
+        Args:
+            external_id (Union[str, List[str]]): External ID
+
+        Returns:
+            FeatureTypeList: Requested Type or None if it does not exist.
+
+        Examples:
+
+            Get Type by external id:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.retrieve_feature_types(external_id="1")
+        """
+        identifiers = IdentifierSequence.load(ids=None, external_ids=external_id)
+        return self._retrieve_multiple(
+            list_cls=FeatureTypeList,
+            resource_cls=FeatureType,
+            identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
             resource_path=f"{self._RESOURCE_PATH}/featuretypes",
         )
 

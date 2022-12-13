@@ -174,6 +174,14 @@ class TestExperimentalGeospatialAPI:
         res = cognite_client.geospatial.list_feature_types()
         assert 0 < len(res) < 100
 
+    def test_retrieve_single_feature_type_by_external_id(self, cognite_client, test_partitioned_feature_type):
+        assert (
+            test_partitioned_feature_type.external_id
+            == cognite_client.geospatial.retrieve_feature_types(
+                external_id=test_partitioned_feature_type.external_id
+            ).external_id
+        )
+
     # This test already exist in the main python sdk
     # It is repeated here to test the geospatial domain part.
     def test_create_features(self, cognite_client, test_feature_type):
