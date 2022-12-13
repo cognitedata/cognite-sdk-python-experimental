@@ -40,6 +40,28 @@ def test_feature_type(cognite_client, cognite_domain):
 
 
 @pytest.fixture()
+def test_partitioned_feature_type(cognite_client, cognite_domain):
+    cognite_client.geospatial.set_current_cognite_domain(cognite_domain)
+    external_id = f"FT_{uuid.uuid4().hex[:10]}"
+    feature_type = cognite_client.geospatial.create_feature_types(
+        FeatureType(
+            external_id=external_id,
+            properties={
+                "position": {"type": "POINT", "srid": "4326", "optional": True},
+                "volume": {"type": "DOUBLE", "optional": True},
+                "temperature": {"type": "DOUBLE", "optional": True},
+                "pressure": {"type": "DOUBLE", "optional": True},
+                "raster": {"srid": 3857, "type": "RASTER", "storage": "embedded", "optional": True},
+            },
+            search_spec={"vol_press_idx": {"properties": ["volume", "pressure"]}},
+            partitions=[{"from": "aa", "to": "ll"}, {"from": "ll", "to": "zz"}],
+        )
+    )
+    yield feature_type
+    cognite_client.geospatial.delete_feature_types(external_id=external_id)
+
+
+@pytest.fixture()
 def test_into_feature_type(cognite_client, cognite_domain):
     cognite_client.geospatial.set_current_cognite_domain(cognite_domain)
     external_id = f"FT_{uuid.uuid4().hex[:10]}"
@@ -142,6 +164,11 @@ class TestExperimentalGeospatialAPI:
             raise pytest.fail("creating feature types with dataSetId should have raised an exception")
         except CogniteAPIError as e:
             assert e.message == "Unsupported field: dataSetId"
+
+    def test_create_partitioned_feature_type(self, cognite_client, test_partitioned_feature_type):
+        assert len(test_partitioned_feature_type.partitions) == 2
+        assert test_partitioned_feature_type.partitions[0] == {"from": "aa", "to": "ll"}
+        assert test_partitioned_feature_type.partitions[1] == {"from": "ll", "to": "zz"}
 
     # This test already exist in the main python sdk
     # It is repeated here to test the geospatial domain part.
