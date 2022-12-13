@@ -2,7 +2,7 @@ import functools
 import json
 import types
 import urllib.parse
-from typing import Dict, Generator, Sequence, Union, overload
+from typing import Dict, Generator, Sequence, Union
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature, FeatureList
