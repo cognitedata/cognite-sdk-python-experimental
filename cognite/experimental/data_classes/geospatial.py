@@ -98,3 +98,48 @@ class ComputeOrder:
     def __init__(self, expression: Dict[str, Any], direction: str):
         self.expression = expression
         self.direction = direction
+
+    @classmethod
+    def _load(cls, resource: Union[str, Dict[str, Any]], cognite_client: "CogniteClient" = None) -> "FeatureType":
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client=cognite_client)
+        instance = cls(cognite_client=cognite_client)
+        for key, value in resource.items():
+            snake_case_key = to_snake_case(key)
+            setattr(instance, snake_case_key, value)
+        return instance
+
+
+class GeospatialTask(CogniteResource):
+    "A geospatial background task."
+
+    def __init__(
+        self,
+        external_id: str = None,
+        task_type: str = None,
+        request: Dict[str, Any] = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client: "CogniteClient" = None,
+    ):
+        self.external_id = external_id
+        self.task_type = task_type
+        self.request = request
+        self.created_time = created_time
+        self.last_updated_time = last_updated_time
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+    @classmethod
+    def _load(cls, resource: Union[str, Dict[str, Any]], cognite_client: "CogniteClient" = None) -> "GeospatialTask":
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client=cognite_client)
+        instance = cls(cognite_client=cognite_client)
+        for key, value in resource.items():
+            snake_case_key = to_snake_case(key)
+            setattr(instance, snake_case_key, value)
+        return instance
+
+
+class GeospatialTaskList(CogniteResourceList):
+    "A list of items computed from geospatial."
+    _RESOURCE = GeospatialTask

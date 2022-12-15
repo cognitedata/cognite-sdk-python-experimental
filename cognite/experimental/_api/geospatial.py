@@ -11,7 +11,6 @@ from cognite.client.utils._identifier import IdentifierSequence
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import *
-from cognite.experimental.data_classes.geospatial import FeatureType, FeatureTypeList
 
 
 def _with_cognite_domain(func):
@@ -454,4 +453,47 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             resource_path=resource_path,
             extra_body_fields=extra_body_fields,
             limit=chunk_size,
+        )
+
+    def create_tasks(
+        self,
+        session_nonce: str,
+        task: Union[GeospatialTask, Sequence[GeospatialTask]],
+    ) -> Union[GeospatialTask, GeospatialTaskList]:
+        """`Create tasks`
+        <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/createTasks>
+
+        Args:
+            task_external_id: the task external id.
+            feature: one feature or a list of features to upsert or a FeatureList object
+
+        Returns:
+            Union[GeospatialTask, Sequence[GeospatialTask]]: created tasks
+
+        Examples:
+
+            Create one task:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> tasks = [
+                ...     GeospatialTask(
+                ...         external_id="my_task",
+                ...         task_type="FEATURES_INGESTION"
+                ...         task_spec={
+                ...             "fileExternalId": "data.csv",
+                ...             "intoFeatureType": "my_feature_type",
+                ...             "propeties": ["externalId", "tag"],
+                ...             "recreateIndex": True"
+                ...         }
+                ...     )
+                ... ]
+                >>> res = c.geospatial.create_tasks(tasks)
+        """
+        return self._create_multiple(
+            list_cls=GeospatialTaskList,
+            resource_cls=GeospatialTask,
+            items=task,
+            resource_path=f"{GeospatialAPI._RESOURCE_PATH}/tasks",
+            extra_body_fields={"sessionNonce": session_nonce},
         )
