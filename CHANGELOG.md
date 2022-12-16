@@ -12,6 +12,12 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.109.0]
+
+### Added
+- Geospatial create_tasks(...) and get_tasks(...)
+
+
 ## [0.108.2]
 
 ### Fixed

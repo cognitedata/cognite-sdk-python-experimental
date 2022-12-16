@@ -98,3 +98,28 @@ class ComputeOrder:
     def __init__(self, expression: Dict[str, Any], direction: str):
         self.expression = expression
         self.direction = direction
+
+
+class GeospatialTask(CogniteResource):
+    "A geospatial background task."
+
+    def __init__(
+        self,
+        external_id: str = None,
+        task_type: str = None,
+        request: Dict[str, Any] = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client: "CogniteClient" = None,
+    ):
+        self.external_id = external_id
+        self.task_type = task_type
+        self.request = request
+        self.created_time = created_time
+        self.last_updated_time = last_updated_time
+        self._cognite_client = cast("CogniteClient", cognite_client)
+
+
+class GeospatialTaskList(CogniteResourceList):
+    "A list of items computed from geospatial."
+    _RESOURCE = GeospatialTask

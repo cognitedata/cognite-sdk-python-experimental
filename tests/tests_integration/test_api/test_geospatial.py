@@ -1,3 +1,4 @@
+import os
 import uuid
 
 import pytest
@@ -149,6 +150,30 @@ def test_feature_with_reference(cognite_client, test_feature_type_with_reference
     )
     yield feature
     cognite_client.geospatial.delete_features(test_feature_type_with_reference.external_id, external_id=external_id)
+
+
+@pytest.fixture
+def test_session_nonce(cognite_client):
+    session = cognite_client.iam.sessions.create()
+    yield session.nonce
+
+
+@pytest.fixture
+def test_task(cognite_client, test_feature_type, test_session_nonce):
+    task = cognite_client.geospatial.create_tasks(
+        session_nonce=test_session_nonce,
+        task=GeospatialTask(
+            external_id=f"task_{uuid.uuid4().hex[:10]}",
+            task_type="FEATURES_INGESTION",
+            request={
+                "fileExternalId": "somefile.csv",
+                "intoFeatureType": test_feature_type.external_id,
+                "columns": ["_external_id", "tag"],
+                "recreateIndex": False,
+            },
+        ),
+    )
+    yield task
 
 
 class TestExperimentalGeospatialAPI:
@@ -318,3 +343,13 @@ class TestExperimentalGeospatialAPI:
             },
         )
         assert type(res) == ComputedItemList
+
+    @pytest.mark.skip(reason="tasks are only deployed in azure-dev")
+    def test_create_tasks(self, test_task):
+        assert test_task.task_type == "FEATURES_INGESTION"
+
+    @pytest.mark.skip(reason="tasks are only deployed in azure-dev")
+    def test_get_tasks(self, cognite_client, test_task):
+        res = cognite_client.geospatial.get_tasks(external_id=test_task.external_id)
+        assert res.task_type == "FEATURES_INGESTION"
+        assert res.external_id == test_task.external_id

@@ -11,7 +11,6 @@ from cognite.client.utils._identifier import IdentifierSequence
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.experimental.data_classes.geospatial import *
-from cognite.experimental.data_classes.geospatial import FeatureType, FeatureTypeList
 
 
 def _with_cognite_domain(func):
@@ -454,4 +453,73 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             resource_path=resource_path,
             extra_body_fields=extra_body_fields,
             limit=chunk_size,
+        )
+
+    def create_tasks(
+        self,
+        session_nonce: str,
+        task: Union[GeospatialTask, Sequence[GeospatialTask]],
+    ) -> Union[GeospatialTask, GeospatialTaskList]:
+        """`Create tasks`
+        <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/createTasks>
+
+        Args:
+            session_nonce: the session nonce to be used by the background worker.
+            task: the task specification.
+
+        Returns:
+            Union[GeospatialTask, Sequence[GeospatialTask]]: created tasks
+
+        Examples:
+
+            Get one task:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> tasks = [
+                ...     GeospatialTask(
+                ...         external_id="my_task",
+                ...         task_type="FEATURES_INGESTION"
+                ...         task_spec={
+                ...             "fileExternalId": "data.csv",
+                ...             "intoFeatureType": "my_feature_type",
+                ...             "propeties": ["externalId", "tag"],
+                ...             "recreateIndex": True
+                ...         }
+                ...     )
+                ... ]
+                >>> res = c.geospatial.create_tasks(tasks)
+        """
+        return self._create_multiple(
+            list_cls=GeospatialTaskList,
+            resource_cls=GeospatialTask,
+            items=task,
+            resource_path=f"{GeospatialAPI._RESOURCE_PATH}/tasks",
+            extra_body_fields={"sessionNonce": session_nonce},
+        )
+
+    def get_tasks(self, external_id: Union[str, List[str]]) -> Union[GeospatialTask, GeospatialTaskList]:
+        """`Retrieve tasks`
+        <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/getTasksByIds>
+
+        Args:
+            external_id: the task external id.
+
+        Returns:
+            Union[GeospatialTask, Sequence[GeospatialTask]]: the retrieved task(s)
+
+        Examples:
+
+            Retrieve one task:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.get_tasks(external_id="my_task")
+        """
+        identifiers = IdentifierSequence.load(ids=None, external_ids=external_id)
+        return self._retrieve_multiple(
+            list_cls=GeospatialTaskList,
+            resource_cls=GeospatialTask,
+            identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
+            resource_path=f"{GeospatialAPI._RESOURCE_PATH}/tasks",
         )
