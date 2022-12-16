@@ -464,15 +464,15 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/createTasks>
 
         Args:
-            task_external_id: the task external id.
-            feature: one feature or a list of features to upsert or a FeatureList object
+            session_nonce: the session nonce to be used by the background worker.
+            task: the task specification.
 
         Returns:
             Union[GeospatialTask, Sequence[GeospatialTask]]: created tasks
 
         Examples:
 
-            Create one task:
+            Get one task:
 
                 >>> from cognite.client import CogniteClient
                 >>> c = CogniteClient()
@@ -496,4 +496,30 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             items=task,
             resource_path=f"{GeospatialAPI._RESOURCE_PATH}/tasks",
             extra_body_fields={"sessionNonce": session_nonce},
+        )
+
+    def get_tasks(self, external_id: Union[str, List[str]]) -> Union[GeospatialTask, GeospatialTaskList]:
+        """`Retrieve tasks`
+        <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/getTasksByIds>
+
+        Args:
+            external_id: the task external id.
+
+        Returns:
+            Union[GeospatialTask, Sequence[GeospatialTask]]: the retrieved task(s)
+
+        Examples:
+
+            Retrieve one task:
+
+                >>> from cognite.client import CogniteClient
+                >>> c = CogniteClient()
+                >>> res = c.geospatial.get_tasks(external_id="my_task")
+        """
+        identifiers = IdentifierSequence.load(ids=None, external_ids=external_id)
+        return self._retrieve_multiple(
+            list_cls=GeospatialTaskList,
+            resource_cls=GeospatialTask,
+            identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
+            resource_path=f"{GeospatialAPI._RESOURCE_PATH}/tasks",
         )
