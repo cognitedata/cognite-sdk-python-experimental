@@ -484,7 +484,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 ...             "fileExternalId": "data.csv",
                 ...             "intoFeatureType": "my_feature_type",
                 ...             "propeties": ["externalId", "tag"],
-                ...             "recreateIndex": True"
+                ...             "recreateIndex": True
                 ...         }
                 ...     )
                 ... ]
