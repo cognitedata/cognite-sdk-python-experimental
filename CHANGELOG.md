@@ -15,7 +15,7 @@ Changes are grouped as follows
 ## [0.109.1]
 
 ### Fixed
-- Added missing status to GeospatialTask
+- Added missing state to GeospatialTask
 
 ## [0.109.0]
 
