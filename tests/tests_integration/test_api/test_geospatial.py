@@ -354,3 +354,5 @@ class TestExperimentalGeospatialAPI:
         assert res.task_type == "FEATURES_INGESTION"
         assert res.external_id == test_task.external_id
         assert res.state is not None
+        assert res.events is not None
+        assert res.result is not None

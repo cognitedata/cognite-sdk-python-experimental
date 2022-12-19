@@ -111,6 +111,8 @@ class GeospatialTask(CogniteResource):
         created_time: int = None,
         last_updated_time: int = None,
         state: str = None,
+        result: Dict[str, Any] = None,
+        events: Dict[str, Any] = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.external_id = external_id
@@ -119,6 +121,8 @@ class GeospatialTask(CogniteResource):
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self.state = state
+        self.result = result
+        self.events = events
         self._cognite_client = cast("CogniteClient", cognite_client)
 
 
