@@ -348,8 +348,9 @@ class TestExperimentalGeospatialAPI:
     def test_create_tasks(self, test_task):
         assert test_task.task_type == "FEATURES_INGESTION"
 
-    @pytest.mark.skip(reason="tasks are only deployed in azure-dev")
+    # @pytest.mark.skip(reason="tasks are only deployed in azure-dev")
     def test_get_tasks(self, cognite_client, test_task):
         res = cognite_client.geospatial.get_tasks(external_id=test_task.external_id)
         assert res.task_type == "FEATURES_INGESTION"
         assert res.external_id == test_task.external_id
+        assert res.state is not None

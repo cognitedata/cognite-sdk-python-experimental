@@ -101,7 +101,7 @@ class ComputeOrder:
 
 
 class GeospatialTask(CogniteResource):
-    "A geospatial background task."
+    """A geospatial background task."""
 
     def __init__(
         self,
@@ -110,6 +110,7 @@ class GeospatialTask(CogniteResource):
         request: Dict[str, Any] = None,
         created_time: int = None,
         last_updated_time: int = None,
+        state: str = None,
         cognite_client: "CogniteClient" = None,
     ):
         self.external_id = external_id
@@ -117,9 +118,11 @@ class GeospatialTask(CogniteResource):
         self.request = request
         self.created_time = created_time
         self.last_updated_time = last_updated_time
+        self.state = state
         self._cognite_client = cast("CogniteClient", cognite_client)
 
 
 class GeospatialTaskList(CogniteResourceList):
-    "A list of items computed from geospatial."
+    """A list of geospatial background tasks."""
+
     _RESOURCE = GeospatialTask
