@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.109.1]
+
+### Fixed
+- Added missing state to GeospatialTask
+
 ## [0.109.0]
 
 ### Added
