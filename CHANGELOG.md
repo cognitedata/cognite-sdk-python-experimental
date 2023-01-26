@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.110.0]
+
+### Changed
+- Increased cognite-sdk major version pin. (4 -> 5)
+
 ## [0.109.1]
 
 ### Fixed
