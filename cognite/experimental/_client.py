@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Dict, List, Optional, Union
+from typing import Optional
 
 from cognite.client import ClientConfig, global_config
 from cognite.client._api_client import APIClient
@@ -14,7 +14,6 @@ from cognite.experimental._api.extractionpipelines import ExperimentalExtraction
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.pnid_object_detection import PNIDObjectDetectionAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 
@@ -53,7 +52,6 @@ class CogniteClient(Client):
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
-        self.pnid_object_detection = PNIDObjectDetectionAPI(self._config, api_version="playground", cognite_client=self)
         self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
         self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
 
