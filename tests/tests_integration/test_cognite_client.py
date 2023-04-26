@@ -8,7 +8,7 @@ c = CogniteClient()
 
 class TestCogniteClient:
     def test_get(self):
-        res = c.get("/token/inspect")
+        res = c.get("/assets")
         assert res.status_code == 200
 
     def test_post(self):
