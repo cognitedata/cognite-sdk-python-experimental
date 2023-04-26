@@ -28,7 +28,8 @@ class DocumentParsingAPI(ContextAPI):
             min_tokens (int): Minimal number of tokens a match must be based on
             search_field (str): Name of the field of non-string entities that identify them.
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
+        """
 
         entities = [
             entity.dump(camel_case=True) if isinstance(entity, CogniteResource) else entity for entity in entities

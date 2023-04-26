@@ -229,7 +229,6 @@ class EntityMatchingPipeline(CogniteResource):
         status_time=None,
         cognite_client=None,
     ):
-
         self.id = id
         self.external_id = external_id
         self.name = name

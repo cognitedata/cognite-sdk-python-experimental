@@ -59,7 +59,8 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
             external_id: external id or list of external ids of the pipelines to retrieve the latest run for.
 
         Returns:
-            Union[EntityMatchingPipelineRun,EntityMatchingPipelineRunList]: list of latest pipeline runs, or a single object if a single id was given and the run was found"""
+            Union[EntityMatchingPipelineRun,EntityMatchingPipelineRunList]: list of latest pipeline runs, or a single object if a single id was given and the run was found
+        """
         identifiers = IdentifierSequence.load(ids=id, external_ids=external_id)
         is_single_id = identifiers.is_singleton()
         runs = self._camel_post("/latest", json={"items": identifiers.as_dicts()}).json()["items"]
@@ -263,7 +264,8 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
             matches: list of matches to create rules for, given as a list of dictionaries with 'input', 'predicted' and (optionally) 'score'
 
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
+        """
         return self._run_job(job_path="/rules", json={"items": matches}, job_cls=ContextualizationJob)
 
     def suggest_fields(
@@ -280,7 +282,8 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
             score_threshold: only return suggestions above this threshold.
 
         Returns:
-            List[Dict]: results sorted by score, each entry having 'source' and 'target' field along with a score and exampleTokens which match"""
+            List[Dict]: results sorted by score, each entry having 'source' and 'target' field along with a score and exampleTokens which match
+        """
         return self._post(
             self._RESOURCE_PATH + "/suggestfields",
             json={
