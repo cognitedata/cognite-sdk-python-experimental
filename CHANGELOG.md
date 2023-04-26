@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.110.1]
+
+### Changed
+- /alerts/deduplicate (`alert.create_deduplicated(...)`) is now retryable
+
 ## [0.110.0]
 
 ### Changed
