@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Union, cast
 
 from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
-from cognite.client.utils._auxiliary import to_snake_case
+from cognite.client.utils._text import to_snake_case
 
 
 class FeatureType(CogniteResource):

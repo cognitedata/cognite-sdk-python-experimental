@@ -1,10 +1,11 @@
 from copy import deepcopy
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes._base import CogniteResource
-from cognite.client.utils._auxiliary import assert_type, to_camel_case, to_snake_case
-from cognite.client.utils._identifier import Identifier, IdentifierSequence
+from cognite.client.utils._auxiliary import assert_type
+from cognite.client.utils._identifier import IdentifierSequence
+from cognite.client.utils._text import to_camel_case
 
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationList, AnnotationUpdate
 

@@ -1,6 +1,6 @@
-from typing import Dict, List, Union
+from typing import List, Union
 
-from cognite.client import utils
+from cognite.client.utils._text import to_camel_case
 
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import EntityMatchingMatchRuleList, MatchRulesApplyJob, MatchRulesSuggestJob
@@ -49,7 +49,7 @@ class MatchRulesAPI(ContextAPI):
             MatchRulesSuggestJob: Resulting queued job. Note that .rules property of this job will block waiting for
             results.
         """
-        matches = [{utils._auxiliary.to_camel_case(k): v for k, v in match.items()} for match in matches]
+        matches = [{to_camel_case(k): v for k, v in match.items()} for match in matches]
         return self._run_job(
             job_path="/suggest",
             status_path="/suggest/",
