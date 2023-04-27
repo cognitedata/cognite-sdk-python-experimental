@@ -12,6 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.112.0]
+
+### Changed
+- Increase cognite-sdk major version (5 -> 6)
+
+### Fixed
+- Lock cognite-sdk version
+
 ## [0.111.0]
 
 ### Removed
