@@ -2074,4 +2074,4 @@ geopandas = ["geopandas", "shapely"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0.0"
-content-hash = "a85bd415c03cf264d9376db4412b5b7fa84cc88e041b1b46dd9a8e282532303b"
+content-hash = "bb1b9489ddf69f53765155aa3c0e111299ba28ee44b2bd697838f52999618545"
