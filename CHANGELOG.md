@@ -17,6 +17,9 @@ Changes are grouped as follows
 ### Removed
 - removed `/findobjects` in Pnid Object Detection as it has been deprecated
 
+### Changed
+- mark /alerts/deduplicate as retryable (`client.alerts.deduplicated(...)`)
+
 ## [0.110.0]
 
 ### Changed
