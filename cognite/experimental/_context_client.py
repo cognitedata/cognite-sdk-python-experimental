@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import ContextualizationJob
-from cognite.client.utils._auxiliary import to_camel_case
+from cognite.client.utils._text import to_camel_case
 from requests import Response
 
 
