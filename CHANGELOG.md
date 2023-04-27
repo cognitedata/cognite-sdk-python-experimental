@@ -12,10 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.110.1]
+## [0.111.0]
 
-### Changed
-- /alerts/deduplicate (`alert.create_deduplicated(...)`) is now retryable
+### Removed
+- removed `/findobjects` in Pnid Object Detection as it has been deprecated
 
 ## [0.110.0]
 

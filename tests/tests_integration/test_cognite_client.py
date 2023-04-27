@@ -8,8 +8,9 @@ c = CogniteClient()
 
 class TestCogniteClient:
     def test_get(self):
-        res = c.get("/login/status")
-        assert res.status_code == 200
+        with pytest.raises(CogniteAPIError) as e:
+            c.get("/login")
+        assert e.value.code == 404
 
     def test_post(self):
         with pytest.raises(CogniteAPIError) as e:
