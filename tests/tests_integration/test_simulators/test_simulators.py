@@ -32,7 +32,7 @@ def cognite_client() -> CogniteClient:
 @mark.skipif(
     os.environ.get("ENABLE_SIMULATORS_TESTS") == None, reason="Skipping simulators API tests due to service immaturity"
 )
-class TestAlertChannelsIntegration:
+class TestSimulatorsIntegration:
     def test_run_single_simulation(self, cognite_client: CogniteClient):
         test_run = SimulationRun(
             simulator_name="DWSIM",
