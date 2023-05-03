@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.113.0]
+
+### Added
+- Simulators API to run a single simulation
+
 ## [0.112.0]
 
 ### Changed
