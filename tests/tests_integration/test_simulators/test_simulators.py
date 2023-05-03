@@ -1,14 +1,13 @@
 import os
 
-from cognite.client.utils._logging import _configure_logger_for_debug_mode
 from cognite.client import ClientConfig
 from cognite.client.credentials import OAuthClientCredentials
+from cognite.client.utils._logging import _configure_logger_for_debug_mode
 from pytest import fixture, mark
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.simulators import (
-    SimulationRun,
-)
+from cognite.experimental.data_classes.simulators import SimulationRun
+
 
 @fixture(scope="class")
 def cognite_client() -> CogniteClient:

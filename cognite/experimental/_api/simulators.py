@@ -3,10 +3,7 @@ from typing import Dict, List, Union
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type
 
-from cognite.experimental.data_classes.simulators import (
-    SimulationRun,
-    SimulationRunList,
-)
+from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunList
 
 
 class SimulationRunsAPI(APIClient):
@@ -35,6 +32,7 @@ class SimulationRunsAPI(APIClient):
             list_cls=SimulationRunList,
             resource_cls=SimulationRun,
         )
+
 
 class SimulatorsAPI(APIClient):
     def __init__(self, *args, **kwargs):

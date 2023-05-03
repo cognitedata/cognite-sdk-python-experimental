@@ -1,9 +1,6 @@
 from typing import Dict, List, cast
 
-from cognite.client.data_classes._base import (
-    CogniteResource,
-    CogniteResourceList,
-)
+from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
 
 class SimulationRun(CogniteResource):
