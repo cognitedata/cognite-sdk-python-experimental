@@ -15,6 +15,7 @@ from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
+from cognite.experimental._api.simulators import SimulatorsAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 
 APIClient._RETRYABLE_POST_ENDPOINT_REGEX_PATTERNS |= {
@@ -51,6 +52,7 @@ class CogniteClient(Client):
         super().__init__(self._config)
         self.geospatial = ExperimentalGeospatialAPI(self._config, api_version="v1", cognite_client=self)
         self.alerts = AlertsAPI(self._config, api_version="v1", cognite_client=self)
+        self.simulators = SimulatorsAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)

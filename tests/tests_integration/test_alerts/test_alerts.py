@@ -41,7 +41,6 @@ def cognite_client() -> CogniteClient:
             project="air-azure-dev",
             headers={"cdf-version": "alpha"},
             credentials=creds,
-            debug=True,
         )
     )
 
