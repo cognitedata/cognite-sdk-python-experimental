@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.113.2]
+
+### Changed
+- Update regex version
+
 ## [0.113.1]
 
 ### Fixed
