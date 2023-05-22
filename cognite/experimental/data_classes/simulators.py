@@ -38,6 +38,7 @@ class SimulationRunFilter(CogniteFilter):
 
     def __init__(
         self,
+        simulator_name: str = None,
         model_name: str = None,
         routine_name: str = None,
         status: str = None,
