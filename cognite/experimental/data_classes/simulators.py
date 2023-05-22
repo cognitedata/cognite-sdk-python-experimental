@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, cast
 
-from cognite.client.data_classes._base import CogniteResource, CogniteResourceList, CogniteFilter
+from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
 
 
 class SimulationRun(CogniteResource):
@@ -32,6 +32,7 @@ class SimulationRun(CogniteResource):
 class SimulationRunList(CogniteResourceList):
     _RESOURCE = SimulationRun
     _ASSERT_CLASSES = True
+
 
 class SimulationRunFilter(CogniteFilter):
     """Filter simulation runs with strict matching."""

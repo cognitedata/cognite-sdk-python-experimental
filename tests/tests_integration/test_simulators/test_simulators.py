@@ -48,13 +48,12 @@ class TestSimulatorsIntegration:
         assert res.id is not None
         assert res.created_time is not None
 
-
     def test_list_simulation_runs(self, cognite_client: CogniteClient):
         res = cognite_client.simulators.list_runs(
             simulator_name="DWSIM",
             model_name="ShowerMixerIntegrationTest",
             routine_name="ShowerMixerCalculation",
-            status="success"
+            status="success",
         )
 
         assert len(res) > 0

@@ -32,7 +32,7 @@ class SimulationRunsAPI(APIClient):
             list_cls=SimulationRunList,
             resource_cls=SimulationRun,
         )
-    
+
     def list_runs(
         self,
         simulator_name: str = None,
@@ -59,7 +59,11 @@ class SimulationRunsAPI(APIClient):
         ).dump(camel_case=True)
 
         return self._list(
-            method="POST", filter=filter, list_cls=SimulationRunList, resource_path="/simulators/runs", resource_cls=SimulationRun
+            method="POST",
+            filter=filter,
+            list_cls=SimulationRunList,
+            resource_path="/simulators/runs",
+            resource_cls=SimulationRun,
         )
 
 
@@ -73,7 +77,7 @@ class SimulatorsAPI(APIClient):
         items: Union[SimulationRun, List[SimulationRun]],
     ) -> Union[SimulationRun, SimulationRunList]:
         return self.simulations.run(items)
-    
+
     def list_runs(
         self,
         simulator_name: str = None,
@@ -81,4 +85,6 @@ class SimulatorsAPI(APIClient):
         routine_name: str = None,
         status: str = None,
     ) -> SimulationRunList:
-        return self.simulations.list_runs(simulator_name=simulator_name, model_name=model_name, routine_name=routine_name, status=status)
+        return self.simulations.list_runs(
+            simulator_name=simulator_name, model_name=model_name, routine_name=routine_name, status=status
+        )
