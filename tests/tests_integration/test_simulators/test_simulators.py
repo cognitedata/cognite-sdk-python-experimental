@@ -53,7 +53,7 @@ class TestSimulatorsIntegration:
             simulator_name="DWSIM",
             model_name="ShowerMixerIntegrationTest",
             routine_name="ShowerMixerCalculation",
-            status="success",
+            status="ready",
         )
 
         assert len(res) > 0
