@@ -57,3 +57,6 @@ class TestSimulatorsIntegration:
         )
 
         assert len(res) > 0
+        assert res[0].simulator_name == "DWSIM"
+        assert res[0].status == "ready"
+        assert res[0].created_time > 0
