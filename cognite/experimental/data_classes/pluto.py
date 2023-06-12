@@ -1,18 +1,18 @@
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
 
 class PlutoSource(CogniteResource):
     def __init__(
-            self,
-            external_id: str = None,
-            type: str = None,
-            host: str = None,
-            port: Optional[int] = None,
-            config: Dict[str, Any] = None,
-            created_time: int = None,
-            cognite_client=None,
+        self,
+        external_id: str = None,
+        type: str = None,
+        host: str = None,
+        port: Optional[int] = None,
+        config: Dict[str, Any] = None,
+        created_time: int = None,
+        cognite_client=None,
     ):
         self.external_id = external_id
         self.type = type
@@ -24,17 +24,18 @@ class PlutoSource(CogniteResource):
 
 
 class PlutoJob(CogniteResource):
-    def __init__(self,
-                 external_id: str = None,
-                 topic_filter: str = None,
-                 format: Dict[str, Any] = None,
-                 status: str = None,
-                 target_status: str = None,
-                 source_id: str = None,
-                 destination_id: str = None,
-                 created_time: int = None,
-                 cognite_client=None,
-                 ):
+    def __init__(
+        self,
+        external_id: str = None,
+        topic_filter: str = None,
+        format: Dict[str, Any] = None,
+        status: str = None,
+        target_status: str = None,
+        source_id: str = None,
+        destination_id: str = None,
+        created_time: int = None,
+        cognite_client=None,
+    ):
         self.external_id = external_id
         self.topic_filter = topic_filter
         self.format = format
@@ -47,13 +48,14 @@ class PlutoJob(CogniteResource):
 
 
 class PlutoDestination(CogniteResource):
-    def __init__(self,
-                 external_id: str = None,
-                 type: str = None,
-                 session_id: Optional[int] = None,
-                 created_time: int = None,
-                 cognite_client=None,
-                 ):
+    def __init__(
+        self,
+        external_id: str = None,
+        type: str = None,
+        session_id: Optional[int] = None,
+        created_time: int = None,
+        cognite_client=None,
+    ):
         self.external_id = external_id
         self.type = type
         self.format = format
