@@ -1,6 +1,9 @@
-from typing import Any, Dict, Optional
+import json
+from typing import Any, Dict, Optional, Type, Union
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
+from cognite.client.utils._text import to_snake_case
+from typing_extensions import Self
 
 
 class PlutoSource(CogniteResource):
@@ -9,18 +12,95 @@ class PlutoSource(CogniteResource):
         external_id: str = None,
         type: str = None,
         host: str = None,
-        port: Optional[int] = None,
-        config: Dict[str, Any] = None,
         created_time: int = None,
+        last_updated_time: int = None,
         cognite_client=None,
     ):
         self.external_id = external_id
         self.type = type
         self.host = host
-        self.port = port
-        self.config = config
         self.created_time = created_time
+        self.last_updated_time = last_updated_time
         self.cognite_client = cognite_client
+
+    @classmethod
+    def _load(
+        cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None
+    ) -> Union["PlutoEventHubSource", "PlutoMqttSource"]:
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client)
+
+        if resource["type"] == "mqtt3" or resource["type"] == "mqtt5":
+            return PlutoMqttSource._load(resource, cognite_client)
+
+        elif resource["type"] == "eventhub":
+            return PlutoEventHubSource._load(resource, cognite_client)
+
+
+class PlutoMqttSource(PlutoSource):
+    def __init__(
+        self,
+        external_id: str = None,
+        type: str = None,
+        host: str = None,
+        port: Optional[int] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client=None,
+    ):
+        super().__init__(
+            external_id=external_id,
+            type=type,
+            host=host,
+            created_time=created_time,
+            last_updated_time=last_updated_time,
+            cognite_client=cognite_client,
+        )
+        self.port = port
+        self.username = username
+        self.password = password
+
+    @classmethod
+    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client)
+
+        data = {to_snake_case(key): val for key, val in resource.items()}
+        return PlutoMqttSource(**data, cognite_client=cognite_client)
+
+
+class PlutoEventHubSource(PlutoSource):
+    def __init__(
+        self,
+        external_id: str = None,
+        type: str = None,
+        host: str = None,
+        key_name: str = None,
+        event_hub_name: str = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client=None,
+    ):
+        super().__init__(
+            external_id=external_id,
+            type=type,
+            host=host,
+            created_time=created_time,
+            last_updated_time=last_updated_time,
+            cognite_client=cognite_client,
+        )
+        self.key_name = key_name
+        self.event_hub_name = event_hub_name
+
+    @classmethod
+    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client)
+
+        data = {to_snake_case(key): val for key, val in resource.items()}
+        return PlutoEventHubSource(**data, cognite_client=cognite_client)
 
 
 class PlutoJob(CogniteResource):
@@ -66,14 +146,11 @@ class PlutoDestination(CogniteResource):
 
 class PlutoSourceList(CogniteResourceList):
     _RESOURCE = PlutoSource
-    _ASSERT_CLASSES = False
 
 
 class PlutoJobList(CogniteResourceList):
     _RESOURCE = PlutoJob
-    _ASSERT_CLASSES = False
 
 
 class PlutoDestinationList(CogniteResourceList):
     _RESOURCE = PlutoDestination
-    _ASSERT_CLASSES = False
