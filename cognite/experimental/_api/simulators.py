@@ -46,7 +46,7 @@ class SimulationRunsAPI(APIClient):
             simulator_name: name of the simulator
             model_name: name of the model
             routine_name: name of the routine
-            status: status of the simualation run. One of ("ready", "running", "success", "failure")
+            status: status of the simulation run. One of ("ready", "running", "success", "failure")
 
         Returns:
             SimulationRunList: list of simulation runs"""
