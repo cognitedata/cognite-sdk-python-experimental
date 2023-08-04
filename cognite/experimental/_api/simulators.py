@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type
 
-from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunList
+from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunFilter, SimulationRunList
 
 
 class SimulationRunsAPI(APIClient):
@@ -33,6 +33,39 @@ class SimulationRunsAPI(APIClient):
             resource_cls=SimulationRun,
         )
 
+    def list_runs(
+        self,
+        simulator_name: str = None,
+        model_name: str = None,
+        routine_name: str = None,
+        status: str = None,
+    ) -> SimulationRunList:
+        """List simulation runs
+
+        Args:
+            simulator_name: name of the simulator
+            model_name: name of the model
+            routine_name: name of the routine
+            status: status of the simulation run. One of ("ready", "running", "success", "failure")
+
+        Returns:
+            SimulationRunList: list of simulation runs"""
+
+        filter = SimulationRunFilter(
+            simulator_name=simulator_name,
+            model_name=model_name,
+            routine_name=routine_name,
+            status=status,
+        ).dump(camel_case=True)
+
+        return self._list(
+            method="POST",
+            filter=filter,
+            list_cls=SimulationRunList,
+            resource_path="/simulators/runs",
+            resource_cls=SimulationRun,
+        )
+
 
 class SimulatorsAPI(APIClient):
     def __init__(self, *args, **kwargs):
@@ -44,3 +77,14 @@ class SimulatorsAPI(APIClient):
         items: Union[SimulationRun, List[SimulationRun]],
     ) -> Union[SimulationRun, SimulationRunList]:
         return self.simulations.run(items)
+
+    def list_runs(
+        self,
+        simulator_name: str = None,
+        model_name: str = None,
+        routine_name: str = None,
+        status: str = None,
+    ) -> SimulationRunList:
+        return self.simulations.list_runs(
+            simulator_name=simulator_name, model_name=model_name, routine_name=routine_name, status=status
+        )

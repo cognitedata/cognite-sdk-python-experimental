@@ -27,7 +27,6 @@ def annotation() -> Annotation:
         creating_user=None,
         annotated_resource_type="file",
         annotated_resource_id=1,
-        annotated_resource_external_id=None,
     )
 
 

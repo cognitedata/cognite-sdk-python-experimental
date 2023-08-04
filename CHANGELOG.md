@@ -12,10 +12,14 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.115.0]
+
+### Added
+ - List and filter simulation runs
+
 ## [0.114.0]
 
 ### Added
-
  - Pluto API (Hosted extractors alpha)
 
 ## [0.113.2]
