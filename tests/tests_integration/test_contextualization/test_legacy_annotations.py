@@ -98,9 +98,7 @@ class TestAnnotationsIntegration:
         )
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
-        assert all(
-            [l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots]
-        )
+        assert all([l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots])
 
         fil = LegacyAnnotationFilter(
             annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_id}],
@@ -109,9 +107,7 @@ class TestAnnotationsIntegration:
         l_annots = ANNOTATIONSAPI.list(limit=5, filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
         assert len(l_annots) == 5
-        assert all(
-            [l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots]
-        )
+        assert all([l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots])
 
     def test_retrieve_multiple(self, new_annotations):
         assert isinstance(new_annotations, LegacyAnnotationList)
