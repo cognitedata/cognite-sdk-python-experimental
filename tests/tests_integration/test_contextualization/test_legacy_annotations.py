@@ -15,8 +15,10 @@ ANNOTATIONSAPI = COGNITE_CLIENT.legacy_annotations
 
 @pytest.fixture
 def new_annotation():
+    event = COGNITE_CLIENT.events.list(limit=1)[0]
     annot = LegacyAnnotation(
         annotation_type="abc",
+        annotated_resource_id=event.id,
         annotated_resource_type="event",
         source="sdk-integration-tests",
     )
@@ -101,7 +103,7 @@ class TestAnnotationsIntegration:
         assert all([l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots])
 
         fil = LegacyAnnotationFilter(
-            annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_id}],
+            annotated_resource_ids=[{"id": new_annotations[0].annotated_resource_id}],
             annotated_resource_type="asset",
         )
         l_annots = ANNOTATIONSAPI.list(limit=5, filter=fil)
