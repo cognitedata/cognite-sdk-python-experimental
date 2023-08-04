@@ -16,7 +16,6 @@ class LegacyAnnotation(CogniteResource):
         id (int, optional): [description]. Defaults to None.
         annotated_resource_id (int, optional): [description]. Defaults to None.
         text (str, optional): [description]. Defaults to None.
-        annotated_resource_external_id (str, optional): [description]. Defaults to None.
         annotated_resource_type (str, optional): [description]. Defaults to None.
         linked_resource_id (int, optional): [description]. Defaults to None.
         linked_resource_external_id (str, optional): [description]. Defaults to None.
@@ -36,7 +35,6 @@ class LegacyAnnotation(CogniteResource):
         id: int = None,
         annotated_resource_id: int = None,
         text: str = None,
-        annotated_resource_external_id: str = None,
         annotated_resource_type: str = None,
         linked_resource_id: int = None,
         linked_resource_external_id: str = None,
@@ -53,7 +51,6 @@ class LegacyAnnotation(CogniteResource):
         self.id = id
         self.annotated_resource_id = annotated_resource_id
         self.text = text
-        self.annotated_resource_external_id = annotated_resource_external_id
         self.annotated_resource_type = annotated_resource_type
         self.linked_resource_id = linked_resource_id
         self.linked_resource_external_id = linked_resource_external_id

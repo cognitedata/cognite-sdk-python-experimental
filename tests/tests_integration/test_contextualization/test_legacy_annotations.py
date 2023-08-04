@@ -17,7 +17,6 @@ ANNOTATIONSAPI = COGNITE_CLIENT.legacy_annotations
 def new_annotation():
     annot = LegacyAnnotation(
         annotation_type="abc",
-        annotated_resource_external_id="foo",
         annotated_resource_type="event",
         source="sdk-integration-tests",
     )
@@ -36,7 +35,6 @@ def new_annotations():
     asset = [a for a in COGNITE_CLIENT.assets.list(limit=100) if a.external_id][0]
     annot = LegacyAnnotation(
         annotation_type="abc",
-        annotated_resource_external_id=asset.external_id,
         annotated_resource_id=asset.id,
         annotated_resource_type="asset",
         source="sdk-integration-tests",
@@ -95,24 +93,24 @@ class TestAnnotationsIntegration:
         assert all([l.annotation_type == "abc" for l in l_annots])
 
         fil = LegacyAnnotationFilter(
-            annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_external_id}],
+            annotated_resource_ids=[{"id": new_annotations[0].annotated_resource_id}],
             annotated_resource_type="asset",
         )
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
         assert all(
-            [l.annotated_resource_external_id == new_annotations[0].annotated_resource_external_id for l in l_annots]
+            [l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots]
         )
 
         fil = LegacyAnnotationFilter(
-            annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_external_id}],
+            annotated_resource_ids=[{"external_id": new_annotations[0].annotated_resource_id}],
             annotated_resource_type="asset",
         )
         l_annots = ANNOTATIONSAPI.list(limit=5, filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
         assert len(l_annots) == 5
         assert all(
-            [l.annotated_resource_external_id == new_annotations[0].annotated_resource_external_id for l in l_annots]
+            [l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots]
         )
 
     def test_retrieve_multiple(self, new_annotations):
