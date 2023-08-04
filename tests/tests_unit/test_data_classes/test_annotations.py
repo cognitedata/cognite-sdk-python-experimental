@@ -2,7 +2,7 @@ import json
 from typing import Optional
 
 import pytest
-from cognite.client.utils._auxiliary import to_snake_case
+from cognite.client.utils._text import to_snake_case
 
 from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationUpdate, annotations
 

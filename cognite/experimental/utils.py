@@ -1,6 +1,6 @@
 from functools import wraps
 
-from cognite.client.utils._auxiliary import to_camel_case, to_snake_case
+from cognite.client.utils._text import to_camel_case, to_snake_case
 
 
 def use_v1_instead_of_playground(f):

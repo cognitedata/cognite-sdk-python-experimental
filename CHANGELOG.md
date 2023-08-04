@@ -12,6 +12,47 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.115.0]
+
+### Added
+ - List and filter simulation runs
+
+## [0.114.0]
+
+### Added
+ - Pluto API (Hosted extractors alpha)
+
+## [0.113.2]
+
+### Changed
+- Update regex version
+
+## [0.113.1]
+
+### Fixed
+- Lock cognite-sdk version to major only
+
+## [0.113.0]
+
+### Added
+- Simulators API to run a single simulation
+
+## [0.112.0]
+
+### Changed
+- Increase cognite-sdk major version (5 -> 6)
+
+### Fixed
+- Lock cognite-sdk version
+
+## [0.111.0]
+
+### Removed
+- removed `/findobjects` in Pnid Object Detection as it has been deprecated
+
+### Changed
+- mark /alerts/deduplicate as retryable (`client.alerts.deduplicated(...)`)
+
 ## [0.110.0]
 
 ### Changed
@@ -42,7 +83,7 @@ Changes are grouped as follows
 
 ### Added
 - Add deduplication endpoint to the alert module.
-- Fix existing alerts api tests and add new tests. 
+- Fix existing alerts api tests and add new tests.
 
 ## [0.107.0]
 
@@ -155,7 +196,7 @@ Changes are grouped as follows
 
 ### Added
 - Method to save predictions made by Vision's extract method (previously called annotate) in CDF using the Annotations API
-- Method to retrieve a Vision feature extraction job by job id. 
+- Method to retrieve a Vision feature extraction job by job id.
 
 ## [0.91.1]
 
@@ -215,7 +256,7 @@ Changes are grouped as follows
 
 - Renamed `client.annotations.*` to `client.legacy_annotations.*` and renamed corresponding (data) class and filenames accordingly.
 - Renamed `client.annotations_v2.*` to `client.annotations.*` and renamed corresponding (data) class and filenames accordingly.
- 
+
 #### Removed
 
 - Removed documentation for legacy `annotations` (now called `legacy_annotations`), which will soon be deprecated.
@@ -405,13 +446,13 @@ Changes are grouped as follows
 ## [0.63]
 
 ### Changed
-- GeospatialAPI: create_features, update_features, search_features, stream_features, retrieve_features, 
+- GeospatialAPI: create_features, update_features, search_features, stream_features, retrieve_features,
 aggregate_features and delete_features to use feature_type_external_id
 
 ## [0.62]
 
 ### Added
-- Experimental annotations_v2 implementation, providing access to the corresponding [AnnotationsV2 API](https://docs.cognite.com/api/playground/#tag/Annotations). 
+- Experimental annotations_v2 implementation, providing access to the corresponding [AnnotationsV2 API](https://docs.cognite.com/api/playground/#tag/Annotations).
     - Added `AnnotationV2`, `AnnotationV2Filter`, `AnnotationV2Update` dataclasses to `cognite.experimental.data_classes`
     - Added `annotations_v2` API to `cognite.experimental.CogniteClient`
     - **Create** annotations with `client.annotations_v2.create` passing `AnnotationV2` instance(s)
@@ -445,7 +486,7 @@ aggregate_features and delete_features to use feature_type_external_id
 
 ### Fixed
 - Geospatial: log should not consume streaming content.
-- Geospatial: throw CogniteConnectionError when streaming connection closes 
+- Geospatial: throw CogniteConnectionError when streaming connection closes
 
 ## [0.60.34]
 
@@ -587,7 +628,7 @@ aggregate_features and delete_features to use feature_type_external_id
 ## [0.60.5]
 
 ### Changed
-- `transformations.notifications`now uses `transformation_id` and `transformation_external_id` instead of `config_id` and `config_external_id`. 
+- `transformations.notifications`now uses `transformation_id` and `transformation_external_id` instead of `config_id` and `config_external_id`.
 
 ## [0.60.4]
 
@@ -652,7 +693,7 @@ aggregate_features and delete_features to use feature_type_external_id
 
 ### Fixed
 
-- Bug: `FunctionSchedulesAPI.create` did not pass `function_id` to request body. 
+- Bug: `FunctionSchedulesAPI.create` did not pass `function_id` to request body.
 
 ## [0.56.0]
 

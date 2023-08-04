@@ -9,7 +9,7 @@ from cognite.client.data_classes._base import (
     CogniteResourceList,
     CogniteUpdate,
 )
-from cognite.client.utils._auxiliary import to_snake_case
+from cognite.client.utils._text import to_snake_case
 
 
 class Annotation(CogniteResource):
@@ -21,7 +21,6 @@ class Annotation(CogniteResource):
         status (str): The status of the annotation, e.g. "suggested", "approved", "rejected".
 
         annotated_resource_type (str): Type name of the CDF resource that is annotated, e.g. "file".
-        annotated_resource_id (int, optional): The internal ID of the annotated resource.
 
         creating_app (str): The name of the app from which this annotation was created.
         creating_app_version (str): The version of the app that created this annotation. Must be a valid semantic versioning (SemVer) string.
@@ -44,7 +43,6 @@ class Annotation(CogniteResource):
         creating_user: Optional[str],
         annotated_resource_type: str,
         annotated_resource_id: Optional[int] = None,
-        annotated_resource_external_id: Optional[str] = None,
     ) -> None:
         self.annotation_type = annotation_type
         self.data = data
@@ -54,7 +52,6 @@ class Annotation(CogniteResource):
         self.creating_user = creating_user
         self.annotated_resource_type = annotated_resource_type
         self.annotated_resource_id = annotated_resource_id
-        self.annotated_resource_external_id = annotated_resource_external_id  # TODO Should be removed as soon as the migration that removes the field on the data persistence level is through.
         self.id = None  # Read only
         self.created_time = None  # Read only
         self.last_updated_time = None  # Read only
@@ -81,7 +78,6 @@ class Annotation(CogniteResource):
             creating_user=data.get("creating_user"),
             annotated_resource_type=data["annotated_resource_type"],
             annotated_resource_id=data.get("annotated_resource_id"),
-            annotated_resource_external_id=data.get("annotated_resource_external_id"),
         )
         # Fill in read-only values, if available
         annotation.id = data.get("id")

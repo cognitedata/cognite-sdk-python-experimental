@@ -73,7 +73,7 @@ class TestEntityMatching:
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
         assert 456 == job.job_id
-        assert "ContextualizationJob(id: 456,status: Queued,error: None)" == str(job)
+        assert "ContextualizationJob(id=456, status=Queued, error=None)" == str(job)
         assert {"items": [1]} == job.result
         assert "Completed" == job.status
 
@@ -94,7 +94,7 @@ class TestEntityMatching:
             feature_type="bigram",
             replacements=[{"field": "*", "from": "BADUK", "to": "GO"}],
         )
-        assert "EntityMatchingModel(id: 123,status: Queued,error: None)" == str(model)
+        assert "EntityMatchingModel(id=123, status=Queued, error=None)" == str(model)
         assert 42 == model.created_time
         model.wait_for_completion()
         assert "Completed" == model.status

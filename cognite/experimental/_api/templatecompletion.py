@@ -14,7 +14,6 @@ class ExperimentalTemplatesAPI(TemplatesAPI):
 
 
 class TemplateCompletionAPI(ContextAPI):
-
     _RESOURCE_PATH = "/context/schemas"
 
     def complete_type(self, external_id: str) -> ContextualizationJob:
@@ -24,7 +23,8 @@ class TemplateCompletionAPI(ContextAPI):
             external_id (str): External ID of the type to be completed
 
         Returns:
-            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results."""
+            ContextualizationJob: Resulting queued job. Note that .results property of this job will block waiting for results.
+        """
         return self._run_job(job_path="/type", status_path="/", external_id=external_id)
 
     def complete(
