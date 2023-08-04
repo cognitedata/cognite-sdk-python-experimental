@@ -14,6 +14,8 @@ class SimulationRun(CogniteResource):
         routine_name: str = None,
         status: str = None,
         status_message: Optional[str] = None,
+        validation_end_time: Optional[int] = None,
+        queue: Optional[bool] = None,
         created_time: int = None,
         last_updated_time: int = None,
         cognite_client: "CogniteClient" = None,
@@ -24,6 +26,8 @@ class SimulationRun(CogniteResource):
         self.routine_name = routine_name
         self.status = status
         self.status_message = status_message
+        self.validation_end_time = validation_end_time
+        self.queue = queue
         self.created_time = created_time
         self.last_updated_time = last_updated_time
         self._cognite_client = cast("CogniteClient", cognite_client)
