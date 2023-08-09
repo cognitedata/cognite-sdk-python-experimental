@@ -17,14 +17,6 @@ class SimulationRunsAPI(APIClient):
         self,
         items: Union[SimulationRun, List[SimulationRun]],
     ) -> Union[SimulationRun, SimulationRunList]:
-        """Run a simulation
-
-        Args:
-            items (Union[SimulationRun, List[SimulationRun]]): simulation(s) to run
-
-        Returns:
-            Union[SimulationRun, SimulationRunList]: simulation run(s)
-        """
         assert_type(items, "items", [SimulationRun, list])
         return self._create_multiple(
             items=items,
@@ -40,17 +32,6 @@ class SimulationRunsAPI(APIClient):
         routine_name: str = None,
         status: str = None,
     ) -> SimulationRunList:
-        """List simulation runs
-
-        Args:
-            simulator_name: name of the simulator
-            model_name: name of the model
-            routine_name: name of the routine
-            status: status of the simulation run. One of ("ready", "running", "success", "failure")
-
-        Returns:
-            SimulationRunList: list of simulation runs"""
-
         filter = SimulationRunFilter(
             simulator_name=simulator_name,
             model_name=model_name,
@@ -76,6 +57,25 @@ class SimulatorsAPI(APIClient):
         self,
         items: Union[SimulationRun, List[SimulationRun]],
     ) -> Union[SimulationRun, SimulationRunList]:
+        """Run a simulation
+
+        Args:
+            items (Union[SimulationRun, List[SimulationRun]]): simulation(s) to run
+
+        Returns:
+            Union[SimulationRun, SimulationRunList]: simulation run(s)
+
+        Examples:
+
+            Run a simulation::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes.simulators import SimulationRun
+                >>> c = CogniteClient()
+                >>> client.config.headers = {"cdf-version": "alpha"}
+                >>> test_run = SimulationRun(simulator_name="my_simulator", model_name="my_model", routine_name="my_routine")
+                >>> c.simulators.run(items=test_run)
+        """
         return self.simulations.run(items)
 
     def list_runs(
@@ -85,6 +85,28 @@ class SimulatorsAPI(APIClient):
         routine_name: str = None,
         status: str = None,
     ) -> SimulationRunList:
+        """List simulation runs
+
+        Args:
+            simulator_name: name of the simulator
+            model_name: name of the model
+            routine_name: name of the routine
+            status: status of the simulation run. One of ("ready", "running", "success", "failure")
+
+        Returns:
+            SimulationRunList: list of simulation runs
+
+        Examples:
+
+            List simulation runs::
+
+                >>> from cognite.experimental import CogniteClient
+                >>> c = CogniteClient()
+                >>> client.config.headers = {"cdf-version": "alpha"}
+                >>> c.simulators.list_runs(
+                >>>     simulator_name="my_simulator", model_name="my_model", routine_name="my_routine", status="success"
+                >>> )
+        """
         return self.simulations.list_runs(
             simulator_name=simulator_name, model_name=model_name, routine_name=routine_name, status=status
         )

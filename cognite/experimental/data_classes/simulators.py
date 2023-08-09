@@ -4,7 +4,21 @@ from cognite.client.data_classes._base import CogniteFilter, CogniteResource, Co
 
 
 class SimulationRun(CogniteResource):
-    """Simulation run"""
+    """Simulation run
+
+    Args:
+        id (int): ID of the simulation run
+        simulator_name (str): name of the simulator
+        model_name (str): name of the model
+        routine_name (str): name of the routine
+        status (str): status of the simulation run. One of ("ready", "running", "success", "failure")
+        status_message (str): status message of the simulation run
+        validation_end_time (int): validation end time of the simulation run
+        queue (bool): whether the simulation run is queued
+        created_time (int): created time of the simulation run
+        last_updated_time (int): last updated time of the simulation run
+
+    """
 
     def __init__(
         self,
@@ -34,12 +48,22 @@ class SimulationRun(CogniteResource):
 
 
 class SimulationRunList(CogniteResourceList):
+    """List of simulation runs"""
+
     _RESOURCE = SimulationRun
     _ASSERT_CLASSES = True
 
 
 class SimulationRunFilter(CogniteFilter):
-    """Filter simulation runs with strict matching."""
+    """Filter simulation runs with strict matching.
+
+    Args:
+        simulator_name (str): name of the simulator
+        model_name (str): name of the model
+        routine_name (str): name of the routine
+        status (str): status of the simulation run. One of ("ready", "running", "success", "failure")
+
+    """
 
     def __init__(
         self,
