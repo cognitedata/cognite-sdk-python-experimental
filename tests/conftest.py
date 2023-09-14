@@ -1,4 +1,3 @@
-import os
 import re
 
 import pytest
@@ -54,10 +53,3 @@ def rsps():
         )
         rsps.assert_all_requests_are_fired = False
         yield rsps
-
-
-@pytest.fixture
-def disable_gzip():
-    os.environ["COGNITE_DISABLE_GZIP"] = "1"
-    yield
-    del os.environ["COGNITE_DISABLE_GZIP"]

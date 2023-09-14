@@ -1,5 +1,4 @@
 import re
-import unittest
 
 import pytest
 from cognite.client.data_classes import ContextualizationJob

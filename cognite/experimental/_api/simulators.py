@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import List, Union
 
 from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type

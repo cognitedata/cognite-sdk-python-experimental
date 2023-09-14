@@ -1,5 +1,3 @@
-from typing import Dict, Union
-
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
 

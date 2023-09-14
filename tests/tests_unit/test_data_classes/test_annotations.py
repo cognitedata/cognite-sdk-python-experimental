@@ -4,7 +4,7 @@ from typing import Optional
 import pytest
 from cognite.client.utils._text import to_snake_case
 
-from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationUpdate, annotations
+from cognite.experimental.data_classes import Annotation, AnnotationFilter, AnnotationUpdate
 
 
 class TestAnnotation:

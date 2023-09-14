@@ -2,12 +2,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from cognite.client import utils
 from cognite.client._api.entity_matching import EntityMatchingAPI as EntityMatchingBaseAPI
-from cognite.client.data_classes import (
-    ContextualizationJob,
-    EntityMatchingModel,
-    EntityMatchingModelList,
-    EntityMatchingModelUpdate,
-)
+from cognite.client.data_classes import ContextualizationJob, EntityMatchingModel
 from cognite.client.data_classes._base import CogniteResource
 from cognite.client.utils._auxiliary import convert_true_match
 from cognite.client.utils._identifier import Identifier, IdentifierSequence

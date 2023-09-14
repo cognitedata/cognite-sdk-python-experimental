@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
