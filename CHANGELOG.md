@@ -12,6 +12,10 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.116.0]
+### Deprecated
+- Legacy annotations, as announced earlier. This will  be removed in a next version.
+
 ## [0.115.0]
 
 ### Added
