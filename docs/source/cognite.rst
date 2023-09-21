@@ -4,11 +4,10 @@ Quickstart
 .. WARNING::
   All of these extensions are experimental and subject to breaking changes. They should not be used in production code.
 
-For a quickstart guide see the main SDK Documentation at https://cognite-sdk-python.readthedocs-hosted.com.
+For a quickstart guide see the `documentation for the main SDK <https://cognite-sdk-python.readthedocs-hosted.com>`_.
 
-The currently available extensions for a `client` ( `CogniteClient`_) instance are:
+The currently available extensions for a `client` (`CogniteClient`_) instance are:
 
-* client.annotations: `Annotations`_ (see also the `API documentation <https://api-docs.cognite.com/20230101/tag/Annotations>`_ )
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_
@@ -23,43 +22,6 @@ CogniteClient
     :members:
     :member-order: bysource
 
-
-Annotations
------------
-
-Retrieve an annotation by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.retrieve
-
-Retrieve multiple annotations by id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.retrieve_multiple
-
-List annotation
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.list
-
-Create an annotation
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.create
-
-Suggest an annotation
-^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.suggest
-
-Update annotations
-^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.update
-
-Delete annotations
-^^^^^^^^^^^^^^^^^^^^
-.. automethod:: cognite.experimental._api.annotations.AnnotationsAPI.delete
-
-Data classes
-^^^^^^^^^^^^
-.. automodule:: cognite.experimental.data_classes.annotations
-    :members:
-    :show-inheritance:
 
 Contextualization
 -----------------

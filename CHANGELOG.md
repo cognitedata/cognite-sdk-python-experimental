@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.117.0]
+### Removed
+- Annotations (v1 API), which are available as part of the regular SDK. See  also
+[the documentation](https://cognite-sdk-python.readthedocs-hosted.com/en/latest/data_organization.html#annotations).
+
 ## [0.116.0]
 ### Deprecated
 - Legacy annotations, as announced earlier. This will  be removed in a next version.
