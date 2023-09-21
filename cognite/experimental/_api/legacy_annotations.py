@@ -14,7 +14,7 @@ from cognite.experimental.data_classes import (
 )
 
 
-@deprecated("Use new Annotations instead; see annotations.py", version="0.116.0")
+@deprecated("Use new Annotations instead; see AnnotationsAPI in the regular SDK", version="0.116.0")
 class LegacyAnnotationsAPI(APIClient):
     _RESOURCE_PATH = "/context/annotations"
     _LIST_CLASS = LegacyAnnotationList

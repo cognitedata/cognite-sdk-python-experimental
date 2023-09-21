@@ -7,7 +7,6 @@ from cognite.client.beta import CogniteClient as Client
 from cognite.client.credentials import OAuthClientCredentials
 
 from cognite.experimental._api.alerts import AlertsAPI
-from cognite.experimental._api.annotations import AnnotationsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
@@ -60,7 +59,6 @@ class CogniteClient(Client):
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
         self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
-        self.annotations = AnnotationsAPI(self._config, api_version="playground", cognite_client=self)
 
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self
