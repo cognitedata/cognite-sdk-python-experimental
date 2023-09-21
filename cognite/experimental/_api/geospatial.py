@@ -1,7 +1,6 @@
 import functools
 import json
 import types
-import urllib.parse
 from typing import Dict, Generator, Sequence, Union
 
 from cognite.client._api.geospatial import GeospatialAPI

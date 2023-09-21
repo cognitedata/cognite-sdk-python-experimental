@@ -7,7 +7,7 @@ from cognite.client.utils._logging import _configure_logger_for_debug_mode
 from pytest import fixture, mark
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunFilter
+from cognite.experimental.data_classes.simulators import SimulationRun
 
 
 @fixture(scope="class")
@@ -31,7 +31,7 @@ def cognite_client() -> CogniteClient:
 
 
 @mark.skipif(
-    os.environ.get("ENABLE_SIMULATORS_TESTS") == None, reason="Skipping simulators API tests due to service immaturity"
+    os.getenv("ENABLE_SIMULATORS_TESTS") is None, reason="Skipping simulators API tests due to service immaturity"
 )
 class TestSimulatorsIntegration:
     def test_run_single_simulation(self, cognite_client: CogniteClient):

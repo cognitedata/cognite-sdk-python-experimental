@@ -1,4 +1,3 @@
-import numbers
 from typing import Dict, List, Union
 
 from cognite.client.data_classes._base import CogniteResource

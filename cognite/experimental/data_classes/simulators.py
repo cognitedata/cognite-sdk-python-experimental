@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, cast
+from typing import Optional, cast
 
 from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
 

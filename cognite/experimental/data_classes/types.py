@@ -1,7 +1,6 @@
 from typing import Any, Dict, List
 
 from cognite.client.data_classes._base import *
-from cognite.client.data_classes.shared import TimestampRange
 
 
 class TypeDefinitionReference(dict):

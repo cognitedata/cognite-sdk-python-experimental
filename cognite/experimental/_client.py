@@ -20,7 +20,7 @@ from cognite.experimental._api.simulators import SimulatorsAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 
 APIClient._RETRYABLE_POST_ENDPOINT_REGEX_PATTERNS |= {
-    "^" + path + "(\?.*)?$"
+    "^" + path + r"(\?.*)?$"
     for path in (
         "/(types|labels|templates)/(list|byids|search)",
         "/alerts/deduplicate",

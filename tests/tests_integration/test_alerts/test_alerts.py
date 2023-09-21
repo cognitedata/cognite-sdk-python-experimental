@@ -135,9 +135,7 @@ def base_subscription() -> Callable[..., AlertSubscription]:
     return create
 
 
-@mark.skipif(
-    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
-)
+@mark.skipif(os.getenv("ENABLE_ALERTS_TESTS") is None, reason="Skipping alerts API tests due to service immaturity")
 class TestAlertChannelsIntegration:
     def test_create_1(self, cognite_client, base_channel):
         res = cognite_client.alerts.channels.create(base_channel())
@@ -213,9 +211,7 @@ class TestAlertChannelsIntegration:
         assert len(res) == 0
 
 
-@mark.skipif(
-    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
-)
+@mark.skipif(os.getenv("ENABLE_ALERTS_TESTS") is None, reason="Skipping alerts API tests due to service immaturity")
 class TestAlertsIntegration:
     def test_create_1(self, cognite_client, base_alert, base_channel):
         channel = cognite_client.alerts.channels.create(base_channel())
@@ -245,7 +241,7 @@ class TestAlertsIntegration:
 
         check_closed = cognite_client.alerts.list(ids=[alerts[0].id])
 
-        assert check_closed[0].closed == True
+        assert check_closed[0].closed is True
         assert len(check_closed) == 1
         assert check_closed[0].id == alerts[0].id
 
@@ -255,9 +251,7 @@ class TestAlertsIntegration:
         assert len(res) > 0
 
 
-@mark.skipif(
-    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
-)
+@mark.skipif(os.getenv("ENABLE_ALERTS_TESTS") is None, reason="Skipping alerts API tests due to service immaturity")
 class TestSubscribersIntegration:
     def test_create_1(self, cognite_client, base_subscriber):
         res = cognite_client.alerts.subscribers.create(base_subscriber())
@@ -265,9 +259,7 @@ class TestSubscribersIntegration:
         assert ALERTS_INT_TEST_EMAIL == res.email
 
 
-@mark.skipif(
-    os.environ.get("ENABLE_ALERTS_TESTS") == None, reason="Skipping alerts API tests due to service immaturity"
-)
+@mark.skipif(os.getenv("ENABLE_ALERTS_TESTS") is None, reason="Skipping alerts API tests due to service immaturity")
 class TestSubscriptionsIntegration:
     def test_create_1(self, cognite_client, base_subscription, base_subscriber, base_channel):
         channel = cognite_client.alerts.channels.create(base_channel())
@@ -288,4 +280,4 @@ class TestSubscriptionsIntegration:
         delete_item = AlertSubscriptionDelete(channel_id=item.channel_id, subscriber_id=item.subscriber_id)
         res = cognite_client.alerts.subscriptions.delete([delete_item])
 
-        assert res == None
+        assert res is None
