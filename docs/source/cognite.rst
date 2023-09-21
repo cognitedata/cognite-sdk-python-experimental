@@ -4,11 +4,11 @@ Quickstart
 .. WARNING::
   All of these extensions are experimental and subject to breaking changes. They should not be used in production code.
 
-For a quickstart guide see the main SDK Documentation at https://cognite-docs.readthedocs-hosted.com/projects/cognite-sdk-python/en/latest/cognite.html
+For a quickstart guide see the main SDK Documentation at https://cognite-sdk-python.readthedocs-hosted.com.
 
 The currently available extensions for a `client` ( `CogniteClient`_) instance are:
 
-* client.annotations: `Annotations`_ (New Annotations API, see also the `API documentation <https://docs.cognite.com/api/playground/#tag/Annotations>`_ )
+* client.annotations: `Annotations`_ (see also the `API documentation <https://api-docs.cognite.com/20230101/tag/Annotations>`_ )
 * client.entity_matching: Extensions for entity matching `Create Entity Matching Pipeline`_
 * client.match_rules: New multi-field entity matching rules `Suggest match rules`_
 * client.pnid_parsing: `Detect entities in a PNID`_

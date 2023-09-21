@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cognite-sdk-experimental"
 
-version = "0.115.0"
+version = "0.116.0"
 
 description = "Experimental additions to the Python SDK"
 authors = ["Sander Land <sander.land@cognite.com>"]
@@ -52,6 +52,7 @@ pandas = ">=1.1.5"
 regex = ">=2020.11.13, <2024"
 geopandas = { version = ">=0.10.0", optional = true }
 shapely = { version = ">=1.7.0", optional = true }
+deprecated = "^1.2.14"
 
 [tool.poetry.extras]
 geopandas = ["geopandas", "shapely"]
@@ -70,6 +71,12 @@ pytest-asyncio = "^0.15.1"
 [[tool.poetry.source]]
 name = "snakepit"
 url = "https://cognite.jfrog.io/cognite/api/pypi/snakepit/simple"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
 [build-system]
 requires = ["poetry>=1.0"]
 build-backend = "poetry.masonry.api"

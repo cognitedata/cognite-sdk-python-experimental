@@ -4,6 +4,7 @@ from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type
 from cognite.client.utils._identifier import IdentifierSequence
 from cognite.client.utils._text import to_camel_case
+from deprecated.sphinx import deprecated
 
 from cognite.experimental.data_classes import (
     LegacyAnnotation,
@@ -13,6 +14,7 @@ from cognite.experimental.data_classes import (
 )
 
 
+@deprecated("Use new Annotations instead; see annotations.py", version="0.116.0")
 class LegacyAnnotationsAPI(APIClient):
     _RESOURCE_PATH = "/context/annotations"
     _LIST_CLASS = LegacyAnnotationList
@@ -20,6 +22,7 @@ class LegacyAnnotationsAPI(APIClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    @deprecated("Use annotations.create or annotations.suggest instead", version="0.116.0")
     def create(self, annotations: Union[LegacyAnnotation, List[LegacyAnnotation]]) -> LegacyAnnotationList:
         """Create annotations
 
@@ -37,6 +40,7 @@ class LegacyAnnotationsAPI(APIClient):
             resource_cls=LegacyAnnotation,
         )
 
+    @deprecated("Use annotations.create or annotations.list instead", version="0.116.0")
     def list(self, filter: Union[LegacyAnnotationFilter, Dict], limit: int = 100) -> LegacyAnnotationList:
         """List annotations.
 
@@ -65,6 +69,7 @@ class LegacyAnnotationsAPI(APIClient):
             method="POST", limit=limit, filter=filter, list_cls=LegacyAnnotationList, resource_cls=LegacyAnnotation
         )
 
+    @deprecated("Use annotations.create or annotations.update instead", version="0.116.0")
     def update(
         self,
         item: Union[LegacyAnnotation, LegacyAnnotationUpdate, List[Union[LegacyAnnotation, LegacyAnnotationUpdate]]],
@@ -78,6 +83,7 @@ class LegacyAnnotationsAPI(APIClient):
             items=item, list_cls=LegacyAnnotationList, resource_cls=LegacyAnnotation, update_cls=LegacyAnnotationUpdate
         )
 
+    @deprecated("Use annotations.create or annotations.delete instead", version="0.116.0")
     def delete(self, id: Union[int, List[int]]) -> None:
         """Delete annotations
 
@@ -86,6 +92,7 @@ class LegacyAnnotationsAPI(APIClient):
         """
         self._delete_multiple(identifiers=IdentifierSequence.load(ids=id), wrap_ids=True)
 
+    @deprecated("Use annotations.create or annotations.retrieve_multiple instead", version="0.116.0")
     def retrieve_multiple(self, ids: List[int]) -> LegacyAnnotationList:
         """Retrieve annotations by IDs
 
@@ -100,6 +107,7 @@ class LegacyAnnotationsAPI(APIClient):
             identifiers=IdentifierSequence.load(ids=ids), list_cls=LegacyAnnotationList, resource_cls=LegacyAnnotation
         )
 
+    @deprecated("Use annotations.create or annotations.retrieve instead", version="0.116.0")
     def retrieve(self, id: int) -> LegacyAnnotation:
         """Retrieve an annotation by id
 
