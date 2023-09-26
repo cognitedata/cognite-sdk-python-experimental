@@ -6,7 +6,7 @@ from cognite.client.utils._text import to_snake_case
 from typing_extensions import Self
 
 
-class PlutoSource(CogniteResource):
+class HostedExtractorsSource(CogniteResource):
     def __init__(
         self,
         external_id: str = None,
@@ -26,18 +26,23 @@ class PlutoSource(CogniteResource):
     @classmethod
     def _load(
         cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None
-    ) -> Union["PlutoEventHubSource", "PlutoMqttSource"]:
+    ) -> Union["HostedExtractorsEventHubSource", "HostedExtractorsMqttSource", "HostedExtractorsRestSource", "HostedExtractorsKafkaSource"]:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 
         if resource["type"] == "mqtt3" or resource["type"] == "mqtt5":
-            return PlutoMqttSource._load(resource, cognite_client)
-
+            return HostedExtractorsMqttSource._load(resource, cognite_client)
         elif resource["type"] == "eventhub":
-            return PlutoEventHubSource._load(resource, cognite_client)
+            return HostedExtractorsEventHubSource._load(resource, cognite_client)
+        elif resource["type"] == "rest":
+            return HostedExtractorsRestSource._load(resource, cognite_client)
+        elif resource["type"] == "kafka":
+            return HostedExtractorsKafkaSource._load(resource, cognite_client)
+        else:
+            raise ValueError(f"Unknown source type {resource['type']}")
 
 
-class PlutoMqttSource(PlutoSource):
+class HostedExtractorsMqttSource(HostedExtractorsSource):
     def __init__(
         self,
         external_id: str = None,
@@ -46,6 +51,7 @@ class PlutoMqttSource(PlutoSource):
         port: Optional[int] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
+        use_tls: bool = None,
         created_time: int = None,
         last_updated_time: int = None,
         cognite_client=None,
@@ -58,6 +64,7 @@ class PlutoMqttSource(PlutoSource):
             last_updated_time=last_updated_time,
             cognite_client=cognite_client,
         )
+        self.use_tls = use_tls
         self.port = port
         self.username = username
         self.password = password
@@ -68,10 +75,10 @@ class PlutoMqttSource(PlutoSource):
             return cls._load(json.loads(resource), cognite_client)
 
         data = {to_snake_case(key): val for key, val in resource.items()}
-        return PlutoMqttSource(**data, cognite_client=cognite_client)
+        return HostedExtractorsMqttSource(**data, cognite_client=cognite_client)
 
 
-class PlutoEventHubSource(PlutoSource):
+class HostedExtractorsEventHubSource(HostedExtractorsSource):
     def __init__(
         self,
         external_id: str = None,
@@ -100,15 +107,89 @@ class PlutoEventHubSource(PlutoSource):
             return cls._load(json.loads(resource), cognite_client)
 
         data = {to_snake_case(key): val for key, val in resource.items()}
-        return PlutoEventHubSource(**data, cognite_client=cognite_client)
+        return HostedExtractorsEventHubSource(**data, cognite_client=cognite_client)
 
 
-class PlutoJob(CogniteResource):
+class HostedExtractorsRestSource(HostedExtractorsSource):
     def __init__(
         self,
         external_id: str = None,
-        topic_filter: str = None,
+        type: str = None,
+        host: str = None,
+        port: int = None,
+        interval: str = None,
+        pagination: Dict[str, Any] = None,
+        incremental_load: Dict[str, Any] = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client=None,
+    ):
+        super().__init__(
+            external_id=external_id,
+            type=type,
+            host=host,
+            created_time=created_time,
+            last_updated_time=last_updated_time,
+            cognite_client=cognite_client,
+        )
+        self.port = port
+        self.interval = interval
+        self.pagination = pagination
+        self.incremental_load = incremental_load
+
+    @classmethod
+    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client)
+
+        data = {to_snake_case(key): val for key, val in resource.items()}
+        return HostedExtractorsRestSource(**data, cognite_client=cognite_client)
+
+
+class HostedExtractorsKafkaSource(HostedExtractorsSource):
+    def __init__(
+        self,
+        external_id: str = None,
+        type: str = None,
+        host: list[str] = None,
+        use_tls: bool = None,
+        username: str = None,
+        password: str = None,
+        ca_certificate: str = None,
+        auth_certificate: str = None,
+        created_time: int = None,
+        last_updated_time: int = None,
+        cognite_client=None,
+    ):
+        super().__init__(
+            external_id=external_id,
+            type=type,
+            host=host,
+            created_time=created_time,
+            last_updated_time=last_updated_time,
+            cognite_client=cognite_client,
+        )
+        self.use_tls = use_tls
+        self.username = username
+        self.password = password
+        self.ca_certificate = ca_certificate
+        self.auth_certificate = auth_certificate
+
+    @classmethod
+    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+        if isinstance(resource, str):
+            return cls._load(json.loads(resource), cognite_client)
+
+        data = {to_snake_case(key): val for key, val in resource.items()}
+        return HostedExtractorsKafkaSource(**data, cognite_client=cognite_client)
+
+
+class HostedExtractorsJob(CogniteResource):
+    def __init__(
+        self,
+        external_id: str = None,
         format: Dict[str, Any] = None,
+        config: Dict[str, Any] = None,
         status: str = None,
         target_status: str = None,
         source_id: str = None,
@@ -117,8 +198,8 @@ class PlutoJob(CogniteResource):
         cognite_client=None,
     ):
         self.external_id = external_id
-        self.topic_filter = topic_filter
         self.format = format
+        self.config = config
         self.status = status
         self.target_status = target_status
         self.source_id = source_id
@@ -127,7 +208,7 @@ class PlutoJob(CogniteResource):
         self.cognite_client = cognite_client
 
 
-class PlutoDestination(CogniteResource):
+class HostedExtractorsDestination(CogniteResource):
     def __init__(
         self,
         external_id: str = None,
@@ -144,13 +225,13 @@ class PlutoDestination(CogniteResource):
         self.cognite_client = cognite_client
 
 
-class PlutoSourceList(CogniteResourceList):
-    _RESOURCE = PlutoSource
+class HostedExtractorsSourceList(CogniteResourceList):
+    _RESOURCE = HostedExtractorsSource
 
 
-class PlutoJobList(CogniteResourceList):
-    _RESOURCE = PlutoJob
+class HostedExtractorsJobList(CogniteResourceList):
+    _RESOURCE = HostedExtractorsJob
 
 
-class PlutoDestinationList(CogniteResourceList):
-    _RESOURCE = PlutoDestination
+class HostedExtractorsDestinationList(CogniteResourceList):
+    _RESOURCE = HostedExtractorsDestination

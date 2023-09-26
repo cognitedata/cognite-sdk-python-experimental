@@ -5,135 +5,135 @@ from cognite.client._api_client import APIClient
 from cognite.client.utils._auxiliary import assert_type
 from cognite.client.utils._identifier import IdentifierSequence
 
-from cognite.experimental.data_classes.pluto import (
-    PlutoDestination,
-    PlutoDestinationList,
-    PlutoJob,
-    PlutoJobList,
-    PlutoSource,
-    PlutoSourceList,
+from cognite.experimental.data_classes.hosted_extractors import (
+    HostedExtractorsDestination,
+    HostedExtractorsDestinationList,
+    HostedExtractorsJob,
+    HostedExtractorsJobList,
+    HostedExtractorsSource,
+    HostedExtractorsSourceList,
 )
 
 
-class PlutoAPI(APIClient):
-    _RESOURCE_PATH = "/pluto"
+class HostedExtractorsAPI(APIClient):
+    _RESOURCE_PATH = "/hostedextractors"
 
     def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
         super().__init__(config, api_version, cognite_client)
-        self.sources = PlutoSourcesAPI(config, api_version, cognite_client)
-        self.jobs = PlutoJobsAPI(config, api_version, cognite_client)
-        self.destinations = PlutoDestinationsAPI(config, api_version, cognite_client)
+        self.sources = HostedExtractorsSourcesAPI(config, api_version, cognite_client)
+        self.jobs = HostedExtractorsJobsAPI(config, api_version, cognite_client)
+        self.destinations = HostedExtractorsDestinationsAPI(config, api_version, cognite_client)
 
 
-class PlutoJobsAPI(APIClient):
-    _RESOURCE_PATH = "/pluto/jobs"
+class HostedExtractorsJobsAPI(APIClient):
+    _RESOURCE_PATH = "/hostedextractors/jobs"
 
     def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
         super().__init__(config, api_version, cognite_client)
 
     def list(
         self, source_external_id: Optional[str] = None, destination_external_id: Optional[str] = None, limit: int = 10
-    ) -> PlutoJobList:
+    ) -> HostedExtractorsJobList:
         filter = {}
         if source_external_id:
             filter["source_external_id"] = source_external_id
         if destination_external_id:
             filter["destination_external_id"] = destination_external_id
         return self._list(
-            list_cls=PlutoJobList,
-            resource_cls=PlutoJob,
+            list_cls=HostedExtractorsJobList,
+            resource_cls=HostedExtractorsJob,
             method="GET",
             limit=limit,
             filter=filter,
-            headers={"cdf-version": "alpha"},
+            headers={"cdf-version": "beta"},
         )
 
-    def create(self, jobs: Union[PlutoJob, List[PlutoJob]]) -> Union[PlutoJob, List[PlutoJob]]:
-        assert_type(jobs, "jobs", [PlutoJob, list])
+    def create(self, jobs: Union[HostedExtractorsJob, List[HostedExtractorsJob]]) -> Union[HostedExtractorsJob, List[HostedExtractorsJob]]:
+        assert_type(jobs, "jobs", [HostedExtractorsJob, list])
         return self._create_multiple(
-            items=jobs, list_cls=PlutoJobList, resource_cls=PlutoJob, headers={"cdf-version": "alpha"}
+            items=jobs, list_cls=HostedExtractorsJobList, resource_cls=HostedExtractorsJob, headers={"cdf-version": "beta"}
         )
 
     def delete(self, external_id: Union[str, List[str]]) -> None:
         self._delete_multiple(
-            resource_path="/pluto/jobs",
+            resource_path="/hostedextractors/jobs",
             identifiers=IdentifierSequence.load(external_ids=external_id),
             wrap_ids=True,
-            headers={"cdf-version": "alpha"},
+            headers={"cdf-version": "beta"},
         )
 
 
-class PlutoSourcesAPI(APIClient):
-    _RESOURCE_PATH = "/pluto/sources"
+class HostedExtractorsSourcesAPI(APIClient):
+    _RESOURCE_PATH = "/hostedextractors/sources"
 
     def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
         super().__init__(config, api_version, cognite_client)
 
     def list(
         self, source_external_id: Optional[str] = None, destination_external_id: Optional[str] = None, limit: int = 10
-    ) -> PlutoSourceList:
+    ) -> HostedExtractorsSourceList:
         filter = {}
         if source_external_id:
             filter["source_external_id"] = source_external_id
         if destination_external_id:
             filter["destination_external_id"] = destination_external_id
         return self._list(
-            list_cls=PlutoSourceList,
-            resource_cls=PlutoSource,
+            list_cls=HostedExtractorsSourceList,
+            resource_cls=HostedExtractorsSource,
             method="GET",
             limit=limit,
             filter=filter,
-            headers={"cdf-version": "alpha"},
+            headers={"cdf-version": "beta"},
         )
 
-    def create(self, jobs: Union[PlutoSource, List[PlutoSource]]) -> Union[PlutoSource, List[PlutoSource]]:
-        assert_type(jobs, "jobs", [PlutoSource, list])
+    def create(self, jobs: Union[HostedExtractorsSource, List[HostedExtractorsSource]]) -> Union[HostedExtractorsSource, List[HostedExtractorsSource]]:
+        assert_type(jobs, "jobs", [HostedExtractorsSource, list])
         return self._create_multiple(
-            items=jobs, list_cls=PlutoSourceList, resource_cls=PlutoSource, headers={"cdf-version": "alpha"}
+            items=jobs, list_cls=HostedExtractorsSourceList, resource_cls=HostedExtractorsSource, headers={"cdf-version": "beta"}
         )
 
     def delete(self, external_id: Union[str, List[str]]) -> None:
         self._delete_multiple(
             identifiers=IdentifierSequence.load(external_ids=external_id),
             wrap_ids=True,
-            headers={"cdf-version": "alpha"},
+            headers={"cdf-version": "beta"},
         )
 
 
-class PlutoDestinationsAPI(APIClient):
-    _RESOURCE_PATH = "/pluto/destinations"
+class HostedExtractorsDestinationsAPI(APIClient):
+    _RESOURCE_PATH = "/hostedextractors/destinations"
 
     def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
         super().__init__(config, api_version, cognite_client)
 
     def list(
         self, source_external_id: Optional[str] = None, destination_external_id: Optional[str] = None, limit: int = 10
-    ) -> PlutoDestinationList:
+    ) -> HostedExtractorsDestinationList:
         filter = {}
         if source_external_id:
             filter["source_external_id"] = source_external_id
         if destination_external_id:
             filter["destination_external_id"] = destination_external_id
         return self._list(
-            list_cls=PlutoDestinationList,
-            resource_cls=PlutoDestination,
+            list_cls=HostedExtractorsDestinationList,
+            resource_cls=HostedExtractorsDestination,
             method="GET",
             limit=limit,
             filter=filter,
-            headers={"cdf-version": "alpha"},
+            headers={"cdf-version": "beta"},
         )
 
     def create(
-        self, jobs: Union[PlutoDestination, List[PlutoDestination]]
-    ) -> Union[PlutoDestination, List[PlutoDestination]]:
-        assert_type(jobs, "jobs", [PlutoDestination, list])
+        self, jobs: Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]
+    ) -> Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]:
+        assert_type(jobs, "jobs", [HostedExtractorsDestination, list])
         return self._create_multiple(
-            items=jobs, list_cls=PlutoDestinationList, resource_cls=PlutoDestination, headers={"cdf-version": "alpha"}
+            items=jobs, list_cls=HostedExtractorsDestinationList, resource_cls=HostedExtractorsDestination, headers={"cdf-version": "beta"}
         )
 
     def delete(self, external_id: Union[str, List[str]]) -> None:
         self._delete_multiple(
             identifiers=IdentifierSequence.load(external_ids=external_id),
             wrap_ids=True,
-            headers={"cdf-version": "alpha"},
+            headers={"cdf-version": "beta"},
         )
