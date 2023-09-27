@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Optional, Type, Union, List
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 from cognite.client.utils._text import to_snake_case
@@ -156,7 +156,7 @@ class HostedExtractorsKafkaSource(HostedExtractorsSource):
         self,
         external_id: str = None,
         type: str = None,
-        host: list[str] = None,
+        host: List[str] = None,
         use_tls: bool = None,
         username: str = None,
         password: str = None,
