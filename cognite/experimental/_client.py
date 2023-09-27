@@ -11,9 +11,9 @@ from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
+from cognite.experimental._api.hosted_extractors import HostedExtractorsAPI
 from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.hosted_extractors import HostedExtractorsAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.simulators import SimulatorsAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI

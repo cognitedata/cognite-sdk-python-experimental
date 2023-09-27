@@ -48,10 +48,15 @@ class HostedExtractorsJobsAPI(APIClient):
             headers={"cdf-version": "beta"},
         )
 
-    def create(self, jobs: Union[HostedExtractorsJob, List[HostedExtractorsJob]]) -> Union[HostedExtractorsJob, List[HostedExtractorsJob]]:
+    def create(
+        self, jobs: Union[HostedExtractorsJob, List[HostedExtractorsJob]]
+    ) -> Union[HostedExtractorsJob, List[HostedExtractorsJob]]:
         assert_type(jobs, "jobs", [HostedExtractorsJob, list])
         return self._create_multiple(
-            items=jobs, list_cls=HostedExtractorsJobList, resource_cls=HostedExtractorsJob, headers={"cdf-version": "beta"}
+            items=jobs,
+            list_cls=HostedExtractorsJobList,
+            resource_cls=HostedExtractorsJob,
+            headers={"cdf-version": "beta"},
         )
 
     def delete(self, external_id: Union[str, List[str]]) -> None:
@@ -86,10 +91,15 @@ class HostedExtractorsSourcesAPI(APIClient):
             headers={"cdf-version": "beta"},
         )
 
-    def create(self, jobs: Union[HostedExtractorsSource, List[HostedExtractorsSource]]) -> Union[HostedExtractorsSource, List[HostedExtractorsSource]]:
+    def create(
+        self, jobs: Union[HostedExtractorsSource, List[HostedExtractorsSource]]
+    ) -> Union[HostedExtractorsSource, List[HostedExtractorsSource]]:
         assert_type(jobs, "jobs", [HostedExtractorsSource, list])
         return self._create_multiple(
-            items=jobs, list_cls=HostedExtractorsSourceList, resource_cls=HostedExtractorsSource, headers={"cdf-version": "beta"}
+            items=jobs,
+            list_cls=HostedExtractorsSourceList,
+            resource_cls=HostedExtractorsSource,
+            headers={"cdf-version": "beta"},
         )
 
     def delete(self, external_id: Union[str, List[str]]) -> None:
@@ -128,7 +138,10 @@ class HostedExtractorsDestinationsAPI(APIClient):
     ) -> Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]:
         assert_type(jobs, "jobs", [HostedExtractorsDestination, list])
         return self._create_multiple(
-            items=jobs, list_cls=HostedExtractorsDestinationList, resource_cls=HostedExtractorsDestination, headers={"cdf-version": "beta"}
+            items=jobs,
+            list_cls=HostedExtractorsDestinationList,
+            resource_cls=HostedExtractorsDestination,
+            headers={"cdf-version": "beta"},
         )
 
     def delete(self, external_id: Union[str, List[str]]) -> None:

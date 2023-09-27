@@ -26,7 +26,12 @@ class HostedExtractorsSource(CogniteResource):
     @classmethod
     def _load(
         cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None
-    ) -> Union["HostedExtractorsEventHubSource", "HostedExtractorsMqttSource", "HostedExtractorsRestSource", "HostedExtractorsKafkaSource"]:
+    ) -> Union[
+        "HostedExtractorsEventHubSource",
+        "HostedExtractorsMqttSource",
+        "HostedExtractorsRestSource",
+        "HostedExtractorsKafkaSource",
+    ]:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 

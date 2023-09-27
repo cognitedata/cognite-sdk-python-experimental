@@ -6,8 +6,12 @@ from cognite.client import ClientConfig
 from cognite.client.credentials import OAuthClientCredentials
 
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes import HostedExtractorsRestSource, HostedExtractorsSource, \
-    HostedExtractorsMqttSource, HostedExtractorsKafkaSource
+from cognite.experimental.data_classes import (
+    HostedExtractorsKafkaSource,
+    HostedExtractorsMqttSource,
+    HostedExtractorsRestSource,
+    HostedExtractorsSource,
+)
 
 test_id = str(uuid.uuid4())
 
@@ -19,7 +23,7 @@ def cognite_client() -> CogniteClient:
             base_url=os.environ["COGNITE_BASE_URL"],
             client_name="experimental-sdk-tests",
             project=os.environ["COGNITE_PROJECT"],
-            credentials= OAuthClientCredentials(
+            credentials=OAuthClientCredentials(
                 token_url=os.environ["COGNITE_TOKEN_URL"],
                 client_id=os.environ["COGNITE_CLIENT_ID"],
                 client_secret=os.environ["COGNITE_CLIENT_SECRET"],
@@ -42,8 +46,17 @@ def cleanup(cognite_client: CogniteClient):
 
 good_sources = [
     HostedExtractorsRestSource(external_id=f"{test_id}-test-rest", type="rest", host="https://nrk.no", interval="1h"),
-    HostedExtractorsMqttSource(external_id=f"{test_id}-test-mqtt", type="mqtt3", host="mqtt.pluto-test.cognite.ai", use_tls=True, username="user", password="pass"),
-    HostedExtractorsKafkaSource(external_id=f"{test_id}-test-kafka", type="kafka", host=["kafka.pluto-test.cognite.ai"], username="abc123"),
+    HostedExtractorsMqttSource(
+        external_id=f"{test_id}-test-mqtt",
+        type="mqtt3",
+        host="mqtt.pluto-test.cognite.ai",
+        use_tls=True,
+        username="user",
+        password="pass",
+    ),
+    HostedExtractorsKafkaSource(
+        external_id=f"{test_id}-test-kafka", type="kafka", host=["kafka.pluto-test.cognite.ai"], username="abc123"
+    ),
 ]
 
 
@@ -68,4 +81,3 @@ def test_create_read_delete_source(cognite_client: CogniteClient, cleanup, sourc
     assert source.type == created_source.type
     assert source.host == created_source.host
     assert source.external_id == created_source.external_id
-
