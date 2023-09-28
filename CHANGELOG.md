@@ -12,6 +12,11 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [0.118.0]
+
+### Changed
+ - Hosted extractors support have been updated to comply with the new beta version.
+
 ## [0.117.0]
 ### Removed
 - Annotations (v1 API), which are available as part of the regular SDK. See  also
