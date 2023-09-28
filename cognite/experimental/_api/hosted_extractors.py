@@ -92,20 +92,27 @@ class HostedExtractorsSourcesAPI(APIClient):
         )
 
     def create(
-        self, jobs: Union[HostedExtractorsSource, List[HostedExtractorsSource]]
+        self, sources: Union[HostedExtractorsSource, List[HostedExtractorsSource]]
     ) -> Union[HostedExtractorsSource, List[HostedExtractorsSource]]:
-        assert_type(jobs, "jobs", [HostedExtractorsSource, list])
+        assert_type(sources, "sources", [HostedExtractorsSource, list])
         return self._create_multiple(
-            items=jobs,
+            items=sources,
             list_cls=HostedExtractorsSourceList,
             resource_cls=HostedExtractorsSource,
             headers={"cdf-version": "beta"},
         )
 
-    def delete(self, external_id: Union[str, List[str]]) -> None:
+    def delete(self, external_id: Union[str, List[str]], force: bool = None, ignore_unknown_ids: bool = None) -> None:
+        extras = {}
+        if force is not None:
+            extras["force"] = force
+        if ignore_unknown_ids is not None:
+            extras["ignoreUnknownIds"] = ignore_unknown_ids
+
         self._delete_multiple(
             identifiers=IdentifierSequence.load(external_ids=external_id),
             wrap_ids=True,
+            extra_body_fields=extras if extras else None,
             headers={"cdf-version": "beta"},
         )
 
@@ -134,19 +141,26 @@ class HostedExtractorsDestinationsAPI(APIClient):
         )
 
     def create(
-        self, jobs: Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]
+        self, destinations: Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]
     ) -> Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]:
-        assert_type(jobs, "jobs", [HostedExtractorsDestination, list])
+        assert_type(destinations, "destinations", [HostedExtractorsDestination, list])
         return self._create_multiple(
-            items=jobs,
+            items=destinations,
             list_cls=HostedExtractorsDestinationList,
             resource_cls=HostedExtractorsDestination,
             headers={"cdf-version": "beta"},
         )
 
-    def delete(self, external_id: Union[str, List[str]]) -> None:
+    def delete(self, external_id: Union[str, List[str]], force: bool = None, ignore_unknown_ids: bool = None) -> None:
+        extras = {}
+        if force is not None:
+            extras["force"] = force
+        if ignore_unknown_ids is not None:
+            extras["ignoreUnknownIds"] = ignore_unknown_ids
+
         self._delete_multiple(
             identifiers=IdentifierSequence.load(external_ids=external_id),
+            extra_body_fields=extras if extras else None,
             wrap_ids=True,
             headers={"cdf-version": "beta"},
         )

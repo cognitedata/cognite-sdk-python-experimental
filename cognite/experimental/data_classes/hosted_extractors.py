@@ -217,14 +217,11 @@ class HostedExtractorsDestination(CogniteResource):
     def __init__(
         self,
         external_id: str = None,
-        type: str = None,
         session_id: Optional[int] = None,
         created_time: int = None,
         cognite_client=None,
     ):
         self.external_id = external_id
-        self.type = type
-        self.format = format
         self.session_id = session_id
         self.created_time = created_time
         self.cognite_client = cognite_client
