@@ -1,6 +1,5 @@
 import os
 import uuid
-from time import sleep
 
 import pytest
 from cognite.client import ClientConfig
@@ -108,6 +107,10 @@ good_sources = [
 
 
 @pytest.mark.parametrize("source", good_sources)
+@pytest.mark.skipif(
+    os.environ.get("ENABLE_PLUTO_TESTS") is None,
+    reason="Skipping hosted extractor tests because of lacking permissions. Set ENABLE_PLUTO_TESTS to enable them.",
+)
 def test_source_crud(cognite_client: CogniteClient, source: HostedExtractorsSource):
     existing_sources = cognite_client.hosted_extractors.sources.list()
     for s in existing_sources:
@@ -172,6 +175,10 @@ bad_jobs = [
 
 
 @pytest.mark.parametrize("job", good_jobs)
+@pytest.mark.skipif(
+    os.environ.get("ENABLE_PLUTO_TESTS") is None,
+    reason="Skipping hosted extractor tests because of lacking permissions. Set ENABLE_PLUTO_TESTS to enable them.",
+)
 def test_job_crud(cognite_client: CogniteClient, create_source, create_destination, job):
     existing_jobs = cognite_client.hosted_extractors.jobs.list()
     for j in existing_jobs:
@@ -200,11 +207,19 @@ def test_job_crud(cognite_client: CogniteClient, create_source, create_destinati
 
 
 @pytest.mark.parametrize("job", bad_jobs)
+@pytest.mark.skipif(
+    os.environ.get("ENABLE_PLUTO_TESTS") is None,
+    reason="Skipping hosted extractor tests because of lacking permissions. Set ENABLE_PLUTO_TESTS to enable them.",
+)
 def test_create_bad_jobs(cognite_client: CogniteClient, create_source, create_destination, job):
     with pytest.raises(CogniteAPIError):
         cognite_client.hosted_extractors.jobs.create(job)
 
 
+@pytest.mark.skipif(
+    os.environ.get("ENABLE_PLUTO_TESTS") is None,
+    reason="Skipping hosted extractor tests because of lacking permissions. Set ENABLE_PLUTO_TESTS to enable them.",
+)
 def test_force_delete_source(cognite_client, create_source, create_destination):
     cognite_client.hosted_extractors.jobs.create(good_jobs[0])
 
@@ -224,6 +239,10 @@ def test_force_delete_source(cognite_client, create_source, create_destination):
             assert False, "source still exists after force deleting"
 
 
+@pytest.mark.skipif(
+    os.environ.get("ENABLE_PLUTO_TESTS") is None,
+    reason="Skipping hosted extractor tests because of lacking permissions. Set ENABLE_PLUTO_TESTS to enable them.",
+)
 def test_ignore_delete_source(cognite_client, create_source):
     with pytest.raises(CogniteAPIError):
         cognite_client.hosted_extractors.sources.delete([create_source.external_id, "doesnt-exist"])
