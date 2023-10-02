@@ -11,9 +11,9 @@ from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
+from cognite.experimental._api.hosted_extractors import HostedExtractorsAPI
 from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.pluto import PlutoAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.simulators import SimulatorsAPI
 from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
@@ -63,7 +63,7 @@ class CogniteClient(Client):
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self
         )
-        self.pluto = PlutoAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
+        self.hosted_extractors = HostedExtractorsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
 
         # template completion only
         self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
