@@ -1,17 +1,16 @@
-from typing import Dict, List, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import List
 
 from cognite.client import utils
 from cognite.client._api.entity_matching import EntityMatchingAPI as EntityMatchingBaseAPI
 from cognite.client.data_classes import (
     ContextualizationJob,
     EntityMatchingModel,
-    EntityMatchingModelList,
-    EntityMatchingModelUpdate,
 )
 from cognite.client.data_classes._base import CogniteResource
 from cognite.client.utils._auxiliary import convert_true_match
 from cognite.client.utils._identifier import Identifier, IdentifierSequence
-
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
     EntityMatchingPipeline,
@@ -50,8 +49,8 @@ class EntityMatchingPipelineRunsAPI(ContextAPI):
         return EntityMatchingPipelineRunList._load(runs, cognite_client=self._cognite_client)
 
     def retrieve_latest(
-        self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None
-    ) -> Union[EntityMatchingPipelineRun, EntityMatchingPipelineRunList]:
+        self, id: int | list[int] | None = None, external_id: str | list[str] | None = None
+    ) -> EntityMatchingPipelineRun | EntityMatchingPipelineRunList:
         """List latest pipeline run for pipelines. Note that pipelines without a run are not returned, so output may not align with input.
 
         Args:
@@ -88,7 +87,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         result = self._camel_post("", json=pipeline.dump()).json()
         return EntityMatchingPipeline._load(result, cognite_client=self._cognite_client)
 
-    def retrieve(self, id: Optional[int] = None, external_id: Optional[str] = None) -> Optional[EntityMatchingPipeline]:
+    def retrieve(self, id: int | None = None, external_id: str | None = None) -> EntityMatchingPipeline | None:
         """Retrieve pipeline
 
         Args:
@@ -105,7 +104,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         )
 
     def retrieve_multiple(
-        self, ids: Optional[List[int]] = None, external_ids: Optional[List[str]] = None
+        self, ids: list[int] | None = None, external_ids: list[str] | None = None
     ) -> EntityMatchingPipelineList:
         """Retrieve models
 
@@ -134,7 +133,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         pipelines = self._camel_post("/list", json={"limit": limit}).json()["items"]
         return EntityMatchingPipelineList._load(pipelines, cognite_client=self._cognite_client)
 
-    def run(self, id: int = None, external_id: str = None) -> EntityMatchingPipelineRun:
+    def run(self, id: int | None = None, external_id: str | None = None) -> EntityMatchingPipelineRun:
         """Run pipeline
 
         Args:
@@ -146,7 +145,7 @@ class EntityMatchingPipelinesAPI(ContextAPI):
         IdentifierSequence.load(id, external_id).assert_singleton()
         return self._run_job(job_path="/run", id=id, external_id=external_id, job_cls=EntityMatchingPipelineRun)
 
-    def delete(self, id: Union[int, List[int]] = None, external_id: Union[str, List[str]] = None) -> None:
+    def delete(self, id: int | list[int] | None = None, external_id: str | list[str] | None = None) -> None:
         """Delete pipelines
 
         Args:
@@ -173,12 +172,10 @@ class EntityMatchingPipelinesAPI(ContextAPI):
 
     def update(
         self,
-        item: Union[
-            EntityMatchingPipeline,
-            EntityMatchingPipelineUpdate,
-            List[Union[EntityMatchingPipeline, EntityMatchingPipelineUpdate]],
-        ],
-    ) -> Union[EntityMatchingPipeline, List[EntityMatchingPipeline]]:
+        item: EntityMatchingPipeline
+        | EntityMatchingPipelineUpdate
+        | list[EntityMatchingPipeline | EntityMatchingPipelineUpdate],
+    ) -> EntityMatchingPipeline | list[EntityMatchingPipeline]:
         """Update model
 
         Args:
@@ -203,17 +200,17 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
 
     def fit(
         self,
-        sources: List[Union[Dict, CogniteResource]],
-        targets: List[Union[Dict, CogniteResource]],
-        true_matches: List[Union[Dict, Tuple[Union[int, str], Union[int, str]]]] = None,
-        match_fields: Union[Dict, List[Tuple[str, str]]] = None,
-        feature_type: str = None,
-        classifier: str = None,
+        sources: list[dict | CogniteResource],
+        targets: list[dict | CogniteResource],
+        true_matches: list[dict | tuple[int | str, int | str]] | None = None,
+        match_fields: dict | list[tuple[str, str]] | None = None,
+        feature_type: str | None = None,
+        classifier: str | None = None,
         ignore_missing_fields: bool = False,
-        name: str = None,
-        description: str = None,
-        external_id: str = None,
-        replacements: List[Dict] = None,
+        name: str | None = None,
+        description: str | None = None,
+        external_id: str | None = None,
+        replacements: list[dict] | None = None,
     ) -> EntityMatchingModel:
         """Fit entity matching model.
         Note: All users on this CDF subscription with assets read-all and entitymatching read-all and write-all
@@ -257,7 +254,7 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
         )
         return EntityMatchingModel._load(response.json(), cognite_client=self._cognite_client)
 
-    def create_rules(self, matches: List[Dict]) -> ContextualizationJob:
+    def create_rules(self, matches: list[dict]) -> ContextualizationJob:
         """Fit rules model.
 
         Args:
@@ -270,10 +267,10 @@ class EntityMatchingAPI(EntityMatchingBaseAPI):
 
     def suggest_fields(
         self,
-        sources: List[Union[Dict, CogniteResource]],
-        targets: List[Union[Dict, CogniteResource]],
+        sources: list[dict | CogniteResource],
+        targets: list[dict | CogniteResource],
         score_threshold: float = 0.5,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get suggestions for match fields in entity matching
 
         Args:

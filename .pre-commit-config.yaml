@@ -1,10 +1,26 @@
+---
 repos:
--   repo: https://github.com/psf/black
-    rev: 23.3.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.6
     hooks:
-      - id: black
--   repo: https://github.com/timothycrosley/isort
-    rev: 5.12.0
+      - id: ruff
+        args:
+          - --fix
+          - --exit-non-zero-on-fix
+          - --line-length=120
+          - --ignore=E731,E501,W605
+            # See https://beta.ruff.rs/docs/rules for an overview of ruff rules
+          - --select=E,W,F,I,T,RUF,TID,UP
+          - --fixable=E,W,F,I,T,RUF,TID,UP
+          - --target-version=py38
+          - --exclude=cognite/client/_proto,cognite/client/_proto_legacy
+      - id: ruff-format
+        args:
+          - --line-length=120
+          - --exclude=cognite/client/_proto*
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
     hooks:
-      - id: isort
-        name: isort (python)
+      - id: debug-statements
+      - id: check-docstring-first

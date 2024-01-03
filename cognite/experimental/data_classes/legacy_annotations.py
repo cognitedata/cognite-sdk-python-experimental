@@ -1,4 +1,6 @@
-from typing import Any, Dict, List
+from __future__ import annotations
+
+from typing import Any
 
 from cognite.client.data_classes._base import (
     CogniteFilter,
@@ -32,20 +34,20 @@ class LegacyAnnotation(CogniteResource):
 
     def __init__(
         self,
-        id: int = None,
-        annotated_resource_id: int = None,
-        text: str = None,
-        annotated_resource_type: str = None,
-        linked_resource_id: int = None,
-        linked_resource_external_id: str = None,
-        linked_resource_type: str = None,
-        annotation_type: str = None,
-        status: str = None,
-        source: str = None,
+        id: int | None = None,
+        annotated_resource_id: int | None = None,
+        text: str | None = None,
+        annotated_resource_type: str | None = None,
+        linked_resource_id: int | None = None,
+        linked_resource_external_id: str | None = None,
+        linked_resource_type: str | None = None,
+        annotation_type: str | None = None,
+        status: str | None = None,
+        source: str | None = None,
         region=None,
         data=None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         self.id = id
@@ -69,13 +71,13 @@ class LegacyAnnotationFilter(CogniteFilter):
     def __init__(
         self,
         annotated_resource_type: str,
-        annotated_resource_ids: List[Dict] = None,
-        linked_resource_type: str = None,
-        linked_resource_ids: List[Dict] = None,
-        annotation_type: str = None,
-        text: str = None,
-        status: str = None,
-        source: str = None,
+        annotated_resource_ids: list[dict] | None = None,
+        linked_resource_type: str | None = None,
+        linked_resource_ids: list[dict] | None = None,
+        annotation_type: str | None = None,
+        text: str | None = None,
+        status: str | None = None,
+        source: str | None = None,
     ):
         self.annotated_resource_type = annotated_resource_type
         self.annotated_resource_ids = annotated_resource_ids
@@ -98,7 +100,7 @@ class LegacyAnnotationUpdate(CogniteUpdate):
         super().__init__(id=id)
 
     class _PrimitiveAnnotationUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "LegacyAnnotationUpdate":
+        def set(self, value: Any) -> LegacyAnnotationUpdate:
             return self._set(value)
 
     @property

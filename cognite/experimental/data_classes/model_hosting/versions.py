@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from __future__ import annotations
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList, CogniteResponse
 
@@ -23,16 +23,16 @@ class ModelVersion(CogniteResource):
 
     def __init__(
         self,
-        name: str = None,
-        is_deprecated: bool = None,
-        training_details: Dict = None,
-        error_msg: str = None,
-        model_name: str = None,
-        created_time: int = None,
-        metadata: Dict = None,
-        source_package_id: int = None,
-        status: str = None,
-        description: str = None,
+        name: str | None = None,
+        is_deprecated: bool | None | None = None,
+        training_details: dict | None = None,
+        error_msg: str | None = None,
+        model_name: str | None = None,
+        created_time: int | None = None,
+        metadata: dict | None = None,
+        source_package_id: int | None = None,
+        status: str | None = None,
+        description: str | None = None,
         cognite_client=None,
     ):
         self.name = name
@@ -54,7 +54,7 @@ class ModelVersionList(CogniteResourceList):
 
 
 class ModelArtifact(CogniteResource):
-    def __init__(self, name: str = None, size: int = None, cognite_client=None):
+    def __init__(self, name: str | None = None, size: int | None = None, cognite_client=None):
         self.name = name
         self.size = size
         self._cognite_client = cognite_client
@@ -73,7 +73,7 @@ class ModelVersionLog(CogniteResponse):
         training_logs (List): A list of log entries for the training routine
     """
 
-    def __init__(self, prediction_logs: List = None, training_logs: List = None):
+    def __init__(self, prediction_logs: list | None = None, training_logs: list | None = None):
         self.prediction_logs = prediction_logs
         self.training_logs = training_logs
 

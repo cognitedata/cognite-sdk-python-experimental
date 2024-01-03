@@ -1,8 +1,14 @@
-from typing import Any, Dict, List, Union, cast
+from __future__ import annotations
+
+import json
+from typing import TYPE_CHECKING, Any, cast
 
 from cognite.client import utils
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 from cognite.client.utils._text import to_snake_case
+
+if TYPE_CHECKING:
+    from cognite.experimental import CogniteClient
 
 
 class FeatureType(CogniteResource):
@@ -10,14 +16,14 @@ class FeatureType(CogniteResource):
 
     def __init__(
         self,
-        external_id: str = None,
-        data_set_id: int = None,
-        created_time: int = None,
-        last_updated_time: int = None,
-        properties: Dict[str, Any] = None,
-        search_spec: Dict[str, Any] = None,
-        partitions: List[Dict[str, Any]] = None,
-        cognite_client: "CogniteClient" = None,
+        external_id: str | None = None,
+        data_set_id: int | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
+        properties: dict[str, Any] | None = None,
+        search_spec: dict[str, Any] | None = None,
+        partitions: list[dict[str, Any]] | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.external_id = external_id
         self.data_set_id = data_set_id
@@ -29,7 +35,7 @@ class FeatureType(CogniteResource):
         self._cognite_client = cast("CogniteClient", cognite_client)
 
     @classmethod
-    def _load(cls, resource: Union[str, Dict[str, Any]], cognite_client: "CogniteClient" = None) -> "FeatureType":
+    def _load(cls, resource: str | dict[str, Any], cognite_client: CogniteClient | None = None) -> FeatureType:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client=cognite_client)
         instance = cls(cognite_client=cognite_client)
@@ -48,8 +54,8 @@ class MvpMappingsDefinition(CogniteResource):
 
     def __init__(
         self,
-        external_id: str = None,
-        mappings: List[Dict[str, Any]] = None,
+        external_id: str | None = None,
+        mappings: list[dict[str, Any]] | None = None,
         cognite_client=None,
     ):
         self.external_id = external_id
@@ -57,7 +63,7 @@ class MvpMappingsDefinition(CogniteResource):
         self._cognite_client = cognite_client
 
     @classmethod
-    def _load(cls, resource: Dict, cognite_client=None):
+    def _load(cls, resource: dict, cognite_client=None):
         instance = cls(cognite_client=cognite_client)
         for key, value in resource.items():
             snake_case_key = utils._auxiliary.to_snake_case(key)
@@ -79,7 +85,7 @@ class ComputedItem(CogniteResource):
         self._cognite_client = cognite_client
 
     @classmethod
-    def _load(cls, resource: Dict, cognite_client=None):
+    def _load(cls, resource: dict, cognite_client=None):
         instance = cls(cognite_client=cognite_client)
         for key, value in resource.items():
             snake_case_key = utils._auxiliary.to_snake_case(key)
@@ -95,7 +101,7 @@ class ComputedItemList(CogniteResourceList):
 class ComputeOrder:
     """An order specification with respect to an expression."""
 
-    def __init__(self, expression: Dict[str, Any], direction: str):
+    def __init__(self, expression: dict[str, Any], direction: str):
         self.expression = expression
         self.direction = direction
 
@@ -105,15 +111,15 @@ class GeospatialTask(CogniteResource):
 
     def __init__(
         self,
-        external_id: str = None,
-        task_type: str = None,
-        request: Dict[str, Any] = None,
-        created_time: int = None,
-        last_updated_time: int = None,
-        state: str = None,
-        result: Dict[str, Any] = None,
-        events: Dict[str, Any] = None,
-        cognite_client: "CogniteClient" = None,
+        external_id: str | None = None,
+        task_type: str | None = None,
+        request: dict[str, Any] | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
+        state: str | None = None,
+        result: dict[str, Any] | None = None,
+        events: dict[str, Any] | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.external_id = external_id
         self.task_type = task_type

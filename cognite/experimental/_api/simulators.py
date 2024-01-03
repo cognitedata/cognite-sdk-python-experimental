@@ -1,8 +1,7 @@
-from typing import Dict, List, Union
+from __future__ import annotations
 
 from cognite.client._api_client import APIClient
-from cognite.client.utils._auxiliary import assert_type
-
+from cognite.client.utils._validation import assert_type
 from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunFilter, SimulationRunList
 
 
@@ -15,8 +14,8 @@ class SimulationRunsAPI(APIClient):
 
     def run(
         self,
-        items: Union[SimulationRun, List[SimulationRun]],
-    ) -> Union[SimulationRun, SimulationRunList]:
+        items: SimulationRun | list[SimulationRun],
+    ) -> SimulationRun | SimulationRunList:
         assert_type(items, "items", [SimulationRun, list])
         return self._create_multiple(
             items=items,
@@ -27,10 +26,10 @@ class SimulationRunsAPI(APIClient):
 
     def list_runs(
         self,
-        simulator_name: str = None,
-        model_name: str = None,
-        routine_name: str = None,
-        status: str = None,
+        simulator_name: str | None = None,
+        model_name: str | None = None,
+        routine_name: str | None = None,
+        status: str | None = None,
     ) -> SimulationRunList:
         filter = SimulationRunFilter(
             simulator_name=simulator_name,
@@ -55,15 +54,15 @@ class SimulatorsAPI(APIClient):
 
     def run(
         self,
-        items: Union[SimulationRun, List[SimulationRun]],
-    ) -> Union[SimulationRun, SimulationRunList]:
+        items: SimulationRun | list[SimulationRun],
+    ) -> SimulationRun | SimulationRunList:
         """Run a simulation
 
         Args:
-            items (Union[SimulationRun, List[SimulationRun]]): simulation(s) to run
+            items (SimulationRun | List[SimulationRun]): simulation(s) to run
 
         Returns:
-            Union[SimulationRun, SimulationRunList]: simulation run(s)
+            SimulationRun | SimulationRunList: simulation run(s)
 
         Examples:
 
@@ -80,10 +79,10 @@ class SimulatorsAPI(APIClient):
 
     def list_runs(
         self,
-        simulator_name: str = None,
-        model_name: str = None,
-        routine_name: str = None,
-        status: str = None,
+        simulator_name: str | None = None,
+        model_name: str | None = None,
+        routine_name: str | None = None,
+        status: str | None = None,
     ) -> SimulationRunList:
         """List simulation runs
 

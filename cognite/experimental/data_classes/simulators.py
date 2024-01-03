@@ -1,6 +1,11 @@
-from typing import Dict, List, Optional, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
 
 from cognite.client.data_classes._base import CogniteFilter, CogniteResource, CogniteResourceList
+
+if TYPE_CHECKING:
+    from cognite.experimental import CogniteClient
 
 
 class SimulationRun(CogniteResource):
@@ -22,17 +27,17 @@ class SimulationRun(CogniteResource):
 
     def __init__(
         self,
-        id: int = None,
-        simulator_name: str = None,
-        model_name: str = None,
-        routine_name: str = None,
-        status: str = None,
-        status_message: Optional[str] = None,
-        validation_end_time: Optional[int] = None,
-        queue: Optional[bool] = None,
-        created_time: int = None,
-        last_updated_time: int = None,
-        cognite_client: "CogniteClient" = None,
+        id: int | None = None,
+        simulator_name: str | None = None,
+        model_name: str | None = None,
+        routine_name: str | None = None,
+        status: str | None = None,
+        status_message: str | None = None,
+        validation_end_time: int | None = None,
+        queue: bool | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
+        cognite_client: CogniteClient = None,
     ):
         self.id = id
         self.simulator_name = simulator_name
@@ -67,11 +72,11 @@ class SimulationRunFilter(CogniteFilter):
 
     def __init__(
         self,
-        simulator_name: str = None,
-        model_name: str = None,
-        routine_name: str = None,
-        status: str = None,
-        cognite_client: "CogniteClient" = None,
+        simulator_name: str | None = None,
+        model_name: str | None = None,
+        routine_name: str | None = None,
+        status: str | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.simulator_name = simulator_name
         self.model_name = model_name

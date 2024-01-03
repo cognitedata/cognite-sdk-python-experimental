@@ -5,7 +5,6 @@ from cognite.client import ClientConfig, global_config
 from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 from cognite.client.credentials import OAuthClientCredentials
-
 from cognite.experimental._api.alerts import AlertsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.entity_matching import EntityMatchingAPI

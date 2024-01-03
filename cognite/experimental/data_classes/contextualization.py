@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import copy
+import warnings
 from collections import UserList
 from enum import Enum
-from typing import Any, Dict, List, Union
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
+
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import (
     CognitePrimitiveUpdate,
@@ -12,9 +16,11 @@ from cognite.client.data_classes._base import (
     CogniteUpdate,
 )
 from cognite.client.utils._text import to_camel_case
-
 from cognite.experimental.data_classes.utils.pandas import dataframe_summarize
 from cognite.experimental.data_classes.utils.rules_output import _color_matches, _label_groups
+
+if TYPE_CHECKING:
+    from PIL import Image
 
 
 class ContextualizationJobType(Enum):
@@ -125,7 +131,7 @@ class EntityMatchingMatchList(CogniteResourceList):
     _ASSERT_CLASSES = False
 
     @classmethod
-    def _load(cls, resource_list: Union[List, str], cognite_client=None):
+    def _load(cls, resource_list: list | str, cognite_client=None):
         loaded = super()._load(resource_list, cognite_client)
         loaded.data = sorted(loaded.data, key=lambda match: -match.score)  # sort matches from highest to lowest score
         return loaded
@@ -208,20 +214,20 @@ class EntityMatchingPipeline(CogniteResource):
 
     def __init__(
         self,
-        id: int = None,
-        external_id: str = None,
-        name: str = None,
-        description: str = None,
-        model_parameters: Dict = None,
-        sources: Dict = None,
-        targets: Dict = None,
-        true_matches: List = None,
-        rejected_matches: List = None,
-        confirmed_matches: List = None,
-        use_existing_matches: bool = None,
-        replacements: List[Dict] = None,
-        score_threshold: float = None,
-        rules: List = None,
+        id: int | None = None,
+        external_id: str | None = None,
+        name: str | None = None,
+        description: str | None = None,
+        model_parameters: dict | None = None,
+        sources: dict | None = None,
+        targets: dict | None = None,
+        true_matches: list | None = None,
+        rejected_matches: list | None = None,
+        confirmed_matches: list | None = None,
+        use_existing_matches: bool | None = None,
+        replacements: list[dict] | None = None,
+        score_threshold: float | None = None,
+        rules: list | None = None,
         status=None,
         error_message=None,
         created_time=None,
@@ -290,7 +296,7 @@ class EntityMatchingPipelineUpdate(CogniteUpdate):  # not implemented yet
     """
 
     class _PrimitiveUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "EntityMatchingPipelineUpdate":
+        def set(self, value: Any) -> EntityMatchingPipelineUpdate:
             return self._set(value)
 
     @property
@@ -390,18 +396,12 @@ class PNIDDetection(CogniteResource):
         self._cognite_client = cognite_client
 
 
-import warnings
-
-
 class PNIDDetectionList(CogniteResourceList):
     _RESOURCE = PNIDDetection
     _UPDATE = None
     _ASSERT_CLASSES = False
 
-    def image_with_bounding_boxes(self, file_id: int) -> "PIL.Image":
-        """returns an image with bounding boxes on top of the pdf specified by file_id"""
-        file_bytes = self._cognite_client.files.download_bytes(id=file_id)
-
+    def image_with_bounding_boxes(self, file_id: int) -> Image:
         try:
             import numpy as np
             from bounding_box import bounding_box as bb
@@ -412,6 +412,9 @@ class PNIDDetectionList(CogniteResourceList):
                 f"Module {e.name} missing, 'pip install Pillow numpy bounding_box pdf2image' for advanced visualization of results"
             )
             raise
+
+        """returns an image with bounding boxes on top of the pdf specified by file_id"""
+        file_bytes = self._cognite_client.files.download_bytes(id=file_id)
 
         def draw_bbox(pnid_img):
             img_arr = np.array(pnid_img)
@@ -437,7 +440,7 @@ class PNIDDetectionList(CogniteResourceList):
             return None
 
     @classmethod
-    def _load(cls, resource_list: Union[List, str], cognite_client=None):
+    def _load(cls, resource_list: list | str, cognite_client=None):
         loaded = super()._load(resource_list, cognite_client)
         return loaded
 
@@ -455,7 +458,7 @@ class PNIDDetectionPageList(UserList):
         return df._repr_html_()
 
     @property
-    def image(self) -> "PIL.Image":
+    def image(self) -> Image:
         """Returns the file as an image with bounding boxes for detected items"""
         return self[0].image_with_bounding_boxes(file_id=self.file_id)
 

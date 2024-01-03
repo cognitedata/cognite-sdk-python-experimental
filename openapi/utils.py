@@ -50,7 +50,7 @@ def get_type_hint(item):
         else:
             return "Union[{}]".format(", ".join(types))
     else:
-        raise "Unrecognized type in '{}'".format(item)
+        raise f"Unrecognized type in '{item}'"
 
     if type == "array":
         return "List[{}]".format(get_type_hint(item["items"]))
@@ -58,7 +58,7 @@ def get_type_hint(item):
         return "Dict[str, Any]"
     elif type in TYPE_MAPPING:
         return TYPE_MAPPING[type]
-    raise "Unrecognized type '{}'".format(type)
+    raise f"Unrecognized type '{type}'"
 
 
 def to_snake_case(str):

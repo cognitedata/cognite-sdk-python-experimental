@@ -1,6 +1,6 @@
 import pytest
-from cognite.client.data_classes import ContextualizationJob
 
+from cognite.client.data_classes import ContextualizationJob
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import PNIDDetectionList, PNIDDetectionPageList
 

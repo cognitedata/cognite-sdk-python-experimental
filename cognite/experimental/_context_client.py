@@ -1,19 +1,22 @@
+from __future__ import annotations
+
 import numbers
-from typing import Any, Dict, List, Union
+from typing import Any
+
+from requests import Response
 
 from cognite.client._api_client import APIClient
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.utils._text import to_camel_case
-from requests import Response
 
 
 class ContextAPI(APIClient):
     def _camel_post(
         self,
         context_path: str,
-        json: Dict[str, Any] = None,
-        params: Dict[str, Any] = None,
-        headers: Dict[str, Any] = None,
+        json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None,
     ) -> Response:
         return self._post(
             self._RESOURCE_PATH + context_path,
@@ -22,7 +25,9 @@ class ContextAPI(APIClient):
             headers=headers,
         )
 
-    def _camel_get(self, context_path: str, params: Dict[str, Any] = None, headers: Dict[str, Any] = None) -> Response:
+    def _camel_get(
+        self, context_path: str, params: dict[str, Any] | None = None, headers: dict[str, Any] | None = None
+    ) -> Response:
         return self._get(
             self._RESOURCE_PATH + context_path,
             params={to_camel_case(k): v for k, v in (params or {}).items() if v is not None},
@@ -30,7 +35,7 @@ class ContextAPI(APIClient):
         )
 
     @staticmethod
-    def _process_file_ids(ids: Union[List[int], int, None], external_ids: Union[List[str], str, None]) -> List:
+    def _process_file_ids(ids: list[int] | int | None, external_ids: list[str] | str | None) -> list:
         """
         Utility for sanitizing a given lists of ids and external ids.
         Returns the concatenation of the ids an external ids in the format

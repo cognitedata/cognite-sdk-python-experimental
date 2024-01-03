@@ -1,7 +1,6 @@
 from typing import Optional
 
 from cognite.client._api.extractionpipelines import ExtractionPipelinesAPI
-
 from cognite.experimental.data_classes import ExtractionPipelineConfig, ExtractionPipelineConfigRevisionList
 
 

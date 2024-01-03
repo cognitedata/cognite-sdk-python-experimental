@@ -316,13 +316,13 @@ test = ["pytest-cov"]
 
 [[package]]
 name = "cognite-sdk"
-version = "6.0.2"
+version = "6.39.6"
 description = "Cognite Python SDK"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "cognite_sdk-6.0.2-py3-none-any.whl", hash = "sha256:7521b7575825dfe7c3d10f93e9b1bd139ad53a9409ba91d48ad79d1284bd1b54"},
-    {file = "cognite_sdk-6.0.2.tar.gz", hash = "sha256:57f3ea83e80840d4315ab3457fa3f80fd0cb412ebce66ed4b22ccbe9521002ec"},
+    {file = "cognite_sdk-6.39.6-py3-none-any.whl", hash = "sha256:0b73fa9338591567eb9c58a22c40032bea997de42e7d919d28de9b4d5d2cf93c"},
+    {file = "cognite_sdk-6.39.6.tar.gz", hash = "sha256:a9c7df65bf30f414a5859d6d0e70849580fa1d31464b72988da2e4bda9773a9f"},
 ]
 
 [package.dependencies]
@@ -332,6 +332,7 @@ protobuf = ">=3.16.0"
 requests = ">=2,<3"
 requests_oauthlib = ">=1,<2"
 sortedcontainers = ">=2.2,<3.0"
+typing_extensions = ">=4"
 tzdata = {version = ">=2023.3", markers = "sys_platform == \"win32\""}
 
 [package.extras]
@@ -342,6 +343,7 @@ numpy = ["numpy (>=1.20,<2.0)"]
 pandas = ["backports-zoneinfo[tzdata] (>=0.2.1)", "pandas (>=1.4)"]
 pyodide = ["pyodide-http (>=0.2.0,<0.3.0)"]
 sympy = ["sympy"]
+yaml = ["PyYAML (>=6.0,<7.0)"]
 
 [[package]]
 name = "colorama"

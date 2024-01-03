@@ -1,11 +1,11 @@
 from typing import Dict, List, Union
 
-from cognite.client._api_client import APIClient
-from cognite.client.utils._auxiliary import assert_type
-from cognite.client.utils._identifier import IdentifierSequence
-from cognite.client.utils._text import to_camel_case
 from deprecated.sphinx import deprecated
 
+from cognite.client._api_client import APIClient
+from cognite.client.utils._identifier import IdentifierSequence
+from cognite.client.utils._text import to_camel_case
+from cognite.client.utils._validation import assert_type
 from cognite.experimental.data_classes import (
     LegacyAnnotation,
     LegacyAnnotationFilter,

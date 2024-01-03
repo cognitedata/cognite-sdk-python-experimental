@@ -25,7 +25,7 @@ def set_request_limit(client, limit):
         "_RETRIEVE_LATEST_LIMIT",
     ]
 
-    tmp = {l: 0 for l in limits}
+    tmp = {limit: 0 for limit in limits}
     for limit_name in limits:
         if hasattr(client, limit_name):
             tmp[limit_name] = getattr(client, limit_name)

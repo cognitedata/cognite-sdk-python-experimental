@@ -1,6 +1,6 @@
-# GenPropertyClass: AssetIdsFilter
-from typing import List
+from __future__ import annotations
 
+# GenPropertyClass: AssetIdsFilter
 from cognite.client.data_classes._base import CognitePropertyClassUtil
 
 
@@ -13,7 +13,7 @@ class AssetIdsFilter(dict):
         contains_any (List[int]): Values for this field must match one of the values in this array
     """
 
-    def __init__(self, contains_all: List[int] = None, contains_any: List[int] = None, **kwargs):
+    def __init__(self, contains_all: list[int] | None = None, contains_any: list[int] | None = None, **kwargs):
         self.contains_all = contains_all
         self.contains_any = contains_any
         self.update(kwargs)
@@ -25,7 +25,7 @@ class AssetIdsFilter(dict):
 
 
 class GeoShape(dict):
-    def __init__(self, type: str = None, coordinates: List = None, **kwargs):
+    def __init__(self, type: str | None = None, coordinates: list | None = None, **kwargs):
         self.type = type
         self.coordinates = coordinates
         self.update(kwargs)

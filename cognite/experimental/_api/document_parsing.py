@@ -1,8 +1,7 @@
-from typing import Dict, List, Union
+from __future__ import annotations
 
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.data_classes._base import CogniteResource
-
 from cognite.experimental._context_client import ContextAPI
 
 
@@ -12,8 +11,8 @@ class DocumentParsingAPI(ContextAPI):
     def detect(
         self,
         file_id: int,
-        entities: List[Union[str, dict, CogniteResource]],
-        name_mapping: Dict[str, str] = None,
+        entities: list[str | dict | CogniteResource],
+        name_mapping: dict[str, str] | None = None,
         partial_match: bool = False,
         min_tokens: int = 1,
         search_field: str = "name",

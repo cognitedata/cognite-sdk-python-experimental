@@ -1,7 +1,13 @@
-from typing import Any, Dict, List
+from __future__ import annotations
 
-from cognite.client.data_classes._base import *
-from cognite.client.data_classes.shared import TimestampRange
+from typing import Any, Dict
+
+from cognite.client.data_classes._base import (
+    CogniteFilter,
+    CognitePropertyClassUtil,
+    CogniteResource,
+    CogniteResourceList,
+)
 
 
 class TypeDefinitionReference(dict):
@@ -18,7 +24,7 @@ class ParentTypeDefinitionFilter(dict):
         external_id (str): External Id provided by client. Should be unique within the project.
     """
 
-    def __init__(self, id: int = None, version: int = None, external_id: str = None, **kwargs):
+    def __init__(self, id: int | None = None, version: int | None = None, external_id: str | None = None, **kwargs):
         self.id = id
         self.version = version
         self.external_id = external_id
@@ -50,15 +56,15 @@ class Type(CogniteResource):
 
     def __init__(
         self,
-        external_id: str = None,
-        name: str = None,
-        description: str = None,
-        properties: List[Dict[str, Any]] = None,
-        parent_type: Union[Dict[str, Any], TypeDefinitionReference] = None,
-        id: int = None,
-        version: int = None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        external_id: str | None = None,
+        name: str | None = None,
+        description: str | None = None,
+        properties: list[dict[str, Any]] | None = None,
+        parent_type: dict[str, Any] | TypeDefinitionReference | None = None,
+        id: int | None = None,
+        version: int | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         self.external_id = external_id
@@ -73,8 +79,8 @@ class Type(CogniteResource):
         self._cognite_client = cognite_client
 
     @classmethod
-    def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(Type, cls)._load(resource, cognite_client)
+    def _load(cls, resource: dict | str, cognite_client=None):
+        instance = super()._load(resource, cognite_client)
         if isinstance(resource, Dict):
             if instance.parent_type is not None:
                 instance.parent_type = TypeDefinitionReference(**instance.parent_type)
@@ -96,9 +102,9 @@ class TypeFilter(CogniteFilter):
 
     def __init__(
         self,
-        name: str = None,
-        external_id_prefix: str = None,
-        type_subtree: Union[Dict[str, Any], ParentTypeDefinitionFilter] = None,
+        name: str | None = None,
+        external_id_prefix: str | None = None,
+        type_subtree: dict[str, Any] | ParentTypeDefinitionFilter | None = None,
         cognite_client=None,
     ):
         self.name = name
@@ -107,8 +113,8 @@ class TypeFilter(CogniteFilter):
         self._cognite_client = cognite_client
 
     @classmethod
-    def _load(cls, resource: Union[Dict, str], cognite_client=None):
-        instance = super(TypeFilter, cls)._load(resource, cognite_client)
+    def _load(cls, resource: dict | str, cognite_client=None):
+        instance = super()._load(resource, cognite_client)
         if isinstance(resource, Dict):
             if instance.type_subtree is not None:
                 instance.type_subtree = ParentTypeDefinitionFilter(**instance.type_subtree)

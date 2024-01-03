@@ -1,12 +1,17 @@
-import os
 import uuid
 
 import pytest
-from cognite.client.data_classes.geospatial import *
-from cognite.client.exceptions import CogniteAPIError
 
+from cognite.client.data_classes import Feature, FeatureList
+from cognite.client.exceptions import CogniteAPIError
 from cognite.experimental import CogniteClient
-from cognite.experimental.data_classes.geospatial import *
+from cognite.experimental.data_classes.geospatial import (
+    ComputedItemList,
+    ComputeOrder,
+    FeatureType,
+    GeospatialTask,
+    MvpMappingsDefinition,
+)
 
 
 @pytest.fixture(scope="class")
@@ -280,7 +285,7 @@ class TestExperimentalGeospatialAPI:
                 }
             }
         )
-        assert type(res) == bytes
+        assert isinstance(res, bytes)
         assert len(res) == 60426
 
     def test_compute_from_feature_type(self, cognite_client, test_feature_type, test_feature):

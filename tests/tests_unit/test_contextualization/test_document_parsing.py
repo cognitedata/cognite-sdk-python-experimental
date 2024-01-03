@@ -1,9 +1,9 @@
 import re
 
 import pytest
+
 from cognite.client.data_classes import ContextualizationJob
 from cognite.client.exceptions import ModelFailedException
-
 from cognite.experimental import CogniteClient
 from tests.utils import jsgz_load
 

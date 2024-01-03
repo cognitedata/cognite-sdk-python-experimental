@@ -1,19 +1,25 @@
+from __future__ import annotations
+
 import json
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any
+
+from typing_extensions import Self
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 from cognite.client.utils._text import to_snake_case
-from typing_extensions import Self
+
+if TYPE_CHECKING:
+    from cognite.experimental import CogniteClient
 
 
 class HostedExtractorsSource(CogniteResource):
     def __init__(
         self,
-        external_id: str = None,
-        type: str = None,
-        host: str = None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        external_id: str | None = None,
+        type: str | None = None,
+        host: str | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         self.external_id = external_id
@@ -25,13 +31,13 @@ class HostedExtractorsSource(CogniteResource):
 
     @classmethod
     def _load(
-        cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None
-    ) -> Union[
-        "HostedExtractorsEventHubSource",
-        "HostedExtractorsMqttSource",
-        "HostedExtractorsRestSource",
-        "HostedExtractorsKafkaSource",
-    ]:
+        cls: type[Self], resource: dict | str, cognite_client: CogniteClient | None = None
+    ) -> (
+        HostedExtractorsEventHubSource
+        | HostedExtractorsMqttSource
+        | HostedExtractorsRestSource
+        | HostedExtractorsKafkaSource
+    ):
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 
@@ -50,15 +56,15 @@ class HostedExtractorsSource(CogniteResource):
 class HostedExtractorsMqttSource(HostedExtractorsSource):
     def __init__(
         self,
-        external_id: str = None,
-        type: str = None,
-        host: str = None,
-        port: Optional[int] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        use_tls: bool = None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        external_id: str | None = None,
+        type: str | None = None,
+        host: str | None = None,
+        port: int | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        use_tls: bool | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         super().__init__(
@@ -75,7 +81,7 @@ class HostedExtractorsMqttSource(HostedExtractorsSource):
         self.password = password
 
     @classmethod
-    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+    def _load(cls: type[Self], resource: dict | str, cognite_client: CogniteClient = None) -> Self:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 
@@ -86,13 +92,13 @@ class HostedExtractorsMqttSource(HostedExtractorsSource):
 class HostedExtractorsEventHubSource(HostedExtractorsSource):
     def __init__(
         self,
-        external_id: str = None,
-        type: str = None,
-        host: str = None,
-        key_name: str = None,
-        event_hub_name: str = None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        external_id: str | None = None,
+        type: str | None = None,
+        host: str | None = None,
+        key_name: str | None = None,
+        event_hub_name: str | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         super().__init__(
@@ -107,7 +113,7 @@ class HostedExtractorsEventHubSource(HostedExtractorsSource):
         self.event_hub_name = event_hub_name
 
     @classmethod
-    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+    def _load(cls: type[Self], resource: dict | str, cognite_client: CogniteClient = None) -> Self:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 
@@ -118,15 +124,15 @@ class HostedExtractorsEventHubSource(HostedExtractorsSource):
 class HostedExtractorsRestSource(HostedExtractorsSource):
     def __init__(
         self,
-        external_id: str = None,
-        type: str = None,
-        host: str = None,
-        port: int = None,
-        interval: str = None,
-        pagination: Dict[str, Any] = None,
-        incremental_load: Dict[str, Any] = None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        external_id: str | None = None,
+        type: str | None = None,
+        host: str | None = None,
+        port: int | None = None,
+        interval: str | None = None,
+        pagination: dict[str, Any] | None = None,
+        incremental_load: dict[str, Any] | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         super().__init__(
@@ -143,7 +149,7 @@ class HostedExtractorsRestSource(HostedExtractorsSource):
         self.incremental_load = incremental_load
 
     @classmethod
-    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+    def _load(cls: type[Self], resource: dict | str, cognite_client: CogniteClient = None) -> Self:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 
@@ -154,16 +160,16 @@ class HostedExtractorsRestSource(HostedExtractorsSource):
 class HostedExtractorsKafkaSource(HostedExtractorsSource):
     def __init__(
         self,
-        external_id: str = None,
-        type: str = None,
-        host: List[str] = None,
-        use_tls: bool = None,
-        username: str = None,
-        password: str = None,
-        ca_certificate: str = None,
-        auth_certificate: str = None,
-        created_time: int = None,
-        last_updated_time: int = None,
+        external_id: str | None = None,
+        type: str | None = None,
+        host: list[str] | None = None,
+        use_tls: bool | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        ca_certificate: str | None = None,
+        auth_certificate: str | None = None,
+        created_time: int | None = None,
+        last_updated_time: int | None = None,
         cognite_client=None,
     ):
         super().__init__(
@@ -181,7 +187,7 @@ class HostedExtractorsKafkaSource(HostedExtractorsSource):
         self.auth_certificate = auth_certificate
 
     @classmethod
-    def _load(cls: Type[Self], resource: Union[Dict, str], cognite_client: "CogniteClient" = None) -> Self:
+    def _load(cls: type[Self], resource: dict | str, cognite_client: CogniteClient = None) -> Self:
         if isinstance(resource, str):
             return cls._load(json.loads(resource), cognite_client)
 
@@ -192,14 +198,14 @@ class HostedExtractorsKafkaSource(HostedExtractorsSource):
 class HostedExtractorsJob(CogniteResource):
     def __init__(
         self,
-        external_id: str = None,
-        format: Dict[str, Any] = None,
-        config: Dict[str, Any] = None,
-        status: str = None,
-        target_status: str = None,
-        source_id: str = None,
-        destination_id: str = None,
-        created_time: int = None,
+        external_id: str | None = None,
+        format: dict[str, Any] | None = None,
+        config: dict[str, Any] | None = None,
+        status: str | None = None,
+        target_status: str | None = None,
+        source_id: str | None = None,
+        destination_id: str | None = None,
+        created_time: int | None = None,
         cognite_client=None,
     ):
         self.external_id = external_id
@@ -216,9 +222,9 @@ class HostedExtractorsJob(CogniteResource):
 class HostedExtractorsDestination(CogniteResource):
     def __init__(
         self,
-        external_id: str = None,
-        session_id: Optional[int] = None,
-        created_time: int = None,
+        external_id: str | None = None,
+        session_id: int | None = None,
+        created_time: int | None = None,
         cognite_client=None,
     ):
         self.external_id = external_id

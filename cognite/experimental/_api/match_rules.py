@@ -1,7 +1,6 @@
 from typing import List, Union
 
 from cognite.client.utils._text import to_camel_case
-
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import EntityMatchingMatchRuleList, MatchRulesApplyJob, MatchRulesSuggestJob
 

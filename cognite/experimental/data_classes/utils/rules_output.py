@@ -82,7 +82,7 @@ def _color_matches(extractors: List[Dict], matches: List[Dict]):
             field = extractor["field"]
             regex_match = regex.match(extractor["pattern"], match.get(source_target, {}).get(field, ""))
             if not regex_match:
-                print(
+                print(  # noqa: T201
                     "Unexpected lack of match of ",
                     extractor["pattern"],
                     match.get(source_target),

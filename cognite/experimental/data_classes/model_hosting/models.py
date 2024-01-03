@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from __future__ import annotations
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
@@ -21,15 +21,15 @@ class Model(CogniteResource):
 
     def __init__(
         self,
-        name: str = None,
-        description: str = None,
-        created_time: int = None,
-        metadata: Dict = None,
-        is_deprecated: bool = None,
-        active_version_name: str = None,
-        input_fields: List = None,
-        output_fields: List = None,
-        webhook_url: str = None,
+        name: str | None = None,
+        description: str | None = None,
+        created_time: int | None = None,
+        metadata: dict | None = None,
+        is_deprecated: bool | None = None,
+        active_version_name: str | None = None,
+        input_fields: list | None = None,
+        output_fields: list | None = None,
+        webhook_url: str | None = None,
         cognite_client=None,
     ):
         self.name = name

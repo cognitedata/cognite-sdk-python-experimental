@@ -1,10 +1,11 @@
-from typing import List, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from cognite.client import ClientConfig
 from cognite.client._api_client import APIClient
-from cognite.client.utils._auxiliary import assert_type
 from cognite.client.utils._identifier import IdentifierSequence
-
+from cognite.client.utils._validation import assert_type
 from cognite.experimental.data_classes.hosted_extractors import (
     HostedExtractorsDestination,
     HostedExtractorsDestinationList,
@@ -14,11 +15,14 @@ from cognite.experimental.data_classes.hosted_extractors import (
     HostedExtractorsSourceList,
 )
 
+if TYPE_CHECKING:
+    from cognite.experimental import CogniteClient
+
 
 class HostedExtractorsAPI(APIClient):
     _RESOURCE_PATH = "/hostedextractors"
 
-    def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
+    def __init__(self, config: ClientConfig, api_version: str | None, cognite_client: CogniteClient) -> None:
         super().__init__(config, api_version, cognite_client)
         self.sources = HostedExtractorsSourcesAPI(config, api_version, cognite_client)
         self.jobs = HostedExtractorsJobsAPI(config, api_version, cognite_client)
@@ -28,11 +32,11 @@ class HostedExtractorsAPI(APIClient):
 class HostedExtractorsJobsAPI(APIClient):
     _RESOURCE_PATH = "/hostedextractors/jobs"
 
-    def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
+    def __init__(self, config: ClientConfig, api_version: str | None, cognite_client: CogniteClient) -> None:
         super().__init__(config, api_version, cognite_client)
 
     def list(
-        self, source_external_id: Optional[str] = None, destination_external_id: Optional[str] = None, limit: int = 10
+        self, source_external_id: str | None = None, destination_external_id: str | None = None, limit: int = 10
     ) -> HostedExtractorsJobList:
         filter = {}
         if source_external_id:
@@ -49,8 +53,8 @@ class HostedExtractorsJobsAPI(APIClient):
         )
 
     def create(
-        self, jobs: Union[HostedExtractorsJob, List[HostedExtractorsJob]]
-    ) -> Union[HostedExtractorsJob, List[HostedExtractorsJob]]:
+        self, jobs: HostedExtractorsJob | list[HostedExtractorsJob]
+    ) -> HostedExtractorsJob | list[HostedExtractorsJob]:
         assert_type(jobs, "jobs", [HostedExtractorsJob, list])
         return self._create_multiple(
             items=jobs,
@@ -59,7 +63,7 @@ class HostedExtractorsJobsAPI(APIClient):
             headers={"cdf-version": "beta"},
         )
 
-    def delete(self, external_id: Union[str, List[str]]) -> None:
+    def delete(self, external_id: str | list[str]) -> None:
         self._delete_multiple(
             resource_path="/hostedextractors/jobs",
             identifiers=IdentifierSequence.load(external_ids=external_id),
@@ -71,11 +75,11 @@ class HostedExtractorsJobsAPI(APIClient):
 class HostedExtractorsSourcesAPI(APIClient):
     _RESOURCE_PATH = "/hostedextractors/sources"
 
-    def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
+    def __init__(self, config: ClientConfig, api_version: str | None, cognite_client: CogniteClient) -> None:
         super().__init__(config, api_version, cognite_client)
 
     def list(
-        self, source_external_id: Optional[str] = None, destination_external_id: Optional[str] = None, limit: int = 10
+        self, source_external_id: str | None = None, destination_external_id: str | None = None, limit: int = 10
     ) -> HostedExtractorsSourceList:
         filter = {}
         if source_external_id:
@@ -92,8 +96,8 @@ class HostedExtractorsSourcesAPI(APIClient):
         )
 
     def create(
-        self, sources: Union[HostedExtractorsSource, List[HostedExtractorsSource]]
-    ) -> Union[HostedExtractorsSource, List[HostedExtractorsSource]]:
+        self, sources: HostedExtractorsSource | list[HostedExtractorsSource]
+    ) -> HostedExtractorsSource | list[HostedExtractorsSource]:
         assert_type(sources, "sources", [HostedExtractorsSource, list])
         return self._create_multiple(
             items=sources,
@@ -102,7 +106,9 @@ class HostedExtractorsSourcesAPI(APIClient):
             headers={"cdf-version": "beta"},
         )
 
-    def delete(self, external_id: Union[str, List[str]], force: bool = None, ignore_unknown_ids: bool = None) -> None:
+    def delete(
+        self, external_id: str | list[str], force: bool | None = None, ignore_unknown_ids: bool | None = None
+    ) -> None:
         extras = {}
         if force is not None:
             extras["force"] = force
@@ -120,11 +126,11 @@ class HostedExtractorsSourcesAPI(APIClient):
 class HostedExtractorsDestinationsAPI(APIClient):
     _RESOURCE_PATH = "/hostedextractors/destinations"
 
-    def __init__(self, config: ClientConfig, api_version: Optional[str], cognite_client: "CogniteClient") -> None:
+    def __init__(self, config: ClientConfig, api_version: str | None, cognite_client: CogniteClient) -> None:
         super().__init__(config, api_version, cognite_client)
 
     def list(
-        self, source_external_id: Optional[str] = None, destination_external_id: Optional[str] = None, limit: int = 10
+        self, source_external_id: str | None = None, destination_external_id: str | None = None, limit: int = 10
     ) -> HostedExtractorsDestinationList:
         filter = {}
         if source_external_id:
@@ -141,8 +147,8 @@ class HostedExtractorsDestinationsAPI(APIClient):
         )
 
     def create(
-        self, destinations: Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]
-    ) -> Union[HostedExtractorsDestination, List[HostedExtractorsDestination]]:
+        self, destinations: HostedExtractorsDestination | list[HostedExtractorsDestination]
+    ) -> HostedExtractorsDestination | list[HostedExtractorsDestination]:
         assert_type(destinations, "destinations", [HostedExtractorsDestination, list])
         return self._create_multiple(
             items=destinations,
@@ -151,7 +157,9 @@ class HostedExtractorsDestinationsAPI(APIClient):
             headers={"cdf-version": "beta"},
         )
 
-    def delete(self, external_id: Union[str, List[str]], force: bool = None, ignore_unknown_ids: bool = None) -> None:
+    def delete(
+        self, external_id: str | list[str], force: bool | None = None, ignore_unknown_ids: bool | None = None
+    ) -> None:
         extras = {}
         if force is not None:
             extras["force"] = force

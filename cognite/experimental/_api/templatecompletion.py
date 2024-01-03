@@ -1,8 +1,7 @@
-from typing import List, Optional
+from __future__ import annotations
 
 from cognite.client._api.templates import TemplatesAPI
 from cognite.client.data_classes import ContextualizationJob
-
 from cognite.experimental._context_client import ContextAPI
 
 
@@ -28,7 +27,7 @@ class TemplateCompletionAPI(ContextAPI):
         return self._run_job(job_path="/type", status_path="/", external_id=external_id)
 
     def complete(
-        self, external_id: str, template_name: str, asset_property: str = None, version: int = None
+        self, external_id: str, template_name: str, asset_property: str | None = None, version: int | None = None
     ) -> ContextualizationJob:
         """Completes a schema uploaded in CDF as a domain.
 
@@ -61,10 +60,10 @@ class TemplateCompletionAPI(ContextAPI):
         self,
         external_id: str,
         template_name: str,
-        asset_property: Optional[str] = None,
-        version: Optional[int] = None,
-        asset_subtree_ids: Optional[List[int]] = None,
-        asset_subtree_external_ids: Optional[List[str]] = None,
+        asset_property: str | None = None,
+        version: int | None = None,
+        asset_subtree_ids: list[int] | None = None,
+        asset_subtree_external_ids: list[str] | None = None,
     ):
         return self._run_job(
             job_path="/instancesuggestion",

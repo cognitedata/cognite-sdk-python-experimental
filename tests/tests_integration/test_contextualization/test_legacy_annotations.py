@@ -1,6 +1,6 @@
 import pytest
-from cognite.client.exceptions import CogniteAPIError
 
+from cognite.client.exceptions import CogniteAPIError
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
     LegacyAnnotation,
@@ -34,7 +34,7 @@ def new_annotation():
 
 @pytest.fixture
 def new_annotations():
-    asset = [a for a in COGNITE_CLIENT.assets.list(limit=100) if a.external_id][0]
+    asset = next(a for a in COGNITE_CLIENT.assets.list(limit=100) if a.external_id)
     annot = LegacyAnnotation(
         annotation_type="abc",
         annotated_resource_id=asset.id,
@@ -87,12 +87,12 @@ class TestAnnotationsIntegration:
         fil = LegacyAnnotationFilter(annotation_type="abc", annotated_resource_type="asset")
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
-        assert all([l.annotation_type == "abc" for l in l_annots])
+        assert all([l_annot.annotation_type == "abc" for l_annot in l_annots])
 
         fil = {"annotation_type": "abc", "annotatedResourceType": "asset"}
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
-        assert all([l.annotation_type == "abc" for l in l_annots])
+        assert all([l_annot.annotation_type == "abc" for l_annot in l_annots])
 
         fil = LegacyAnnotationFilter(
             annotated_resource_ids=[{"id": new_annotations[0].annotated_resource_id}],
@@ -100,7 +100,7 @@ class TestAnnotationsIntegration:
         )
         l_annots = ANNOTATIONSAPI.list(filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
-        assert all([l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots])
+        assert all([l_annot.annotated_resource_id == new_annotations[0].annotated_resource_id for l_annot in l_annots])
 
         fil = LegacyAnnotationFilter(
             annotated_resource_ids=[{"id": new_annotations[0].annotated_resource_id}],
@@ -109,7 +109,7 @@ class TestAnnotationsIntegration:
         l_annots = ANNOTATIONSAPI.list(limit=5, filter=fil)
         assert isinstance(l_annots, LegacyAnnotationList)
         assert len(l_annots) == 5
-        assert all([l.annotated_resource_id == new_annotations[0].annotated_resource_id for l in l_annots])
+        assert all([l_annot.annotated_resource_id == new_annotations[0].annotated_resource_id for l_annot in l_annots])
 
     def test_retrieve_multiple(self, new_annotations):
         assert isinstance(new_annotations, LegacyAnnotationList)

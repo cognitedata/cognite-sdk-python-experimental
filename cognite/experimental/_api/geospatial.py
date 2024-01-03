@@ -1,16 +1,26 @@
+from __future__ import annotations
+
 import functools
 import json
 import types
-import urllib.parse
-from typing import Dict, Generator, Sequence, Union
+from typing import Any, Generator, Sequence
+
+from requests.exceptions import ChunkedEncodingError
 
 from cognite.client._api.geospatial import GeospatialAPI
 from cognite.client.data_classes.geospatial import Feature, FeatureList
 from cognite.client.exceptions import CogniteConnectionError
 from cognite.client.utils._identifier import IdentifierSequence
-from requests.exceptions import ChunkedEncodingError
-
-from cognite.experimental.data_classes.geospatial import *
+from cognite.experimental.data_classes.geospatial import (
+    ComputedItemList,
+    ComputeOrder,
+    FeatureType,
+    FeatureTypeList,
+    GeospatialTask,
+    GeospatialTaskList,
+    MvpMappingsDefinition,
+    MvpMappingsDefinitionList,
+)
 
 
 def _with_cognite_domain(func):
@@ -39,7 +49,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         return self._cognite_domain
 
     def __init__(self, *args, **kwargs):
-        super(ExperimentalGeospatialAPI, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # https://stackoverflow.com/questions/6034662/python-method-overriding-does-signature-matter
         # skip these methods from parent
@@ -58,17 +68,15 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
                 setattr(ExperimentalGeospatialAPI, attr_name, wrapped)
 
     @_with_cognite_domain
-    def create_feature_types(
-        self, feature_type: Union[FeatureType, Sequence[FeatureType]]
-    ) -> Union[FeatureType, FeatureTypeList]:
+    def create_feature_types(self, feature_type: FeatureType | Sequence[FeatureType]) -> FeatureType | FeatureTypeList:
         """`Creates feature types`
         <https://docs.cognite.com/api/v1/#operation/createFeatureTypes>
 
         Args:
-            feature_type (Union[FeatureType, Sequence[FeatureType]]): feature type definition or list of feature type definitions to create.
+            feature_type (FeatureType | Sequence[FeatureType]): feature type definition or list of feature type definitions to create.
 
         Returns:
-            Union[FeatureType, FeatureTypeList]: Created feature type definition(s)
+            FeatureType | FeatureTypeList: Created feature type definition(s)
 
         Examples:
 
@@ -99,8 +107,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     def stream_features(
         self,
         feature_type_external_id: str,
-        filter: Dict[str, Any],
-        properties: Dict[str, Any] = None,
+        filter: dict[str, Any],
+        properties: dict[str, Any] | None = None,
         allow_crs_transformation: bool = False,
     ) -> Generator[Feature, None, None]:
         resource_path = self._feature_resource_path(feature_type_external_id) + "/search-streaming"
@@ -126,7 +134,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     @_with_cognite_domain
     def create_mvt_mappings_definitions(
         self,
-        mappings_definitions: Union[MvpMappingsDefinition, MvpMappingsDefinitionList],
+        mappings_definitions: MvpMappingsDefinition | MvpMappingsDefinitionList,
     ) -> MvpMappingsDefinitionList:
         """`Creates MVP mappings`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialCreateMvtMappings>
@@ -135,7 +143,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             mappings_definitions: list of MVT mappings definitions
 
         Returns:
-            Union[List[Dict[str, Any]]]: list of created MVT mappings definitions
+            MvpMappingsDefinitionList: list of created MVT mappings definitions
 
         Examples:
 
@@ -171,12 +179,12 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         )
 
     @_with_cognite_domain
-    def delete_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> None:
+    def delete_mvt_mappings_definitions(self, external_id: str | list[str] | None = None) -> None:
         """`Deletes MVP mappings definitions`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialDeleteMvtMappings>
 
         Args:
-            external_id (Union[str, List[str]]): the mappings external ids
+            external_id (str | List[str]): the mappings external ids
 
         Returns:
             None
@@ -195,13 +203,15 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         )
 
     @_with_cognite_domain
-    def retrieve_mvt_mappings_definitions(self, external_id: Union[str, List[str]] = None) -> MvpMappingsDefinitionList:
+    def retrieve_mvt_mappings_definitions(
+        self, external_id: str | list[str] | None = None
+    ) -> MvpMappingsDefinitionList:
         """`Retrieve MVP mappings definitions`
         <https://pr-1653.specs.preview.cogniteapp.com/v1.json.html#operation/GeospatialGetByIdsMvtMappings>
 
         Args:
             external_id : the mappings external ids
-            external_id (Union[str, List[str]]): External ID or list of external ids
+            external_id (str | List[str]): External ID or list of external ids
 
         Returns:
             MvpMappingsDefinitionList: the requested mappings or None if it does not exist.
@@ -250,16 +260,16 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     @_with_cognite_domain
     def compute(
         self,
-        sub_computes: Dict[str, Any] = None,
-        from_feature_type: str = None,
-        left_joins: Sequence[Dict[str, Any]] = None,
-        filter: Dict[str, Any] = None,
-        group_by: Sequence[Dict[str, Any]] = None,
-        order_by: Sequence[ComputeOrder] = None,
-        output: Dict[str, Any] = None,
-        into_feature_type: str = None,
-        binary_output: Dict[str, Any] = None,
-    ) -> Union[bytes, ComputedItemList, None]:
+        sub_computes: dict[str, Any] | None = None,
+        from_feature_type: str | None = None,
+        left_joins: Sequence[dict[str, Any]] | None = None,
+        filter: dict[str, Any] | None = None,
+        group_by: Sequence[dict[str, Any]] | None = None,
+        order_by: Sequence[ComputeOrder] | None = None,
+        output: dict[str, Any] | None = None,
+        into_feature_type: str | None = None,
+        binary_output: dict[str, Any] | None = None,
+    ) -> bytes | ComputedItemList | None:
         """`Compute something`
         <https://pr-1717.specs.preview.cogniteapp.com/v1.json.html#operation/compute>
 
@@ -275,7 +285,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             binary_output (Dict[str, Any]): the binary output computation to execute
 
         Returns:
-            Union[bytes,List[ComputedItem],None]
+            bytes | List[ComputedItem] | None
 
         Examples:
 
@@ -396,10 +406,10 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     def upsert_features(
         self,
         feature_type_external_id: str,
-        feature: Union[Feature, Sequence[Feature], FeatureList],
+        feature: Feature | Sequence[Feature] | FeatureList,
         allow_crs_transformation: bool = False,
-        chunk_size: int = None,
-    ) -> Union[Feature, FeatureList]:
+        chunk_size: int | None = None,
+    ) -> Feature | FeatureList:
         """`Upsert features`
         <https://pr-1814.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/upsertFeatures>
 
@@ -413,7 +423,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             chunk_size: maximum number of items in a single request to the api
 
         Returns:
-            Union[Feature, FeatureList]: Upserted features
+            Feature | FeatureList: Upserted features
 
         Examples:
 
@@ -458,8 +468,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     def create_tasks(
         self,
         session_nonce: str,
-        task: Union[GeospatialTask, Sequence[GeospatialTask]],
-    ) -> Union[GeospatialTask, GeospatialTaskList]:
+        task: GeospatialTask | Sequence[GeospatialTask],
+    ) -> GeospatialTask | GeospatialTaskList:
         """`Create tasks`
         <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/createTasks>
 
@@ -468,7 +478,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             task: the task specification.
 
         Returns:
-            Union[GeospatialTask, Sequence[GeospatialTask]]: created tasks
+            GeospatialTask | Sequence[GeospatialTask]: created tasks
 
         Examples:
 
@@ -498,7 +508,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             extra_body_fields={"sessionNonce": session_nonce},
         )
 
-    def get_tasks(self, external_id: Union[str, List[str]]) -> Union[GeospatialTask, GeospatialTaskList]:
+    def get_tasks(self, external_id: str | list[str]) -> GeospatialTask | GeospatialTaskList:
         """`Retrieve tasks`
         <https://pr-1916.specs.preview.cogniteapp.com/v1.json.html#tag/Geospatial/operation/getTasksByIds>
 
@@ -506,7 +516,7 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
             external_id: the task external id.
 
         Returns:
-            Union[GeospatialTask, Sequence[GeospatialTask]]: the retrieved task(s)
+            GeospatialTask | Sequence[GeospatialTask]: the retrieved task(s)
 
         Examples:
 

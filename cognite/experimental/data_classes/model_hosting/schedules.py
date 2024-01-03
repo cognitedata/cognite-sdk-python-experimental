@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from __future__ import annotations
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList, CogniteResponse
 
@@ -10,7 +10,7 @@ class Schedule(CogniteResource):
         name (str): Name of the schedule.
         model_name (str): The name of the model associated with this schedule.
         description (str): Description of the schedule.
-        data_spec (Union[Dict, ScheduleDataSpec]): The data spec for the schedule.
+        data_spec (Union[Dict, None]): The data spec for the schedule.
         is_deprecated (bool): Whether or not the model version is deprecated.
         created_time (int): Created time in UNIX.
         metadata (Dict): User-defined metadata about the model.
@@ -20,14 +20,14 @@ class Schedule(CogniteResource):
 
     def __init__(
         self,
-        name: str = None,
-        model_name: str = None,
-        description: str = None,
-        data_spec: Union["ScheduleDataSpec", Dict] = None,
-        is_deprecated: bool = None,
-        created_time: int = None,
-        metadata: Dict = None,
-        args: Dict = None,
+        name: str | None = None,
+        model_name: str | None = None,
+        description: str | None = None,
+        data_spec: dict | None = None,
+        is_deprecated: bool | None = None,
+        created_time: int | None = None,
+        metadata: dict | None = None,
+        args: dict | None = None,
         cognite_client=None,
     ):
         self.name = name
@@ -55,7 +55,9 @@ class LogEntry(CogniteResponse):
         message (str): The log message.
     """
 
-    def __init__(self, timestamp: int = None, scheduled_execution_time: int = None, message: str = None):
+    def __init__(
+        self, timestamp: int | None = None, scheduled_execution_time: int | None = None, message: str | None = None
+    ):
         self.timestamp = timestamp
         self.scheduled_execution_time = scheduled_execution_time
         self.message = message
@@ -77,7 +79,7 @@ class ScheduleLog(CogniteResponse):
         completed (List[LogEntry]): A list of log entries for succesful executions.
     """
 
-    def __init__(self, failed: List = None, completed: List = None):
+    def __init__(self, failed: list | None = None, completed: list | None = None):
         self.failed = failed
         self.completed = completed
 

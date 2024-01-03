@@ -1,8 +1,6 @@
-import numbers
-from typing import Dict, List, Union
+from __future__ import annotations
 
 from cognite.client.data_classes._base import CogniteResource
-
 from cognite.experimental._context_client import ContextAPI
 from cognite.experimental.data_classes import (
     PNIDConvertResults,
@@ -17,13 +15,13 @@ class PNIDParsingAPI(ContextAPI):
 
     def detect(
         self,
-        entities: List[Union[str, dict, CogniteResource]],
+        entities: list[str | dict | CogniteResource],
         search_field: str = "name",
-        name_mapping: Dict[str, str] = None,
+        name_mapping: dict[str, str] | None = None,
         partial_match: bool = False,
         min_tokens: int = 1,
-        file_id: int = None,
-        file_external_id: str = None,
+        file_id: int | None = None,
+        file_external_id: str | None = None,
     ) -> PNIDDetectResults:
         """Detect entities in a PNID.
         The results are not written to CDF.
@@ -64,7 +62,7 @@ class PNIDParsingAPI(ContextAPI):
         return job
 
     def extract_pattern(
-        self, patterns: List[str], file_id: int = None, file_external_id: str = None
+        self, patterns: list[str], file_id: int | None = None, file_external_id: str | None = None
     ) -> PNIDDetectResults:
         """Extract tags from P&ID based on pattern. The results are not written to CDF.
 
@@ -89,7 +87,11 @@ class PNIDParsingAPI(ContextAPI):
         )
 
     def convert(
-        self, items: List[Dict], grayscale: bool = None, file_id: int = None, file_external_id: str = None
+        self,
+        items: list[dict],
+        grayscale: bool | None = None,
+        file_id: int | None = None,
+        file_external_id: str | None = None,
     ) -> PNIDConvertResults:
         """Convert a P&ID to an interactive SVG where the provided annotations are highlighted.
         The resulting SVG is not uploaded to CDF.
