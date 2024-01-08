@@ -11,7 +11,6 @@ from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.hosted_extractors import HostedExtractorsAPI
-from cognite.experimental._api.legacy_annotations import LegacyAnnotationsAPI
 from cognite.experimental._api.match_rules import MatchRulesAPI
 from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.simulators import SimulatorsAPI
@@ -57,7 +56,6 @@ class CogniteClient(Client):
         self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
-        self.legacy_annotations = LegacyAnnotationsAPI(self._config, api_version="playground", cognite_client=self)
 
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self

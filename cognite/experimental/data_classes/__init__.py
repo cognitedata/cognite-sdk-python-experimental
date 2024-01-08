@@ -48,12 +48,6 @@ from cognite.experimental.data_classes.hosted_extractors import (
     HostedExtractorsSource,
     HostedExtractorsSourceList,
 )
-from cognite.experimental.data_classes.legacy_annotations import (
-    LegacyAnnotation,
-    LegacyAnnotationFilter,
-    LegacyAnnotationList,
-    LegacyAnnotationUpdate,
-)
 from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunFilter, SimulationRunList
 from cognite.experimental.data_classes.types import (
     ParentTypeDefinitionFilter,
@@ -106,10 +100,6 @@ __all__ = [
     "HostedExtractorsSourceList",
     "HostedExtractorsJobList",
     "HostedExtractorsDestinationList",
-    "LegacyAnnotation",
-    "LegacyAnnotationFilter",
-    "LegacyAnnotationUpdate",
-    "LegacyAnnotationList",
     "SimulationRun",
     "SimulationRunList",
     "SimulationRunFilter",
