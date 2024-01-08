@@ -7,7 +7,6 @@ from cognite.client.beta import CogniteClient as Client
 from cognite.client.credentials import OAuthClientCredentials
 from cognite.experimental._api.alerts import AlertsAPI
 from cognite.experimental._api.document_parsing import DocumentParsingAPI
-from cognite.experimental._api.entity_matching import EntityMatchingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.hosted_extractors import HostedExtractorsAPI
@@ -53,7 +52,6 @@ class CogniteClient(Client):
         self.simulators = SimulatorsAPI(self._config, api_version="v1", cognite_client=self)
 
         self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
-        self.entity_matching = EntityMatchingAPI(self._config, api_version="playground", cognite_client=self)
         self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
         self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
 
