@@ -76,8 +76,8 @@ class TestSchemaCompletion:
         job = SCAPI.complete_type(external_id=eid)
         assert isinstance(job, ContextualizationJob)
         assert "Queued" == job.status
-        assert "Completed" == job.status
         assert {"items": []} == job.result
+        assert "Completed" == job.status
         assert 123 == job.job_id
 
         extract_calls = 0
