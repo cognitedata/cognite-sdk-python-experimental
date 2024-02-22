@@ -6,14 +6,10 @@ from cognite.client._api_client import APIClient
 from cognite.client.beta import CogniteClient as Client
 from cognite.client.credentials import OAuthClientCredentials
 from cognite.experimental._api.alerts import AlertsAPI
-from cognite.experimental._api.document_parsing import DocumentParsingAPI
 from cognite.experimental._api.extractionpipelines import ExperimentalExtractionPipelinesAPI
 from cognite.experimental._api.geospatial import ExperimentalGeospatialAPI
 from cognite.experimental._api.hosted_extractors import HostedExtractorsAPI
-from cognite.experimental._api.match_rules import MatchRulesAPI
-from cognite.experimental._api.pnid_parsing import PNIDParsingAPI
 from cognite.experimental._api.simulators import SimulatorsAPI
-from cognite.experimental._api.templatecompletion import ExperimentalTemplatesAPI
 
 APIClient._RETRYABLE_POST_ENDPOINT_REGEX_PATTERNS |= {
     "^" + path + "(\?.*)?$"
@@ -51,14 +47,7 @@ class CogniteClient(Client):
         self.alerts = AlertsAPI(self._config, api_version="v1", cognite_client=self)
         self.simulators = SimulatorsAPI(self._config, api_version="v1", cognite_client=self)
 
-        self.document_parsing = DocumentParsingAPI(self._config, api_version="playground", cognite_client=self)
-        self.match_rules = MatchRulesAPI(self._config, api_version="playground", cognite_client=self)
-        self.pnid_parsing = PNIDParsingAPI(self._config, api_version="playground", cognite_client=self)
-
         self.extraction_pipelines = ExperimentalExtractionPipelinesAPI(
             self._config, api_version="playground", cognite_client=self
         )
         self.hosted_extractors = HostedExtractorsAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
-
-        # template completion only
-        self.templates = ExperimentalTemplatesAPI(self._config, api_version=self._API_VERSION, cognite_client=self)
