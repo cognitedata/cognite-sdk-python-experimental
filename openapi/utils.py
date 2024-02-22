@@ -7,7 +7,7 @@ TYPE_MAPPING = {
     "boolean": "bool",
     None: "None",
     "None": "None",
-    "array": "List",
+    "array": "list",
     "object": "Dict[str, Any]",
 }
 
@@ -53,7 +53,7 @@ def get_type_hint(item):
         raise f"Unrecognized type in '{item}'"
 
     if type == "array":
-        return "List[{}]".format(get_type_hint(item["items"]))
+        return "list[{}]".format(get_type_hint(item["items"]))
     elif type == "object":
         return "Dict[str, Any]"
     elif type in TYPE_MAPPING:

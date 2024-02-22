@@ -51,9 +51,8 @@ class ClassGenerator:
                 schemas.append(self._spec.components.schemas.get(schema_name))
         docstring = self.generate_docstring(schemas, indentation=4, is_property=is_property)
         constructor_args = self.generate_constructor(schemas, indentation=4, is_property=is_property)
-        property_definitions = self.generate_properties(schemas, indentation=4) if is_property else ""
         loader = self.generate_loader(schemas, class_segment.class_name, indentation=4)
-        generated_segment = docstring + "\n" + constructor_args + "\n" + property_definitions + loader
+        generated_segment = docstring + "\n" + constructor_args + "\n" + loader
         return class_segment.class_name, generated_segment
 
     def generate_docstring(self, schemas, indentation, is_property=False):
@@ -80,7 +79,7 @@ class ClassGenerator:
         for schema in schemas:
             for prop_name, prop in self._get_schema_properties(schema).items():
                 prop_name = utils.to_snake_case(prop_name)
-                req = " = None"  # TODO: check if prop is required or not
+                req = " | None = None"  # TODO: check if prop is required or not
                 if prop_name not in ignore:
                     constructor_params.append(f"{prop_name}: {self._get_type_hint(prop)}{req}")
                     ignore.append(prop_name)
@@ -104,19 +103,6 @@ class ClassGenerator:
         else:
             constructor_body += " " * (indentation + 4) + "self._cognite_client = cognite_client\n"
         return constructor_params + "\n" + constructor_body[:-1]
-
-    def generate_properties(self, schemas, indentation):
-        properties = ""
-        ignore = [p for p in TO_EXCLUDE]
-        for schema in schemas:
-            for schema_name, prop in self._get_schema_properties(schema).items():
-                prop_name = utils.to_snake_case(schema_name)
-                if prop_name not in ignore:
-                    properties += " " * indentation + '{} = CognitePropertyClassUtil.declare_property("{}")\n'.format(
-                        prop_name, schema_name
-                    )
-                    ignore.append(prop_name)
-        return properties
 
     def generate_loader(self, schemas, class_name, indentation):
         prop_to_type = dict()
@@ -230,7 +216,7 @@ class UpdateClassGenerator:
             if "set" in update_prop_type_hints:
                 setter = indent + "@property\n"
                 setter += indent + f"def {utils.to_snake_case(prop_name)}(self):\n"
-                if update_prop_type_hints["set"] == "List":
+                if update_prop_type_hints["set"] == "list":
                     setter += indent + indent + f"return {class_name}._List{class_name}(self, '{prop_name}')"
                 elif update_prop_type_hints["set"] == "Dict[str, Any]":
                     setter += indent + indent + f"return {class_name}._Object{class_name}(self, '{prop_name}')"
@@ -244,8 +230,8 @@ class UpdateClassGenerator:
         xindent = " " * indentation
         update_class_methods = {
             "Primitive": [("set", "Any")],
-            "Object": [("set", "Dict"), ("add", "Dict"), ("remove", "List")],
-            "List": [("set", "List"), ("add", "List"), ("remove", "List")],
+            "Object": [("set", "Dict"), ("add", "Dict"), ("remove", "list")],
+            "list": [("set", "list"), ("add", "list"), ("remove", "list")],
         }
         indent = " " * 4 + xindent
         for update_class_name, methods in update_class_methods.items():

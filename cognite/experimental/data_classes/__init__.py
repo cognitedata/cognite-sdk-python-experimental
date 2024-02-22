@@ -31,13 +31,6 @@ from cognite.experimental.data_classes.hosted_extractors import (
     HostedExtractorsSourceList,
 )
 from cognite.experimental.data_classes.simulators import SimulationRun, SimulationRunFilter, SimulationRunList
-from cognite.experimental.data_classes.types import (
-    ParentTypeDefinitionFilter,
-    Type,
-    TypeDefinitionReference,
-    TypeFilter,
-    TypeList,
-)
 
 __all__ = [
     "AlertChannel",
@@ -69,9 +62,4 @@ __all__ = [
     "SimulationRun",
     "SimulationRunList",
     "SimulationRunFilter",
-    "TypeDefinitionReference",
-    "ParentTypeDefinitionFilter",
-    "Type",
-    "TypeFilter",
-    "TypeList",
 ]
