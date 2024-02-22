@@ -201,8 +201,11 @@ class TestExperimentalGeospatialAPI:
         assert test_partitioned_feature_type.partitions[1] == {"from": "ll", "to": "zz"}
 
     def test_list_feature_types(self, cognite_client, test_partitioned_feature_type):
+        import logging
+
         res = cognite_client.geospatial.list_feature_types()
         assert 0 < len(res) < 100
+        logging.info(res)
         assert res[-1].partitions[0] == {"from": "aa", "to": "ll"}
         assert res[-1].partitions[1] == {"from": "ll", "to": "zz"}
 
