@@ -12,6 +12,13 @@ Changes are grouped as follows
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [1.0.0]
+
+### Changed
+  - Bump core SDK to 7.21.1 with major changes.
+### Removed
+  - Removed all experimental features related to contextualization.
+
 ## [0.118.0]
 
 ### Changed
