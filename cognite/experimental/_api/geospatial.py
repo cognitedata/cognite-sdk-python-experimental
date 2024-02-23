@@ -8,7 +8,7 @@ from typing import Any, Generator, Sequence
 from requests.exceptions import ChunkedEncodingError
 
 from cognite.client._api.geospatial import GeospatialAPI
-from cognite.client.data_classes.geospatial import Feature, FeatureList
+from cognite.client.data_classes.geospatial import Feature, FeatureList, FeatureTypeWrite
 from cognite.client.exceptions import CogniteConnectionError
 from cognite.client.utils._identifier import IdentifierSequence
 from cognite.experimental.data_classes.geospatial import (
@@ -55,6 +55,8 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         # skip these methods from parent
         skip_methods = [
             "create_feature_types",
+            "list_feature_types",
+            "retrieve_feature_types",
             "coordinate_reference_systems",
             "stream_features",
             "compute",
@@ -70,10 +72,10 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
     @_with_cognite_domain
     def create_feature_types(self, feature_type: FeatureType | Sequence[FeatureType]) -> FeatureType | FeatureTypeList:
         """`Creates feature types`
-        <https://docs.cognite.com/api/v1/#operation/createFeatureTypes>
+        <https://developer.cognite.com/api#tag/Geospatial/operation/createFeatureTypes>
 
         Args:
-            feature_type (FeatureType | Sequence[FeatureType]): feature type definition or list of feature type definitions to create.
+            feature_type (FeatureType | FeatureTypeWrite | Sequence[FeatureType] | Sequence[FeatureTypeWrite]): feature type definition or list of feature type definitions to create.
 
         Returns:
             FeatureType | FeatureTypeList: Created feature type definition(s)
@@ -82,24 +84,74 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
 
             Create new type definitions:
 
-                >>> from cognite.client import CogniteClient
-                >>> from cognite.client.data_classes.geospatial import FeatureType
-                >>> c = CogniteClient()
+                >>> from cognite.experimental import CogniteClient
+                >>> from cognite.experimental.data_classes.geospatial import FeatureTypeWrite
+                >>> client = CogniteClient()
                 >>> feature_types = [
-                ...     FeatureType(external_id="wells", properties={"location": {"type": "POINT", "srid": 4326}})
-                ...     FeatureType(
+                ...     FeatureTypeWrite(external_id="wells", properties={"location": {"type": "POINT", "srid": 4326}})
+                ...     FeatureTypeWrite(
                 ...       external_id="cities",
                 ...       properties={"name": {"type": "STRING", "size": 10}},
                 ...       search_spec={"name_index": {"properties": ["name"]}}
-                ...       partitions=[{"from":"2000", "to":"2007"},{"from":"2007", "to":"2020"}],
                 ...     )
                 ... ]
-                >>> res = c.geospatial.create_feature_types(feature_types)
+                >>> res = client.geospatial.create_feature_types(feature_types)
         """
         return self._create_multiple(
             list_cls=FeatureTypeList,
             resource_cls=FeatureType,
             items=feature_type,
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+            input_resource_cls=FeatureTypeWrite,
+        )
+
+    @_with_cognite_domain
+    def list_feature_types(self) -> FeatureTypeList:
+        """`List feature types`
+        <https://developer.cognite.com/api#tag/Geospatial/operation/listFeatureTypes>
+
+        Returns:
+            FeatureTypeList: List of feature types
+
+        Examples:
+
+            Iterate over feature type definitions:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> client = CogniteClient()
+                >>> for feature_type in client.geospatial.list_feature_types():
+                ...     feature_type # do something with the feature type definition
+        """
+        return self._list(
+            list_cls=FeatureTypeList,
+            resource_cls=FeatureType,
+            method="POST",
+            resource_path=f"{self._RESOURCE_PATH}/featuretypes",
+        )
+
+    def retrieve_feature_types(self, external_id: str | list[str]) -> FeatureType | FeatureTypeList:
+        """`Retrieve feature types`
+        <https://developer.cognite.com/api#tag/Geospatial/operation/getFeatureTypesByIds>
+
+        Args:
+            external_id (str | list[str]): External ID
+
+        Returns:
+            FeatureType | FeatureTypeList: Requested Type or None if it does not exist.
+
+        Examples:
+
+            Get Type by external id:
+
+                >>> from cognite.experimental import CogniteClient
+                >>> client = CogniteClient()
+                >>> res = client.geospatial.retrieve_feature_types(external_id="1")
+        """
+        identifiers = IdentifierSequence.load(ids=None, external_ids=external_id)
+        return self._retrieve_multiple(
+            list_cls=FeatureTypeList,
+            resource_cls=FeatureType,
+            identifiers=identifiers.as_singleton() if identifiers.is_singleton() else identifiers,
             resource_path=f"{self._RESOURCE_PATH}/featuretypes",
         )
 
@@ -172,9 +224,9 @@ class ExperimentalGeospatialAPI(GeospatialAPI):
         """
         resource_path = ExperimentalGeospatialAPI._MVT_RESOURCE_PATH
         return self._create_multiple(
+            list_cls=MvpMappingsDefinitionList,
             items=mappings_definitions,
             resource_path=resource_path,
-            list_cls=MvpMappingsDefinitionList,
             resource_cls=MvpMappingsDefinition,
         )
 
