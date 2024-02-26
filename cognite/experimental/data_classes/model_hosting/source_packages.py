@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from __future__ import annotations
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList, CogniteResponse
 
@@ -11,7 +11,7 @@ class CreateSourcePackageResponse(CogniteResponse):
         upload_url (str): The url to upload the source package distribution to.
     """
 
-    def __init__(self, id: int = None, upload_url: str = None):
+    def __init__(self, id: int | None = None, upload_url: str | None = None):
         self.id = id
         self.upload_url = upload_url
 
@@ -21,7 +21,8 @@ class CreateSourcePackageResponse(CogniteResponse):
 
 
 class SourcePackage(CogniteResource):
-    """A representation of a source package in the model hosting environment.
+    (
+        """A representation of a source package in the model hosting environment.
 
     Args:
         id (int): Id of the source package.
@@ -36,19 +37,21 @@ class SourcePackage(CogniteResource):
         metadata (Dict): User-defined metadata about the source package.
         cognite_client (CogniteClient): An optional CogniteClient to associate with this data class.
     """
+        | None
+    )
 
     def __init__(
         self,
-        id: int = None,
-        name: str = None,
-        description: str = None,
-        is_deprecated: bool = None,
-        package_name: str = None,
-        is_uploaded: bool = None,
-        available_operations: List = None,
-        created_time: int = None,
-        runtime_version: str = None,
-        metadata: Dict = None,
+        id: int | None = None,
+        name: str | None = None,
+        description: str | None = None,
+        is_deprecated: bool | None = None,
+        package_name: str | None = None,
+        is_uploaded: bool | None = None,
+        available_operations: list | None = None,
+        created_time: int | None = None,
+        runtime_version: str | None = None,
+        metadata: dict | None = None,
         cognite_client=None,
     ):
         self.id = id

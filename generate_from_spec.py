@@ -1,4 +1,3 @@
-import argparse
 import os
 
 from openapi.generator import CodeGenerator
@@ -13,14 +12,14 @@ if __name__ == "__main__":
     )
     spec = codegen_playground.open_api_spec
 
-    print("=" * 100)
-    print("{}: {}".format(spec.info.title, spec.info.version))
-    print(spec.info.description)
-    print("=" * 100)
+    print("=" * 100)  # noqa
+    print(f"{spec.info.title}: {spec.info.version}")  # noqa
+    print(spec.info.description)  # noqa
+    print("=" * 100)  # noqa
 
     for root, dirs, files in os.walk("./cognite/experimental/data_classes"):
         for file in files:
             file_path = os.path.join(root, file)
             if file_path.endswith(".py"):
-                print("* Generating playground code in {}".format(file_path))
+                print(f"* Generating playground code in {file_path}")  # noqa
                 codegen_playground.generate(file_path, file_path)

@@ -1,9 +1,8 @@
-from typing import Dict, List, Union
+from __future__ import annotations
 
 from cognite.client._api_client import APIClient
-from cognite.client.utils._auxiliary import assert_type
 from cognite.client.utils._identifier import IdentifierSequence
-
+from cognite.client.utils._validation import assert_type
 from cognite.experimental.data_classes.alerts import (
     Alert,
     AlertChannel,
@@ -29,8 +28,8 @@ class AlertChannelsAPI(APIClient):
 
     def create(
         self,
-        channels: Union[AlertChannel, List[AlertChannel]],
-    ) -> Union[AlertChannel, AlertChannelList]:
+        channels: AlertChannel | list[AlertChannel],
+    ) -> AlertChannel | AlertChannelList:
         """Create channels
 
         Args:
@@ -49,10 +48,10 @@ class AlertChannelsAPI(APIClient):
 
     def list(
         self,
-        external_ids: List[str] = None,
-        ids: List[int] = None,
-        parent_ids: List[str] = None,
-        metadata: Dict[str, str] = None,
+        external_ids: list[str] | None = None,
+        ids: list[int] | None = None,
+        parent_ids: list[str] | None = None,
+        metadata: dict[str, str] | None = None,
         limit=100,
     ) -> AlertChannelList:
         """List alert channels
@@ -78,8 +77,8 @@ class AlertChannelsAPI(APIClient):
         )
 
     def update(
-        self, items: Union[AlertChannel, AlertChannelUpdate, List[Union[AlertChannel, AlertChannelUpdate]]]
-    ) -> Union[AlertChannel, AlertChannelList]:
+        self, items: AlertChannel | AlertChannelUpdate | list[AlertChannel | AlertChannelUpdate]
+    ) -> AlertChannel | AlertChannelList:
         """Update alerting channels
 
         Args:
@@ -91,7 +90,7 @@ class AlertChannelsAPI(APIClient):
             items=items, list_cls=AlertChannelList, resource_cls=AlertChannel, update_cls=AlertChannelUpdate
         )
 
-    def delete(self, ids: List[int] = None, external_ids: List[str] = None) -> None:
+    def delete(self, ids: list[int] | None = None, external_ids: list[str] | None = None) -> None:
         self._delete_multiple(identifiers=IdentifierSequence.load(ids=ids, external_ids=external_ids), wrap_ids=True)
 
 
@@ -113,8 +112,8 @@ class AlertSubscribersAPI(APIClient):
 
     def create(
         self,
-        subscribers: Union[AlertSubscriber, List[AlertSubscriber]],
-    ) -> Union[AlertSubscriber, AlertSubscriberList]:
+        subscribers: AlertSubscriber | list[AlertSubscriber],
+    ) -> AlertSubscriber | AlertSubscriberList:
         assert_type(subscribers, "subscribers", [AlertSubscriber, list])
         return self._create_multiple(
             items=subscribers,
@@ -142,8 +141,8 @@ class AlertSubscriptionsAPI(APIClient):
 
     def create(
         self,
-        subscriptions: Union[AlertSubscription, List[AlertSubscriptionList]],
-    ) -> Union[AlertSubscription, AlertSubscriptionList]:
+        subscriptions: AlertSubscription | list[AlertSubscriptionList],
+    ) -> AlertSubscription | AlertSubscriptionList:
         assert_type(subscriptions, "subscriptions", [AlertSubscription, list])
         return self._create_multiple(
             items=subscriptions,
@@ -161,7 +160,7 @@ class AlertSubscriptionsAPI(APIClient):
         Returns:
             None"""
 
-    def delete(self, cmds: List[AlertSubscriptionDelete]) -> None:
+    def delete(self, cmds: list[AlertSubscriptionDelete]) -> None:
         items_to_delete = [cmd.dump(camel_case=True) for cmd in cmds]
 
         body = {"items": items_to_delete}
@@ -191,8 +190,8 @@ class AlertsAPI(APIClient):
 
     def create(
         self,
-        alerts: Union[Alert, List[Alert]],
-    ) -> Union[Alert, AlertList]:
+        alerts: Alert | list[Alert],
+    ) -> Alert | AlertList:
         assert_type(alerts, "alerts", [Alert, list])
         return self._create_multiple(
             items=alerts, resource_path=self._RESOURCE_PATH, list_cls=AlertList, resource_cls=Alert
@@ -200,8 +199,8 @@ class AlertsAPI(APIClient):
 
     def create_deduplicated(
         self,
-        alerts: Union[Alert, List[Alert]],
-    ) -> Union[Alert, AlertList]:
+        alerts: Alert | list[Alert],
+    ) -> Alert | AlertList:
         assert_type(alerts, "alerts", [Alert, list])
         return self._create_multiple(
             items=alerts,
@@ -212,13 +211,13 @@ class AlertsAPI(APIClient):
 
     def list(
         self,
-        ids: List[int] = None,
-        external_ids: List[str] = None,
-        channel_ids: List[int] = None,
-        channel_external_ids: List[int] = None,
-        closed: bool = None,
-        start_time: str = None,
-        end_time: str = None,
+        ids: list[int] | None = None,
+        external_ids: list[str] | None = None,
+        channel_ids: list[int] | None = None,
+        channel_external_ids: list[int] | None = None,
+        closed: bool | None = None,
+        start_time: str | None = None,
+        end_time: str | None = None,
         limit=100,
     ) -> AlertList:
         """List alerts
@@ -250,8 +249,8 @@ class AlertsAPI(APIClient):
 
     def close(
         self,
-        ids: List[int] = None,
-        external_ids: List[str] = None,
+        ids: list[int] | None = None,
+        external_ids: list[str] | None = None,
     ) -> None:
         """Close alerts
 

@@ -17,7 +17,7 @@ class Paths:
             for curr_path, path_item in self._paths.items():
                 if path == curr_path:
                     return path_item
-            ValueError("PathItem with path ´{}´ does not exist".format(path))
+            ValueError(f"PathItem with path '{path}' does not exist")
         return [path_item for _, path_item in self._paths.items()]
 
     def get_operation(self, operation_id: str):
@@ -25,7 +25,7 @@ class Paths:
             for method, operation in path_item.items():
                 if "operationId" in operation and operation["operationId"] == operation_id:
                     return operation
-        raise ValueError("Operation with that id ´{}´ does not exist".format(operation_id))
+        raise ValueError(f"Operation with that id '{operation_id}' does not exist")
 
 
 class Schemas:
@@ -40,7 +40,7 @@ class Schemas:
             for schema_name, schema in self._schemas.items():
                 if schema_name == name:
                     return schema
-            raise ValueError("Schema `{}` does not exist".format(name))
+            raise ValueError(f"Schema '{name}' does not exist")
         return [schema for _, schema in self._schemas.items()]
 
     def rev_get(self, struct):
@@ -64,7 +64,7 @@ class Info:
 
 
 class OpenAPISpec:
-    def __init__(self, url: str = None, path: str = None, exclude_schemas=()):
+    def __init__(self, url: str | None = None, path: str | None = None, exclude_schemas=()):
         if url:
             self._spec_url = url
             self._spec = self.download_spec(exclude_schemas=exclude_schemas)
@@ -83,5 +83,5 @@ class OpenAPISpec:
             spec_path = os.path.join(dir, "spec.json")
             with open(spec_path, "w") as f:
                 json.dump(spec, f, indent=4)
-            res = check_output("swagger-cli bundle -r {}".format(spec_path), shell=True)
+            res = check_output(f"swagger-cli bundle -r {spec_path}", shell=True)
         return json.loads(res)

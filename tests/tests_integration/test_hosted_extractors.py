@@ -2,10 +2,10 @@ import os
 import uuid
 
 import pytest
+
 from cognite.client import ClientConfig
 from cognite.client.credentials import OAuthClientCredentials
 from cognite.client.exceptions import CogniteAPIError
-
 from cognite.experimental import CogniteClient
 from cognite.experimental.data_classes import (
     HostedExtractorsDestination,
@@ -43,13 +43,13 @@ def cleanup(cognite_client: CogniteClient):
     try:
         jobs = [j for j in cognite_client.hosted_extractors.jobs.list() if j.external_id.startswith(test_id)]
         cognite_client.hosted_extractors.jobs.delete([j.external_id for j in jobs])
-    except:
+    except:  # noqa
         pass
 
     try:
         sources = [s for s in cognite_client.hosted_extractors.sources.list() if s.external_id.startswith(test_id)]
         cognite_client.hosted_extractors.sources.delete([s.external_id for s in sources])
-    except:
+    except:  # noqa
         pass
 
     try:
@@ -57,7 +57,7 @@ def cleanup(cognite_client: CogniteClient):
             d for d in cognite_client.hosted_extractors.destinations.list() if d.external_id.startswith(test_id)
         ]
         cognite_client.hosted_extractors.destinations.delete([d.external_id for d in destinations])
-    except:
+    except:  # noqa
         pass
 
 

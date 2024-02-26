@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
 
 from cognite.client.data_classes._base import (
     CogniteFilter,
@@ -10,21 +12,24 @@ from cognite.client.data_classes._base import (
     CogniteUpdate,
 )
 
+if TYPE_CHECKING:
+    from cognite.experimental import CogniteClient
+
 
 class AlertChannel(CogniteResource):
     """Alert channel"""
 
     def __init__(
         self,
-        external_id: str = None,
-        id: int = None,
-        name: str = None,
-        parent_id: int = None,
-        parent_external_id: str = None,
-        description: str = None,
-        metadata: Dict[str, str] = None,
-        alert_rules: Dict[str, Dict[str, str]] = None,
-        cognite_client: "CogniteClient" = None,
+        external_id: str | None = None,
+        id: int | None = None,
+        name: str | None = None,
+        parent_id: int | None = None,
+        parent_external_id: str | None = None,
+        description: str | None = None,
+        metadata: dict[str, str] | None = None,
+        alert_rules: dict[str, dict[str, str]] | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.external_id = external_id
         self.id = id
@@ -46,43 +51,43 @@ class AlertChannelUpdate(CogniteUpdate):
     """
 
     class _PrimitiveAlertChannelUpdate(CognitePrimitiveUpdate):
-        def set(self, value: Any) -> "AlertChannelUpdate":
+        def set(self, value: Any) -> AlertChannelUpdate:
             return self._set(value)
 
     class _ObjectAlertChannelUpdate(CogniteObjectUpdate):
-        def set(self, value: Dict) -> "AlertChannelUpdate":
+        def set(self, value: dict) -> AlertChannelUpdate:
             return self._set(value)
 
-        def add(self, value: Dict) -> "AlertChannelUpdate":
+        def add(self, value: dict) -> AlertChannelUpdate:
             return self._add(value)
 
-        def remove(self, value: List) -> "AlertChannelUpdate":
+        def remove(self, value: list) -> AlertChannelUpdate:
             return self._remove(value)
 
     class _ListAlertChannelUpdate(CogniteListUpdate):
-        def set(self, value: List) -> "AlertChannelUpdate":
+        def set(self, value: list) -> AlertChannelUpdate:
             return self._set(value)
 
-        def add(self, value: List) -> "AlertChannelUpdate":
+        def add(self, value: list) -> AlertChannelUpdate:
             return self._add(value)
 
-        def remove(self, value: List) -> "AlertChannelUpdate":
+        def remove(self, value: list) -> AlertChannelUpdate:
             return self._remove(value)
 
     @property
-    def external_id(self) -> "_PrimitiveAlertChannelUpdate":
+    def external_id(self) -> _PrimitiveAlertChannelUpdate:
         return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "externalId")
 
     @property
-    def name(self) -> "_PrimitiveAlertChannelUpdate":
+    def name(self) -> _PrimitiveAlertChannelUpdate:
         return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "name")
 
     @property
-    def description(self) -> "_PrimitiveAlertChannelUpdate":
+    def description(self) -> _PrimitiveAlertChannelUpdate:
         return AlertChannelUpdate._PrimitiveAlertChannelUpdate(self, "description")
 
     @property
-    def metadata(self) -> "_ObjectAlertChannelUpdate":
+    def metadata(self) -> _ObjectAlertChannelUpdate:
         return AlertChannelUpdate._ObjectAlertChannelUpdate(self, "metadata")
 
 
@@ -97,11 +102,11 @@ class AlertChannelFilter(CogniteFilter):
 
     def __init__(
         self,
-        external_ids: List[str] = None,
-        ids: List[int] = None,
-        parent_ids: List[str] = None,
-        metadata: Dict[str, str] = None,
-        cognite_client: "CogniteClient" = None,
+        external_ids: list[str] | None = None,
+        ids: list[int] | None = None,
+        parent_ids: list[str] | None = None,
+        metadata: dict[str, str] | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.external_ids = external_ids
         self.ids = ids
@@ -123,19 +128,19 @@ class Alert(CogniteResource):
 
     def __init__(
         self,
-        id: int = None,
-        external_id: str = None,
-        timestamp: int = None,
-        channel_id: int = None,
-        channel_external_id: str = None,
-        source: str = None,
-        value: str = None,
-        level: str = None,
-        metadata: Dict[str, str] = None,
-        acknowledged: bool = None,
-        closed: bool = None,
-        triggered_points: Optional[List[AlertTriggeredPoint]] = None,
-        cognite_client: "CogniteClient" = None,
+        id: int | None = None,
+        external_id: str | None = None,
+        timestamp: int | None = None,
+        channel_id: int | None = None,
+        channel_external_id: str | None = None,
+        source: str | None = None,
+        value: str | None = None,
+        level: str | None = None,
+        metadata: dict[str, str] | None = None,
+        acknowledged: bool | None = None,
+        closed: bool | None = None,
+        triggered_points: list[AlertTriggeredPoint] | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.id = id
         self.external_id = external_id
@@ -163,14 +168,14 @@ class AlertFilter(CogniteFilter):
 
     def __init__(
         self,
-        ids: List[int] = None,
-        external_ids: List[str] = None,
-        channel_ids: List[int] = None,
-        channel_external_ids: List[int] = None,
-        closed: bool = None,
-        start_time: int = None,
-        end_time: int = None,
-        cognite_client: "CogniteClient" = None,
+        ids: list[int] | None = None,
+        external_ids: list[str] | None = None,
+        channel_ids: list[int] | None = None,
+        channel_external_ids: list[int] | None = None,
+        closed: bool | None = None,
+        start_time: int | None = None,
+        end_time: int | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.ids = ids
         self.external_ids = external_ids
@@ -187,11 +192,11 @@ class AlertSubscriber(CogniteResource):
 
     def __init__(
         self,
-        id: int = None,
-        external_id: str = None,
-        metadata: Dict[str, str] = None,
-        email: str = None,
-        cognite_client: "CogniteClient" = None,
+        id: int | None = None,
+        external_id: str | None = None,
+        metadata: dict[str, str] | None = None,
+        email: str | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.id = id
         self.external_id = external_id
@@ -209,13 +214,13 @@ class AlertSubscriberList(CogniteResourceList):
 class AlertSubscriptionDelete(CogniteResource):
     def __init__(
         self,
-        id: int = None,
-        external_id: str = None,
-        channel_id: int = None,
-        channel_external_id: str = None,
-        subscriber_id: int = None,
-        subscriber_external_id: str = None,
-        cognite_client: "CogniteClient" = None,
+        id: int | None = None,
+        external_id: str | None = None,
+        channel_id: int | None = None,
+        channel_external_id: str | None = None,
+        subscriber_id: int | None = None,
+        subscriber_external_id: str | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.id = id
         self.external_id = external_id
@@ -231,14 +236,14 @@ class AlertSubscription(CogniteResource):
 
     def __init__(
         self,
-        id: int = None,
-        external_id: str = None,
-        channel_id: int = None,
-        channel_external_id: str = None,
-        subscriber_id: int = None,
-        subscriber_external_id: str = None,
-        metadata: Dict[str, str] = None,
-        cognite_client: "CogniteClient" = None,
+        id: int | None = None,
+        external_id: str | None = None,
+        channel_id: int | None = None,
+        channel_external_id: str | None = None,
+        subscriber_id: int | None = None,
+        subscriber_external_id: str | None = None,
+        metadata: dict[str, str] | None = None,
+        cognite_client: CogniteClient | None = None,
     ):
         self.id = id
         self.external_id = external_id

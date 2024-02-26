@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from __future__ import annotations
 
 from cognite.client.data_classes._base import CogniteResource, CogniteResourceList
 
@@ -6,10 +6,10 @@ from cognite.client.data_classes._base import CogniteResource, CogniteResourceLi
 class ExtractionPipelineConfigRevision(CogniteResource):
     def __init__(
         self,
-        external_id: str = None,
-        revision: int = None,
-        description: str = None,
-        created_time: int = None,
+        external_id: str | None = None,
+        revision: int | None = None,
+        description: str | None = None,
+        created_time: int | None = None,
         cognite_client=None,
     ):
         self.external_id = external_id
@@ -22,14 +22,14 @@ class ExtractionPipelineConfigRevision(CogniteResource):
 class ExtractionPipelineConfig(ExtractionPipelineConfigRevision):
     def __init__(
         self,
-        external_id: str = None,
-        config: str = None,
-        revision: int = None,
-        description: str = None,
-        created_time: int = None,
+        external_id: str | None = None,
+        config: str | None = None,
+        revision: int | None = None,
+        description: str | None = None,
+        created_time: int | None = None,
         cognite_client=None,
     ):
-        super(ExtractionPipelineConfig, self).__init__(
+        super().__init__(
             external_id=external_id,
             revision=revision,
             description=description,
